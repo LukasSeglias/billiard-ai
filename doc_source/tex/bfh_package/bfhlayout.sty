@@ -1,0 +1,131 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bfhlayout}[2015/09/04 BFH Layout Definitions package]
+
+% Loading necessary packages
+% For Colors
+\RequirePackage{bfhcolors}
+%For drawing pictures
+% (Here used for the lines with rounded edges, e.g.)
+\RequirePackage{tikz}
+% For Pagestyles
+\RequirePackage{scrlayer-scrpage}
+
+
+
+% Size of borders as suggested in the CI-Manual:
+% For DIN A4
+%Ränder
+%Oben: 12 mm
+%Unten: 13 mm
+%Innen: 16 mm
+%Aussen: 12 mm
+%Spalten
+%Spaltenanzahl: 12
+%Spaltenabstand: 4 mm
+%Grundlinienraster
+%Beginn: 12 mm
+%Abstand: 4 mm
+%Schulterhöhe
+%Höhe: 48 mm
+
+% Bars, lines, etc
+% bfhbar{width} draws a line with rouded edges and thickness 2mm which is the
+% suggested one for DIN A4
+\newcommand{\bfhbar}[1]{\tikz \draw[rounded corners=0.5mm,color=BFHGray,fill] (0,0) rectangle (#1,2mm);}
+
+% White lines for tabulars:
+\newcommand{\bfhmidline}{\arrayrulecolor{white}\specialrule{1pt}{0pt}{0pt}%
+            \arrayrulecolor{black}}
+
+% Logo
+\providecommand{\@logode}{BFH_Logo_A_de_100_RGB}
+\providecommand{\@logofr}{BFH_Logo_A_fr_100_RGB.eps}
+\providecommand{\@logoen}{BFH_Logo_A_en_100_RGB.eps}
+% TODO: Set Logo according to language
+\providecommand{\Logo}{BFH_Logo_C_de_100_RGB.pdf}
+
+% Variables for titlepages other than the standard ones (like \title, etc)
+%%%
+\newcommand*{\@shorttitle}{}%
+\newcommand{\shorttitle}[1]{\gdef\@shorttitle{%
+    #1%
+}}%
+%%%
+% Variables for a Thesis-Titlepage
+%%%
+% Type of work. BSc-Thesis, Semesterproject, etc.
+\newcommand*{\@type}{}%
+\newcommand{\type}[1]{\gdef\@type{%
+    #1%
+}}%
+% Topic
+\newcommand*{\@degreeprogramme}{}%
+\newcommand{\degreeprogramme}[1]{\gdef\@degreeprogramme{%
+    #1%
+}}%
+% Supervisor(s)
+\newcommand*{\@thesisadvisor}{}%
+\newcommand{\thesisadvisor}[1]{\gdef\@thesisadvisor{%
+    #1%
+}}%
+% Client/Auftraggeber
+\newcommand*{\@projectpartner}{}%
+\newcommand{\projectpartner}[1]{\gdef\@projectpartner{%
+    #1%
+}}%
+% Experts
+\newcommand*{\@expert}{}%
+\newcommand{\expert}[1]{\gdef\@expert{%
+    #1%
+}}%
+% Version
+\newcommand*{\@version}{}%
+\newcommand{\version}[1]{\gdef\@version{%
+    #1%
+}}%
+%%%%%%%%%%%%%%%%%%%%%%%
+% Variable Definition Thesis Titlepage end
+%%%%%%%%%%%%%%%%%%%%%%%
+% Variables for Lecture Notes, Excercise Sheets, Exams, etc.
+%%%%%%%%%%%%%%%%%%%%%%%
+% TO BE DEFINED: \semester, \classes, \modulename, \teachers, \sheetname (like
+% Exercise, Repetition, Working Sheet, semestral Exam, final Exam, etc.)
+
+
+% Titlepicture
+% Command draws lines in BFHGray above and below the included picture, too
+\newcommand*{\@titlepicture}{}%
+\newcommand{\titlepicture}[1]{\gdef\@titlepicture{%
+  \bfhbar{150mm}\\[-0.6mm]%
+  \includegraphics[width=15cm,height=10cm]{#1}\\[-2.5mm]%
+  \bfhbar{150mm}%
+}}%
+
+%%%%%%%%%%%%%%%%%%%
+% BFH Pagestyles, they may be used in several documents
+%%%%%%%%%%%%%%%%%%
+\newtriplepagestyle{BFHInFoot}% Sets the name of the School in the footline,
+% nothing else
+% This Style is used on the Thesis Titlepage and as usual Style in a Report
+% and lecture Notes (But I do not like the latter for a lecture Note (HEH2))
+[0pt]%[thickness of the outer linen ]
+[0pt]%[thickness of the inner linen ]
+{}%{inner head element }
+{}%{centre head element }
+{}%{outer head element }
+{\normalfont\color{BFHGray}Berner Fachhochschule | Haute \'ecole
+sp\'ecialis\'ee bernoise | Bern University of Applied Sciences}%{inner foot element }
+{}%{centre foot element }
+{}% {outer foot element }
+%%%%%%%%%%%%%
+\newtriplepagestyle{BFHThesisBody}%
+  [0pt]%[thickness of the outer linen ]
+  [0pt]%[thickness of the inner linen ]
+  {}%{inner head element }
+  {}%{centre head element }
+  {}%{outer head element }
+  {\normalfont\color{BFHGray}\@shorttitle, Version \@version, \@date}%{inner foot element }
+{}%{centre foot element }
+{\normalfont\color{BFHGray}\thepage}% {outer foot element }
+\renewcommand*\chapterpagestyle{BFHThesisBody}
+\renewcommand*\partpagestyle{empty}

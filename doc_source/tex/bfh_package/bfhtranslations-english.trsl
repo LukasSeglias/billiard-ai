@@ -1,0 +1,29 @@
+% this is file bfhtranslations-english.trsl
+\ProvideDictionaryFor{English}{bfhtranslations}[0.1]
+
+\ProvideDictTranslation{topic of study}{Topic of Study}
+\ProvideDictTranslation{author}{Author}
+\ProvideDictTranslation{Author}{Author}
+\ProvideDictTranslation{authors}{Authors}
+\ProvideDictTranslation{Authors}{Authors}
+\ProvideDictTranslation{Supervisor}{Supervisor}
+\ProvideDictTranslation{Project-Partner}{Project-Partner}
+\ProvideDictTranslation{Expert}{Expert}
+\ProvideDictTranslation{Date}{Date}
+
+
+\ProvideDictTranslation{bfhproblem}{Problem} % Problem, question or exercise?
+\ProvideDictTranslation{bfhexamid}{Exam-ID} % Student-ID
+\ProvideDictTranslation{bfhpoints}{Points} % Points for a problem
+\ProvideDictTranslation{bfhreachedpoints}{Reached Points} % Points reached by the student
+\ProvideDictTranslation{bfhmaxpoints}{Max. Points} % Maximum of points
+\ProvideDictTranslation{bfhexamgrade}{Grade} % Grade for the exam
+\ProvideDictTranslation{bfhexperiencegrade}{Experience-Grade} % Grade of the experience part
+\ProvideDictTranslation{bfhweightedaverage}{weighted average} % Average for exam and experience
+\ProvideDictTranslation{bfhmodulegrade}{Module-Grade} % Final Grade
+\ProvideDictTranslation{bfhproblemshortcut}{P} % shortcut for the execise number
+\ProvideDictTranslation{bfhadvice}{Advice} % Title for the Advice Section
+\ProvideDictTranslation{bfhcontinued}{continued} % Subtitle the backside of the exercise sheets
+\ProvideDictTranslation{bfhti}{Engineering and Information Technology} % Departement TI
+\ProvideDictTranslation{Name}{Name} 
+\ProvideDictTranslation{name}{name} 

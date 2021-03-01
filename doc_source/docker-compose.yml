@@ -1,0 +1,14 @@
+version: '3'
+services:
+  documentation_build:
+    build:
+      context: './'
+    #command: tail -f /dev/null
+    environment:
+      - LANGUAGE=${LANGUAGE}
+    volumes:
+      - ./tex/${PROJECT}/${LANGUAGE}:/source/${LANGUAGE}
+      - ./tex/${PROJECT}/common:/source/common
+      - ./tex/bfh_package:/usr/share/texlive/texmf-dist/tex/latex/bfh
+      - ../doc/${PROJECT}/${LANGUAGE}:/interface/output
+    container_name: billiard_ai_document_build

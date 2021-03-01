@@ -1,0 +1,33 @@
+% this is file bfhtranslations-german.trsl
+\ProvideDictionaryFor{german}{bfhtranslations}[0.1]
+\ProvideDictTranslation{topic of study}{Studienrichtung}
+\ProvideDictTranslation{author}{Autor}
+\ProvideDictTranslation{Author}{Autor}
+\ProvideDictTranslation{authors}{Autoren}
+\ProvideDictTranslation{Authors}{Autoren}
+\ProvideDictTranslation{Supervisor}{Dozent}
+\ProvideDictTranslation{Project-Partner}{Auftraggeber}
+\ProvideDictTranslation{Expert}{Experte}
+\ProvideDictTranslation{Date}{Datum}
+
+
+
+
+
+
+% Translations for Exams
+\ProvideDictTranslation{bfhproblem}{Aufgabe}% Problem, question or exercise?
+\ProvideDictTranslation{bfhexamid}{Klausur-ID} % Student-ID
+\ProvideDictTranslation{bfhpoints}{Punkte}% Points for a problem
+\ProvideDictTranslation{bfhreachedpoints}{erreichte Punkte} % Points reached by the student
+\ProvideDictTranslation{bfhmaxpoints}{Max. Punkte} % Maximum of points
+\ProvideDictTranslation{bfhexamgrade}{Note} % Grade for the exam
+\ProvideDictTranslation{bfhexperiencegrade}{Erfahrungsnote} % Grade of the experience part
+\ProvideDictTranslation{bfhweightedaverage}{Durchschnittsnote}% Average for exam and experience
+\ProvideDictTranslation{bfhmodulegrade}{Modulnote} % Final Grade
+\ProvideDictTranslation{bfhproblemshortcut}{P} % shortcut for the execise number
+\ProvideDictTranslation{bfhadvice}{Hinweise} % Title for the Advice Section
+\ProvideDictTranslation{bfhcontinued}{Fortsetzung} % Subtitle the backside of the exercise sheets
+\ProvideDictTranslation{bfhti}{Technik und Informatik} % Departement TI
+\ProvideDictTranslation{Name}{Name} 
+\ProvideDictTranslation{name}{Name}

@@ -1,0 +1,63 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bfhcolors}[2017/02/08 BFH color definitions package]
+
+\RequirePackage{xcolor}
+
+% Define BFH colors in RGB and CMYK coated
+\DeclareOption{coated}{
+  % Primary colors
+  \definecolorset[named]{RGB/cmyk}{BFH}{}{%
+    Gray,105,125,145/0.55,0.00,0.00,0.50;%
+    Orange,250,165,0/0.00,0.20,1.00,0.00}
+  % Secondary colors
+  \definecolorset[named]{RGB/cmyk}{BFH}{}{%
+    DarkGreen,85,100,85/0.65,0.30,0.65,0.30;%
+    MediumGreen,105,150,115/0.50,0.00,0.40,0.15;%
+    LightGreen,140,175,130/0.35,0.00,0.35,0.10;%
+    DarkBlue,80,110,150/0.70,0.40,0.00,0.20;%
+    MediumBlue,105,155,190/0.60,0.25,0.00,0.00;%
+    LightBlue,135,185,200/0.40,0.05,0.05,0.05;%
+    DarkPurple,100,80,120/0.50,0.60,0.00,0.35;%
+    MediumPurple,130,90,125/0.25,0.55,0.00,0.30;%
+    LightPurple,160,135,170/0.30,0.40,0.00,0.00;%
+    DarkOcher,120,100,80/0.20,0.30,0.40,0.35;%
+    MediumOcher,150,130,95/0.10,0.20,0.40,0.25;%
+    LightOcher,185,145,100/0.10,0.25,0.40,0.05}}
+\ProcessOptions\relax
+
+% If the coated option was not passed, define the BFH colors in RGB and CMYK uncoated as the default.
+% Primary colors
+\providecolorset[named]{RGB/cmyk}{BFH}{}{%
+  Gray,105,125,145/0.55,0.00,0.00,0.50;%
+  Orange,250,165,0/0.00,0.20,1.00,0.00}
+% Secondary colors
+\providecolorset[named]{RGB/cmyk}{BFH}{}{%
+  DarkGreen,85,100,85/0.60,0.20,0.60,0.35;%
+  MediumGreen,105,150,115/0.55,0.00,0.55,0.10;%
+  LightGreen,140,175,130/0.40,0.00,0.50,0.05;%
+  DarkBlue,80,110,150/0.70,0.40,0.00,0.15;%
+  MediumBlue,105,155,190/0.55,0.10,0.00,0.10;%
+  LightBlue,135,185,200/0.40,0.00,0.10,0.05;%
+  DarkPurple,100,80,120/0.60,0.80,0.05,0.15;%
+  MediumPurple,130,90,125/0.35,0.70,0.10,0.15;%
+  LightPurple,160,135,170/0.30,0.45,0.05,0.00;%
+  DarkOcher,120,100,80/0.35,0.45,0.65,0.25;%
+  MediumOcher,150,130,95/0.25,0.30,0.60,0.15;%
+  LightOcher,185,145,100/0.10,0.25,0.60,0.10}
+
+% Colors for online applications (only available in RGB)
+\definecolorset[named]{RGB}{BFH}{}{%
+  GrayPrimary,105,125,145;%
+  OrangePrimary,250,165,0;%
+  GrayLogo,105,125,145;%
+  OrangeLogo,250,19,0;%
+  GrayText,75,100,125;%
+  Gray1,100,120,139;%
+  Gray2,162,174,185;%
+  Gray3,193,201,209;%
+  Gray4,224,228,232;%
+  Gray5,239,241,243;%
+  Orange1Text,189,126,0;%
+  Orange2Text,255,203,62;%
+  OrangeGraphic,250,165,0;%
+  GrayDark,60,60,60}

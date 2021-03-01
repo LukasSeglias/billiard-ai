@@ -1,0 +1,152 @@
+\documentclass[
+    10pt, % Fontsize
+    a4paper, % papersize
+    twoside, % For twosided documents
+    openright, % Chapters start always at a odd page
+    numbers=noenddot, % No final dots in Sectionnumbers, e.g 1.2 instead of 1.2.
+    BCOR=5mm, % Correction length for lost space from binding
+    parskip=half*, %No indent but spacing between paragraphs
+    thesis, % type of document
+%ngerman, % For language setting, translations package does not see if
+% the language is set here.??
+%english,
+%french,
+]{bfhbook}
+
+
+% Test Template for bfhbook.cls
+\usepackage[T1]{fontenc}
+% Coding
+\usepackage[utf8]{inputenc}
+% Language setting
+\usepackage[ngerman]{babel}
+
+% For more sophisticated blindtext, including lists, math text, etc.
+\usepackage{blindtext}
+\usepackage{gauss}
+
+% \usepackage{fonttable}
+% Hyperref
+\usepackage[
+    pdftex,                  % for PDF
+    colorlinks=true,         % colored links
+    linkcolor=black,         % color for links
+    citecolor=black,         % color for references
+    urlcolor=black,          % color for url
+    bookmarks=true
+]{hyperref}
+
+\usepackage[acronym, toc=false]{glossaries-extra} % Generate Glossaries
+\usepackage{booktabs} % For nicer tables
+\usepackage{threeparttable} % Table-Captions having the same width than the table
+\usepackage[singlelinecheck=off]{caption}
+\usepackage{siunitx} % Scientific Units and number setting
+\usepackage{listings} % For Program-Code
+\usepackage[backend=biber,
+style=alphabetic,
+]{biblatex}
+
+\usepackage{subcaption}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Settings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Type?? (Lecture Notes, BSc Thesis, Master Thesis, . . .)
+% Use Variables \BSc, \Master, etc. for language support
+\type{Projekt 2}
+% Author(s)
+\author{Lukas Seglias, Luca Ritz}
+% Title
+\title{Billiard-AI}
+% Short Title, will be used in the footline
+\shorttitle{Billiard-AI}
+% Subtitle
+\subtitle{Ein intelligenter Billardtisch}
+% Titlepicture
+\titlepicture{../common/resources/Elektronik.jpg}
+%%
+
+% Topic of Study
+\degreeprogramme{Informatik - Computer Perception and Virtual Reality}
+% Supervisor
+\thesisadvisor{Markus Hudritsch}
+% Client
+\projectpartner{}
+% Expert
+\expert{}
+% Version
+\version{0.4}
+% Date
+\date{\today} % Or any other possible date
+% Departement
+% Use Variable for language support
+%\TI
+
+% Semester
+% Use Variable for language support
+%\semester
+
+% Logo(s)
+
+% Colors
+% Secondary Color for Graphics, Tables etc.
+% Naming: BFH*Color*light|middle|dark, e.g. BFHGreendark, BFHBluelight, etc.
+% Possible Color Values: Green, Blue, Purple, Brown
+\newcommand{\seccolor}{BFHLightGreen}
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+
+\input{./resources/glossary}
+\addbibresource{./resources/literature.bib}
+
+\begin{document}
+    \maketitle
+%**************************************************************************
+    \frontmatter % preliminary parts
+%**************************************************************************
+% Allows breaks in Math Formulars
+    \allowdisplaybreaks
+
+    \tableofcontents
+    \sloppy
+%%%%%%%%%%%%%%%%%%%%%%%%
+% Introduction
+%**************************************************************************
+    \mainmatter % The main part
+%**************************************************************************
+%\part{Part One}
+   \include{00_summary/00_document}
+   \include{01_introduction/00_document}
+   \include{02_goals/00_document}
+   \include{03_billiard_ai/00_document}
+   \include{04_results/00_document}
+   \include{05_further_work/00_document}
+   \include{06_conclusion/00_document}
+
+% List of Figures
+    \listoffigures
+% List of Tables
+    \listoftables
+% Bibliography
+    \printbibliography
+% Glossary
+    \printunsrtglossary[style={index}]
+
+% Appendices
+    \chapter*{Versionskontrolle}
+    \renewcommand{\arraystretch}{2} % In order to set the correct linespacing.
+% Must be set here, since this also changes the linespacing for the array
+% environment
+%\arrayrulecolor{white}
+    \begin{center}
+        \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+        \begin{tabular}{llll}
+            \rowcolor{\seccolor!50}
+            Version & Datum & Beschreibung & Autor\\\bfhmidline
+            01.03.2021 & Eröffnun Dokumentation & Luca Ritz\\\bfhmidline
+        \end{tabular}
+    \end{center}
+
+    \include{07_appendix/00_document}
+\end{document}

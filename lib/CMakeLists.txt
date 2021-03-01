@@ -1,0 +1,3 @@
+add_subdirectory(billiard_physics)
+add_subdirectory(billiard_detection)
+add_subdirectory(billiard_search)
