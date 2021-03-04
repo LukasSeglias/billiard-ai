@@ -1,5 +1,13 @@
 \chapter{Ziele}
-Die Projekt-2 Arbeit hat das wesentliche Ziel der Vorbereitung auf die Bachelor-Thesis. Daher sei zu Beginn erwähnt,
+Ins Billard-Spiel einzusteigen ist nicht ganz einfach. Zu Beginn kann man schlecht abschätzen, welchen Weg eine Kugel
+wählen wird, wenn man sie anschlägt und ebenfalls hat man Mühe, den optimalen Stoss zufinden, erst recht, wenn
+man weiter in die Tiefe sehen will. Wenn es also wichtig wird, die Weisse nach einem Stoss für den Nächsten optimal
+zu platzieren.
+
+Am Ende wird also ein System entstehen, das einem den optimalen Stoss vorschlägt, basierend auf Kriterien und
+einer festgelegten Tiefe.
+
+Die Projekt-2 Arbeit hat das grundlegende Ziel der Vorbereitung auf die Bachelor-Thesis. Daher sei zu Beginn erwähnt,
 dass möglichst viel vorgearbeitet werden kann, auch wenn dies an dieser Stelle keine explizite Erwähnung findet.
 
 Im Wesentlichen geht es aber vor allem um die zugrunde liegenden Basisarbeiten. Diese setzen sich aus den folgenden
@@ -20,7 +28,7 @@ Teilstücken zusammen:
     physikalisch korrekt zu beschreiben.
     \item[Suche eines einfachen Stosses] Sobald der theoretische Ansatz erarbeitet wurde, soll eine erste einfache
     Suche implementiert werden. Diese soll nur direkte Stösse berücksichtigen. Indirekte über die Bande wie auch über
-    andere Kugeln werden vorerst nicht beachtet. Die Ausgabe soll auch nicht unbedingt über den Beamer erfolgen, eine
+    andere Kugeln werden vorerst nicht beachtet. Die Ausgabe soll auch nicht unbedingt über den Projektor erfolgen, eine
     textuelle Präsentation soll hier genügen.
 \end{description}
 
@@ -32,3 +40,25 @@ will. Da grössere Turniere wie Weltmeisterschaften in Snooker ausgetragen werde
 Hauptaugenmerk darauf zu legen. Nichtsdestotrotz wird die Anwendung so abstrakt gehalten, dass sie mit wenig Aufwand
 auf Pool-Billard portiert werden könnte. Dies wird aber vorläufig weder in Projekt-2 noch in der darauffolgenden
 Bachelor-Thesis von Relevanz sein.
+
+\subsection{Planung}
+Die Planung beinhaltet eine Auflistung der Ziele nach Deadline sowie Bearbeiter.
+
+\rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+\begin{tabular}{llll}
+    \rowcolor{\seccolor!50}
+    Ziel & Datum & Bearbeiter\\\bfhmidline
+    Evaluation Beamer \& Kamera & 08.03.2021 & Lukas \& Luca\\\bfhmidline
+    Überlegungen zum Aufbau & 11.03.2021 & Lukas \& Luca\\\bfhmidline
+    Entscheid Beamer- Kameratyp & 11.03.2021 & Lukas \& Luca\\\bfhmidline
+    Theorie der Kamera-Kalibrierung erarbeiten & 18.03.2021 & Lukas\\\bfhmidline
+    Beschreibung Such-Algorithmus & 18.03.2021 & Luca\\\bfhmidline
+    Theorie der Beamer-Kalibrierung erarbeiten & 25.03.2021 & Lukas \& Luca\\\bfhmidline
+    Aufbau des Systems & 01.04.2021 & Lukas \& Luca\\\bfhmidline
+    Definitive Kalibrierung & 08.04.2021 & Lukas \& Luca\\\bfhmidline
+    Kugel erkennen \& Klassifikation & 15.04.2021 & Luca\\\bfhmidline
+    Fine-Tuning Kugel erkennen \& Klassifikation & 29.04.2021 & Luca\\\bfhmidline
+    Marker - Transformation in internes Koordinatensystem & 29.04.2021 & Lukas\\\bfhmidline
+    Resultate festhalten Erkennung, Klassifikation \& Transformation & 06.05.2021 & Lukas \& Luca\\\bfhmidline
+    Einfache Suche implementieren & 03.06.2021 & Lukas \& Luca\\\bfhmidline
+\end{tabular}
