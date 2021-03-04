@@ -1,1 +1,34 @@
 \chapter{Ziele}
+Die Projekt-2 Arbeit hat das wesentliche Ziel der Vorbereitung auf die Bachelor-Thesis. Daher sei zu Beginn erwähnt,
+dass möglichst viel vorgearbeitet werden kann, auch wenn dies an dieser Stelle keine explizite Erwähnung findet.
+
+Im Wesentlichen geht es aber vor allem um die zugrunde liegenden Basisarbeiten. Diese setzen sich aus den folgenden
+Teilstücken zusammen:
+\begin{description}
+    \item[Aufsetzen des Projekts] Dazu gehören nebst Überlegungen zur Architektur und der Implementation davon auch
+    das Aufsetzen der Dokumentation, welche in Latex geschrieben wird.
+    \item[Aufbau des Systems] Dies beinhaltet die Montage der Kamera wie auch des Projektors.
+    \item[Kalibrierung der Kamera] Bestimme die intrinsische Transformationsmatrix, um genaue Bildanalyse betreiben zu
+    können.
+    \item[Erkennung der Kugelpositionen] Die Kugeln sollen einer Position im Pixelkoordinatensystem zugewiesen werden
+    können.
+    \item[Klassifikation der Kugeln] Wurden die Kugeln erkannt, sollen sie entsprechend der Farbe klassifiziert werden.
+    \item[Übersetzung in internes Koordinatensystem] Mittels Marker, welche am Tisch angebracht werden, sollen die
+    auflösungsabhängigen Pixelkoordinaten in ein standardisiertes internes Koordinatensystem überführt werden.
+    \item[Theoriearbeiten zur Suche eines Stosses] Um einen optimalen Stoss zu finden, bedarf es zunächst einiger
+    theoretischen Grundüberlegungen. Dies beinhaltet z.B. einen Algorithmus, um einen Stoss zu finden sowie auch
+    physikalisch korrekt zu beschreiben.
+    \item[Suche eines einfachen Stosses] Sobald der theoretische Ansatz erarbeitet wurde, soll eine erste einfache
+    Suche implementiert werden. Diese soll nur direkte Stösse berücksichtigen. Indirekte über die Bande wie auch über
+    andere Kugeln werden vorerst nicht beachtet. Die Ausgabe soll auch nicht unbedingt über den Beamer erfolgen, eine
+    textuelle Präsentation soll hier genügen.
+\end{description}
+
+Es ist weiterhin anzumerken, dass es in erster Linie um Snooker-Billard geht. Dies hat mehrere Gründe. Einerseits soll
+in dieser Arbeit nicht die Klassifikation der Kugeln im Zentrum stehen, sondern die Suche nach einem optimalen Stoss.
+Es wird angenommen, dass dies mit Snooker-Kugeln einfacher geht als mit Pool-Billard-Kugeln. Andererseits wird das
+Projekt zusammen mit einem Unternehmen durchgeführt, welches eventuell auch einen kommerziellen Ansatz verfolgen
+will. Da grössere Turniere wie Weltmeisterschaften in Snooker ausgetragen werden, kam schnell der Wunsch auf, das
+Hauptaugenmerk darauf zu legen. Nichtsdestotrotz wird die Anwendung so abstrakt gehalten, dass sie mit wenig Aufwand
+auf Pool-Billard portiert werden könnte. Dies wird aber vorläufig weder in Projekt-2 noch in der darauffolgenden
+Bachelor-Thesis von Relevanz sein.
