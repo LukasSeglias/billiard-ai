@@ -1,0 +1,848 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open...",                    ID_FILE_LOAD
+        MENUITEM "Save",                        ID_FILE_SAVE
+        MENUITEM "Save As...",                  ID_FILE_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&Tools"
+    BEGIN
+        MENUITEM "&Setup...",                   ID_TOOLS_SETUP
+        MENUITEM SEPARATOR
+        MENUITEM "Default GigE Vision Communication Parameters...", ID_TOOLS_DEFAULTGEVCOMMUNICATIONPARAMETERS
+        MENUITEM "Default USB3 Vision Communication Parameters...", ID_TOOLS_DEFAULTU3VCOMMUNICATIONPARAMETERS
+        MENUITEM SEPARATOR
+        MENUITEM "&Event Monitor",              ID_TOOLS_EVENTMONITOR
+        MENUITEM "GigE Vision Action Command...", ID_TOOLS_ACTIONCOMMAND
+        MENUITEM SEPARATOR
+        MENUITEM "Device Serial &Communication...", ID_TOOLS_DEVICESERIALCOMMUNICATION
+        MENUITEM "Frame Grabber Camera Bridge...", ID_TOOLS_CAMERABRIDGE
+        MENUITEM "Serial Communication Bridge...", ID_TOOLS_SERIALCOMMUNICATIONBRIDGE
+        MENUITEM SEPARATOR
+        MENUITEM "Image &Filtering...",         ID_TOOLS_IMAGEFILTERING
+        POPUP "Deinterlacing"
+        BEGIN
+            MENUITEM "Off",                         ID_TOOLS_DEINTERLACING_DISABLED
+            MENUITEM "Weave Half Temporal Resolution", ID_TOOLS_DEINTERLACING_WEAVE_HALF
+            MENUITEM "Weave Full Temporal Resolution", ID_TOOLS_DEINTERLACING_WEAVE_FULL
+            MENUITEM "Blending",                    ID_TOOLS_DEINTERLACING_BLENDING
+            MENUITEM "Line Doubling",               ID_TOOLS_DEINTERLACING_LINEDOUBLING
+        END
+        MENUITEM SEPARATOR
+        POPUP "Display"
+        BEGIN
+            MENUITEM "Disabled",                    ID_DISPLAYIMAGES_DISABLED
+            MENUITEM "30 FPS",                      ID_DISPLAYIMAGES_30FPS
+            MENUITEM "60 FPS",                      ID_DISPLAYIMAGES_60FPS
+        END
+        MENUITEM "Display Chunk Data",          ID_TOOLS_DISPLAYCHUNKDATA
+        MENUITEM "Display Partial Images",      ID_TOOLS_DISPLAYPARTIALIMAGES
+        MENUITEM SEPARATOR
+        MENUITEM "Buffer Options...",           ID_TOOLS_BUFFEROPTIONS
+        MENUITEM "Reset Streaming Statistics",  ID_TOOLS_RESET_STREAMING_STATISTICS
+        MENUITEM SEPARATOR
+        MENUITEM "Save Images or Video",        ID_TOOLS_SAVEIMAGES
+        MENUITEM "Save Current Image",          ID_TOOLS_SAVECURRENTIMAGE
+        MENUITEM SEPARATOR
+        MENUITEM "Save Preferences",            ID_TOOLS_SAVEPREFERENCES
+        MENUITEM "Restore Default Preferences", ID_TOOLS_RESTOREDEFAULTPREFERENCES
+        MENUITEM SEPARATOR
+        MENUITEM "File Transfer...",            ID_TOOLS_FILETRANSFER
+        MENUITEM "Save GenICam XML...",         ID_TOOLS_SAVE_XML
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About eBUS Player...",       ID_HELP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_EVENTMONITOR DIALOGEX 0, 0, 533, 247
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Event Monitor"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "&Clear log",IDC_CLEAR_BUTTON,5,209,401,16
+    EDITTEXT        IDC_LOG_EDIT,5,4,401,201,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL
+    EDITTEXT        IDC_SAVELOGEDIT,62,228,317,14,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "...",IDC_SAVELOGBUTTON,382,228,24,14
+    CONTROL         "Save to file",IDC_SAVELOGCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,230,52,10
+    CONTROL         "GenICam parameter updates",IDC_GENICAMCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,411,4,109,10
+    CONTROL         "Buffer errors",IDC_BUFFERERRORCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,411,28,57,10
+    CONTROL         "All buffer events",IDC_BUFFERALLCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,411,40,69,10
+    CONTROL         "Device serial communication",IDC_SERIAL_COM_LOG_ENABLED,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,411,76,105,10
+    CONTROL         "Messaging channel events",IDC_EVENTSCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,411,16,100,10
+    CONTROL         "eBUS SDK log events",IDC_LOGSINKCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,411,64,83,10
+    CONTROL         "Chunk data",IDC_CHUNKCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,411,52,53,10
+END
+
+IDD_IMAGE_SAVE_OPTIONS DIALOGEX 0, 0, 283, 247
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Image and Video Saving Options"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "Enable Image or Video Saving",IDC_IMAGESAVEENABLE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,114,10
+    GROUPBOX        "Location to save images or video",IDC_LOCATIONGROUP,7,20,269,34
+    EDITTEXT        IDC_LOCATION,16,34,225,15,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_LOCATION_BUTTON,245,34,18,14
+    GROUPBOX        "Throttling options",IDC_THROTTLINGGROUP,7,108,269,92
+    CONTROL         "Save one image out of every",IDC_ONEOUTOF_RADIO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,17,123,106,10
+    EDITTEXT        IDC_ONEOUTOF,127,120,35,14,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "captured images.",IDC_CAPTUREDIMAGESLABEL,170,123,56,8,NOT WS_GROUP
+    CONTROL         "Save a maximum of one image every ",IDC_MAXRATE_RADIO,
+                    "Button",BS_AUTORADIOBUTTON,17,143,132,10
+    EDITTEXT        IDC_MAXRATE,153,140,35,14,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "ms.",IDC_MSLABEL,198,143,12,8,NOT WS_GROUP
+    CONTROL         "Throttle throughput to HDD. Maintain ",IDC_AVERAGETHROUGHPUT_RADIO,
+                    "Button",BS_AUTORADIOBUTTON,17,162,137,10
+    EDITTEXT        IDC_AVERAGETHROUGHPUT,157,160,35,14,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "Mbits/s average.",IDC_AVERAGELABEL,203,162,55,8,NOT WS_GROUP
+    CONTROL         "No throttling (Limited by CPU, HDD, etc. Images may be dropped).",IDC_NOTHROTTLE_RADIO,
+                    "Button",BS_AUTORADIOBUTTON,17,181,229,10
+    PUSHBUTTON      "OK",IDOK,181,222,46,17,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,230,222,46,17
+    GROUPBOX        "Format",IDC_LOCATIONGROUP2,7,57,269,50
+    COMBOBOX        IDC_FORMAT,16,71,225,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Target encoding bitrate",IDC_CAPTUREDIMAGESLABEL2,16,91,76,8,NOT WS_GROUP
+    EDITTEXT        IDC_AVGBITRATE,103,88,72,14,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "bits/s.",IDC_AVERAGELABEL2,181,91,21,8,NOT WS_GROUP
+END
+
+IDD_BUFFER_OPTIONS DIALOGEX 0, 0, 364, 249
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Buffer Options"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Buffers used for streaming",IDC_STATIC,7,7,350,97
+    DEFPUSHBUTTON   "OK",IDOK,253,228,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,307,228,50,14
+    LTEXT           "TEXT",IDC_HELP1,132,15,214,84
+    GROUPBOX        "Default buffer size",IDC_STATIC,7,106,350,63
+    LTEXT           "TEXT",IDC_HELP2,132,114,214,50
+    EDITTEXT        IDC_BUFFERSIZE,19,122,74,14,ES_AUTOHSCROLL
+    LTEXT           "bytes",IDC_STATIC,98,124,19,8
+    EDITTEXT        IDC_BUFFERCOUNT,19,20,74,14,ES_AUTOHSCROLL
+    LTEXT           "buffers",IDC_STATIC,98,23,24,8
+    GROUPBOX        "Automatic buffer resizing",IDC_STATIC,7,171,350,41
+    LTEXT           "TEXT",IDC_HELP3,132,181,214,28
+    CONTROL         "Enabled",IDC_AUTORESIZECHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,184,41,10
+END
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 266, 222
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About eBUS Player"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,209,201,50,14,WS_GROUP
+    LTEXT           "eBUS Player",IDC_APPNAME,7,138,100,8
+    LTEXT           "eBUS PureGEV version 1.3.0 (build 1674)",IDC_PRODUCTNAME,7,153,132,8
+    LTEXT           "Copyright (c) 2002-2010",IDC_COPYRIGHT,7,166,80,8
+    LTEXT           "Pleora Technologies Inc.",IDC_COMPANY,7,179,79,8
+    CONTROL         IDB_ABOUT,IDC_STATIC,"Static",SS_BITMAP | WS_BORDER,7,7,251,121
+END
+
+IDD_SPLASHPAGE DIALOGEX 0, 0, 398, 260
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_BORDER | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         IDB_SPLASH,IDC_STATIC,"Static",SS_BITMAP | WS_BORDER,7,7,385,186
+    LTEXT           "eBUS Player",IDC_APPNAME,7,199,100,8
+    LTEXT           "eBUS PureGEV version 1.3.0 (build 1674)",IDC_PRODUCTNAME,7,214,132,8
+    LTEXT           "Copyright (c) 2002-2010",IDC_COPYRIGHT,7,227,80,8
+    LTEXT           "Pleora Technologies Inc.",IDC_COMPANY,7,240,79,8
+END
+
+IDD_NO_DRIVER DIALOGEX 0, 0, 273, 72
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Warning"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,216,48,50,17
+    LTEXT           "You have chosen to connect to a GigE Vision device through a network interface, which does not employ an eBUS driver.  eBUS drivers are recommended for optimal streaming performance.",IDC_WARNING_MESSAGE,7,7,259,35
+    CONTROL         "Don't show me this again",IDC_DONT_SHOW_AGAIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,46,104,19
+END
+
+IDD_FILETRANSFER DIALOGEX 0, 0, 316, 139
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "File Transfer"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,7,116,302,16
+    GROUPBOX        "1. Device File",IDC_GROUP1,7,7,302,32
+    COMBOBOX        IDC_FILECOMBO,15,19,182,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "2. Transfer",IDC_GROUP2,7,40,302,62
+    PUSHBUTTON      "Download",IDC_DOWNLOADBUTTON,15,50,141,16
+    CONTROL         "",IDC_PROGRESS,"msctls_progress32",WS_BORDER,15,70,286,16
+    LTEXT           "",IDC_PROGRESSLABEL,15,89,286,8
+    PUSHBUTTON      "Upload",IDC_UPLOADBUTTON,158,50,143,16
+END
+
+IDD_HISTOGRAMCTRL DIALOGEX 0, 0, 252, 110
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+END
+
+IDD_PERSISTENCEINFO_DLG DIALOGEX 0, 0, 293, 102
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "Device Configuration Changed"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,239,79,50,17
+    CONTROL         "Technical Note About Saving eBUS Player and Device Settings",IDC_MFCLINK,
+                    "MfcLink",WS_TABSTOP,7,48,282,16
+    CONTROL         "Don't show me this again",IDC_DONTSHOWAGAIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,86,93,10
+    LTEXT           "You have changed settings on your device. These changes will be lost if your device is restarted.",IDC_MESSAGE,7,7,282,20
+    LTEXT           "For detailed information about how to save device settings, see:",IDC_STATIC,7,36,208,8
+END
+
+IDD_CAMERACONTROL DIALOGEX 0, 0, 341, 269
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Camera Control"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "How will you be controlling the camera attached to your frame grabber?",IDC_STATIC,7,7,230,8
+    CONTROL         "I have a CL Protocol library that can be used to control my camera",IDC_CLPRADIO,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,19,23,228,10
+    CONTROL         "My camera is GenCP compliant",IDC_GENCPRADIO,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,19,57,113,10
+    CONTROL         "I have a Pleora Camera File for my camera",IDC_PCFRADIO,
+                    "Button",BS_AUTORADIOBUTTON | WS_TABSTOP,19,76,152,10
+    CONTROL         "I will manually configure how the camera is controlled",IDC_MANUALRADIO,
+                    "Button",BS_AUTORADIOBUTTON | WS_TABSTOP,19,112,185,10
+    LTEXT           "Template",IDC_CLPTEMPLATELABEL,36,39,30,8
+    COMBOBOX        IDC_CLPTEMPLATECOMBO,75,37,146,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Path",IDC_PCFPATHLABEL,36,93,16,8,NOT WS_GROUP
+    EDITTEXT        IDC_PCFPATHEDIT,75,90,192,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_PCFPATHBUTTON,273,90,19,15
+    LTEXT           "Select this option if:\r\n- Your camera is not using the first serial port of the frame grabber\r\n- You have more than one camera\r\n- You want to use an external application to control your camera through a serial bridge\r\n- You do not want to control a camera",IDC_MANUALDESCRIPTION,36,124,299,46
+    CONTROL         "Don't show me this again",IDC_DONTSHOWAGAINCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,243,172,19
+    DEFPUSHBUTTON   "OK",IDOK,230,246,50,16
+    PUSHBUTTON      "Cancel",IDCANCEL,284,246,50,16
+    LTEXT           "How is your camera powered?",IDC_STATIC,7,181,97,8
+    CONTROL         "My camera has an external power supply",IDC_NOPOCLRADIO,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,19,195,147,10
+    CONTROL         "Power is provided by the frame grabber Camera Link cable (PoCL)",IDC_POCLRADIO,
+                    "Button",BS_AUTORADIOBUTTON | WS_TABSTOP,19,209,226,10
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_EVENTMONITOR, DIALOG
+    BEGIN
+        LEFTMARGIN, 5
+        RIGHTMARGIN, 528
+        VERTGUIDE, 406
+        VERTGUIDE, 411
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 242
+    END
+
+    IDD_IMAGE_SAVE_OPTIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 276
+        VERTGUIDE, 16
+        VERTGUIDE, 241
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 239
+    END
+
+    IDD_BUFFER_OPTIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 357
+        VERTGUIDE, 19
+        VERTGUIDE, 93
+        VERTGUIDE, 98
+        VERTGUIDE, 132
+        VERTGUIDE, 346
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 242
+    END
+
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+    END
+
+    IDD_SPLASHPAGE, DIALOG
+    BEGIN
+    END
+
+    IDD_NO_DRIVER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 266
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 65
+    END
+
+    IDD_FILETRANSFER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        VERTGUIDE, 15
+        VERTGUIDE, 301
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 132
+    END
+
+    IDD_HISTOGRAMCTRL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 245
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 103
+    END
+
+    IDD_PERSISTENCEINFO_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 289
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 96
+    END
+
+    IDD_CAMERACONTROL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 334
+        VERTGUIDE, 19
+        VERTGUIDE, 36
+        VERTGUIDE, 75
+        VERTGUIDE, 267
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 262
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR ACCELERATORS
+BEGIN
+    "O",            ID_ACCELERATOR_OPEN,    VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_ACCELERATOR_SAVE,    VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_REGISTERINTERFACE,   VIRTKEY, CONTROL, ALT, NOINVERT
+    VK_F12,         ID_SECRETUNLOCK,        VIRTKEY, SHIFT, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_EVENTMONITOR AFX_DIALOG_LAYOUT 
+BEGIN
+    0x0000
+END
+
+IDD_CAMERACONTROL AFX_DIALOG_LAYOUT 
+BEGIN
+    0x0000
+END
+
+IDD_NO_DRIVER AFX_DIALOG_LAYOUT 
+BEGIN
+    0x0000
+END
+
+IDD_PERSISTENCEINFO_DLG AFX_DIALOG_LAYOUT 
+BEGIN
+    0x0000
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_PERSISTENCEINFO_DLG DLGINIT
+BEGIN
+    IDC_MFCLINK, 0x37c, 244, 0
+0x4d3c, 0x4346, 0x694c, 0x6b6e, 0x555f, 0x6c72, 0x683e, 0x7474, 0x7370, 
+0x2f3a, 0x732f, 0x7075, 0x6f70, 0x7472, 0x6563, 0x746e, 0x7265, 0x702e, 
+0x656c, 0x726f, 0x2e61, 0x6f63, 0x2f6d, 0x2f73, 0x7261, 0x6974, 0x6c63, 
+0x2f65, 0x6153, 0x6976, 0x676e, 0x652d, 0x5542, 0x2d53, 0x6c50, 0x7961, 
+0x7265, 0x612d, 0x646e, 0x442d, 0x7665, 0x6369, 0x2d65, 0x6553, 0x7474, 
+0x6e69, 0x7367, 0x4b2d, 0x6142, 0x6573, 0x2f3c, 0x464d, 0x4c43, 0x6e69, 
+0x5f6b, 0x7255, 0x3e6c, 0x4d3c, 0x4346, 0x694c, 0x6b6e, 0x555f, 0x6c72, 
+0x7250, 0x6665, 0x7869, 0x3c3e, 0x4d2f, 0x4346, 0x694c, 0x6b6e, 0x555f, 
+0x6c72, 0x7250, 0x6665, 0x7869, 0x3c3e, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 
+0x6f54, 0x6c6f, 0x6974, 0x3e70, 0x2f3c, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 
+0x6f54, 0x6c6f, 0x6974, 0x3e70, 0x4d3c, 0x4346, 0x694c, 0x6b6e, 0x465f, 
+0x6c75, 0x546c, 0x7865, 0x5474, 0x6f6f, 0x746c, 0x7069, 0x463e, 0x4c41, 
+0x4553, 0x2f3c, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 0x7546, 0x6c6c, 0x6554, 
+0x7478, 0x6f54, 0x6c6f, 0x6974, 0x3e70, 
+    0
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// French (Canada) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRC)
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH_CANADIAN
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRC)\r\n"
+    "LANGUAGE 12, 3\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\eBUSPlayer.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""     // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // French (Canada) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (Canada) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENC)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_CAN
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_EBUSPLAYER DIALOGEX 0, 0, 589, 318
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "eBUS Player"
+MENU IDR_MENU
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    GROUPBOX        "Connection",IDC_STATIC,4,4,187,138
+    PUSHBUTTON      "Select / Connect",IDC_CONNECT_BUTTON,10,16,86,16
+    PUSHBUTTON      "Disconnect",IDC_DISCONNECT_BUTTON,97,16,87,16,WS_DISABLED
+    LTEXT           "IP address",IDC_STATIC,10,41,45,8
+    EDITTEXT        IDC_IP_EDIT,65,37,119,14,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
+    LTEXT           "MAC address",IDC_STATIC,10,58,50,8
+    EDITTEXT        IDC_MAC_EDIT,65,55,119,14,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
+    LTEXT           "GUID",IDC_STATIC,9,75,50,8
+    EDITTEXT        IDC_GUID_EDIT,65,72,119,14,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
+    LTEXT           "Vendor",IDC_STATIC,10,92,50,8
+    EDITTEXT        IDC_MANUFACTURER_EDIT,65,89,119,14,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
+    LTEXT           "Model",IDC_STATIC,10,110,44,8
+    EDITTEXT        IDC_MODEL_EDIT,65,106,119,14,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
+    LTEXT           "Name",IDC_STATIC,10,126,44,8
+    EDITTEXT        IDC_NAME_EDIT2,65,123,119,14,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
+    GROUPBOX        "Acquisition Control",IDC_CONTROL_GROUP2,4,144,187,77
+    LTEXT           "Source",IDC_STATIC,10,161,23,8
+    COMBOBOX        IDC_COMBO_INPUT,65,156,119,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Mode",IDC_STATIC,10,176,55,8
+    COMBOBOX        IDC_MODE,65,172,119,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Play",IDC_START,"Button",BS_OWNERDRAW | WS_TABSTOP,10,189,86,26
+    CONTROL         "Stop",IDC_STOP,"Button",BS_OWNERDRAW | WS_TABSTOP,98,189,86,26
+    GROUPBOX        "Parameters and Controls",IDC_CONTROL_GROUP,4,221,187,92
+    PUSHBUTTON      "Communication control",IDC_LINK_BUTTON,10,233,174,17,WS_DISABLED
+    PUSHBUTTON      "Device control",IDC_DEVICE_BUTTON,10,252,174,17,WS_DISABLED
+    PUSHBUTTON      "Image stream control",IDC_STREAMPARAMS_BUTTON,10,271,174,17,WS_DISABLED
+    PUSHBUTTON      "Camera Link camera control",IDC_CAMERAPARAMS_BUTTON,10,290,174,17,WS_DISABLED
+    GROUPBOX        "Display",IDC_DISPLAY_GROUP,198,4,385,309
+    PUSHBUTTON      "Display",IDC_DISPLAYPOS,205,17,371,257,NOT WS_VISIBLE | WS_DISABLED
+    EDITTEXT        IDC_STATUS,205,277,371,30,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY
+END
+
+IDD_OPENSTREAM DIALOGEX 0, 0, 239, 73
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "Connection Progress"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "A packet of size of %i bytes was configured for streaming. You may experience issues if your system configuration cannot support this packet size.",IDC_STATUS,35,13,199,33
+END
+
+IDD_SETUP DIALOGEX 0, 0, 315, 210
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Setup"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "eBUS Player Role",IDC_STATIC,7,7,121,72
+    CONTROL         "Controller and data receiver",IDC_CTRLDATA,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,15,23,106,10
+    CONTROL         "Controller",IDC_CTRL,"Button",BS_AUTORADIOBUTTON,15,36,102,10
+    CONTROL         "Data receiver",IDC_DATA,"Button",BS_AUTORADIOBUTTON,15,49,103,10
+    GROUPBOX        "GigE Vision Stream Destination",IDC_STATIC,134,7,174,156,WS_GROUP
+    CONTROL         "Unicast, automatic",IDC_UNICASTAUTO,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,144,23,75,10
+    CONTROL         "Unicast, specific local port",IDC_UNICASTSPECIFIC,
+                    "Button",BS_AUTORADIOBUTTON,144,36,99,10
+    LTEXT           "Port",IDC_SPECIFICPORTLABEL,160,51,14,8,NOT WS_GROUP
+    EDITTEXT        IDC_SPECIFICPORT,200,48,52,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Unicast, other destination",IDC_UNICASTOTHER,"Button",BS_AUTORADIOBUTTON,144,64,99,10
+    LTEXT           "IP address",IDC_IPLABEL,160,78,35,8,NOT WS_GROUP
+    CONTROL         "",IDC_IP,"SysIPAddress32",WS_TABSTOP,200,77,100,15
+    LTEXT           "Port",IDC_PORTLABEL,160,98,14,8,NOT WS_GROUP
+    EDITTEXT        IDC_PORT,200,95,52,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Multicast",IDC_MULTICAST,"Button",BS_AUTORADIOBUTTON,144,112,44,10
+    LTEXT           "IP address",IDC_MULTICASTIPLABEL,160,127,35,8
+    CONTROL         "",IDC_MULTICASTIP,"SysIPAddress32",WS_TABSTOP,200,124,100,15
+    LTEXT           "Port",IDC_MULTICASTPORTLABEL,160,145,14,8,NOT WS_GROUP
+    EDITTEXT        IDC_MULTICASTPORT,200,142,52,14,ES_AUTOHSCROLL | ES_NUMBER
+    DEFPUSHBUTTON   "OK",IDOK,205,186,50,17
+    PUSHBUTTON      "Cancel",IDCANCEL,258,186,50,17
+    GROUPBOX        "Stream Channel",IDC_STATIC,7,82,121,81
+    EDITTEXT        IDC_CHANNEL_EDIT,77,96,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Default channel",IDC_CHANNEL_LABEL,15,100,51,8
+END
+
+IDD_FILTERING DIALOGEX 0, 0, 371, 284
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Image Filtering"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "RGB Filtering",IDC_STATIC,7,7,357,107
+    CONTROL         "Enabled",IDC_ENABLEDCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,19,41,10
+    CTEXT           "Gains",IDC_GAINSLABEL,99,20,47,8
+    LTEXT           "Red",IDC_REDLABEL,15,36,30,8
+    CONTROL         "",IDC_RGSLIDER,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,45,31,100,15
+    EDITTEXT        IDC_RGEDIT,146,32,52,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_RGSPIN,"msctls_updown32",UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,188,32,10,14
+    LTEXT           "Green",IDC_GREENLABEL,15,55,30,8
+    CONTROL         "",IDC_GGSLIDER,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,45,50,100,15
+    EDITTEXT        IDC_GGEDIT,146,51,52,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_GGSPIN,"msctls_updown32",UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,188,51,10,14
+    LTEXT           "Blue",IDC_BLUELABEL,15,74,30,8
+    CONTROL         "",IDC_BGSLIDER,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,45,69,100,15
+    EDITTEXT        IDC_BGEDIT,146,70,52,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_BGSPIN,"msctls_updown32",UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,188,70,10,14
+    PUSHBUTTON      "White Balance",IDC_WBBUTTON,15,89,64,18
+    PUSHBUTTON      "Reset",IDC_RESETBUTTON,81,89,64,18
+    CTEXT           "Offsets",IDC_OFFSETSLABEL,255,20,47,8
+    CONTROL         "",IDC_ROSLIDER,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,202,31,100,15
+    EDITTEXT        IDC_ROEDIT,302,32,52,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_ROSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,343,32,11,14
+    CONTROL         "",IDC_GOSLIDER,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,202,50,100,15
+    EDITTEXT        IDC_GOEDIT,302,51,52,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_GOSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,343,51,11,14
+    CONTROL         "",IDC_BOSLIDER,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,202,69,100,15
+    EDITTEXT        IDC_BOEDIT,302,70,52,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_BOSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,343,70,11,14
+    GROUPBOX        "Bayer Interpolation",IDC_STATIC,4,115,180,33
+    COMBOBOX        IDC_BAYERCOMBO,15,128,131,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Histogram",IDC_STATIC,7,152,357,125
+    PUSHBUTTON      "Histogram",IDC_IPOS,15,162,339,76,NOT WS_VISIBLE | WS_DISABLED
+    CONTROL         "Enabled",IDC_HISTOGRAMENABLED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,242,41,10
+    LTEXT           "Dark",IDC_STATIC,73,243,16,8
+    CONTROL         "",IDC_DARKSLIDER,"msctls_trackbar32",TBS_TOP | TBS_NOTICKS | WS_TABSTOP,97,241,161,15
+    LTEXT           "Light",IDC_STATIC,73,260,16,8
+    CONTROL         "",IDC_LIGHTSLIDER,"msctls_trackbar32",TBS_TOP | TBS_NOTICKS | WS_TABSTOP,97,257,161,15
+    PUSHBUTTON      "Auto Configure",IDC_AUTOCONFIGURE,270,241,84,18
+    GROUPBOX        "Tap Reconstruction",IDC_STATIC,188,115,176,33
+    COMBOBOX        IDC_TAPCOMBO,198,128,131,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_REGISTERINTERFACE DIALOGEX 0, 0, 282, 163
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Register Interface"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Read",IDC_STATIC,7,7,132,105
+    LTEXT           "Address",IDC_STATIC,15,25,27,8
+    EDITTEXT        IDC_READADDRESS,47,23,66,14,ES_AUTOHSCROLL
+    LTEXT           "hex",IDC_STATIC,117,25,13,8
+    PUSHBUTTON      "Read",IDC_READBUTTON,15,44,116,17
+    LTEXT           "Value",IDC_STATIC,15,76,18,8
+    EDITTEXT        IDC_READVALUE,47,73,66,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "hex",IDC_STATIC,118,75,13,8
+    LTEXT           "Result",IDC_STATIC,15,94,21,8
+    EDITTEXT        IDC_READRESULT,47,91,84,14,ES_AUTOHSCROLL | ES_READONLY
+    GROUPBOX        "Write",IDC_STATIC,143,7,132,105
+    LTEXT           "Address",IDC_STATIC,151,25,27,8
+    EDITTEXT        IDC_WRITEADDRESS,183,22,66,14,ES_AUTOHSCROLL
+    LTEXT           "hex",IDC_STATIC,253,25,13,8
+    LTEXT           "Value",IDC_STATIC,152,43,18,8
+    EDITTEXT        IDC_WRITEVALUE,183,40,66,14,ES_AUTOHSCROLL
+    LTEXT           "hex",IDC_STATIC,254,43,13,8
+    PUSHBUTTON      "Write",IDC_WRITEBUTTON,151,62,116,17
+    LTEXT           "Result",IDC_STATIC,151,94,21,8
+    EDITTEXT        IDC_WRITERESULT,183,91,84,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Warning: directly accessing the register map of a GigE Vision device requires advanced knowledge of that register map. Some operations could corrupt the device or cause synchronization issues with the GenApi cache.",IDC_STATIC,7,118,268,31
+END
+
+IDD_ERRORS DIALOGEX 0, 0, 255, 149
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "eBUS Player"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,198,125,50,17
+    EDITTEXT        IDC_TEXTBOX,7,21,241,86,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
+    LTEXT           "The following error(s) occured during the operation:",IDC_STATIC,7,7,167,8
+END
+
+IDD_ACTIONCOMMAND DIALOGEX 0, 0, 328, 256
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "GigE Vision Action Command"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LISTBOX         IDC_LIST_INTERFACES,15,17,298,51,LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDITDEVICEKEY,66,88,68,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDITGROUPKEY,66,103,68,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDITGROUPMASK,66,119,68,12,ES_AUTOHSCROLL
+    CONTROL         "Scheduled",IDC_CHECKSCHEDULED,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,156,105,133,10
+    EDITTEXT        IDC_ACTIONTIME,238,119,76,12,ES_AUTOHSCROLL
+    CONTROL         "Request Acknowledgements",IDC_REQUESTACKNOWLEDGESCHECKBOX,
+                    "Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,156,91,133,10
+    PUSHBUTTON      "Send",IDC_BUTTONSEND,7,144,314,18
+    GROUPBOX        "Local Interfaces",IDC_STATIC,7,4,314,71
+    GROUPBOX        "Action command",IDC_STATIC,7,76,314,64
+    LTEXT           "Device Key",IDC_STATIC,14,90,48,13
+    LTEXT           "Group Mask",IDC_STATIC,14,122,45,13
+    LTEXT           "Group Key",IDC_STATIC,14,106,43,13
+    LTEXT           "Scheduled Time",IDC_STATIC_ACTIONTIME_ENABLED,165,120,57,8
+    GROUPBOX        "Acknowledgements",IDC_STATIC,7,169,314,80
+    LISTBOX         IDC_LISTACK,14,182,300,59,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_EBUSPLAYER, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 583
+        VERTGUIDE, 10
+        VERTGUIDE, 65
+        VERTGUIDE, 184
+        VERTGUIDE, 191
+        VERTGUIDE, 198
+        VERTGUIDE, 205
+        VERTGUIDE, 560
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 313
+        HORZGUIDE, 16
+        HORZGUIDE, 32
+    END
+
+    IDD_OPENSTREAM, DIALOG
+    BEGIN
+        LEFTMARGIN, 5
+        RIGHTMARGIN, 234
+        TOPMARGIN, 5
+        BOTTOMMARGIN, 68
+    END
+
+    IDD_SETUP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 308
+        VERTGUIDE, 15
+        VERTGUIDE, 128
+        VERTGUIDE, 134
+        VERTGUIDE, 144
+        VERTGUIDE, 160
+        VERTGUIDE, 200
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 203
+        HORZGUIDE, 163
+    END
+
+    IDD_FILTERING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 364
+        VERTGUIDE, 15
+        VERTGUIDE, 45
+        VERTGUIDE, 146
+        VERTGUIDE, 198
+        VERTGUIDE, 202
+        VERTGUIDE, 302
+        VERTGUIDE, 354
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 277
+        HORZGUIDE, 28
+        HORZGUIDE, 46
+        HORZGUIDE, 65
+        HORZGUIDE, 84
+        HORZGUIDE, 107
+    END
+
+    IDD_REGISTERINTERFACE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 275
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 156
+        HORZGUIDE, 112
+    END
+
+    IDD_ERRORS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 248
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 142
+    END
+
+    IDD_ACTIONCOMMAND, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 321
+        VERTGUIDE, 289
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 249
+        HORZGUIDE, 104
+        HORZGUIDE, 112
+        HORZGUIDE, 131
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_FILTERING AFX_DIALOG_LAYOUT 
+BEGIN
+    0x0000
+END
+
+IDD_EBUSPLAYER AFX_DIALOG_LAYOUT 
+BEGIN
+    0x0000
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "icon.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_SPLASH              BITMAP                  "eBUSPlayer_Splash.bmp"
+IDB_ABOUT               BITMAP                  "eBUSPlayer_About.bmp"
+IDB_PLAY                BITMAP                  "play.bmp"
+IDB_STOP                BITMAP                  "stop.bmp"
+IDB_WHEEL               BITMAP                  "wheel.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&About eBUS Player..."
+END
+
+#endif    // English (Canada) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRC)
+LANGUAGE 12, 3
+#pragma code_page(1252)
+#include "eBUSPlayer.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"     // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

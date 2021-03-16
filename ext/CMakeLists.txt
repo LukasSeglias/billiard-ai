@@ -1,5 +1,6 @@
 add_subdirectory(opencv)
 add_subdirectory(opengl)
+add_subdirectory(camera_sdk)
 include(fltk.cmake)
 include(glad.cmake)
 include(glm.cmake)

@@ -1,0 +1,365 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B25BC2B8-7455-36D8-851A-F7C3B05FDE62}</ProjectGuid>
+    <RootNamespace>eBUSPlayerSample</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)Win32\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)Win32\Debug\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)Win32\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)Win32\Release\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)_Dbg</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)x64\Debug\</OutDir>
+    <IntDir>$(ProjectDir)x64\Debug\</IntDir>
+    <TargetName>$(ProjectName)64_Dbg</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)x64\Release\</OutDir>
+    <IntDir>$(ProjectDir)x64\Release\</IntDir>
+    <TargetName>$(ProjectName)64</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <ValidateAllParameters>false</ValidateAllParameters>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.;$(PUREGEV_ROOT)\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;PV_NO_GEV1X_PIXEL_TYPES;PV_NO_DEPRECATED_PIXEL_TYPES;_WIN32_WINNT=0x0601;WINVER=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(ProjectDir)res;$(PUREGEV_ROOT)\Includes;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>comsuppw.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>$(PUREGEV_ROOT)\Libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+	  
+    </Link>
+	<Manifest>
+		
+      <EnableDpiAwareness>false</EnableDpiAwareness>
+	</Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.;$(PUREGEV_ROOT)\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;PV_NO_GEV1X_PIXEL_TYPES;PV_NO_DEPRECATED_PIXEL_TYPES;_WIN32_WINNT=0x0601;WINVER=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(ProjectDir)res;$(PUREGEV_ROOT)\Includes;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>comsuppw.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>$(PUREGEV_ROOT)\Libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+	  
+    </Link>
+	<Manifest>
+		
+      <EnableDpiAwareness>false</EnableDpiAwareness>
+	</Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <ValidateAllParameters>false</ValidateAllParameters>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>.;$(PUREGEV_ROOT)\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;PV_NO_GEV1X_PIXEL_TYPES;PV_NO_DEPRECATED_PIXEL_TYPES;_WIN32_WINNT=0x0601;WINVER=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(ProjectDir)res;$(PUREGEV_ROOT)\Includes;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>comsuppw.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>$(PUREGEV_ROOT)\Libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+	  
+    </Link>
+	<Manifest>
+		
+      <EnableDpiAwareness>false</EnableDpiAwareness>
+	</Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>.;$(PUREGEV_ROOT)\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;PV_NO_GEV1X_PIXEL_TYPES;PV_NO_DEPRECATED_PIXEL_TYPES;_WIN32_WINNT=0x0601;WINVER=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(ProjectDir)res;$(PUREGEV_ROOT)\Includes;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>comsuppw.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>$(PUREGEV_ROOT)\Libraries;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+	  
+    </Link>
+	<Manifest>
+		
+      <EnableDpiAwareness>false</EnableDpiAwareness>
+	</Manifest>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    
+            <ClCompile Include="BufferOptions.cpp" />
+            <ClCompile Include="ChangeSourceTask.cpp" />
+            <ClCompile Include="ConnectTask.cpp" />
+            <ClCompile Include="Device.cpp" />
+            <ClCompile Include="DeviceGEV.cpp" />
+            <ClCompile Include="DeviceU3V.cpp" />
+            <ClCompile Include="DisconnectTask.cpp" />
+            <ClCompile Include="DisplayThread.cpp" />
+            <ClCompile Include="ImageFiltering.cpp" />
+            <ClCompile Include="ImageSaving.cpp" />
+            <ClCompile Include="LoadTask.cpp" />
+            <ClCompile Include="LogBuffer.cpp" />
+            <ClCompile Include="Mutex.cpp" />
+            <ClCompile Include="ParameterInfo.cpp" />
+            <ClCompile Include="Persistent.cpp" />
+            <ClCompile Include="Player.cpp" />
+            <ClCompile Include="SaveTask.cpp" />
+            <ClCompile Include="Setup.cpp" />
+            <ClCompile Include="Stream.cpp" />
+            <ClCompile Include="StreamGEV.cpp" />
+            <ClCompile Include="StreamU3V.cpp" />
+            <ClCompile Include="Task.cpp" />
+            <ClCompile Include="AboutBox.cpp" />
+            <ClCompile Include="ActionCommandDlg.cpp" />
+            <ClCompile Include="BitmapButton.cpp" />
+            <ClCompile Include="BufferOptionsDlg.cpp" />
+            <ClCompile Include="EventMonitorDlg.cpp" />
+            <ClCompile Include="FilteringDlg.cpp" />
+            <ClCompile Include="FileTransferDlg.cpp" />
+            <ClCompile Include="eBUSPlayerApp.cpp" />
+            <ClCompile Include="eBUSPlayerDlg.cpp" />
+            <ClCompile Include="eBUSPlayerDlgHandlers.cpp" />
+            <ClCompile Include="eBUSPlayerDlgMenu.cpp" />
+            <ClCompile Include="eBUSPlayerDlgMenuFile.cpp" />
+            <ClCompile Include="eBUSPlayerDlgMenuTools.cpp" />
+            <ClCompile Include="HexEdit.cpp" />
+            <ClCompile Include="ImageSaveDlg.cpp" />
+            <ClCompile Include="ProgressDlg.cpp" />
+            <ClCompile Include="RegisterInterfaceDlg.cpp" />
+            <ClCompile Include="SetupDlg.cpp" />
+            <ClCompile Include="SplashDlg.cpp" />
+            <ClCompile Include="stdafx.cpp" />
+            <ClCompile Include="WarningDlg.cpp" />
+            <ClCompile Include="ErrorsDlg.cpp" />
+            <ClCompile Include="HistogramCtrl.cpp" />
+            <ClCompile Include="PersistenceInfoDlg.cpp" />
+            <ClCompile Include="CameraControlDlg.cpp" />
+            <ClCompile Include="eBUSPlayerFactory.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    
+            <ClInclude Include="BufferOptions.h" />
+            <ClInclude Include="ChangeSourceTask.h" />
+            <ClInclude Include="ConnectTask.h" />
+            <ClInclude Include="Device.h" />
+            <ClInclude Include="DeviceGEV.h" />
+            <ClInclude Include="DeviceU3V.h" />
+            <ClInclude Include="DisconnectTask.h" />
+            <ClInclude Include="DisplayThread.h" />
+            <ClInclude Include="eBUSPlayerShared.h" />
+            <ClInclude Include="ImageFiltering.h" />
+            <ClInclude Include="ImageSaving.h" />
+            <ClInclude Include="IMessageSink.h" />
+            <ClInclude Include="Persistent.h" />
+            <ClInclude Include="IPlayerController.h" />
+            <ClInclude Include="IProgress.h" />
+            <ClInclude Include="LoadTask.h" />
+            <ClInclude Include="LogBuffer.h" />
+            <ClInclude Include="Mutex.h" />
+            <ClInclude Include="ParameterInfo.h" />
+            <ClInclude Include="Player.h" />
+            <ClInclude Include="SaveTask.h" />
+            <ClInclude Include="Setup.h" />
+            <ClInclude Include="Stream.h" />
+            <ClInclude Include="StreamGEV.h" />
+            <ClInclude Include="StreamU3V.h" />
+            <ClInclude Include="Task.h" />
+            <ClInclude Include="IMp4Writer.h" />
+            <ClInclude Include="Mp4WriterWin32.h" />
+            <ClInclude Include="AboutBox.h" />
+            <ClInclude Include="ActionCommandDlg.h" />
+            <ClInclude Include="BitmapButton.h" />
+            <ClInclude Include="BufferOptionsDlg.h" />
+            <ClInclude Include="eBUSPlayerApp.h" />
+            <ClInclude Include="eBUSPlayerDlg.h" />
+            <ClInclude Include="ErrorsDlg.h" />
+            <ClInclude Include="EventMonitorDlg.h" />
+            <ClInclude Include="FileTransferDlg.h" />
+            <ClInclude Include="FilteringDlg.h" />
+            <ClInclude Include="HexEdit.h" />
+            <ClInclude Include="HistogramCtrl.h" />
+            <ClInclude Include="ImageSaveDlg.h" />
+            <ClInclude Include="ProgressDlg.h" />
+            <ClInclude Include="PvMessageBox.h" />
+            <ClInclude Include="RegisterInterfaceDlg.h" />
+            <ClInclude Include="resource.h" />
+            <ClInclude Include="SetupDlg.h" />
+            <ClInclude Include="SplashDlg.h" />
+            <ClInclude Include="stdafx.h" />
+            <ClInclude Include="WarningDlg.h" />
+            <ClInclude Include="PersistenceInfoDlg.h" />
+            <ClInclude Include="CameraControlDlg.h" />
+            <ClInclude Include="eBUSPlayerFactory.h" />
+  </ItemGroup>
+  <ItemGroup>
+     
+                <None Include="res/icon.ico" /> 
+                <None Include="res/eBUSPlayer_About.bmp" /> 
+                <None Include="res/eBUSPlayer_Splash.bmp" /> 
+                <None Include="res/eBUSPlayer.rc2" /> 
+                <None Include="ReadMe.txt" /> 
+                <None Include="res/play.bmp" /> 
+                <None Include="res/stop.bmp" /> 
+                <None Include="res/wheel.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    
+            <ResourceCompile Include="eBUSPlayer.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="../eBUSPlayer.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

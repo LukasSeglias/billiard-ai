@@ -1,0 +1,370 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\TransmitTiledImages.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""     // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\icon.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_WHEEL               BITMAP                  "res\\wheel.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_TILINGSAMPLEMFC_DIALOG DIALOGEX 0, 0, 729, 359
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "GigE Vision Transmitter"
+MENU IDR_MENU
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    GROUPBOX        "Video Source 1",IDC_STATIC,7,7,145,63
+    LTEXT           "Not connected",IDC_STATIC_CONNECTION_11,14,18,132,27,WS_DISABLED
+    PUSHBUTTON      "Select/Connect",IDC_BUTTON_CONNECT_11,14,49,75,16
+    PUSHBUTTON      "Parameters",IDC_BUTTON_OPTIONS_11,92,49,54,16
+    GROUPBOX        "Video Source 2",IDC_STATIC,156,7,145,63
+    LTEXT           "Not connected",IDC_STATIC_CONNECTION_12,160,18,132,27,WS_DISABLED
+    PUSHBUTTON      "Select/Connect",IDC_BUTTON_CONNECT_12,162,49,75,16
+    PUSHBUTTON      "Parameters",IDC_BUTTON_OPTIONS_12,241,49,54,16
+    GROUPBOX        "Video Source 3",IDC_STATIC,7,71,145,63
+    LTEXT           "Not connected",IDC_STATIC_CONNECTION_21,14,82,132,27,WS_DISABLED
+    PUSHBUTTON      "Select/Connect",IDC_BUTTON_CONNECT_21,14,114,75,16
+    PUSHBUTTON      "Parameters",IDC_BUTTON_OPTIONS_21,92,114,54,16
+    GROUPBOX        "Video Source 4",IDC_STATIC,156,71,145,63
+    LTEXT           "Not connected",IDC_STATIC_CONNECTION_22,163,81,132,27,WS_DISABLED
+    PUSHBUTTON      "Select/Connect",IDC_BUTTON_CONNECT_22,162,113,75,16
+    PUSHBUTTON      "Parameters",IDC_BUTTON_OPTIONS_22,240,113,54,16
+    GROUPBOX        "Acquisition Controls",IDC_STATIC,7,136,294,47
+    CONTROL         "Play",IDC_BTN_START,"Button",BS_OWNERDRAW | WS_TABSTOP,14,148,70,28
+    CONTROL         "Stop",IDC_BTN_STOP,"Button",BS_OWNERDRAW | WS_DISABLED | WS_TABSTOP,87,148,70,28
+    GROUPBOX        "Video Output",IDC_STATIC,7,185,294,65
+    LTEXT           "Width:",IDC_STATIC,17,200,22,8
+    EDITTEXT        IDC_EDIT_WIDTH,112,196,64,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Height:",IDC_STATIC,17,217,24,8
+    EDITTEXT        IDC_EDIT_HEIGHT,112,214,64,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Tiling Mode:",IDC_STATIC,17,235,39,8
+    COMBOBOX        IDC_COMBO_TILING_MODE,112,232,90,12,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Transmission",IDC_TRANSMISSION_GROUPBOX,7,252,294,100
+    LTEXT           "Destination Address:",IDC_STATIC,17,266,68,8
+    CONTROL         "",IDC_IPADDRESS_DESTINATION,"SysIPAddress32",WS_TABSTOP,112,262,90,15
+    LTEXT           "Destination Port:",IDC_STATIC,17,284,55,8
+    EDITTEXT        IDC_EDIT_PORT,112,281,64,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Interface Address:",IDC_STATIC,17,303,62,8
+    COMBOBOX        IDC_COMBO_IF_ADDRESS,112,299,90,12,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Desired Frame Rate (fps):",IDC_STATIC,17,319,84,8
+    EDITTEXT        IDC_EDIT_FPS,112,315,64,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Maximum Packet Size:",IDC_STATIC,17,338,71,8
+    EDITTEXT        IDC_EDIT_PACKET_SIZE,112,334,64,14,ES_AUTOHSCROLL | ES_NUMBER
+    GROUPBOX        "Display",IDC_DISPLAY_GROUPBOX,305,7,417,345
+    PUSHBUTTON      "Display",IDC_DISPLAYPOS,310,17,407,302,NOT WS_VISIBLE | WS_DISABLED
+    EDITTEXT        IDC_STATUS_BAR,310,323,407,24,ES_MULTILINE | ES_AUTOHSCROLL | WS_DISABLED
+END
+
+IDD_SETUP DIALOGEX 0, 0, 308, 162
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Setup"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Role",IDC_STATIC,4,3,116,106
+    CONTROL         "Controller and data receiver",IDC_CTRLDATA,"Button",BS_AUTORADIOBUTTON | WS_GROUP,12,13,106,10
+    CONTROL         "Data receiver",IDC_DATA,"Button",BS_AUTORADIOBUTTON,12,27,59,10
+    GROUPBOX        "Stream Destination",IDC_DESTINATION_GROUP,126,3,176,107,WS_GROUP | WS_TABSTOP
+    CONTROL         "Unicast, automatic",IDC_UNICASTAUTO,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,133,14,152,10
+    CONTROL         "Unicast, specific local port",IDC_UNICASTSPECIFIC,
+                    "Button",BS_AUTORADIOBUTTON,133,27,99,10
+    LTEXT           "Port",IDC_SPECIFICPORTLABEL,154,43,14,8,NOT WS_GROUP
+    EDITTEXT        IDC_SPECIFICPORT,195,41,45,14,ES_AUTOHSCROLL
+    CONTROL         "Multicast",IDC_MULTICAST,"Button",BS_AUTORADIOBUTTON,133,55,42,10
+    LTEXT           "IP address",IDC_MULTICASTIPLABEL,154,71,35,8,NOT WS_GROUP
+    LTEXT           "Port",IDC_MULTICASTPORTLABEL,154,90,14,8,NOT WS_GROUP
+    EDITTEXT        IDC_MULTICASTPORT,195,87,45,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,198,140,50,16,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,252,140,50,16
+    CONTROL         "",IDC_MULTICASTIP,"SysIPAddress32",WS_TABSTOP,195,69,100,15
+END
+
+IDD_PROGRESS DIALOGEX 0, 0, 206, 76
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "Connection Progress"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "A packet of size of %i bytes was configured for streaming. You may experience issues if your system configuration cannot support this packet size.",IDC_STATUS,27,13,172,33
+    PUSHBUTTON      "Cancel",IDCANCEL,149,52,50,17,NOT WS_VISIBLE | WS_DISABLED
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_TILINGSAMPLEMFC_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 722
+        VERTGUIDE, 301
+        VERTGUIDE, 310
+        VERTGUIDE, 538
+        VERTGUIDE, 717
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 352
+    END
+
+    IDD_SETUP, DIALOG
+    BEGIN
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_PARAMETERSMENU MENU
+BEGIN
+    POPUP "Parameters"
+    BEGIN
+        MENUITEM "Communication Parameters",    ID_PARAMETERS_COMMUNICATIONPARAMETERS
+        MENUITEM "Device Parameters",           ID_PARAMETERS_DEVICEPARAMETERS
+        MENUITEM "Stream Parameters",           ID_PARAMETERS_STREAMPARAMETERS
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_TILINGSAMPLEMFC_DIALOG AFX_DIALOG_LAYOUT 
+BEGIN
+    0x0000
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (Canada) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENC)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_CAN
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_PLAY                BITMAP                  "res\\play.bmp"
+IDB_STOP                BITMAP                  "res\\stop.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 239, 78
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,182,55,50,16
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,21,20
+    LTEXT           "TransmitTiledImages",IDC_APPNAME,73,7,122,8
+    LTEXT           "<Version>",IDC_VERSION,73,31,122,8
+    LTEXT           "<Copyright>",IDC_COPYRIGHT,73,42,122,8
+    LTEXT           "<Company name>",IDC_COMPANYNAME,73,20,122,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 232
+        VERTGUIDE, 73
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 71
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open",                       ID_FILE_OPEN
+        MENUITEM "&Save",                       ID_FILE_SAVE, INACTIVE
+        MENUITEM "Save &As...",                 ID_FILE_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "About TransmitTiledImages...", ID_HELP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR ACCELERATORS
+BEGIN
+    "O",            ID_ACCELERATOR_OPEN,    VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_ACCELERATOR_SAVE,    VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_ACCELERATOR_SAVEAS,  VIRTKEY, CONTROL, NOINVERT
+    "X",            ID_ACCELERATOR_EXIT,    VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "100904b0"
+        BEGIN
+            VALUE "CompanyName", "Pleora Technologies Inc."
+            VALUE "FileDescription", "TransmitTiledImages Sample"
+            VALUE "FileVersion", "3.0.0.2358"
+            VALUE "InternalName", "TransmitTiledImages.exe"
+            VALUE "LegalCopyright", "Copyright (c) 2002-2012"
+            VALUE "OriginalFilename", "TransmitTiledImages.exe"
+            VALUE "ProductName", "eBUS SDK"
+            VALUE "ProductVersion", "3, 0, 0, 2358"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x1009, 1200
+    END
+END
+
+#endif    // English (Canada) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#include "res\TransmitTiledImages.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"     // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

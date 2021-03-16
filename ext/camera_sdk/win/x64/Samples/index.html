@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+
+<head>
+	<title>eBUS SDK C++ Code Samples</title>
+	<link rel="stylesheet" type="text/css" href="../Documentation/Images/styles.css"></head>
+<body>
+
+
+<!-- initial setup start -->
+<img src="../Documentation/Images/spacer.gif" border="0" height="20" width="1" alt=""><br>
+<table align="center"  bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" width="793">
+	<tr><td bgcolor="#CF9F33" colspan="3"><img src="../Documentation/Images/spacer.gif" border="0" height="1" width="1" alt=""></td></tr>
+	<tr><td bgcolor="#CF9F33" width="1"><img src="../Documentation/Images/spacer.gif" border="0" height="1" width="1" alt=""></td>
+	<td width="791">
+	<table border="0" cellpadding="0" cellspacing="0" width="791">
+		<tr><td width="159"><a href="http://www.pleora.com/" target="_blank"><img src="../Documentation/Images/logo.gif" alt="Pleora Technologies" width="159" height="102" border="0"></a></td>
+		    <td width="531"><img src="../Documentation/Images/header.jpg" alt="Products" width="531" height="120" border="0"></td>
+	</table>
+	<img src="../Documentation/Images/spacer.gif" border="0" height="20" width="1" alt=""><br>
+	<table align="center" border="0" cellpadding="0" cellspacing="0" width="740">
+		<tr><td>
+<!-- initial setup end -->
+
+
+<!-- eBUS SDK start -->
+		<h1>eBUS SDK C++ Code Samples</h1>
+		<p>The following sample programs are provided to help illustrate various features of the C++ API for the eBUS SDK.
+		Before changing the code for any of the samples, Pleora recommends that you copy the sample from the
+		<a href=".">installation directory</a> to your personal Visual Studio work space.</p>
+		<table align="left" border=0 cellpadding="1" cellspacing="2" width="725">
+			<tr><th bgcolor="#BBBBBB" width="30%">Sample</th>
+			    <th bgcolor="#BBBBBB" >Description</th>
+			<tr><td bgcolor="#FFFFFF"><a href="eBUSDriverInstallationAPI">EbSetupLibSample</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to display information about network configuration and apply eBUS drivers to network adapters on a given PC.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="eBUSPlayerSample">eBUSPlayerSample</a></td>
+			   <td bgcolor="#FFFFFF">Contains the source code for the eBUS Player application which is used to detect, connect and configure a GigE Vision or USB3 Vision devices.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="NetCommand">NetCommand</a></td>
+			   <td bgcolor="#FFFFFF">Contains the source code for the NetCommand application which is used to detect, connect and configure multiple GigE Vision and USB3 Vision devices simultaneously.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="ConfigurationReader">ConfigurationReader</a></td>
+			   <td bgcolor="#FFFFFF">Illustrates how to use the PvConfigurationReader and PvConfigurationWriter classes.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="DeviceFinder">DeviceFinder</a></td>
+			   <td bgcolor="#FFFFFF">Illustrates how to use the PvSystem, PvInterface, PvDeviceInfo and PvDeviceFinderWnd classes to detect and enumerate GigE Vision and USB3 Vision devices.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="GenICamParameters">GenICamParameters</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to use the PvGenParameter of PvGenParameterArray.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="MulticastMaster">MulticastMaster</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to configure a GigE Vision device to stream to a multicast group.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="MulticastSlave">MulticastSlave</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to join a multicast group and receive a stream.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="MultiSource">MultiSource</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to use the PvPipeline class for image acquisition from a multi source device.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="PvPipelineSample">PvPipelineSample</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to use the PvPipeline class for image acquisition.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="PlcAndGevEvents">PlcAndGevEvents</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to control and handle PLC states and handle GigE Vision events.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="ConnectionRecovery">ConnectionRecovery</a></td>
+			   <td bgcolor="#FFFFFF">Illustrates how to create a simple command line application performing typical image acquisition that supports automatic recovery.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="SerialBridge">SerialBridge</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to use the PvSerialBridge class control a serial device connected to a Pleora Video Interface.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="DeviceSerialPort">DeviceSerialPort</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to use the PvSerialPortIPEngine class for serial communication through a Pleora Video Interface.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="SimpleGUIApplication">SimpleGUIApplication</a></td>
+			   <td bgcolor="#FFFFFF">Shows a typical simple eBUS SDK application.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="PvStreamSample">PvStreamSample</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to use the PvStream class for image acquisition.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="TransmitProcessedImage">TransmitProcessedImage</a></td>
+			   <td bgcolor="#FFFFFF">Illustrates how to receive video from a GigE Vision or USB3 Vision device, resample it, apply a text overlay, and retransmit.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="TransmitTestPattern">TransmitTestPattern</a></td>
+			   <td bgcolor="#FFFFFF">Illustrates how to use the PvVirtualDeviceGEV and PvTransmitterGEV classes to transmit a test pattern.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="TransmitTiledImages">TransmitTiledImages</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to take four incoming receive streams and combine them into a single, tiled transmit stream.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="ImageProcessing">ImageProcessing</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to use the eBUS SDK to acquire images in buffers managed by an external image processing library.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="TapReconstruction">TapReconstruction</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to use the PvTapFilter class to perform tap reconstruction on PvBuffer image.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="DirectShowDisplay">DirectShowDisplay</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to setup a live display from the eBUS SDK DirectShow filter.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="CameraBridge">CameraBridge</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to use the PvCameraBridge class to control frame grabber cameras using Pleora Camera Files, CL Protocol or GenCP.</td></tr>
+			<tr><td bgcolor="#FFFFFF"><a href="TransmitChunkData">TransmitChunkData</a></td>
+			   <td bgcolor="#FFFFFF">Shows how to use PvTransmitter to transmit a mix of of images and chunk buffers.</td></tr>
+		</table>
+		<br clear="all">
+		<p>&nbsp;<p><p>&nbsp;<p>
+<!-- eBUS SDK end -->
+
+
+<!-- final setup start -->
+	</tr></table>
+	<table align="center" bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" width="791">
+		<tr><td align="center"><div id="footer">Copyright &copy; 2018 Pleora Technologies Inc.</div></td></tr>
+	</table>
+	</td></tr>
+</table>
+<!-- final setup end -->
+
+</body>
+</html>

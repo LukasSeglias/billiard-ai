@@ -1,0 +1,165 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// French (Canada) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRC)
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH_CANADIAN
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRC)\r\n"
+    "LANGUAGE 12, 3\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\SimpleGUIApplication.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""     // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // French (Canada) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (Canada) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENC)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_CAN
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SIMPLEGUIDAPPLICATION DIALOGEX 0, 0, 583, 281
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "SimpleGUIApplication"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Select / Connect",IDC_CONNECT_BUTTON,10,16,86,16
+    PUSHBUTTON      "Disconnect",IDC_DISCONNECT_BUTTON,97,16,87,16,WS_DISABLED
+    LTEXT           "IP address",IDC_STATIC,10,39,45,8
+    EDITTEXT        IDC_IP_EDIT,65,35,119,14,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
+    LTEXT           "MAC address",IDC_STATIC,10,56,50,8
+    EDITTEXT        IDC_MAC_EDIT,65,53,119,14,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
+    LTEXT           "GUID",IDC_STATIC,9,73,50,8
+    EDITTEXT        IDC_GUID_EDIT,65,70,119,14,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
+    LTEXT           "Manufacturer",IDC_STATIC,10,91,50,8
+    EDITTEXT        IDC_MANUFACTURER_EDIT,65,88,119,14,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
+    LTEXT           "Model",IDC_STATIC,10,109,44,8
+    EDITTEXT        IDC_MODEL_EDIT,65,106,119,14,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
+    LTEXT           "Name",IDC_STATIC,10,126,44,8
+    EDITTEXT        IDC_NAME_EDIT,65,123,119,14,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
+    GROUPBOX        "Acquisition Control",IDC_CONTROL_GROUP2,4,145,187,61
+    LTEXT           "Mode",IDC_STATIC,10,161,55,8
+    COMBOBOX        IDC_MODE,66,158,118,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Play",IDC_START,10,175,86,26
+    PUSHBUTTON      "Stop",IDC_STOP,98,175,86,26
+    GROUPBOX        "Parameters and Controls",IDC_CONTROL_GROUP,3,208,187,73
+    PUSHBUTTON      "Communication control",IDC_LINK_BUTTON,9,220,174,17,WS_DISABLED
+    PUSHBUTTON      "Device control",IDC_DEVICE_BUTTON,9,239,174,17,WS_DISABLED
+    PUSHBUTTON      "Image stream control",IDC_STREAMPARAMS_BUTTON,9,259,174,17,WS_DISABLED
+    GROUPBOX        "Display",IDC_DISPLAY_GROUP,198,4,378,277
+    PUSHBUTTON      "Display",IDC_DISPLAYPOS,205,17,363,257,NOT WS_VISIBLE | WS_DISABLED
+    GROUPBOX        "Connection",IDC_STATIC,4,4,187,137
+END
+
+IDD_OPENSTREAM DIALOGEX 0, 0, 207, 47
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "Connection Progress"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Opening stream to device",IDC_STATUS,27,13,175,13
+    PUSHBUTTON      "Cancel",IDCANCEL,152,28,50,14,NOT WS_VISIBLE | WS_DISABLED
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\SimpleGUIApplication.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_SIMPLEGUIDAPPLICATION, DIALOG
+    BEGIN
+        RIGHTMARGIN, 575
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (Canada) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRC)
+LANGUAGE 12, 3
+#pragma code_page(1252)
+#include "res\SimpleGUIApplication.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"     // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
