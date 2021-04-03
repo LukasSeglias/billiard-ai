@@ -9,6 +9,9 @@ find_package(OpenCV REQUIRED CONFIG
         PATHS ${CMAKE_BINARY_DIR}/ext/opencv/opencv)
 unset(BUILD_SHARED_LIBS)
 
+find_package(realsense2 REQUIRED CONFIG
+        PATHS ${CMAKE_BINARY_DIR}/librealsense/lib/cmake/realsense2)
+
 add_subdirectory(lib)
 add_subdirectory(test)
 add_subdirectory(doc_source)

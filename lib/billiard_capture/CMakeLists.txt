@@ -10,4 +10,4 @@ target_include_directories(${PROJECT_NAME}
 
 add_subdirectory(src)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCV_LIBS} camera_sdk)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCV_LIBS} ${realsense2_LIBRARY} camera_sdk)

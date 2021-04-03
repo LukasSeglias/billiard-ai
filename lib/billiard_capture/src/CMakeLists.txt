@@ -6,4 +6,5 @@ target_sources(${PROJECT_NAME}
         billiard_capture.cpp
         image_stream.hpp
         image_stream.cpp
+        camera.hpp
         )
