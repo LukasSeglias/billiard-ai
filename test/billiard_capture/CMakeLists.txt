@@ -10,6 +10,7 @@ add_custom_command(TARGET ${PROJECT_NAME}
 
         # Copy dependencies to binary folder
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_capture> ${PROJECT_BINARY_DIR}/
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${realsense2_LIBRARY}> ${PROJECT_BINARY_DIR}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:gtest_main> ${PROJECT_BINARY_DIR}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:gtest> ${PROJECT_BINARY_DIR}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:gmock_main> ${PROJECT_BINARY_DIR}/
