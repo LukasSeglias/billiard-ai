@@ -16,7 +16,7 @@ public class AnimationService : MonoBehaviour
 	////////////////////////////////////////////////////////////////////
 	public static event Action<RootObject> OnAnimationReceived;
 	public static event Action OnCaptureState;
-	
+
 	void Start() {
 		onStart();
 		debugger((message) => Debug.Log(message));
@@ -53,7 +53,7 @@ public class AnimationService : MonoBehaviour
 	public static void searchSolution(Search value) {
 		search(map(value));
 	}
-	
+
 	////////////////////////////////////////////////////////////////////
 	// Native Interface Declaration
 	////////////////////////////////////////////////////////////////////

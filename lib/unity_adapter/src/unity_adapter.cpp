@@ -1,12 +1,8 @@
 #include <unity_adapter/unity_adapter.hpp>
-#include <fstream>
-#include <filesystem>
 #include "event_queue.hpp"
 #include <memory>
-
 #include <string>
 
-std::shared_ptr<RootObject> _currentState;
 Debugger _debugger;
 
 ///////////////////////////////////////////////////////
@@ -16,12 +12,18 @@ using AnimationChangedEventQueue = unity::EventQueue<RootObject, AnimationChange
 AnimationChangedEventQueue* _animationChangedEventQueue = nullptr;
 
 ///////////////////////////////////////////////////////
+//// Mappings - Declaration
+///////////////////////////////////////////////////////
+std::shared_ptr<RootObject> map(const State& state); // Unity - CPP
+// TODO: Add mapping from internal state to external animation (Capture)
+// TODO: Add mapping from internal animation to external animation (Search)
+
+///////////////////////////////////////////////////////
 //// Implementation
 ///////////////////////////////////////////////////////
-std::shared_ptr<RootObject> testState();
+std::shared_ptr<RootObject> testState(); // TODO: Delete
 
 void onStart() {
-    _currentState = testState();
     _animationChangedEventQueue = new AnimationChangedEventQueue{};
 }
 
@@ -45,32 +47,31 @@ void configuration(Configuration config) {
 }
 
 void capture() {
-    #ifdef NDEBUG
-        // TODO: Capture state and update _currentState
-    #endif
+    // TODO: Capture state and push to _animationChangedEventQueue
+    // TODO: Hint, write a mapping function according to the existing "map" to create an animation from a state.
 
-    _animationChangedEventQueue->push(_currentState);  // TODO: Delete this
+    _animationChangedEventQueue->push(testState()); // TODO: Delete!
 }
 
 void search(Search search) {
-    // TODO: Map _currentState to internal type of billiard_search
-    // TODO: Search with current capturing
-    // TODO: Update _currentState
-
-    _animationChangedEventQueue->push(_currentState);  // TODO: Delete this
+    // TODO: Capture state
+    // TODO: Start search
+    // TODO: When search finished, the result has to be mapped and pushed to _animationChangedEventQueue
 }
 
 void debugger(Debugger debugger) {
     _debugger = debugger;
 }
 
-std::shared_ptr<RootObject> map(const State& state);
-
 void state(State state) {
     #ifndef NDEBUG
-        _currentState = map(state);
+        _animationChangedEventQueue->push(map(state));
     #endif
 }
+
+///////////////////////////////////////////////////////
+//// Mappings - Implementation
+///////////////////////////////////////////////////////
 
 Ball* map(const BallState* ballState, int ballSize);
 
@@ -94,7 +95,10 @@ Ball* map(const BallState* ballState, int ballSize) {
     return balls;
 }
 
-// TODO: Delete
+// TODO: Add mapping from internal state to external animation (Capture)
+// TODO: Add mapping from internal animation to external animation (Search)
+
+// TODO: Delete all after this comment
 std::shared_ptr<RootObject> testState() {
     Ball balls1[] = {
             Ball {
