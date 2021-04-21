@@ -1,0 +1,14 @@
+{
+	"radius": 0.026,
+	"width": 1.88,
+	"height": 0.942,
+	"scale": 2,
+	"correctionWidth": {
+		"factor": 2.8,
+		"translation": -0.84
+	},
+	"correctionHeight": {
+		"factor": 2.83,
+		"translation": -0.525
+	}
+}

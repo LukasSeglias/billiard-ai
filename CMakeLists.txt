@@ -9,6 +9,7 @@ find_package(OpenCV REQUIRED CONFIG
         PATHS ${CMAKE_BINARY_DIR}/ext/opencv/opencv)
 unset(BUILD_SHARED_LIBS)
 
+add_subdirectory(billiard_ui)
 add_subdirectory(lib)
 add_subdirectory(test)
 add_subdirectory(doc_source)
