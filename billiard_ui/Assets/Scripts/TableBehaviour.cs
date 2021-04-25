@@ -142,7 +142,8 @@ public class TableBehaviour : MonoBehaviour
 				ballInfo.id = ball.id;
 				ballInfo.type = ball.type;
 				ballObject.transform.position = position(convert(ball.position, 0));
-				ballObject.transform.localScale = new Vector3((float) config.radius/0.5f * scale, (float) config.radius/0.5f * scale, (float) config.radius/0.5f * scale);
+				float radius = config.radius / 1000;
+				ballObject.transform.localScale = new Vector3((float) radius/0.5f * scale, (float) radius/0.5f * scale, (float) radius/0.5f * scale);
 				ballObjects.Add(ball.id, ballObject);
 			}
 			this.endTime = frames[frames.Length - 1].time;

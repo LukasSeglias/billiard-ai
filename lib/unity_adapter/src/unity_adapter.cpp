@@ -15,16 +15,19 @@ AnimationChangedEventQueue* _animationChangedEventQueue = nullptr;
 //// Mappings - Declaration
 ///////////////////////////////////////////////////////
 std::shared_ptr<RootObject> map(const State& state); // Unity - CPP
+// TODO: Add mapping from external config to internal config (Apply config)
 // TODO: Add mapping from internal state to external animation (Capture)
 // TODO: Add mapping from internal animation to external animation (Search)
 
 ///////////////////////////////////////////////////////
 //// Implementation
 ///////////////////////////////////////////////////////
+std::shared_ptr<RootObject> _currentState;
 std::shared_ptr<RootObject> testState(); // TODO: Delete
 
 void onStart() {
     _animationChangedEventQueue = new AnimationChangedEventQueue{};
+    _currentState = testState(); // TODO: Delete
 }
 
 void onTearDown() {
@@ -41,6 +44,7 @@ void onAnimationChangedEvent(AnimationChangedEventCallback callback) {
 }
 
 void configuration(Configuration config) {
+    // TODO: Map configuration and pass it to the library, delete all debugger outputs
     _debugger((std::string("radius: ") + std::to_string(config.radius)).c_str());
     _debugger((std::string("width: ") + std::to_string(config.width)).c_str());
     _debugger((std::string("height: ") + std::to_string(config.height)).c_str());
@@ -65,16 +69,19 @@ void configuration(Configuration config) {
 }
 
 void capture() {
-    // TODO: Capture state and push to _animationChangedEventQueue
+    // TODO: Capture state and update _currentState
+    // TODO: Push _currentState to the animationChangedEventQueue
     // TODO: Hint, write a mapping function according to the existing "map" to create an animation from a state.
 
-    _animationChangedEventQueue->push(testState()); // TODO: Delete!
+    _animationChangedEventQueue->push(_currentState);
 }
 
 void search(Search search) {
     // TODO: Capture state
     // TODO: Start search
     // TODO: When search finished, the result has to be mapped and pushed to _animationChangedEventQueue
+
+    _animationChangedEventQueue->push(_currentState); // TODO: Delete
 }
 
 void debugger(Debugger debugger) {
@@ -83,7 +90,8 @@ void debugger(Debugger debugger) {
 
 void state(State state) {
     #ifndef NDEBUG
-        _animationChangedEventQueue->push(map(state));
+        _currentState = map(state);
+        _animationChangedEventQueue->push(_currentState);
     #endif
 }
 
