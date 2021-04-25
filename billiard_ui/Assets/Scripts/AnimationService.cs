@@ -129,28 +129,60 @@ public class AnimationService : MonoBehaviour
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
-	struct Configuration_t {
+	struct RailSegment_t {
+		public Vec2_t start;
+		public Vec2_t end;
+	}
+	
+	[StructLayout(LayoutKind.Sequential)]
+	struct Circle_t {
+		public float radius;
+		public Vec2_t position;
+	}
+	
+	[StructLayout(LayoutKind.Sequential)]
+	struct ArucoMarker_t {
+		public Vec2_t position;
+		public float sideLength;
+	}
+	
+	[StructLayout(LayoutKind.Sequential)]
+	class Configuration_t {
+		public Configuration_t(float radius, float width, float height,
+		RailSegment_t[] segments, Circle_t[] targets, ArucoMarker_t[] markers) {
+			this.radius = radius;
+			this.width = width;
+			this.height = height;
+			this.segments = allocate(segments);
+			this.segmentSize = segments.Length;
+			this.targets = allocate(targets);
+			this.targetSize = targets.Length;
+			this.markers = allocate(markers);
+			this.markerSize = markers.Length;
+		}
+		
+		~Configuration_t() {
+			Marshal.FreeHGlobal(segments);
+			Marshal.FreeHGlobal(targets);
+			Marshal.FreeHGlobal(markers);
+		}
+		
 		public float radius;
 		public float width;
 		public float height;
+		public int segmentSize;
+		public int targetSize;
+		public int markerSize;
+		public IntPtr segments;
+		public IntPtr targets;
+		public IntPtr markers;
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
 	class BilliardState_t {
 		public BilliardState_t(BallState_t[] ballStates) {
-			int size = 0;
-			foreach(var ballState in ballStates) {
-				size += Marshal.SizeOf(ballState);
-			}
-            balls = Marshal.AllocHGlobal(size);
-			
-			long currentPtr = balls.ToInt64();
-			for (int i = 0; i < ballStates.Length; i++)
-			{
-				IntPtr ptr = new IntPtr(currentPtr);
-				Marshal.StructureToPtr(ballStates[i], ptr, false);
-				currentPtr += Marshal.SizeOf(ballStates[i]);
-			}
+			this.balls = allocate(ballStates);
+			this.ballSize = ballStates.Length;
 		}
 		
 		~BilliardState_t() {
@@ -179,7 +211,43 @@ public class AnimationService : MonoBehaviour
 	////////////////////////////////////////////////////////////////////
 	
 	private static Configuration_t map(Configuration from) {
-		return new Configuration_t{radius = from.radius, width = from.width, height = from.height};
+		return new Configuration_t(from.radius, from.width, from.height, map(from.segments), map(from.targets), map(from.markers));
+	}
+	
+	private static RailSegment_t[] map(RailSegment[] from) {
+		RailSegment_t[] segments = new RailSegment_t[from.Length];
+		for (int i = 0; i < segments.Length; i++) {
+			segments[i] = map(from[i]);
+		}
+		return segments;
+	}
+	
+	private static RailSegment_t map(RailSegment from) {
+		return new RailSegment_t{start = map(from.start), end = map(from.end)};
+	}
+	
+	private static Circle_t[] map(Circle[] from) {
+		Circle_t[] circles = new Circle_t[from.Length];
+		for (int i = 0; i < circles.Length; i++) {
+			circles[i] = map(from[i]);
+		}
+		return circles;
+	}
+	
+	private static Circle_t map(Circle from) {
+		return new Circle_t{radius = from.radius, position = map(from.position)};
+	}
+	
+	private static ArucoMarker_t[] map(ArucoMarker[] from) {
+		ArucoMarker_t[] markers = new ArucoMarker_t[from.Length];
+		for (int i = 0; i < markers.Length; i++) {
+			markers[i] = map(from[i]);
+		}
+		return markers;
+	}
+	
+	private static ArucoMarker_t map(ArucoMarker from) {
+		return new ArucoMarker_t{position = map(from.position), sideLength = from.sideLength};
 	}
 	
 	private static RootObject map(RootObject_t from) {
@@ -239,6 +307,10 @@ public class AnimationService : MonoBehaviour
 		return new Vec2 {x = from.x, y = from.y};
 	}
 	
+	private static Vec2_t map(Vec2 from) {
+		return new Vec2_t {x = from.x, y = from.y};
+	}
+	
 	private static BallState_t[] map(List<GameObject> balls, StretchingBehaviour heightBehaviour, StretchingBehaviour widthBehaviour) {
 		BallState_t[] ballStates = new BallState_t[balls.Count];
 		
@@ -283,5 +355,22 @@ public class AnimationService : MonoBehaviour
              }
          }
          return result;
-     }
+    }
+	
+	private static IntPtr allocate<T>(T[] models) {
+		int size = 0;
+		foreach(var model in models) {
+			size += Marshal.SizeOf(model);
+		}
+        IntPtr pointer = Marshal.AllocHGlobal(size);
+			
+		long currentPtr = pointer.ToInt64();
+		for (int i = 0; i < models.Length; i++)
+		{
+			IntPtr ptr = new IntPtr(currentPtr);
+			Marshal.StructureToPtr(models[i], ptr, false);
+			currentPtr += Marshal.SizeOf(models[i]);
+		}
+		return pointer;
+	}
 }

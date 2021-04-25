@@ -6,15 +6,36 @@
 
 extern "C" {
 
+    struct EXPORT_UNITY_ADAPTER_LIB Vec2 {
+        double x;
+        double y;
+    };
+
+    struct EXPORT_UNITY_ADAPTER_LIB RailSegment {
+        Vec2 start;
+        Vec2 end;
+    };
+
+    struct EXPORT_UNITY_ADAPTER_LIB Circle {
+        float radius;
+        Vec2 position;
+    };
+
+    struct EXPORT_UNITY_ADAPTER_LIB ArucoMarker {
+        Vec2 position;
+        float sideLength;
+    };
+
     struct EXPORT_UNITY_ADAPTER_LIB Configuration {
         float radius;
         float width;
         float height;
-    };
-
-    struct EXPORT_UNITY_ADAPTER_LIB Vec2 {
-        double x;
-        double y;
+        int segmentSize;
+        int targetSize;
+        int markerSize;
+        RailSegment* segments;
+        Circle* targets;
+        ArucoMarker* markers;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB  Ball {

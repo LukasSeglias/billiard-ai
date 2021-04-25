@@ -44,6 +44,24 @@ void configuration(Configuration config) {
     _debugger((std::string("radius: ") + std::to_string(config.radius)).c_str());
     _debugger((std::string("width: ") + std::to_string(config.width)).c_str());
     _debugger((std::string("height: ") + std::to_string(config.height)).c_str());
+    _debugger((std::string("segments: ") + std::to_string(config.segmentSize)).c_str());
+    _debugger((std::string("targets: ") + std::to_string(config.targetSize)).c_str());
+    _debugger((std::string("markers: ") + std::to_string(config.markerSize)).c_str());
+
+    for(int i = 0; i < config.segmentSize; i++) {
+        auto& segment = config.segments[i];
+        _debugger((std::string("rail segment [") + std::to_string(i) + "] has start at [" + std::to_string(segment.start.x) + ";" + std::to_string(segment.start.y) + "] and end at [" + std::to_string(segment.end.x) + ";" + std::to_string(segment.end.y) + "]").c_str());
+    }
+
+    for(int i = 0; i < config.targetSize; i++) {
+        auto& target = config.targets[i];
+        _debugger((std::string("target [") + std::to_string(i) + "] is located at [" + std::to_string(target.position.x) + ";" + std::to_string(target.position.y) + "] and has radius " + std::to_string(target.radius)).c_str());
+    }
+
+    for(int i = 0; i < config.markerSize; i++) {
+        auto& marker = config.markers[i];
+        _debugger((std::string("marker [") + std::to_string(i) + "] is located at [" + std::to_string(marker.position.x) + ";" + std::to_string(marker.position.y) + "] and has side length " + std::to_string(marker.sideLength)).c_str());
+    }
 }
 
 void capture() {

@@ -1,8 +1,38 @@
 {
 	"radius": 0.026,
-	"width": 1.88,
-	"height": 0.942,
+	"width": 1880,
+	"height": 942,
 	"scale": 2,
+	"segments": [
+		{
+			"start": {"x": -940, "y": 471},
+			"end": {"x": 0, "y": 471}
+		},
+		{
+			"start": {"x": 0, "y": -471},
+			"end": {"x": 940, "y": -471}
+		}
+	],
+	"targets": [
+		{
+			"radius": 9,
+			"position": {"x": -940, "y": 471}
+		},
+		{
+			"radius": 10,
+			"position": {"x": 940, "y": -471}
+		}
+	],
+	"markers": [
+		{
+			"position": {"x": -935, "y": 471},
+			"sideLength": 15
+		},
+		{
+			"position": {"x": 935, "y": -471},
+			"sideLength": 16
+		}
+	],
 	"correctionWidth": {
 		"factor": 2.8,
 		"translation": -0.84

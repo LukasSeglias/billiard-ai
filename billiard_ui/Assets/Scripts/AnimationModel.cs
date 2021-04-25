@@ -38,11 +38,32 @@ public class Ball
 }
 
 [Serializable]
+public class RailSegment {
+	public Vec2 start;
+	public Vec2 end;
+}
+	
+[Serializable]
+public class Circle {
+	public float radius;
+	public Vec2 position;
+}
+	
+[Serializable]
+public class ArucoMarker {
+	public Vec2 position;
+	public float sideLength;
+}
+
+[Serializable]
 public class Configuration {
 	public float radius;
 	public float width;
     public float height;
 	public float scale;
+	public RailSegment[] segments;
+	public Circle[] targets;
+	public ArucoMarker[] markers;
 	public Correction correctionWidth;
 	public Correction correctionHeight;
 }
