@@ -15,11 +15,11 @@
 	],
 	"targets": [
 		{
-			"radius": 9,
+			"radius": 26,
 			"position": {"x": -940, "y": 471}
 		},
 		{
-			"radius": 10,
+			"radius": 26,
 			"position": {"x": 940, "y": -471}
 		}
 	],

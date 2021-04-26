@@ -29,6 +29,8 @@ public class TableBehaviour : MonoBehaviour
 	private bool isPlaying = true;
 	private Configuration config;
     private int animationIndex = 0;
+	private List<GameObject> railSegments;
+	private List<GameObject> targets;
 	
 	// Start is called before the first frame update
     void Start()
@@ -50,8 +52,10 @@ public class TableBehaviour : MonoBehaviour
 		Scale = config.scale;
 		
 		Table.GetComponent<Renderer>().enabled = false;
-
 		infoText.gameObject.SetActive(false);
+
+		railSegments = drawRailSegments(ref config, ref HeightStretching, ref WidthStretching);
+		targets = drawTargets(ref config, ref HeightStretching, ref WidthStretching);
     }
 	
 	void OnDestroy() {
@@ -59,7 +63,6 @@ public class TableBehaviour : MonoBehaviour
 		AnimationService.OnCaptureState -= disableInterface;
 	}
 
-    // Update is called once per frame
     void Update()
     {
 		AnimationModel[] animations = root.animations;
@@ -102,7 +105,7 @@ public class TableBehaviour : MonoBehaviour
 				animator.toggleBalls();
 			}
 		} else if (Input.GetKeyDown(KeyCode.T)) {
-			Table.GetComponent<Renderer>().enabled = !Table.GetComponent<Renderer>().enabled;
+			toggleConfigProperties();
 		} else if (Input.GetKeyDown(KeyCode.D)) {
 			// TODO: Display position
 		}
@@ -112,10 +115,108 @@ public class TableBehaviour : MonoBehaviour
 		}
     }
 	
+	private void toggleConfigProperties() {
+		bool enabled = !Table.GetComponent<Renderer>().enabled;
+		Table.GetComponent<Renderer>().enabled = enabled;
+		foreach(var segment in railSegments) {
+			segment.GetComponent<LineRenderer>().enabled = enabled;
+		}
+		foreach(var target in targets) {
+			target.GetComponent<LineRenderer>().enabled = enabled;
+		}
+	}
+	
 	private void animate(double deltaTime) {		
 		if (animator != null) {
 			animator.update(deltaTime);
 		}
+	}
+	
+	private void animationChanged(RootObject root) {
+		infoText.SetText("");
+		infoText.gameObject.SetActive(false);
+		enableInterface();
+		this.root = root;
+		
+		if (this.animator != null) {
+			this.animator.delete();
+			this.animator = null;
+		}
+	}
+	
+	private List<GameObject> drawRailSegments(ref Configuration config, ref StretchingBehaviour heightStretching, ref StretchingBehaviour widthStretching) {
+		List<GameObject> railSegments = new List<GameObject>();
+		int index = 0;
+		foreach(var segment in config.segments) {
+			GameObject lineObject = new GameObject(string.Format("RailSegment{0}", index++));
+			LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
+			lRend.enabled = false;
+			lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
+			lRend.startColor = Color.red;
+			lRend.endColor = Color.red;
+			lRend.startWidth = 0.02f;
+			lRend.endWidth = 0.02f;
+			lRend.SetPosition(0, position(convert(segment.start / 1000, 0), heightStretching, widthStretching));
+			lRend.SetPosition(1, position(convert(segment.end / 1000, 0), heightStretching, widthStretching));
+			lRend.sortingOrder = 0;
+			railSegments.Add(lineObject);
+		}
+		return railSegments;
+	}
+	
+	private List<GameObject> drawTargets(ref Configuration config, ref StretchingBehaviour heightStretching, ref StretchingBehaviour widthStretching) {
+		List<GameObject> targets = new List<GameObject>();
+		int index = 0;
+		foreach(var target in config.targets) {
+			GameObject lineObject = new GameObject(string.Format("Target{0}", index++));
+			LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
+			lRend.enabled = false;
+			lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
+			lRend.startColor = Color.red;
+			lRend.endColor = Color.red;
+			lRend.startWidth = 0.02f;
+			lRend.endWidth = 0.02f;
+			lRend.sortingOrder = 0;
+			CreatePoints(lRend, 50, config.scale, target, ref heightStretching, ref widthStretching);
+			railSegments.Add(lineObject);
+		}
+		return targets;
+	}
+	
+	private void CreatePoints (LineRenderer circleRenderer, int segments, float scale, Circle circle, ref StretchingBehaviour heightStretching, ref StretchingBehaviour widthStretching) {
+        float x;
+        float y;
+
+        float angle = 0f;
+		float angleStep = 360f / segments;
+		circleRenderer.positionCount = segments + 2;
+
+        for (int i = 0; i < (segments + 2); i++)
+        {
+			var movedPos = position(convert(circle.position / 1000, 0), heightStretching, widthStretching);
+            y = Mathf.Cos (Mathf.Deg2Rad * angle) * (circle.radius * scale / 1000) + movedPos.y;
+            x = Mathf.Sin (Mathf.Deg2Rad * angle) * (circle.radius * scale / 1000) + movedPos.x;
+
+            circleRenderer.SetPosition(i, new Vector3(x, y, 0));
+
+            angle += angleStep;
+        }
+    }
+	
+	private void disableInterface() {
+		Background.transform.position = new Vector3(0, 0, -0.8f);
+	}
+	
+	private void enableInterface() {
+		Background.transform.position = new Vector3(0, 0, 0.5f);
+	}
+	
+	private static Vector3 convert(Vec2 vector, float z) {
+		return new Vector3((float)vector.x, (float)vector.y, z);
+	}
+	
+	private static Vector3 position(Vector3 pos, StretchingBehaviour heightStretching, StretchingBehaviour widthStretching) {
+		return new Vector3(widthStretching.forward(pos.x), heightStretching.forward(pos.y), pos.z);
 	}
 	
 	private class Animator {
@@ -141,7 +242,7 @@ public class TableBehaviour : MonoBehaviour
 				PickableInformation ballInfo = ballObject.AddComponent<PickableInformation>();
 				ballInfo.id = ball.id;
 				ballInfo.type = ball.type;
-				ballObject.transform.position = position(convert(ball.position, 0));
+				ballObject.transform.position = position(convert(ball.position, 0), heightStretching, widthStretching);
 				float radius = config.radius / 1000;
 				ballObject.transform.localScale = new Vector3((float) radius/0.5f * scale, (float) radius/0.5f * scale, (float) radius/0.5f * scale);
 				ballObjects.Add(ball.id, ballObject);
@@ -174,8 +275,8 @@ public class TableBehaviour : MonoBehaviour
 						lRend.colorGradient = gradient;
 						lRend.startWidth = 0.02f;
 						lRend.endWidth = 0.02f;
-						lRend.SetPosition(0, position(convert(startBall.position, 0)));
-						lRend.SetPosition(1, position(convert(endBall.position, 0)));
+						lRend.SetPosition(0, position(convert(startBall.position, 0), heightStretching, widthStretching));
+						lRend.SetPosition(1, position(convert(endBall.position, 0), heightStretching, widthStretching));
 						lRend.sortingOrder = 0;
 						lines.Add(lineObject);
 					}
@@ -245,14 +346,6 @@ public class TableBehaviour : MonoBehaviour
 			return this.time == this.endTime;
 		}
 		
-		private Vector3 convert(Vec2 vector, float z) {
-			return new Vector3((float)vector.x, (float)vector.y, z);
-		}
-		
-		private Vector3 position(Vector3 pos) {
-			return new Vector3(widthStretching.forward(pos.x), heightStretching.forward(pos.y), pos.z);
-		}
-		
 		private void mayUpdateAnimationWindow(double time, KeyFrame[] frames) {
 			KeyFrame currentEndFrame = frames[this.startFrameIndex + 1];
 			KeyFrame currentStartFrame = frames[this.startFrameIndex];
@@ -276,27 +369,8 @@ public class TableBehaviour : MonoBehaviour
 			Vector3 startVelocity = convert(start.velocity,0.0f);
 			Vector3 endVelocity = convert(end.velocity,0.0f);
 			Vector3 a = (endVelocity - startVelocity) * (float)(1/duration);
-			gameObject.transform.position = position(0.5f * a * (float)(timeDelta * timeDelta) + startVelocity * (float)timeDelta + convert(start.position, 0));			
+			gameObject.transform.position = position(0.5f * a * (float)(timeDelta * timeDelta) + startVelocity * (float)timeDelta + convert(start.position, 0),
+				heightStretching, widthStretching);			
 		}
-	}
-	
-	private void animationChanged(RootObject root) {
-		infoText.SetText("");
-		infoText.gameObject.SetActive(false);
-		enableInterface();
-		this.root = root;
-		
-		if (this.animator != null) {
-			this.animator.delete();
-			this.animator = null;
-		}
-	}
-	
-	private void disableInterface() {
-		Background.transform.position = new Vector3(0, 0, -0.8f);
-	}
-	
-	private void enableInterface() {
-		Background.transform.position = new Vector3(0, 0, 0.5f);
 	}
 }

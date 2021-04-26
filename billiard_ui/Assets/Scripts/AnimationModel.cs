@@ -25,6 +25,8 @@ public class KeyFrame
 public class Vec2 {
 	public double x;
 	public double y;
+	
+	public static Vec2 operator /(Vec2 vec, float value) => new Vec2{x = vec.x / value, y = vec.y / value};
 }
 
 [Serializable]
