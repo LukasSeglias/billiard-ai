@@ -107,7 +107,9 @@ public class TableBehaviour : MonoBehaviour
 		} else if (Input.GetKeyDown(KeyCode.T)) {
 			toggleConfigProperties();
 		} else if (Input.GetKeyDown(KeyCode.D)) {
-			animator.togglePositions();
+			if (animator != null) {
+				animator.togglePositions();	
+			}
 		}
 		
 		if (isPlaying) {
