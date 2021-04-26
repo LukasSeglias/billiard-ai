@@ -107,7 +107,7 @@ public class TableBehaviour : MonoBehaviour
 		} else if (Input.GetKeyDown(KeyCode.T)) {
 			toggleConfigProperties();
 		} else if (Input.GetKeyDown(KeyCode.D)) {
-			// TODO: Display position
+			animator.togglePositions();
 		}
 		
 		if (isPlaying) {
@@ -219,6 +219,10 @@ public class TableBehaviour : MonoBehaviour
 		return new Vector3(widthStretching.forward(pos.x), heightStretching.forward(pos.y), pos.z);
 	}
 	
+	private static Vec2 invPosition(Vec2 pos, StretchingBehaviour heightStretching, StretchingBehaviour widthStretching) {
+		return new Vec2{x = widthStretching.inverse((float) pos.x), y = heightStretching.inverse((float) pos.y)};
+	}
+	
 	private class Animator {
 		
 		private readonly KeyFrame[] frames;
@@ -245,6 +249,16 @@ public class TableBehaviour : MonoBehaviour
 				ballObject.transform.position = position(convert(ball.position, 0), heightStretching, widthStretching);
 				float radius = config.radius / 1000;
 				ballObject.transform.localScale = new Vector3((float) radius/0.5f * scale, (float) radius/0.5f * scale, (float) radius/0.5f * scale);
+				
+				GameObject textObject = new GameObject();
+				textObject.name = ball.id + "_Position";
+				TMPro.TextMeshPro textMesh = textObject.AddComponent<TMPro.TextMeshPro>();
+				textMesh.fontSize = 4;
+				textMesh.GetComponent<MeshRenderer >().enabled = false;
+				textObject.transform.SetParent(ballObject.transform, false);
+				textObject.GetComponent<RectTransform>().sizeDelta = new Vector2(5, 2);
+				updateLocationText(ball.id, ballObject);
+				
 				ballObjects.Add(ball.id, ballObject);
 			}
 			this.endTime = frames[frames.Length - 1].time;
@@ -322,6 +336,7 @@ public class TableBehaviour : MonoBehaviour
 						
 						ballObject.SetActive(true);
 						updatePosition(startBall, endBall, ballObject, duration, timeDeltaInAnimationWindow);
+						updateLocationText(startBall.id, ballObject);
 					} else {
 						ballObject.SetActive(false);
 					}
@@ -344,6 +359,20 @@ public class TableBehaviour : MonoBehaviour
 		
 		public bool isFinished() {
 			return this.time == this.endTime;
+		}
+		
+		public void togglePositions() {
+			foreach(KeyValuePair<string, GameObject> entry in ballObjects) {
+				var textObject = entry.Value.transform.Find(entry.Key + "_Position").gameObject;
+				textObject.GetComponent<TMPro.TextMeshPro>().GetComponent<MeshRenderer>().enabled = !textObject.GetComponent<TMPro.TextMeshPro>().GetComponent<MeshRenderer>().enabled;
+			}
+		}
+		
+		private void updateLocationText(string id, GameObject ball) {
+			var textObject = ball.transform.Find(id + "_Position").gameObject;
+			var pos = new Vec2{x = ball.transform.position.x, y = ball.transform.position.y};
+			var invPos = invPosition(pos, heightStretching, widthStretching);
+			textObject.GetComponent<TMPro.TextMeshPro>().SetText(string.Format("[{0:F4}; {1:F4}]", invPos.x, invPos.y));
 		}
 		
 		private void mayUpdateAnimationWindow(double time, KeyFrame[] frames) {
