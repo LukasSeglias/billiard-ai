@@ -244,6 +244,18 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: 5fcc04116af9fcc43971d3d29dc33c5f, type: 2}
   - key: WHITE
     material: {fileID: 2100000, guid: 8812f2d40ddc4e9488f8f1ee85e5dcfe, type: 2}
+  - key: YELLOW
+    material: {fileID: 2100000, guid: 243d34f5ea0a6ea449f889a6fc8f47d4, type: 2}
+  - key: GREEN
+    material: {fileID: 2100000, guid: 3a72847fb2e6b284a827c33eec857a07, type: 2}
+  - key: BROWN
+    material: {fileID: 2100000, guid: 4e6aca930f7df76479cffd3a450e80e6, type: 2}
+  - key: BLUE
+    material: {fileID: 2100000, guid: b0baec18043f1dc4387f8a00884ed087, type: 2}
+  - key: PINK
+    material: {fileID: 2100000, guid: bdc29fb2509a6b04882a95c7681c217b, type: 2}
+  - key: BLACK
+    material: {fileID: 2100000, guid: 9296eb178bcf71844a6da438e7a9516a, type: 2}
   infoText: {fileID: 960878234}
   HeightStretching: {fileID: 487807132}
   WidthStretching: {fileID: 487807131}
