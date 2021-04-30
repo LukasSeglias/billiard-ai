@@ -17,7 +17,7 @@ namespace billiard::capture {
         ImageCapture(ImageCapture&& other) = delete;
         bool open(std::string macAddress);
         void close();
-        [[nodiscard]] cv::Mat read() const;
+        [[nodiscard]] virtual cv::Mat read() const;
         ~ImageCapture();
     private:
         Device* device;

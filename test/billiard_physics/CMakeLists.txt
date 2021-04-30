@@ -26,5 +26,7 @@ foreach(OpenCV_LIB ${OpenCV_LIBS})
 endforeach()
 add_subdirectory(src)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE BILLIARD_PHYSICS_IMPORT)
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+        BILLIARD_PHYSICS_IMPORT
+        GTEST_LINKED_AS_SHARED_LIBRARY=1)
 target_link_libraries(${PROJECT_NAME} PRIVATE billiard_physics gtest gtest_main gmock gmock_main)

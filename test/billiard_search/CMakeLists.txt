@@ -27,6 +27,7 @@ endforeach()
 add_subdirectory(src)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-        BILLIARD_SEARCH_IMPORT)
+        BILLIARD_SEARCH_IMPORT
+        GTEST_LINKED_AS_SHARED_LIBRARY=1)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE billiard_search gtest gtest_main gmock gmock_main)
