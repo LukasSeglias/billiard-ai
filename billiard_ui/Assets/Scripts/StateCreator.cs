@@ -28,7 +28,8 @@ public class StateCreator : MonoBehaviour
     {
 		SceneManager.SetActiveScene(SceneManager.GetSceneByName("StateCreationScene"));
 		
-		config = ConfigurationLoader.load(ref HeightStretching, ref WidthStretching, ref Table);
+		config = ConfigurationLoader.load();
+		Utility.applyConfig(ref config, ref HeightStretching, ref WidthStretching, ref Table);
 		Scale = config.scale;
 		
 		typeText.SetText(Materials[currentCreationIndex].key);
@@ -64,7 +65,7 @@ public class StateCreator : MonoBehaviour
 			ballInfo.id = Materials[currentCreationIndex].key + id++;
 			ballInfo.type = Materials[currentCreationIndex].key;
 			ballObject.transform.position = objectPos;
-			float radius = config.radius / 1000;
+			float radius = config.radius;
 			ballObject.transform.localScale = new Vector3((float) radius/0.5f * Scale, (float) radius/0.5f * Scale, (float) radius/0.5f * Scale);
 			ballObjects.Add(ballObject);
         } else if (Input.GetMouseButtonDown(1)){ 

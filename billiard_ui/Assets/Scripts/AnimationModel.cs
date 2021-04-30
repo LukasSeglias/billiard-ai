@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 [Serializable]
 public class RootObject
@@ -43,18 +44,33 @@ public class Ball
 public class RailSegment {
 	public Vec2 start;
 	public Vec2 end;
+	
+	public static RailSegment operator /(RailSegment segment, float value) => new RailSegment{
+		start = segment.start / value,
+		end = segment.end / value
+	};
 }
 	
 [Serializable]
 public class Circle {
 	public float radius;
 	public Vec2 position;
+	
+	public static Circle operator /(Circle circle, float value) => new Circle{
+		radius = circle.radius / value,
+		position = circle.position / value
+	};
 }
 	
 [Serializable]
 public class ArucoMarker {
 	public Vec2 position;
 	public float sideLength;
+	
+	public static ArucoMarker operator /(ArucoMarker marker, float value) => new ArucoMarker{
+		position = marker.position / value,
+		sideLength = marker.sideLength / value
+	};
 }
 
 [Serializable]
@@ -68,6 +84,18 @@ public class Configuration {
 	public ArucoMarker[] markers;
 	public Correction correctionWidth;
 	public Correction correctionHeight;
+	
+	public static Configuration operator /(Configuration config, float value) => new Configuration{
+		radius = config.radius / value,
+		width = config.width / value,
+		height = config.height / value,
+		scale = config.scale,
+		segments = config.segments.Select(segment => segment / value).ToArray(),
+		targets = config.targets.Select(target => target / value).ToArray(),
+		markers = config.markers.Select(marker => marker / value).ToArray(),
+		correctionWidth = new Correction{factor = config.correctionWidth.factor, translation = config.correctionWidth.translation},
+		correctionHeight = new Correction{factor = config.correctionHeight.factor, translation = config.correctionHeight.translation}
+	};
 }
 
 [Serializable]

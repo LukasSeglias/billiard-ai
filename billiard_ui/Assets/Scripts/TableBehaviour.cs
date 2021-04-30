@@ -48,7 +48,8 @@ public class TableBehaviour : MonoBehaviour
 		AnimationService.OnAnimationReceived += animationChanged;
 		AnimationService.OnCaptureState += disableInterface;
 		
-		config = ConfigurationLoader.load(ref HeightStretching, ref WidthStretching, ref Table);
+		config = ConfigurationLoader.load();
+		Utility.applyConfig(ref config, ref HeightStretching, ref WidthStretching, ref Table);
 		Scale = config.scale;
 		
 		Table.GetComponent<Renderer>().enabled = false;
@@ -158,8 +159,8 @@ public class TableBehaviour : MonoBehaviour
 			lRend.endColor = Color.red;
 			lRend.startWidth = 0.02f;
 			lRend.endWidth = 0.02f;
-			lRend.SetPosition(0, position(convert(segment.start / 1000, 0), heightStretching, widthStretching));
-			lRend.SetPosition(1, position(convert(segment.end / 1000, 0), heightStretching, widthStretching));
+			lRend.SetPosition(0, position(convert(segment.start, 0), heightStretching, widthStretching));
+			lRend.SetPosition(1, position(convert(segment.end, 0), heightStretching, widthStretching));
 			lRend.sortingOrder = 0;
 			railSegments.Add(lineObject);
 		}
@@ -195,9 +196,9 @@ public class TableBehaviour : MonoBehaviour
 
         for (int i = 0; i < (segments + 2); i++)
         {
-			var movedPos = position(convert(circle.position / 1000, 0), heightStretching, widthStretching);
-            y = Mathf.Cos (Mathf.Deg2Rad * angle) * (circle.radius * scale / 1000) + movedPos.y;
-            x = Mathf.Sin (Mathf.Deg2Rad * angle) * (circle.radius * scale / 1000) + movedPos.x;
+			var movedPos = position(convert(circle.position, 0), heightStretching, widthStretching);
+            y = Mathf.Cos (Mathf.Deg2Rad * angle) * (circle.radius * scale) + movedPos.y;
+            x = Mathf.Sin (Mathf.Deg2Rad * angle) * (circle.radius * scale) + movedPos.x;
 
             circleRenderer.SetPosition(i, new Vector3(x, y, 0));
 
@@ -249,7 +250,7 @@ public class TableBehaviour : MonoBehaviour
 				ballInfo.id = ball.id;
 				ballInfo.type = ball.type;
 				ballObject.transform.position = position(convert(ball.position, 0), heightStretching, widthStretching);
-				float radius = config.radius / 1000;
+				float radius = config.radius;
 				ballObject.transform.localScale = new Vector3((float) radius/0.5f * scale, (float) radius/0.5f * scale, (float) radius/0.5f * scale);
 				
 				GameObject textObject = new GameObject();
