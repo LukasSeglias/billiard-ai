@@ -9,6 +9,8 @@
 #include <queue>
 
 #include "macro_definition.hpp"
+#include <opencv2/opencv.hpp>
+#include <opencv2/aruco.hpp>
 #include "type.hpp"
 
 
@@ -34,4 +36,106 @@ namespace billiard::detection {
                          const std::function<State (const State& previousState, const cv::Mat&)>& detect,
                          std::queue<std::promise<State>>& waiting); // TODO: Pass configuration for auruco configuration
     };
+
+    struct EXPORT_BILLIARD_DETECTION_LIB CameraIntrinsics {
+        /**
+         * Format, see here: https://docs.opencv.org/master/d9/d0c/group__calib3d.html#ga3207604e4b1a1758aa66acb6ed5aa65d
+         * [ fx skew cx
+         *   0  fy   cy
+         *   0  0    1  ]
+         */
+        cv::Mat cameraMatrix;
+
+        /**
+         * Format, see here: https://docs.opencv.org/master/d9/d0c/group__calib3d.html#ga3207604e4b1a1758aa66acb6ed5aa65d
+         * [k1, k2, p1, p2, k3]
+         * Yes, k3 is really supposed to be after p2
+         */
+        cv::Mat distCoeffs;
+
+        /**
+         * Sensor pixel size in x and y direction in milimeters.
+         */
+        cv::Point2d sensorSize;
+
+        CameraIntrinsics() {}
+
+        CameraIntrinsics(const cv::Point2d& focalLength,
+                         const cv::Point2d& principalPoint,
+                         double skew,
+                         const cv::Point3d& radialDistortionCoefficients,
+                         const cv::Point2d& tangentialDistortionCoefficients,
+                         const cv::Point2d& sensorPixelSize);
+    };
+
+    struct EXPORT_BILLIARD_DETECTION_LIB DetectedMarkers {
+        bool success;
+        std::vector<int> markerIds;
+        std::vector<std::vector<cv::Point2f>> markerCorners;
+        std::vector<std::vector<cv::Point2f>> rejectedCandidates;
+    };
+
+    EXPORT_BILLIARD_DETECTION_LIB DetectedMarkers detect(cv::Mat& image, const cv::Ptr<cv::aruco::Board>& board);
+
+    EXPORT_BILLIARD_DETECTION_LIB void draw(cv::Mat& image, const DetectedMarkers& detection);
+
+    struct EXPORT_BILLIARD_DETECTION_LIB BoardPoseEstimation {
+        int markersUsed = 0;
+        cv::Vec3d rvec; // Rotation vector (Rodrigues)
+        cv::Vec3d tvec; // Translation vector
+    };
+
+    /**
+     * Estimates the pose of a board. According to the OpenCV documentation:
+     * "The returned transformation is the one that transforms points from
+     * the board coordinate system to the camera coordinate system."
+     */
+    EXPORT_BILLIARD_DETECTION_LIB BoardPoseEstimation estimateBoardPose(const DetectedMarkers& detectionResult,
+                                                                        const cv::Ptr<cv::aruco::Board>& board,
+                                                                        const CameraIntrinsics& intrinsics);
+
+    EXPORT_BILLIARD_DETECTION_LIB void drawAxis(cv::Mat& image,
+                                                const BoardPoseEstimation& pose,
+                                                const CameraIntrinsics& intrinsics);
+
+    struct EXPORT_BILLIARD_DETECTION_LIB WorldToModelCoordinates {
+        cv::Vec3d translation;
+    };
+
+    struct EXPORT_BILLIARD_DETECTION_LIB CameraToWorldCoordinateSystemConfig {
+        bool valid = false;
+        BoardPoseEstimation pose;
+        CameraIntrinsics intrinsics;
+        cv::Mat boardToCamera;
+        cv::Mat cameraToBoard;
+        cv::Vec3d cameraPosInWorldCoordinates;
+        cv::Point2d principalPoint;
+        double focalLength;
+    };
+
+    EXPORT_BILLIARD_DETECTION_LIB CameraToWorldCoordinateSystemConfig configure(cv::Mat& image,
+                                                                                const cv::Ptr<cv::aruco::Board>& board,
+                                                                                const CameraIntrinsics& intrinsics);
+
+    EXPORT_BILLIARD_DETECTION_LIB std::vector<cv::Point2d> worldPointsToImagePoints(
+            const CameraToWorldCoordinateSystemConfig& config,
+            const std::vector<cv::Point3d>& worldPoints);
+
+    EXPORT_BILLIARD_DETECTION_LIB std::vector<cv::Point2d> worldPointsToModelPoints(
+            const WorldToModelCoordinates& worldToModel,
+            const std::vector<cv::Point3d>& worldPoints);
+
+    struct EXPORT_BILLIARD_DETECTION_LIB Plane {
+        cv::Vec3d point {0, 0, 0};
+        cv::Vec3d normal {0, 0, 1};
+        Plane(const cv::Vec3d& point, const cv::Vec3d& normal): point(point), normal(normal) {};
+    };
+
+    /**
+     * Translate image points to world points located on a plane
+     */
+    EXPORT_BILLIARD_DETECTION_LIB std::vector<cv::Point3d> imagePointsToWorldPoints(
+            const CameraToWorldCoordinateSystemConfig& config,
+            const Plane& plane,
+            const std::vector<cv::Point2d>& imagePoints);
 }

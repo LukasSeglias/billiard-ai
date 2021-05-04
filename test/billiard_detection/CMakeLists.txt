@@ -29,4 +29,4 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
         BILLIARD_DETECTION_IMPORT
         BILLIARD_CAPTURE_IMPORT
         GTEST_LINKED_AS_SHARED_LIBRARY=1)
-target_link_libraries(${PROJECT_NAME} PRIVATE billiard_detection gtest gtest_main gmock gmock_main)
+target_link_libraries(${PROJECT_NAME} PRIVATE billiard_detection billiard_capture gtest gtest_main gmock gmock_main)
