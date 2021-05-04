@@ -2,7 +2,7 @@ include(FetchContent)
 FetchContent_Declare(
         opencv_contrib
         GIT_REPOSITORY https://github.com/opencv/opencv_contrib.git
-        GIT_TAG        4.4.0
+        GIT_TAG        4.5.2
 )
 FetchContent_Populate(opencv_contrib)
 
@@ -12,7 +12,7 @@ build_external_project(
         opencv
         ${CMAKE_CURRENT_BINARY_DIR}/external
         https://github.com/opencv/opencv.git
-        4.4.0
+        4.5.2
         -DBUILD_opencv_core=ON
         -DBUILD_opencv_highgui=ON
         -DBUILD_opencv_imgproc=ON
