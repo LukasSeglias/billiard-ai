@@ -118,6 +118,13 @@ public class AnimationService : MonoBehaviour
 		public double y;
 	}
 
+	[StructLayout(LayoutKind.Sequential)]
+    struct Vec3_t {
+        public double x;
+        public double y;
+        public double z;
+    }
+
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
 	struct Ball_t
 	{
@@ -141,15 +148,57 @@ public class AnimationService : MonoBehaviour
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
-	struct ArucoMarker_t {
-		public Vec2_t position;
+	struct ArucoMarkers_t {
+	    public int patternSize;
 		public float sideLength;
+		public Vec3_t m0;
+		public Vec3_t m1;
+		public Vec3_t m2;
+		public Vec3_t m3;
 	}
-	
+
+	[StructLayout(LayoutKind.Sequential)]
+    struct Plane_t {
+        public Vec3_t point;
+        public Vec3_t normal;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct WorldToModel_t {
+        public Vec3_t translation;
+    }
+
+	[StructLayout(LayoutKind.Sequential)]
+    struct CameraIntrinsics_t {
+        // Focal length in pixel
+        public double fx;
+        public double fy;
+
+        // Principal point in pixel
+        public double cx;
+        public double cy;
+
+        // Skew
+        public double skew;
+
+        // Radial distortion coefficients k1, k2, k3
+        public double k1;
+        public double k2;
+        public double k3;
+
+        // Tangential distortion coefficients p1, p2
+        public double p1;
+        public double p2;
+
+        // Sensor pixel size in millimeters
+        public double sx;
+        public double sy;
+    }
+
 	[StructLayout(LayoutKind.Sequential)]
 	class Configuration_t {
 		public Configuration_t(float radius, float width, float height,
-		RailSegment_t[] segments, Circle_t[] targets, ArucoMarker_t[] markers) {
+		RailSegment_t[] segments, Circle_t[] targets, ArucoMarkers_t markers, CameraIntrinsics_t camera, Plane_t ballPlane, WorldToModel_t worldToModel) {
 			this.radius = radius;
 			this.width = width;
 			this.height = height;
@@ -157,14 +206,15 @@ public class AnimationService : MonoBehaviour
 			this.segmentSize = segments.Length;
 			this.targets = allocate(targets);
 			this.targetSize = targets.Length;
-			this.markers = allocate(markers);
-			this.markerSize = markers.Length;
+			this.markers = markers;
+			this.camera = camera;
+			this.ballPlane = ballPlane;
+			this.worldToModel = worldToModel;
 		}
 		
 		~Configuration_t() {
 			Marshal.FreeHGlobal(segments);
 			Marshal.FreeHGlobal(targets);
-			Marshal.FreeHGlobal(markers);
 		}
 		
 		public float radius;
@@ -172,10 +222,12 @@ public class AnimationService : MonoBehaviour
 		public float height;
 		public int segmentSize;
 		public int targetSize;
-		public int markerSize;
 		public IntPtr segments;
 		public IntPtr targets;
-		public IntPtr markers;
+		public ArucoMarkers_t markers;
+		public CameraIntrinsics_t camera;
+		public Plane_t ballPlane;
+		public WorldToModel_t worldToModel;
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
@@ -211,7 +263,7 @@ public class AnimationService : MonoBehaviour
 	////////////////////////////////////////////////////////////////////
 	
 	private static Configuration_t map(Configuration from) {
-		return new Configuration_t(from.radius, from.width, from.height, map(from.segments), map(from.targets), map(from.markers));
+		return new Configuration_t(from.radius, from.width, from.height, map(from.segments), map(from.targets), map(from.markers), map(from.camera), map(from.ballPlane), map(from.worldToModel));
 	}
 	
 	private static RailSegment_t[] map(RailSegment[] from) {
@@ -237,18 +289,40 @@ public class AnimationService : MonoBehaviour
 	private static Circle_t map(Circle from) {
 		return new Circle_t{radius = from.radius, position = map(from.position)};
 	}
-	
-	private static ArucoMarker_t[] map(ArucoMarker[] from) {
-		ArucoMarker_t[] markers = new ArucoMarker_t[from.Length];
-		for (int i = 0; i < markers.Length; i++) {
-			markers[i] = map(from[i]);
-		}
-		return markers;
+
+	private static ArucoMarkers_t map(ArucoMarkers from) {
+		return new ArucoMarkers_t{
+		    patternSize = from.patternSize,
+		    sideLength = from.sideLength,
+		    m0 = map(from.m0),
+		    m1 = map(from.m1),
+		    m2 = map(from.m2),
+		    m3 = map(from.m3)
+		};
 	}
-	
-	private static ArucoMarker_t map(ArucoMarker from) {
-		return new ArucoMarker_t{position = map(from.position), sideLength = from.sideLength};
-	}
+
+	private static Plane_t map(Plane from) {
+        return new Plane_t{
+            point = map(from.point),
+            normal = map(from.normal)
+        };
+    }
+
+    private static WorldToModel_t map(WorldToModel from) {
+        return new WorldToModel_t{
+            translation = map(from.translation)
+        };
+    }
+
+	private static CameraIntrinsics_t map(CameraIntrinsics from) {
+    		return new CameraIntrinsics_t{fx = from.fx, fy = from.fy,
+    		                    cx = from.cx, cy = from.cy,
+    		                    skew = from.skew,
+    		                    k1 = from.k1, k2 = from.k2, k3 = from.k3,
+    		                    p1 = from.p1, p2 = from.p2,
+    		                    sx = from.sx, sy = from.sy
+    		                    };
+    	}
 	
 	private static RootObject map(RootObject_t from) {
 		RootObject result = new RootObject();
@@ -310,6 +384,14 @@ public class AnimationService : MonoBehaviour
 	private static Vec2_t map(Vec2 from) {
 		return new Vec2_t {x = from.x, y = from.y};
 	}
+
+	private static Vec3 map(Vec3_t from) {
+        return new Vec3 {x = from.x, y = from.y, z = from.z};
+    }
+
+    private static Vec3_t map(Vec3 from) {
+        return new Vec3_t {x = from.x, y = from.y, z = from.z};
+    }
 	
 	private static BallState_t[] map(List<GameObject> balls, StretchingBehaviour heightBehaviour, StretchingBehaviour widthBehaviour) {
 		BallState_t[] ballStates = new BallState_t[balls.Count];

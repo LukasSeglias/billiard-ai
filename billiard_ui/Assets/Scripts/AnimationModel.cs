@@ -31,6 +31,19 @@ public class Vec2 {
 }
 
 [Serializable]
+public class Vec3 {
+	public double x;
+	public double y;
+	public double z;
+
+	public static Vec3 operator /(Vec3 vec, float value) => new Vec3{
+	    x = vec.x / value,
+        y = vec.y / value,
+        z = vec.z / value
+	};
+}
+
+[Serializable]
 public class Ball
 {
     public string type;
@@ -63,14 +76,57 @@ public class Circle {
 }
 	
 [Serializable]
-public class ArucoMarker {
-	public Vec2 position;
-	public float sideLength;
+public class ArucoMarkers {
+
+    public int patternSize;
+    public float sideLength;
+	public Vec3 m0;
+	public Vec3 m1;
+	public Vec3 m2;
+	public Vec3 m3;
 	
-	public static ArucoMarker operator /(ArucoMarker marker, float value) => new ArucoMarker{
-		position = marker.position / value,
-		sideLength = marker.sideLength / value
+	public static ArucoMarkers operator /(ArucoMarkers markers, float value) => new ArucoMarkers{
+		patternSize = markers.patternSize,
+		sideLength = markers.sideLength,
+		m0 = new Vec3 { x = markers.m0.x, y = markers.m0.y, z = markers.m0.z },
+		m1 = new Vec3 { x = markers.m1.x, y = markers.m1.y, z = markers.m1.z },
+		m2 = new Vec3 { x = markers.m2.x, y = markers.m2.y, z = markers.m2.z },
+		m3 = new Vec3 { x = markers.m3.x, y = markers.m3.y, z = markers.m3.z },
 	};
+}
+
+[Serializable]
+public class CameraIntrinsics {
+	public double fx;
+	public double fy;
+
+	public double cx;
+	public double cy;
+
+	public double skew;
+
+	public double k1;
+	public double k2;
+	public double k3;
+
+	public double p1;
+	public double p2;
+
+	public double sx;
+	public double sy;
+}
+
+[Serializable]
+public class Plane {
+
+	public Vec3 point;
+	public Vec3 normal;
+}
+
+[Serializable]
+public class WorldToModel {
+
+	public Vec3 translation;
 }
 
 [Serializable]
@@ -81,10 +137,13 @@ public class Configuration {
 	public float scale;
 	public RailSegment[] segments;
 	public Circle[] targets;
-	public ArucoMarker[] markers;
+	public ArucoMarkers markers;
+	public CameraIntrinsics camera;
+	public Plane ballPlane;
+	public WorldToModel worldToModel;
 	public Correction correctionWidth;
 	public Correction correctionHeight;
-	
+
 	public static Configuration operator /(Configuration config, float value) => new Configuration{
 		radius = config.radius / value,
 		width = config.width / value,
@@ -92,7 +151,21 @@ public class Configuration {
 		scale = config.scale,
 		segments = config.segments.Select(segment => segment / value).ToArray(),
 		targets = config.targets.Select(target => target / value).ToArray(),
-		markers = config.markers.Select(marker => marker / value).ToArray(),
+        markers = config.markers / value,
+        ballPlane = new Plane {
+            point  = new Vec3{ x = config.ballPlane.point.x,  y = config.ballPlane.point.y,  z = config.ballPlane.point.z },
+            normal = new Vec3{ x = config.ballPlane.normal.x, y = config.ballPlane.normal.y, z = config.ballPlane.normal.z }
+        },
+        worldToModel = new WorldToModel {
+            translation = new Vec3 { x = config.worldToModel.translation.x, y = config.worldToModel.translation.y, z = config.worldToModel.translation.z }
+        },
+        camera = new CameraIntrinsics {fx = config.camera.fx, fy = config.camera.fy,
+                           cx = config.camera.cx, cy = config.camera.cy,
+                           skew = config.camera.skew,
+                           k1 = config.camera.k1, k2 = config.camera.k2, k3 = config.camera.k3,
+                           p1 = config.camera.p1, p2 = config.camera.p2,
+                           sx = config.camera.sx, sy = config.camera.sy
+        },
 		correctionWidth = new Correction{factor = config.correctionWidth.factor, translation = config.correctionWidth.translation},
 		correctionHeight = new Correction{factor = config.correctionHeight.factor, translation = config.correctionHeight.translation}
 	};
