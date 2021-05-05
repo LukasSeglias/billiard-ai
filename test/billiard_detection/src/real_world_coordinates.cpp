@@ -50,16 +50,16 @@ TEST(Detection, image_coordinates_to_world_coordinates) {
     using namespace billiard::detection;
 
     // Config
-    const float markerLength = 50; // length of marker in millimeters in the real world
-    cv::Ptr<cv::aruco::Board> board = createArucoBoard2(markerLength);
-    CameraIntrinsics intrinsics = getIntrinsics2();
-    Plane plane {{0, 0, 13.3}, {0, 0, 1}};
-
     double innerTableLength = 1889.0; // millimeters
     double innerTableWidth  =  951;   // millimeters
     double ballDiameter     = 52.3;   // millimeters
     double ballRadius       = ballDiameter/2; // millimeters
     cv::Point2d innerTableCenter { innerTableLength/2, innerTableWidth/2 };
+
+    const float markerLength = 50; // length of marker in millimeters in the real world
+    cv::Ptr<cv::aruco::Board> board = createArucoBoard2(markerLength);
+    CameraIntrinsics intrinsics = getIntrinsics2();
+    Plane plane {{0, 0, 13.3 - ballRadius}, {0, 0, 1}};
 
     cv::Vec3d worldToRail { 78.5, -71, 0.0 };
     cv::Vec3d railToModel { innerTableCenter.x, innerTableCenter.y, 0.0 };
@@ -93,6 +93,8 @@ TEST(Detection, image_coordinates_to_world_coordinates) {
             // Ball 7
             cv::Point2d { (540+49+ballRadius),innerTableWidth - (373+49+ballRadius) } - innerTableCenter,
     };
+
+    double totalAbsoluteDist = 0.0;
 
     for(int ball = 1; ball <= balls; ball++) {
         std::stringstream filePath;
@@ -129,10 +131,13 @@ TEST(Detection, image_coordinates_to_world_coordinates) {
             cv::imshow("Output", output);
             std::cout << "image point: " << imagePoints[0] << " should be at: " << imagePoint << std::endl;
             std::cout << "world point: " << worldPoints[0] << std::endl;
-            std::cout << "model point: " << modelPoints[0] << " should be at " << expectedModelPoint << " dist: " << (modelPoints[0] - expectedModelPoint) << std::endl;
+            std::cout << "model point: " << modelPoints[0] << " should be at " << expectedModelPoint << " dist: " << (modelPoints[0] - expectedModelPoint) << " dist: " << cv::norm(modelPoints[0] - expectedModelPoint) << std::endl;
+
+            totalAbsoluteDist += cv::norm(modelPoints[0] - expectedModelPoint);
 
         }
 
         cv::waitKey();
     }
+    std::cout << "total absolute distance: " << std::to_string(totalAbsoluteDist) << std::endl;
 }
