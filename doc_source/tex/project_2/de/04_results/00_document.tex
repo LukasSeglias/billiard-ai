@@ -1,1 +1,55 @@
 \chapter{Resultate}
+Das Kapitel beinhaltet die Beschreibung der Genauigkeiten der Messresultate.
+
+\section{Übersetzungsgenauigkeit der erkannten Kugeln}
+Es gilt zwei Aspekte zu beachten. Einerseits soll die Genauigkeit der Übersetzung von Pixel- zu Modellkoordinatensystem,
+andererseits auch die Genauigkeit der Detektion eines Kugelmittelpunkts bestimmt werden.
+Um Letzeres zu erreichen, muss Ersteres bekannt sein. Ist bekannt, welcher Fehler bei der Übersetzung geschieht, kann
+erkannt werden, wie gross der Fehlerbeitrag der Detektion des Kugelmittelpunkts ist. Dies ist wichtig, um bei
+grösseren Abweichungen von der erwarteten Fehlertoleranz am richtigen Ort anzusetzen. Die Gesamttoleranz der beiden
+möglichen Fehlerquellen liegt bei 3mm. TODO: 3mm?
+
+Um die Genauigkeit zu messen, wurden mehrere Testbilder\footnote{Alle Testbilder sind im Anhang \ref{anhang:testbilder} ersichtlich}
+erstellt. Auf diesen ist jeweils eine Kugel ersichtlich, von der
+wie in Kapitel \ref{kap:aufbauMessung} beschrieben die Modellkoordinate bestimmt wird. Diese Messung dient als Wahrheit zur
+Verifikation der Berechnungen.
+
+In einem ersten Schritt muss also die Genauigkeit der Umrechung der Koordinatensysteme bestimmt werden. Dazu wird
+manuell der erwartete Kugelmittelpunkt in Pixelkoordinaten pro Testbild bestimmt. Dieser Punkt wird anschliessend
+umgerechnet und es wird der absolute Fehlerwert in Millimeter angegeben.
+
+\begin{table}[ht]
+    \begin{center}
+        \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+        \begin{tabular}{llll}
+            \rowcolor{\seccolor!50}
+            Pixelkoordinaten & Erwartete Modellkoordinaten & Detektierte Modellkoordinaten & Absoluter Fehler\\\bfhmidline
+            [780, 233] & [13, 13] & [10, 10]  & [3, 3], 4.24mm \\\bfhmidline
+        \end{tabular}
+    \end{center}
+    \caption{Messresultate Koordinatensystem}
+    \label{tab:messresultate:koordinatensystem}
+\end{table}
+Der durchschnittliche Messfehler beträgt: ?mm\\
+
+In einem zweiten Schritt wird nun noch die Detektion der Kugeln miteinbezogen. Es wird also nicht mehr manuell
+der Kugelmittelpunkt bestimmt, dies übernimmt nun ebenfalls die Core-Library. Der Fehler wird nun nochmals gleich
+berechnet wie bei Tabelle \ref{tab:messresultate:koordinatensystem} unter Verwendung derselben Testbilder
+(siehe Tabelle \ref{tab:messresultate:detektion}, Spalte \glqq Gesamter absoluter Fehler\grqq). Abschliessend
+kann der Fehler der Detektion in Millimeter über die absolute Differenz des Fehlerwerts ohne Detektion und des
+Fehlerwerts mit Detektion bestimmt werden (siehe Tabelle \ref{tab:messresultate:detektion}, Spalte \glqq Absoluter Fehler Detektion\grqq).
+
+\begin{table}[ht]
+    \begin{center}
+        \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+        \begin{tabular}{llll}
+            \rowcolor{\seccolor!50}
+            Erwartete Modellkoordinaten & Detektierte Modellkoordinaten & Gesamter absoluter Fehler & Absoluter Fehler Detektion\\\bfhmidline
+            [13, 13] & [9, 9] & [4, 4], 5.65mm & 5.65mm - 4.24mm = 1.41mm\\\bfhmidline
+        \end{tabular}
+    \end{center}
+    \caption{Messresultate Detektion}
+    \label{tab:messresultate:detektion}
+\end{table}
+Der durchschnittliche Fehler der Detektion beträgt: ?mm\\
+Der durchschnittliche Gesamtmessfehler beträgt: ?mm
