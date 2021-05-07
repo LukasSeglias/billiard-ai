@@ -11,6 +11,12 @@ extern "C" {
         double y;
     };
 
+    struct EXPORT_UNITY_ADAPTER_LIB Vec3 {
+        double x;
+        double y;
+        double z;
+    };
+
     struct EXPORT_UNITY_ADAPTER_LIB RailSegment {
         Vec2 start;
         Vec2 end;
@@ -21,9 +27,52 @@ extern "C" {
         Vec2 position;
     };
 
-    struct EXPORT_UNITY_ADAPTER_LIB ArucoMarker {
-        Vec2 position;
+    struct EXPORT_UNITY_ADAPTER_LIB ArucoMarkers {
+        int patternSize;
         float sideLength;
+        Vec3 m0;
+        Vec3 m1;
+        Vec3 m2;
+        Vec3 m3;
+    };
+
+    struct EXPORT_UNITY_ADAPTER_LIB Plane {
+        Vec3 point;
+        Vec3 normal;
+    };
+
+    struct EXPORT_UNITY_ADAPTER_LIB WorldToModel {
+        Vec3 translation;
+    };
+
+    /**
+     * Camera intrinsics
+     */
+    struct EXPORT_UNITY_ADAPTER_LIB CameraIntrinsics {
+
+        // Focal length in pixel
+        double fx;
+        double fy;
+
+        // Principal point in pixel
+        double cx;
+        double cy;
+
+        // Skew
+        double skew;
+
+        // Radial distortion coefficients k1, k2, k3
+        double k1;
+        double k2;
+        double k3;
+
+        // Tangential distortion coefficients p1, p2
+        double p1;
+        double p2;
+
+        // Sensor pixel size in millimeters
+        double sx;
+        double sy;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB Configuration {
@@ -32,10 +81,12 @@ extern "C" {
         float height;
         int segmentSize;
         int targetSize;
-        int markerSize;
         RailSegment* segments;
         Circle* targets;
-        ArucoMarker* markers;
+        ArucoMarkers markers;
+        CameraIntrinsics camera;
+        Plane ballPlane;
+        WorldToModel worldToModel;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB  Ball {

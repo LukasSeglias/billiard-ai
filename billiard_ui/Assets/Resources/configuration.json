@@ -23,16 +23,35 @@
 			"position": {"x": 940, "y": -471}
 		}
 	],
-	"markers": [
-		{
-			"position": {"x": -935, "y": 471},
-			"sideLength": 15
-		},
-		{
-			"position": {"x": 935, "y": -471},
-			"sideLength": 16
-		}
-	],
+	"markers": {
+		"patternSize": 3,
+		"sideLength": 50.0,
+		"m0": { "x":     0, "y":    0, "z": 0 },
+		"m1": { "x":  1725, "y":    0, "z": 0 },
+		"m2": { "x":  1725, "y": 1084, "z": 0 },
+		"m3": { "x":     0, "y": 1084, "z": 0 }
+	},
+	"worldToModel": {
+		"translation": { "x": -1018.0, "y": -871.8, "z": 0.0 }
+	},
+	"ballPlane": {
+		"point":  { "x":  0, "y":  0, "z": 13.3 },
+		"normal": { "x":  0, "y":  0, "z":    1 }
+	},
+	"camera": {
+		"fx": 1375.69,
+		"fy": 1375.85,
+		"cx": 974.842,
+		"cy": 539.363,
+		"skew": 0,
+		"k1": 0,
+		"k2": 0,
+		"k3": 0,
+		"p1": 0,
+		"p2": 0,
+		"sx": 0.0014,
+		"sy": 0.0014
+	},
 	"correctionWidth": {
 		"factor": 2.8,
 		"translation": -0.84
