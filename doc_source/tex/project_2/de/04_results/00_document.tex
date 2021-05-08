@@ -27,7 +27,13 @@ andererseits auch die Genauigkeit der Detektion eines Kugelmittelpunkts bestimmt
 Um Letzeres zu erreichen, muss Ersteres bekannt sein. Ist bekannt, welcher Fehler bei der Übersetzung geschieht, kann
 erkannt werden, wie gross der Fehlerbeitrag der Detektion des Kugelmittelpunkts ist. Dies ist wichtig, um bei
 grösseren Abweichungen von der erwarteten Fehlertoleranz am richtigen Ort anzusetzen. Die Gesamttoleranz der beiden
-möglichen Fehlerquellen liegt bei 3mm. TODO: 3mm?
+möglichen Fehlerquellen liegt bei 3mm. Diese Fehlertoleranz $F(x,y)$ beschreibt einen Radius um den erwarteten Kugelmittelpunkt.
+Der Radius setzt sich aus dem Fehler in X- wie auch in Y-Richtung zusammen. Er wird also wie in Gleichung \ref{eq:1} beschrieben.
+\begin{align}
+    F(x,y) = \sqrt{x^2 + y^2} | T(x,y) \leq 3\label{eq:1}
+\end{align}
+Zusätzlich muss noch der Fehler des Messgeräts berücksichtigt werden, welcher mit $\pm 1.5mm$ angegeben wird. Somit liegt
+der Gesamtfehlerradius bei $4.5mm$, wobei allfällige Messfehler von Hand nicht berücksichtigt werden.
 
 Um die Genauigkeit zu messen, wurden mehrere Testbilder\footnote{Alle Testbilder sind im Anhang \ref{anhang:uebersetzungsgenauigkeit:testbilder} ersichtlich}
 erstellt. Auf diesen ist jeweils eine Kugel ersichtlich, von der
@@ -44,13 +50,19 @@ umgerechnet und es wird der absolute Fehlerwert in Millimeter angegeben.
         \begin{tabular}{lllll}
             \rowcolor{\seccolor!50}
             Bild & Pixelkoordinaten & Erwartete Modellkoordinaten & Detektierte Modellkoordinaten & Absoluter Fehler\\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:1} & [780, 233] & [13, 13] & [10, 10]  & [3, 3], 4.24mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:1} 8 & [629, 743] & [-374.85, -216.15] & [-373.308, -214.712]  & [-1.542, -1.438], 2.108mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:2} 9 & [814, 287] & [-180.85, 283.15] & [-178.844, 281.705]  & [-2.006, 1.445], 2.472mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:2} 10 & [1273, 413] & [337.85, 142.15] & [336.345, 140.874]  & [1.505, 1.276], 1.973mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:2} 11 & [1561, 621] & [664.15, -91.85] & [661.979, -93.1876]  & [2.171, 1.3376], 2.549mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:2} 12 & [475, 639] & [-560.85, -112.85] & [-561.435, -112.964]  & [0.585, 0.114], 0.596mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:3} 13 & [980, 537] & [5.85, 0.15] & [6.50545, 1.31031]  & [-0.655, -1.160], 1.332mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:3} 14 & [1640, 225] & [751.15, 350.15] & [750.001, 352.548]  & [1.149, -2.398], 2.659mm \\\bfhmidline
         \end{tabular}
     \end{center}
     \caption{Messresultate Koordinatensystem}
     \label{tab:messresultate:koordinatensystem}
 \end{table}
-Der durchschnittliche Messfehler beträgt: ? [mm]\\
+Der durchschnittliche Messfehler beträgt: 1.956 [mm]\\
 
 In einem zweiten Schritt wird nun noch die Detektion der Kugeln miteinbezogen. Es wird also nicht mehr manuell
 der Kugelmittelpunkt bestimmt, dies übernimmt nun ebenfalls die Core-Library. Der Fehler wird nun nochmals gleich
@@ -62,10 +74,10 @@ Fehlerwerts mit Detektion bestimmt werden (siehe Tabelle \ref{tab:messresultate:
 \begin{table}[ht]
     \begin{center}
         \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
-        \begin{tabular}{llll}
+        \begin{tabular}{lllll}
             \rowcolor{\seccolor!50}
-            Erwartete Modellkoordinaten & Detektierte Modellkoordinaten & Gesamter absoluter Fehler & Absoluter Fehler Detektion\\\bfhmidline
-            [13, 13] & [9, 9] & [4, 4], 5.65mm & 5.65mm - 4.24mm = 1.41mm\\\bfhmidline
+            Bild & Erwartete Modellkoordinaten & Detektierte Modellkoordinaten & Gesamter absoluter Fehler & Absoluter Fehler Detektion\\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:1} & [13, 13] & [9, 9] & [4, 4], 5.65mm & 5.65mm - 4.24mm = 1.41mm\\\bfhmidline
         \end{tabular}
     \end{center}
     \caption{Messresultate Detektion}
