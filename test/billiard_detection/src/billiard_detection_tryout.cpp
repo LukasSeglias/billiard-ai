@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include <billiard_capture/billiard_capture.hpp>
+#include <librealsense2/rs.hpp>
 
 void imageGallery(const std::string& name, const std::vector<cv::Mat>& images) {
     int imageIndex = 0;
@@ -1608,6 +1610,7 @@ TEST(BallDetectionTests, whitePinkMask) {
 // TODO: Es werden fälschlicherweise Schatten als Kugeln detektiert.
 TEST(BallDetectionTests, combined) {
 
+    bool live = false;
     std::vector<std::string> imagePaths = {
             "./resources/test_detection/1.png",
             "./resources/test_detection/2.png",
@@ -1671,10 +1674,28 @@ TEST(BallDetectionTests, combined) {
     bool showSaturated = true;
     bool showWhitePink = true;
 
-    while(true) {
-        std::string imagePath = imagePaths[imageIndex];
+    billiard::capture::CameraCapture capture {};
 
-        auto original = imread(imagePath, cv::IMREAD_COLOR);
+    if (live) {
+        if (!capture.open()) {
+            std::cerr << "Unable to open image stream" << std::endl;
+            return;
+        }
+    }
+
+    while(true) {
+        cv::Mat original;
+
+        if (live) {
+            if (imageChanged) {
+                billiard::capture::CameraFrames frames = capture.read();
+                frames.color.copyTo(original);
+            }
+        } else {
+            std::string imagePath = imagePaths[imageIndex];
+            original = imread(imagePath, cv::IMREAD_COLOR);
+        }
+
         cv::Mat input;
         cv::resize(original, input, cv::Size(), scale, scale);
 
@@ -2021,6 +2042,8 @@ TEST(BallDetectionTests, combined) {
         } else if (key == 'o') {
             showDebuggingOutput = !showDebuggingOutput;
             cv::destroyAllWindows();
+        } else if (key == 'r') {
+            imageChanged = true;
         } else if (key == 97 /* A */) {
             imageIndex = imageIndex == 0 ? imagePaths.size() - 1 : imageIndex - 1;
             imageChanged = true;
@@ -2032,7 +2055,7 @@ TEST(BallDetectionTests, combined) {
 
 }
 
-TEST(BallDetectionTests, latest) {
+TEST(BallDetectionTests, older) {
 
     std::vector<std::string> imagePaths = {
             "./resources/test_detection/1.png",
