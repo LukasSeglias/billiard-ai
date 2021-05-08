@@ -245,6 +245,19 @@ namespace billiard::detection {
         return modelPoints;
     }
 
+    std::vector<cv::Point3d> modelPointsToWorldPoints(const WorldToModelCoordinates& worldToModel,
+                                                      const std::vector<cv::Point2d>& modelPoints,
+                                                      double z) {
+
+        const cv::Point3d& invTranslation = - cv::Point3d(worldToModel.translation);
+        std::vector<cv::Point3d> worldPoints;
+        for (const cv::Point2d& modelPoint : modelPoints) {
+            cv::Point3d worldPoint = cv::Point3d(modelPoint.x, modelPoint.y, z) + invTranslation;
+            worldPoints.push_back(worldPoint);
+        }
+        return worldPoints;
+    }
+
     CameraIntrinsics::CameraIntrinsics(const cv::Point2d& focalLength,
                                        const cv::Point2d& principalPoint,
                                        double skew,

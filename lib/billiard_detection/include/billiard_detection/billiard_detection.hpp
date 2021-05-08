@@ -125,6 +125,11 @@ namespace billiard::detection {
             const WorldToModelCoordinates& worldToModel,
             const std::vector<cv::Point3d>& worldPoints);
 
+    EXPORT_BILLIARD_DETECTION_LIB std::vector<cv::Point3d> modelPointsToWorldPoints(
+            const WorldToModelCoordinates& worldToModel,
+            const std::vector<cv::Point2d>& modelPoints,
+            double z);
+
     struct EXPORT_BILLIARD_DETECTION_LIB Plane {
         cv::Vec3d point {0, 0, 0};
         cv::Vec3d normal {0, 0, 1};
