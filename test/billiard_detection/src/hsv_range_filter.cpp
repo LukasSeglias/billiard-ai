@@ -51,6 +51,18 @@ TEST(BallDetectionTests, hsvRangeFilter) {
             "./resources/test_detection/6.png",
             "./resources/test_detection/7.png",
             "./resources/test_detection/8.png",
+            "./resources/test_detection/9.png",
+            "./resources/test_detection/10.png",
+            "./resources/test_detection/11.png",
+            "./resources/test_detection/12.png",
+            "./resources/test_detection/13.png",
+            "./resources/test_detection/14.png",
+            "./resources/test_detection/15.png",
+            "./resources/test_detection/16.png",
+            "./resources/test_detection/17.png",
+            "./resources/test_detection/18.png",
+            "./resources/test_detection/19.png",
+            "./resources/test_detection/20.png",
     };
 
     cv::namedWindow(result_window_name, cv::WINDOW_NORMAL);
