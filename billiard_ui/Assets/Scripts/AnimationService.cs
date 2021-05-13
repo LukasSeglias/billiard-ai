@@ -168,6 +168,17 @@ public class AnimationService : MonoBehaviour
         public Vec3_t translation;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    class Table_t {
+
+        public double innerTableLength;
+        public double innerTableWidth;
+        public double ballDiameter;
+        public double arucoHeightAboveInnerTable;
+        public double railWorldPointZComponent;
+        public Vec3_t worldToRail;
+    }
+
 	[StructLayout(LayoutKind.Sequential)]
     struct CameraIntrinsics_t {
         // Focal length in pixel
@@ -198,7 +209,7 @@ public class AnimationService : MonoBehaviour
 	[StructLayout(LayoutKind.Sequential)]
 	class Configuration_t {
 		public Configuration_t(float radius, float width, float height,
-		RailSegment_t[] segments, Circle_t[] targets, ArucoMarkers_t markers, CameraIntrinsics_t camera, Plane_t ballPlane, WorldToModel_t worldToModel) {
+		RailSegment_t[] segments, Circle_t[] targets, ArucoMarkers_t markers, CameraIntrinsics_t camera, Plane_t ballPlane, WorldToModel_t worldToModel, Table_t table) {
 			this.radius = radius;
 			this.width = width;
 			this.height = height;
@@ -210,6 +221,7 @@ public class AnimationService : MonoBehaviour
 			this.camera = camera;
 			this.ballPlane = ballPlane;
 			this.worldToModel = worldToModel;
+			this.table = table;
 		}
 		
 		~Configuration_t() {
@@ -228,6 +240,7 @@ public class AnimationService : MonoBehaviour
 		public CameraIntrinsics_t camera;
 		public Plane_t ballPlane;
 		public WorldToModel_t worldToModel;
+		public Table_t table;
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
@@ -263,7 +276,7 @@ public class AnimationService : MonoBehaviour
 	////////////////////////////////////////////////////////////////////
 	
 	private static Configuration_t map(Configuration from) {
-		return new Configuration_t(from.radius, from.width, from.height, map(from.segments), map(from.targets), map(from.markers), map(from.camera), map(from.ballPlane), map(from.worldToModel));
+		return new Configuration_t(from.radius, from.width, from.height, map(from.segments), map(from.targets), map(from.markers), map(from.camera), map(from.ballPlane), map(from.worldToModel), map(from.table));
 	}
 	
 	private static RailSegment_t[] map(RailSegment[] from) {
@@ -313,6 +326,17 @@ public class AnimationService : MonoBehaviour
             translation = map(from.translation)
         };
     }
+
+    private static Table_t map(Table from) {
+            return new Table_t{
+                innerTableLength = from.innerTableLength,
+                innerTableWidth = from.innerTableWidth,
+                ballDiameter = from.ballDiameter,
+                arucoHeightAboveInnerTable = from.arucoHeightAboveInnerTable,
+                railWorldPointZComponent = from.railWorldPointZComponent,
+                worldToRail = map(from.worldToRail)
+            };
+        }
 
 	private static CameraIntrinsics_t map(CameraIntrinsics from) {
     		return new CameraIntrinsics_t{fx = from.fx, fy = from.fy,

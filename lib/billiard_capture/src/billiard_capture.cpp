@@ -181,16 +181,23 @@ namespace billiard::capture {
     bool CameraCapture::open() {
         rs2::context ctx;
         std::cout << "librealsense " << RS2_API_VERSION_STR << std::endl;
-        std::cout << "RealSense devices connected: " << ctx.query_devices().size() << std::endl;
+        uint32_t numberOfDevices = ctx.query_devices().size();
+        std::cout << "RealSense devices connected: " << numberOfDevices << std::endl;
+
+        if (numberOfDevices == 0) {
+            return false;
+        }
 
         rs2::config cfg;
         cfg.enable_stream(RS2_STREAM_COLOR, 1920, 1080, RS2_FORMAT_BGR8, 30);
         cfg.enable_stream(RS2_STREAM_DEPTH, 848, 480, RS2_FORMAT_Z16, 30);
 
         camera = new Camera();
-        camera->pipe.start(cfg);
-
-        return true;
+        if (camera->pipe.start(cfg)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     void CameraCapture::close() {

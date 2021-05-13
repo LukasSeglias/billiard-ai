@@ -26,10 +26,10 @@
 	"markers": {
 		"patternSize": 3,
 		"sideLength": 50.0,
-		"m0": { "x":     0, "y":    0, "z": 0 },
-		"m1": { "x":  1725, "y":    0, "z": 0 },
-		"m2": { "x":  1725, "y": 1084, "z": 0 },
-		"m3": { "x":     0, "y": 1084, "z": 0 }
+		"m0": { "x":     0, "y":    0, "z": 0, "COMMENT": "BOTTOM-LEFT" },
+		"m1": { "x":  1722, "y":    0, "z": 0, "COMMENT": "BOTTOM-RIGHT" },
+		"m2": { "x":  1722, "y": 1084, "z": 0, "COMMENT": "TOP-RIGHT" },
+		"m3": { "x":     0, "y": 1085, "z": 0, "COMMENT": "TOP-LEFT" }
 	},
 	"worldToModel": {
 		"translation": { "x": -1018.0, "y": -871.8, "z": 0.0 }
@@ -37,6 +37,14 @@
 	"ballPlane": {
 		"point":  { "x":  0, "y":  0, "z": 13.3 },
 		"normal": { "x":  0, "y":  0, "z":    1 }
+	},
+	"table": {
+		"innerTableLength": 1881.0,
+		"innerTableWidth": 943.0,
+		"ballDiameter": 52.3,
+		"arucoHeightAboveInnerTable": 38.1,
+		"railWorldPointZComponent": 0.0,
+		"worldToRail": { "x": 79.0, "y": -71.5, "z": 0.0 }
 	},
 	"camera": {
 		"fx": 1375.69,

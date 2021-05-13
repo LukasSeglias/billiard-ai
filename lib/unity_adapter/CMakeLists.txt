@@ -17,6 +17,7 @@ add_custom_command(TARGET ${PROJECT_NAME}
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:unity_adapter> ${UNITY_PLUGINS}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_search> ${UNITY_PLUGINS}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_capture> ${UNITY_PLUGINS}/
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_snooker> ${UNITY_PLUGINS}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_detection> ${UNITY_PLUGINS}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_physics> ${UNITY_PLUGINS}/
         )
@@ -27,4 +28,4 @@ foreach(OpenCV_LIB ${OpenCV_LIBS})
             )
 endforeach()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE billiard_search billiard_detection billiard_capture)
+target_link_libraries(${PROJECT_NAME} PRIVATE billiard_search billiard_detection billiard_snooker billiard_capture)

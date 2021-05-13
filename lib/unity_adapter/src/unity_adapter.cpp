@@ -3,6 +3,8 @@
 #include <memory>
 #include <string>
 #include <billiard_detection/billiard_detection.hpp>
+#include <billiard_snooker/billiard_snooker.hpp>
+#include <billiard_capture/billiard_capture.hpp>
 
 Debugger _debugger;
 
@@ -16,13 +18,16 @@ AnimationChangedEventQueue* _animationChangedEventQueue = nullptr;
 //// Mappings - Declaration
 ///////////////////////////////////////////////////////
 std::shared_ptr<RootObject> map(const State& state); // Unity - CPP
+std::shared_ptr<RootObject> map(const billiard::detection::State& state); // Unity - CPP
 // TODO: Add mapping from external config to internal config (Apply config)
-// TODO: Add mapping from internal state to external animation (Capture)
 // TODO: Add mapping from internal animation to external animation (Search)
 
 ///////////////////////////////////////////////////////
 //// Implementation
 ///////////////////////////////////////////////////////
+std::shared_ptr<billiard::detection::StateTracker> stateTracker;
+std::shared_ptr<billiard::capture::CameraCapture> cameraCapture;
+std::shared_ptr<billiard::detection::DetectionConfig> detectionConfig;
 std::shared_ptr<RootObject> _currentState;
 std::shared_ptr<RootObject> testState(); // TODO: Delete
 
@@ -57,9 +62,10 @@ inline cv::Vec3d toVec3d(const Vec3& vec) {
 }
 
 inline billiard::detection::CameraIntrinsics toIntrinsics(const CameraIntrinsics& camera);
-cv::Ptr<cv::aruco::Board> createArucoBoard(const ArucoMarkers& markers);
+inline billiard::detection::ArucoMarkers createArucoMarkers(const ArucoMarkers& input);
 inline billiard::detection::Plane toPlane(const Plane& plane);
 inline billiard::detection::WorldToModelCoordinates toWorldToModelCoordinates(const WorldToModel& worldToModel);
+inline billiard::detection::Table toTable(const Table& table);
 
 void configuration(Configuration config) {
     // TODO: Map configuration and pass it to the library, delete all debugger outputs
@@ -97,14 +103,71 @@ void configuration(Configuration config) {
     billiard::detection::CameraIntrinsics intrinsics = toIntrinsics(config.camera);
     _debugger("CameraIntrinsics created");
 
-    billiard::detection::Plane ballPlane = toPlane(config.ballPlane);
-    _debugger("BallPlane created");
-
-    cv::Ptr<cv::aruco::Board> board = createArucoBoard(config.markers);
+    billiard::detection::ArucoMarkers markers = createArucoMarkers(config.markers);
     _debugger("Aruco-board created");
+    _debugger((std::string("Markers:")
+               + " patternSize: " + std::to_string(markers.patternSize)
+               + " sideLength: " + std::to_string(markers.sideLength)
+               + " bottomLeft: " + "" + std::to_string(markers.bottomLeft.x) + ", " + std::to_string(markers.bottomLeft.y) + ", " + std::to_string(markers.bottomLeft.z)
+               + " bottomRight: " + "" + std::to_string(markers.bottomRight.x) + ", " + std::to_string(markers.bottomRight.y) + ", " + std::to_string(markers.bottomRight.z)
+               + " topLeft: " + "" + std::to_string(markers.topLeft.x) + ", " + std::to_string(markers.topLeft.y) + ", " + std::to_string(markers.topLeft.z)
+               + " topRight: " + "" + std::to_string(markers.topRight.x) + ", " + std::to_string(markers.topRight.y) + ", " + std::to_string(markers.topRight.z)
+              ).c_str());
 
-    billiard::detection::WorldToModelCoordinates worldToModel = toWorldToModelCoordinates(config.worldToModel);
-    _debugger("worldToModel created");
+    billiard::detection::Table table = toTable(config.table);
+    _debugger((std::string("Table: ")
+                + " innerTableLength: " + std::to_string(table.innerTableLength)
+                + " innerTableWidth: " + std::to_string(table.innerTableWidth)
+                + " ballDiameter: " + std::to_string(table.ballDiameter)
+                + " arucoHeightAboveInnerTable: " + std::to_string(table.arucoHeightAboveInnerTable)
+                + " railWorldPointZComponent: " + std::to_string(table.railWorldPointZComponent)
+                + " worldToRail: " + std::to_string(table.worldToRail[0]) + ", " + std::to_string(table.worldToRail[1]) + ", " + std::to_string(table.worldToRail[2])
+                ).c_str());
+
+//    billiard::detection::Plane ballPlane = toPlane(config.ballPlane);
+//    _debugger("BallPlane created");
+
+//    billiard::detection::WorldToModelCoordinates worldToModel = toWorldToModelCoordinates(config.worldToModel);
+//    _debugger("worldToModel created");
+
+    if (cameraCapture) {
+        cameraCapture->close();
+    }
+
+//    cameraCapture = std::make_shared<billiard::capture::CameraCapture>();
+//    if (cameraCapture->open()) {
+//        _debugger("[SUCCESS]: Opened camera capture");
+//    } else {
+//        _debugger("[ERROR]: Unable to open camera capture");
+//        return;
+//    }
+//
+//    int skippedFrames = 30;
+//    while (skippedFrames-- > 0) cameraCapture->read();
+//    billiard::capture::CameraFrames frames = cameraCapture->read();
+//    cv::Mat image = frames.color;
+
+    cv::Mat image = cv::imread("D:\\Dev\\billiard-ai\\cmake-build-debug\\test\\billiard_detection\\resources\\test_detection\\1.png");
+    cv::imshow("image", image);
+
+    detectionConfig = std::make_shared<billiard::detection::DetectionConfig>(billiard::detection::configure(image, table, markers, intrinsics));
+    if (detectionConfig->valid) {
+        _debugger("[SUCCESS]: Detection configured");
+    } else {
+        _debugger("[ERROR]: Unable to configure detection");
+        return;
+    }
+
+    if (billiard::snooker::configure(*detectionConfig)) {
+        _debugger("[SUCCESS]: Snooker detection configured");
+    } else {
+        _debugger("[ERROR]: Unable to configure snooker detection");
+        return;
+    }
+
+//    stateTracker = std::make_shared<billiard::detection::StateTracker>(cameraCapture,
+//                                                                       detectionConfig,
+//                                                                       billiard::snooker::detect);
 
     _debugger("All configuration mapped");
 }
@@ -112,6 +175,17 @@ void configuration(Configuration config) {
 inline billiard::detection::WorldToModelCoordinates toWorldToModelCoordinates(const WorldToModel& worldToModel) {
     return billiard::detection::WorldToModelCoordinates {
             toVec3d(worldToModel.translation)
+    };
+}
+
+inline billiard::detection::Table toTable(const Table& table) {
+    return billiard::detection::Table {
+            table.innerTableLength,
+            table.innerTableWidth,
+            table.ballDiameter,
+            table.arucoHeightAboveInnerTable,
+            table.railWorldPointZComponent,
+            toVec3d(table.worldToRail)
     };
 }
 
@@ -133,40 +207,46 @@ inline billiard::detection::CameraIntrinsics toIntrinsics(const CameraIntrinsics
     };
 }
 
-cv::Ptr<cv::aruco::Board> createArucoBoard(const ArucoMarkers& markers) {
+inline billiard::detection::ArucoMarkers createArucoMarkers(const ArucoMarkers& input) {
 
-    const int nMarkers = 4;
-    std::vector<int> ids = {0, 1, 2, 3};
-    cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::generateCustomDictionary(nMarkers, markers.patternSize);
-
-    const float side = markers.sideLength;
-
-    auto cornerPositions = [&side](const cv::Point3f& bottomLeft) -> std::vector<cv::Point3f> {
-        return {
-                bottomLeft + cv::Point3f{ 0, side, 0 },
-                bottomLeft + cv::Point3f{ side, side, 0 },
-                bottomLeft + cv::Point3f{ side, 0, 0 },
-                bottomLeft + cv::Point3f{ 0, 0, 0 },
-        };
-    };
-
-    cv::Point3f centerOffset{side/2, side/2, 0};
-    std::vector<std::vector<cv::Point3f>> objPoints = {
-            cornerPositions(toPoint3f(markers.m0) - centerOffset), // Marker 0
-            cornerPositions(toPoint3f(markers.m1) - centerOffset), // Marker 1
-            cornerPositions(toPoint3f(markers.m2) - centerOffset), // Marker 2
-            cornerPositions(toPoint3f(markers.m3) - centerOffset), // Marker 3
-    };
-
-    cv::Ptr<cv::aruco::Board> board = cv::aruco::Board::create(objPoints, dictionary, ids);
-    return board;
+    billiard::detection::ArucoMarkers markers;
+    markers.patternSize = input.patternSize;
+    markers.sideLength  = input.sideLength;
+    markers.bottomLeft  = toPoint3f(input.m0);
+    markers.bottomRight = toPoint3f(input.m1);
+    markers.topRight    = toPoint3f(input.m2);
+    markers.topLeft     = toPoint3f(input.m3);
+    return markers;
 }
 
 void capture() {
+    _debugger("[COMMAND]: Capture");
     // TODO: Capture state and update _currentState
     // TODO: Push _currentState to the animationChangedEventQueue
     // TODO: Hint, write a mapping function according to the existing "map" to create an animation from a state.
 
+    if (detectionConfig) {
+
+        cv::Mat image = cv::imread("D:\\Dev\\billiard-ai\\cmake-build-debug\\test\\billiard_detection\\resources\\test_detection\\1.png");
+
+        billiard::detection::State pixelState = billiard::snooker::detect(billiard::detection::State{}, image);
+        billiard::detection::State state = billiard::detection::pixelToModelCoordinates(*detectionConfig, pixelState);
+
+        _debugger(("[Detection]: Detected " + std::to_string(state._balls.size()) + " balls").c_str());
+        for (auto& ball : state._balls) {
+            _debugger(("[Detection]: Ball: " + ball._id + " " + ball._type + " at (" + std::to_string(ball._position[0]) + ", " + std::to_string(ball._position[1]) + ")").c_str());
+        }
+
+        _currentState = map(state);
+    }
+
+    if (stateTracker) {
+
+//    auto stateFuture = stateTracker->capture();
+//    stateFuture.wait();
+//    auto state = stateFuture.get();
+
+    }
     _animationChangedEventQueue->push(_currentState);
 }
 
@@ -215,7 +295,30 @@ Ball* map(const BallState* ballState, int ballSize) {
     return balls;
 }
 
-// TODO: Add mapping from internal state to external animation (Capture)
+Ball* map(const std::vector<billiard::detection::Ball>& ballStates);
+
+std::shared_ptr<RootObject> map(const billiard::detection::State& state) {
+    KeyFrame keyFrame{0.0, map(state._balls), static_cast<int>(state._balls.size())};
+
+    KeyFrame keyFrames[] = {
+            keyFrame,
+            keyFrame
+    };
+    AnimationModel models[] = {AnimationModel{keyFrames, 2}};
+    return std::make_shared<RootObject>(models, 1);
+}
+
+Ball* map(const std::vector<billiard::detection::Ball>& ballStates) {
+    Ball* balls = new Ball[ballStates.size()];
+
+    for (int i = 0; i < ballStates.size(); i++) {
+        auto& ballState = ballStates[i];
+        const Vec2& position = Vec2{ballState._position[0], ballState._position[1]};
+        balls[i] = Ball{_strdup(ballState._type.c_str()), _strdup(ballState._id.c_str()), position, Vec2{0, 0}, true};
+    }
+    return balls;
+}
+
 // TODO: Add mapping from internal animation to external animation (Search)
 
 // TODO: Delete all after this comment

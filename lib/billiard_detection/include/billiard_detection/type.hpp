@@ -22,5 +22,12 @@ namespace billiard::detection {
         std::vector<Ball> _balls;
     };
 
+    struct EXPORT_BILLIARD_DETECTION_LIB Pocket {
+        double x;
+        double y;
+        double radius;
+        Pocket(double x, double y, double radius): x(x), y(y), radius(radius) {};
+    };
+
     // TODO: Add configuration for aruco markers
 }

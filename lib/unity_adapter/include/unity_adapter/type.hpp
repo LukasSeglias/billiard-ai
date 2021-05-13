@@ -45,6 +45,15 @@ extern "C" {
         Vec3 translation;
     };
 
+    struct EXPORT_UNITY_ADAPTER_LIB Table {
+        double innerTableLength;
+        double innerTableWidth;
+        double ballDiameter;
+        double arucoHeightAboveInnerTable;
+        double railWorldPointZComponent;
+        Vec3 worldToRail;
+    };
+
     /**
      * Camera intrinsics
      */
@@ -87,6 +96,7 @@ extern "C" {
         CameraIntrinsics camera;
         Plane ballPlane;
         WorldToModel worldToModel;
+        Table table;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB  Ball {

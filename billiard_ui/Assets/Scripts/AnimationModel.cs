@@ -130,6 +130,17 @@ public class WorldToModel {
 }
 
 [Serializable]
+public class Table {
+
+    public double innerTableLength;
+    public double innerTableWidth;
+    public double ballDiameter;
+    public double arucoHeightAboveInnerTable;
+    public double railWorldPointZComponent;
+	public Vec3 worldToRail;
+}
+
+[Serializable]
 public class Configuration {
 	public float radius;
 	public float width;
@@ -141,6 +152,7 @@ public class Configuration {
 	public CameraIntrinsics camera;
 	public Plane ballPlane;
 	public WorldToModel worldToModel;
+	public Table table;
 	public Correction correctionWidth;
 	public Correction correctionHeight;
 
@@ -158,6 +170,14 @@ public class Configuration {
         },
         worldToModel = new WorldToModel {
             translation = new Vec3 { x = config.worldToModel.translation.x, y = config.worldToModel.translation.y, z = config.worldToModel.translation.z }
+        },
+        table = new Table {
+            innerTableLength = config.table.innerTableLength,
+            innerTableWidth = config.table.innerTableWidth,
+            ballDiameter = config.table.ballDiameter,
+            arucoHeightAboveInnerTable = config.table.arucoHeightAboveInnerTable,
+            railWorldPointZComponent = config.table.railWorldPointZComponent,
+            worldToRail = new Vec3 { x = config.table.worldToRail.x, y = config.table.worldToRail.y, z = config.table.worldToRail.z }
         },
         camera = new CameraIntrinsics {fx = config.camera.fx, fy = config.camera.fy,
                            cx = config.camera.cx, cy = config.camera.cy,

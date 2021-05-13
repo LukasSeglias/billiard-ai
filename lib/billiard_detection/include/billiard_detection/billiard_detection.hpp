@@ -16,25 +16,33 @@
 
 namespace billiard::detection {
 
-    class EXPORT_BILLIARD_DETECTION_LIB StateTracker {
-    public:
-        StateTracker(const std::shared_ptr<capture::ImageCapture>& imageCapture,
-                     const std::function<State(const State& previousState, const cv::Mat&)>& detect); // TODO: Add Configuration for aruco initialization
-        ~StateTracker();
+    struct EXPORT_BILLIARD_DETECTION_LIB WorldToModelCoordinates {
+        cv::Vec3d translation;
+    };
 
-        std::future<State> capture();
+    struct EXPORT_BILLIARD_DETECTION_LIB Plane {
+        cv::Vec3d point {0, 0, 0};
+        cv::Vec3d normal {0, 0, 1};
+        Plane() = default;
+        Plane(const cv::Vec3d& point, const cv::Vec3d& normal): point(point), normal(normal) {};
+    };
 
-    private:
-        std::promise<void> _exitSignal;
-        std::mutex _lock;
-        std::queue<std::promise<State>> _waiting;
-        std::thread _thread;
+    struct EXPORT_BILLIARD_DETECTION_LIB ArucoMarkers {
+        int patternSize;
+        float sideLength;
+        cv::Point3f bottomLeft;
+        cv::Point3f bottomRight;
+        cv::Point3f topRight;
+        cv::Point3f topLeft;
+    };
 
-        static void work(std::future<void> exitSignal,
-                         std::mutex& lock,
-                         const std::shared_ptr<capture::ImageCapture>& imageCapture,
-                         const std::function<State (const State& previousState, const cv::Mat&)>& detect,
-                         std::queue<std::promise<State>>& waiting); // TODO: Pass configuration for auruco configuration
+    struct EXPORT_BILLIARD_DETECTION_LIB Table {
+        double innerTableLength; // Length between the rails on the long side, in millimeters
+        double innerTableWidth;  // Length between the rails on the short side, in millimeters
+        double ballDiameter;     // in millimeters
+        double arucoHeightAboveInnerTable; // in millimeters
+        double railWorldPointZComponent; // in millimeters
+        cv::Vec3d worldToRail;
     };
 
     struct EXPORT_BILLIARD_DETECTION_LIB CameraIntrinsics {
@@ -68,6 +76,73 @@ namespace billiard::detection {
                          const cv::Point2d& sensorPixelSize);
     };
 
+    struct EXPORT_BILLIARD_DETECTION_LIB BoardPoseEstimation {
+        int markersUsed = 0;
+        cv::Vec3d rvec; // Rotation vector (Rodrigues)
+        cv::Vec3d tvec; // Translation vector
+    };
+
+    struct EXPORT_BILLIARD_DETECTION_LIB CameraToWorldCoordinateSystemConfig {
+        bool valid = false;
+        BoardPoseEstimation pose;
+        CameraIntrinsics intrinsics;
+        cv::Mat boardToCamera;
+        cv::Mat cameraToBoard;
+        cv::Vec3d cameraPosInWorldCoordinates;
+        cv::Point2d principalPoint;
+        double focalLength;
+    };
+
+    struct EXPORT_BILLIARD_DETECTION_LIB DetectionConfig {
+        bool valid = false;
+
+        // Scaling of input image
+        double scale = 0.5;
+
+        int ballRadiusInPixel;
+
+        // Binary mask (255=true) to determine possible locations of balls (only on the green inner table)
+        // Scaled by DetectionConfig::scale
+        cv::Mat innerTableMask;
+
+        // Plane where all the ball centers are located in the real world (aruco marker frame of reference)
+        Plane ballPlane;
+
+        WorldToModelCoordinates worldToModel;
+
+        CameraToWorldCoordinateSystemConfig cameraToWorld;
+    };
+
+    EXPORT_BILLIARD_DETECTION_LIB DetectionConfig configure(const cv::Mat& original,
+                                                            const Table& table,
+                                                            const ArucoMarkers& markers,
+                                                            const CameraIntrinsics& intrinsics);
+
+    EXPORT_BILLIARD_DETECTION_LIB State detect(const State& previousState, const cv::Mat& image);
+
+    class EXPORT_BILLIARD_DETECTION_LIB StateTracker {
+    public:
+        StateTracker(const std::shared_ptr<capture::CameraCapture>& capture,
+                     const std::shared_ptr<billiard::detection::DetectionConfig>& config,
+                     const std::function<State(const State& previousState, const cv::Mat&)>& detect); // TODO: Add Configuration for aruco initialization
+        ~StateTracker();
+
+        std::future<State> capture();
+
+    private:
+        std::promise<void> _exitSignal;
+        std::mutex _lock;
+        std::queue<std::promise<State>> _waiting;
+        std::thread _thread;
+
+        static void work(std::future<void> exitSignal,
+                         std::mutex& lock,
+                         const std::shared_ptr<capture::CameraCapture>& capture,
+                         const std::shared_ptr<billiard::detection::DetectionConfig>& config,
+                         const std::function<State (const State& previousState, const cv::Mat&)>& detect,
+                         std::queue<std::promise<State>>& waiting); // TODO: Pass configuration for auruco configuration
+    };
+
     struct EXPORT_BILLIARD_DETECTION_LIB DetectedMarkers {
         bool success;
         std::vector<int> markerIds;
@@ -78,12 +153,6 @@ namespace billiard::detection {
     EXPORT_BILLIARD_DETECTION_LIB DetectedMarkers detect(cv::Mat& image, const cv::Ptr<cv::aruco::Board>& board);
 
     EXPORT_BILLIARD_DETECTION_LIB void draw(cv::Mat& image, const DetectedMarkers& detection);
-
-    struct EXPORT_BILLIARD_DETECTION_LIB BoardPoseEstimation {
-        int markersUsed = 0;
-        cv::Vec3d rvec; // Rotation vector (Rodrigues)
-        cv::Vec3d tvec; // Translation vector
-    };
 
     /**
      * Estimates the pose of a board. According to the OpenCV documentation:
@@ -97,21 +166,6 @@ namespace billiard::detection {
     EXPORT_BILLIARD_DETECTION_LIB void drawAxis(cv::Mat& image,
                                                 const BoardPoseEstimation& pose,
                                                 const CameraIntrinsics& intrinsics);
-
-    struct EXPORT_BILLIARD_DETECTION_LIB WorldToModelCoordinates {
-        cv::Vec3d translation;
-    };
-
-    struct EXPORT_BILLIARD_DETECTION_LIB CameraToWorldCoordinateSystemConfig {
-        bool valid = false;
-        BoardPoseEstimation pose;
-        CameraIntrinsics intrinsics;
-        cv::Mat boardToCamera;
-        cv::Mat cameraToBoard;
-        cv::Vec3d cameraPosInWorldCoordinates;
-        cv::Point2d principalPoint;
-        double focalLength;
-    };
 
     EXPORT_BILLIARD_DETECTION_LIB CameraToWorldCoordinateSystemConfig configure(cv::Mat& image,
                                                                                 const cv::Ptr<cv::aruco::Board>& board,
@@ -130,12 +184,6 @@ namespace billiard::detection {
             const std::vector<cv::Point2d>& modelPoints,
             double z);
 
-    struct EXPORT_BILLIARD_DETECTION_LIB Plane {
-        cv::Vec3d point {0, 0, 0};
-        cv::Vec3d normal {0, 0, 1};
-        Plane(const cv::Vec3d& point, const cv::Vec3d& normal): point(point), normal(normal) {};
-    };
-
     /**
      * Translate image points to world points located on a plane
      */
@@ -143,4 +191,6 @@ namespace billiard::detection {
             const CameraToWorldCoordinateSystemConfig& config,
             const Plane& plane,
             const std::vector<cv::Point2d>& imagePoints);
+
+    EXPORT_BILLIARD_DETECTION_LIB State pixelToModelCoordinates(const DetectionConfig& config, const State& input);
 }
