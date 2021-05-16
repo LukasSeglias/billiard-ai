@@ -300,8 +300,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81478ec24d105f14587ec5ef1de91afb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Factor: 2.83
-  Translation: -0.525
+  Factor: 2.8
+  Translation: -0.4
   Mapping: 0
 --- !u!1 &705507993
 GameObject:

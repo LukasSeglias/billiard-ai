@@ -17,26 +17,26 @@ TEST(Realsense, tryout) {
     std::cout << "RealSense devices connected: " << ctx.query_devices().size() << std::endl;
 
     rs2::config cfg;
-    cfg.enable_stream(RS2_STREAM_COLOR, 1920, 1080, RS2_FORMAT_BGR8, 30);
+    cfg.enable_stream(RS2_STREAM_COLOR, 1280, 720, RS2_FORMAT_BGR8, 15);
 //    cfg.enable_stream(RS2_STREAM_INFRARED, 1280, 720, RS2_FORMAT_Y8, 30);
-    cfg.enable_stream(RS2_STREAM_DEPTH, 848, 480, RS2_FORMAT_Z16, 30);
+//    cfg.enable_stream(RS2_STREAM_DEPTH, 848, 480, RS2_FORMAT_Z16, 30);
 
     rs2::pipeline pipe;
     pipe.start(cfg);
 
-    cv::namedWindow("Depth", cv::WINDOW_AUTOSIZE);
+//    cv::namedWindow("Depth", cv::WINDOW_AUTOSIZE);
     cv::namedWindow("Color", cv::WINDOW_AUTOSIZE);
 //    cv::namedWindow("Infrared", cv::WINDOW_AUTOSIZE);
 
     while (cv::waitKey(1) < 0) {
         rs2::frameset data = pipe.wait_for_frames(); // Wait for next set of frames from the camera
 
-        rs2::colorizer color_map;
-        cv::Mat depth = toMat(data.get_depth_frame().apply_filter(color_map), CV_8UC3);
         cv::Mat color = toMat(data.get_color_frame(), CV_8UC3);
+        rs2::colorizer color_map;
+//        cv::Mat depth = toMat(data.get_depth_frame().apply_filter(color_map), CV_8UC3);
 //        cv::Mat infrared = toMat(data.get_infrared_frame(), CV_8UC1);
 
-        cv::imshow("Depth", depth);
+//        cv::imshow("Depth", depth);
         cv::imshow("Color", color);
 //        cv::imshow("Infrared", infrared);
     }
@@ -132,7 +132,7 @@ TEST(RealSense, getCalibrationParameters) {
 
         for (auto&& profile : sensor.get_stream_profiles()) {
 
-            if (profile.stream_type() == rs2_stream::RS2_STREAM_COLOR && profile.fps() == 30) {
+            if (profile.stream_type() == rs2_stream::RS2_STREAM_COLOR && profile.fps() == 15) {
 
                 if (auto video = profile.as<rs2::video_stream_profile>()) {
 
@@ -151,7 +151,7 @@ TEST(RealSense, getCalibrationParameters) {
 
 TEST(RealSense, screenshot) {
 
-    double scale = 0.5;
+    double scale = 1.0;
 
     billiard::capture::CameraCapture capture {};
 
@@ -160,7 +160,7 @@ TEST(RealSense, screenshot) {
         cv::namedWindow("Color", cv::WINDOW_AUTOSIZE);
         cv::namedWindow("Depth", cv::WINDOW_AUTOSIZE);
 
-        int screenshotNumber = 2;
+        int screenshotNumber = 100;
         while (true) {
             billiard::capture::CameraFrames frames = capture.read();
 

@@ -97,7 +97,7 @@ namespace billiard::detection {
         bool valid = false;
 
         // Scaling of input image
-        double scale = 0.5;
+        double scale = 1.0;
 
         int ballRadiusInPixel;
 
@@ -167,7 +167,7 @@ namespace billiard::detection {
                                                 const BoardPoseEstimation& pose,
                                                 const CameraIntrinsics& intrinsics);
 
-    EXPORT_BILLIARD_DETECTION_LIB CameraToWorldCoordinateSystemConfig configure(cv::Mat& image,
+    EXPORT_BILLIARD_DETECTION_LIB CameraToWorldCoordinateSystemConfig configure(const cv::Mat& image,
                                                                                 const cv::Ptr<cv::aruco::Board>& board,
                                                                                 const CameraIntrinsics& intrinsics);
 

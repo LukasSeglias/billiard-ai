@@ -12,7 +12,7 @@ namespace billiard::snooker {
         bool valid = false;
 
         // Scaling of input image
-        double scale = 0.5;
+        double scale = 1.0;
 
         // Error margin for ball radii
         double radiusErrorLow = 20 /* % (percent) */;

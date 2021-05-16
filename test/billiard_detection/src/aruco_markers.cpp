@@ -199,8 +199,6 @@ TEST(ArUcoMarkers, estimatePosesOfSingleMarkers) {
     }
 }
 
-
-
 TEST(ArUcoMarkers, realsense_estimatePosesOfSingleMarkers) {
 
     // Based on the tutorial on https://docs.opencv.org/4.5.1/d5/dae/tutorial_aruco_detection.html
@@ -275,7 +273,6 @@ TEST(ArUcoMarkers, realsense_estimatePosesOfSingleMarkers) {
         capture.close();
     }
 }
-
 
 TEST(DISABLED_ArUcoMarkers, buildArUcoBoard) {
 
@@ -387,7 +384,6 @@ static void onMouse( int event, int x, int y, int, void* ) {
     pointChanged = true;
 }
 
-
 /**
  * RealSense D435
  */
@@ -438,7 +434,7 @@ TEST(ArUcoMarkers, realsense_tryout_refactored) {
 
             imshow("Live", frame);
 
-            CameraToWorldCoordinateSystemConfig config = configure(frame, board, intrinsics);
+            CameraToWorldCoordinateSystemConfig config = billiard::detection::configure(frame, board, intrinsics);
             if (config.valid) {
 
                 // Input
@@ -538,7 +534,7 @@ TEST(ArUcoMarkers, tryout_refactored) {
     intrinsics.distCoeffs = getDistCoeffs();
     intrinsics.sensorSize = {0.0014, 0.0014 };
 
-    CameraToWorldCoordinateSystemConfig config = configure(frame, board, intrinsics);
+    CameraToWorldCoordinateSystemConfig config = billiard::detection::configure(frame, board, intrinsics);
     if (config.valid) {
 
         // Input

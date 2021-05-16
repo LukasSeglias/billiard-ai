@@ -10,4 +10,6 @@ target_include_directories(${PROJECT_NAME}
 
 add_subdirectory(src)
 
+target_compile_definitions(${PROJECT_NAME} PUBLIC
+        BILLIARD_DETECTION_IMPORT)
 target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCV_LIBS} glm billiard_detection)

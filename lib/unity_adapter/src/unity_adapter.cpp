@@ -8,6 +8,9 @@
 
 Debugger _debugger;
 
+bool LIVE = true;
+std::string IMAGE_PATH = "D:\\Dev\\billiard-ai\\cmake-build-debug\\test\\billiard_detection\\resources\\test_detection\\1_scaled_HD.png";
+
 ///////////////////////////////////////////////////////
 //// Event-Queues
 ///////////////////////////////////////////////////////
@@ -63,8 +66,6 @@ inline cv::Vec3d toVec3d(const Vec3& vec) {
 
 inline billiard::detection::CameraIntrinsics toIntrinsics(const CameraIntrinsics& camera);
 inline billiard::detection::ArucoMarkers createArucoMarkers(const ArucoMarkers& input);
-inline billiard::detection::Plane toPlane(const Plane& plane);
-inline billiard::detection::WorldToModelCoordinates toWorldToModelCoordinates(const WorldToModel& worldToModel);
 inline billiard::detection::Table toTable(const Table& table);
 
 void configuration(Configuration config) {
@@ -124,31 +125,28 @@ void configuration(Configuration config) {
                 + " worldToRail: " + std::to_string(table.worldToRail[0]) + ", " + std::to_string(table.worldToRail[1]) + ", " + std::to_string(table.worldToRail[2])
                 ).c_str());
 
-//    billiard::detection::Plane ballPlane = toPlane(config.ballPlane);
-//    _debugger("BallPlane created");
-
-//    billiard::detection::WorldToModelCoordinates worldToModel = toWorldToModelCoordinates(config.worldToModel);
-//    _debugger("worldToModel created");
-
     if (cameraCapture) {
         cameraCapture->close();
     }
 
-//    cameraCapture = std::make_shared<billiard::capture::CameraCapture>();
-//    if (cameraCapture->open()) {
-//        _debugger("[SUCCESS]: Opened camera capture");
-//    } else {
-//        _debugger("[ERROR]: Unable to open camera capture");
-//        return;
-//    }
-//
-//    int skippedFrames = 30;
-//    while (skippedFrames-- > 0) cameraCapture->read();
-//    billiard::capture::CameraFrames frames = cameraCapture->read();
-//    cv::Mat image = frames.color;
+    cv::Mat image;
+    if (LIVE) {
+        cameraCapture = std::make_shared<billiard::capture::CameraCapture>();
+        if (cameraCapture->open()) {
+            _debugger("[SUCCESS]: Opened camera capture");
+        } else {
+            _debugger("[ERROR]: Unable to open camera capture");
+            return;
+        }
 
-    cv::Mat image = cv::imread("D:\\Dev\\billiard-ai\\cmake-build-debug\\test\\billiard_detection\\resources\\test_detection\\1.png");
-    cv::imshow("image", image);
+        int skippedFrames = 30;
+        while (skippedFrames-- > 0) cameraCapture->read();
+        billiard::capture::CameraFrames frames = cameraCapture->read();
+        image = frames.color;
+    } else {
+        image = cv::imread(IMAGE_PATH);
+        cv::imshow("image", image);
+    }
 
     detectionConfig = std::make_shared<billiard::detection::DetectionConfig>(billiard::detection::configure(image, table, markers, intrinsics));
     if (detectionConfig->valid) {
@@ -165,17 +163,13 @@ void configuration(Configuration config) {
         return;
     }
 
-//    stateTracker = std::make_shared<billiard::detection::StateTracker>(cameraCapture,
-//                                                                       detectionConfig,
-//                                                                       billiard::snooker::detect);
+    if (LIVE) {
+        stateTracker = std::make_shared<billiard::detection::StateTracker>(cameraCapture,
+                                                                           detectionConfig,
+                                                                           billiard::snooker::detect);
+    }
 
     _debugger("All configuration mapped");
-}
-
-inline billiard::detection::WorldToModelCoordinates toWorldToModelCoordinates(const WorldToModel& worldToModel) {
-    return billiard::detection::WorldToModelCoordinates {
-            toVec3d(worldToModel.translation)
-    };
 }
 
 inline billiard::detection::Table toTable(const Table& table) {
@@ -186,13 +180,6 @@ inline billiard::detection::Table toTable(const Table& table) {
             table.arucoHeightAboveInnerTable,
             table.railWorldPointZComponent,
             toVec3d(table.worldToRail)
-    };
-}
-
-inline billiard::detection::Plane toPlane(const Plane& plane) {
-    return billiard::detection::Plane {
-            toVec3d(plane.point),
-            toVec3d(plane.normal)
     };
 }
 
@@ -219,34 +206,42 @@ inline billiard::detection::ArucoMarkers createArucoMarkers(const ArucoMarkers& 
     return markers;
 }
 
+inline void printState(const billiard::detection::State& state) {
+    _debugger(("[Detection]: Detected " + std::to_string(state._balls.size()) + " balls").c_str());
+    for (auto& ball : state._balls) {
+        _debugger(("[Detection]: Ball: " + ball._id + " " + ball._type + " at (" + std::to_string(ball._position[0]) + ", " + std::to_string(ball._position[1]) + ")").c_str());
+    }
+}
+
 void capture() {
     _debugger("[COMMAND]: Capture");
     // TODO: Capture state and update _currentState
     // TODO: Push _currentState to the animationChangedEventQueue
     // TODO: Hint, write a mapping function according to the existing "map" to create an animation from a state.
 
-    if (detectionConfig) {
+    if (LIVE) {
+        if (stateTracker) {
 
-        cv::Mat image = cv::imread("D:\\Dev\\billiard-ai\\cmake-build-debug\\test\\billiard_detection\\resources\\test_detection\\1.png");
+            auto stateFuture = stateTracker->capture();
+            stateFuture.wait();
+            auto state = stateFuture.get();
+            printState(state);
 
-        billiard::detection::State pixelState = billiard::snooker::detect(billiard::detection::State{}, image);
-        billiard::detection::State state = billiard::detection::pixelToModelCoordinates(*detectionConfig, pixelState);
-
-        _debugger(("[Detection]: Detected " + std::to_string(state._balls.size()) + " balls").c_str());
-        for (auto& ball : state._balls) {
-            _debugger(("[Detection]: Ball: " + ball._id + " " + ball._type + " at (" + std::to_string(ball._position[0]) + ", " + std::to_string(ball._position[1]) + ")").c_str());
+            _currentState = map(state);
         }
+    } else {
+        if (detectionConfig) {
 
-        _currentState = map(state);
+            cv::Mat image = cv::imread(IMAGE_PATH);
+
+            billiard::detection::State pixelState = billiard::snooker::detect(billiard::detection::State{}, image);
+            billiard::detection::State state = billiard::detection::pixelToModelCoordinates(*detectionConfig, pixelState);
+            printState(state);
+
+            _currentState = map(state);
+        }
     }
 
-    if (stateTracker) {
-
-//    auto stateFuture = stateTracker->capture();
-//    stateFuture.wait();
-//    auto state = stateFuture.get();
-
-    }
     _animationChangedEventQueue->push(_currentState);
 }
 
@@ -311,9 +306,11 @@ std::shared_ptr<RootObject> map(const billiard::detection::State& state) {
 Ball* map(const std::vector<billiard::detection::Ball>& ballStates) {
     Ball* balls = new Ball[ballStates.size()];
 
+    double scale = 0.001; // millimeters to meters
+
     for (int i = 0; i < ballStates.size(); i++) {
         auto& ballState = ballStates[i];
-        const Vec2& position = Vec2{ballState._position[0], ballState._position[1]};
+        const Vec2& position = Vec2{ballState._position[0] * scale, ballState._position[1] * scale};
         balls[i] = Ball{_strdup(ballState._type.c_str()), _strdup(ballState._id.c_str()), position, Vec2{0, 0}, true};
     }
     return balls;

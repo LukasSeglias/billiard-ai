@@ -189,8 +189,9 @@ namespace billiard::capture {
         }
 
         rs2::config cfg;
-        cfg.enable_stream(RS2_STREAM_COLOR, 1920, 1080, RS2_FORMAT_BGR8, 30);
-        cfg.enable_stream(RS2_STREAM_DEPTH, 848, 480, RS2_FORMAT_Z16, 30);
+//        cfg.enable_stream(RS2_STREAM_COLOR, 1920, 1080, RS2_FORMAT_BGR8, 30);
+        cfg.enable_stream(RS2_STREAM_COLOR, 1280, 720, RS2_FORMAT_BGR8, 15);
+//        cfg.enable_stream(RS2_STREAM_DEPTH, 848, 480, RS2_FORMAT_Z16, 30);
 
         camera = new Camera();
         if (camera->pipe.start(cfg)) {
@@ -221,14 +222,16 @@ namespace billiard::capture {
 
         rs2::frameset data = camera->pipe.wait_for_frames();
 
-        rs2::depth_frame depthFrame = data.get_depth_frame();
-        cv::Mat depth = toMat(depthFrame, CV_8UC1);
+//        rs2::depth_frame depthFrame = data.get_depth_frame();
+//        cv::Mat depth = toMat(depthFrame, CV_8UC1);
+        cv::Mat depth;
 
         cv::Mat colorizedDepth;
-        if (depthFrame && depthFrame.get_data() != nullptr) {
-            rs2::colorizer color_map;
-            colorizedDepth = toMat(depthFrame.apply_filter(color_map),CV_8UC3);
-        }
+//        cv::Mat colorizedDepth;
+//        if (depthFrame && depthFrame.get_data() != nullptr) {
+//            rs2::colorizer color_map;
+//            colorizedDepth = toMat(depthFrame.apply_filter(color_map),CV_8UC3);
+//        }
 
         cv::Mat color = toMat(data.get_color_frame(), CV_8UC3);
 

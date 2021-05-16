@@ -1,5 +1,14 @@
 #include <billiard_detection/billiard_detection.hpp>
 
+#ifndef BILLIARD_DETECTION_DEBUG_OUTPUT
+    #ifdef NDEBUG
+        #undef BILLIARD_DETECTION_DEBUG_OUTPUT
+    #endif
+    #ifndef NDEBUG
+        #define BILLIARD_DETECTION_DEBUG_OUTPUT 1
+    #endif
+#endif
+
 billiard::detection::StateTracker::StateTracker(const std::shared_ptr<capture::CameraCapture>& capture,
                                                 const std::shared_ptr<billiard::detection::DetectionConfig>& config,
                                                 const std::function<State(const State& previousState,
@@ -34,6 +43,14 @@ void billiard::detection::StateTracker::work(std::future<void> exitSignal,
           std::queue<std::promise<State>>& waiting) {
     State previousState;
     while (exitSignal.wait_for(std::chrono::nanoseconds(10)) == std::future_status::timeout) {
+#ifndef NDEBUG
+        lock.lock();
+        if (waiting.empty()) {
+            lock.unlock();
+            continue;
+        }
+        lock.unlock();
+#endif
         auto image = capture->read();
         auto state = detect(previousState, image.color);
         previousState = state;
@@ -326,8 +343,8 @@ namespace billiard::detection {
         double railToModelX = innerTableLength/2;
         double railToModelY = innerTableWidth/2;
 
-        double middlePocketRadius = 70;
-        double cornerPocketRadius = 70;
+        double middlePocketRadius = 50;
+        double cornerPocketRadius = 50;
 
         double pocketTop = innerTableWidth - railToModelY;
         double pocketBottom = 0.0 - railToModelY;

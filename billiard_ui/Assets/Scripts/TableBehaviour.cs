@@ -259,6 +259,7 @@ public class TableBehaviour : MonoBehaviour
 				textMesh.fontSize = 4;
 				textMesh.GetComponent<MeshRenderer >().enabled = false;
 				textObject.transform.SetParent(ballObject.transform, false);
+				textObject.transform.localPosition = new Vector3(0, -2, 0);
 				textObject.GetComponent<RectTransform>().sizeDelta = new Vector2(5, 2);
 				updateLocationText(ball.id, ballObject);
 				

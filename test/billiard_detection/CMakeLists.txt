@@ -13,6 +13,7 @@ add_custom_command(TARGET ${PROJECT_NAME}
 
         # Copy dependencies to binary folder
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_detection> ${PROJECT_BINARY_DIR}/
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_snooker> ${PROJECT_BINARY_DIR}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_capture> ${PROJECT_BINARY_DIR}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${realsense2_LIBRARY}> ${PROJECT_BINARY_DIR}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:gtest_main> ${PROJECT_BINARY_DIR}/
@@ -30,6 +31,7 @@ add_subdirectory(src)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
         BILLIARD_DETECTION_IMPORT
+        BILLIARD_SNOOKER_IMPORT
         BILLIARD_CAPTURE_IMPORT
         GTEST_LINKED_AS_SHARED_LIBRARY=1)
-target_link_libraries(${PROJECT_NAME} PRIVATE billiard_detection billiard_capture gtest gtest_main gmock gmock_main)
+target_link_libraries(${PROJECT_NAME} PRIVATE billiard_detection billiard_snooker billiard_capture gtest gtest_main gmock gmock_main)
