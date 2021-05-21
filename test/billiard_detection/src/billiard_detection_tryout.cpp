@@ -127,3 +127,96 @@ TEST(BallDetectionTests, snooker) {
     }
 
 }
+
+
+TEST(BallDetectionTests, snooker_write_detected_images) {
+
+    bool writeImages = false;
+    std::vector<std::string> imagePaths = {
+            "./resources/test_detection/1.png",
+            "./resources/test_detection/2.png",
+            "./resources/test_detection/3.png",
+            "./resources/test_detection/4.png",
+            "./resources/test_detection/5.png",
+            "./resources/test_detection/6.png",
+            "./resources/test_detection/7.png",
+            "./resources/test_detection/8.png",
+            "./resources/test_detection/9.png",
+            "./resources/test_detection/10.png",
+            "./resources/test_detection/11.png",
+            "./resources/test_detection/12.png",
+            "./resources/test_detection/13.png",
+            "./resources/test_detection/14.png",
+            "./resources/test_detection/15.png",
+            "./resources/test_detection/16.png",
+            "./resources/test_detection/17.png",
+            "./resources/test_detection/18.png",
+            "./resources/test_detection/19.png",
+            "./resources/test_detection/20.png",
+    };
+
+    cv::Size imageSize = getImageSize();
+    billiard::detection::Table table = getTable();
+    billiard::detection::ArucoMarkers markers = getMarkers();
+    billiard::detection::CameraIntrinsics intrinsics = getIntrinsics_realsense_hd();
+
+    std::shared_ptr<billiard::detection::DetectionConfig> detectionConfig;
+
+    for (int i = 0; i < imagePaths.size(); i++) {
+        std::string imagePath = imagePaths[i];
+        cv::Mat frame = imread(imagePath, cv::IMREAD_COLOR);
+        cv::resize(frame, frame, imageSize);
+
+        detectionConfig = std::make_shared<billiard::detection::DetectionConfig>(billiard::detection::configure(frame, table, markers, intrinsics));
+        if (!detectionConfig->valid) {
+            std::cout << "Unable to configure detection" << std::endl;
+            return;
+        }
+
+        if (!billiard::snooker::configure(*detectionConfig)) {
+            std::cout << "Unable to configure snooker detection" << std::endl;
+            return;
+        }
+
+        billiard::detection::State pixelState = billiard::snooker::detect(billiard::detection::State(), frame);
+        billiard::detection::State state = billiard::detection::pixelToModelCoordinates(*detectionConfig, pixelState);
+
+        for (auto& ball : pixelState._balls) {
+
+            cv::Point2d pixelPoint = cv::Point2d(ball._position.x, ball._position.y);
+            cv::Point integerPixelPoint{(int)pixelPoint.x, (int)pixelPoint.y};
+
+            int ballRadius = detectionConfig->ballRadiusInPixel;
+
+            cv::Mat frameCopy = frame.clone();
+            cv::circle(frameCopy, integerPixelPoint, 1, cv::Scalar(0, 100, 100), 1, cv::LINE_AA);
+            cv::circle(frameCopy, integerPixelPoint, ballRadius, cv::Scalar(0, 100, 100), 1, cv::LINE_AA);
+
+            float paddingFactor = 0.5;
+            float radius = (1.0f + paddingFactor) * ballRadius;
+
+            cv::Mat ballImage = frameCopy(cv::Rect{
+                    (int) (pixelPoint.x - radius),
+                    (int) (pixelPoint.y - radius),
+                    (int) (2 * radius),
+                    (int) (2 * radius)
+            });
+
+            cv::Mat ballImageEnlarged;
+            float scale = 16.0;
+            cv::resize(ballImage, ballImageEnlarged, cv::Size(), scale, scale, cv::INTER_CUBIC);
+
+            {
+                std::string filename = std::string("detected_balls/Image_") + std::to_string(i) + std::string("_ball_") + std::to_string(integerPixelPoint.x) + std::string("_") + std::to_string(integerPixelPoint.y) + std::string("_original.png");
+                if (writeImages) cv::imwrite(filename, ballImage);
+                if (!writeImages) cv::imshow(filename, ballImage);
+            }
+            {
+                std::string filename = std::string("detected_balls/Image_") + std::to_string(i) + std::string("_ball_") + std::to_string(integerPixelPoint.x) + std::string("_") + std::to_string(integerPixelPoint.y) + std::string("_larger.png");
+                if (writeImages) cv::imwrite(filename, ballImageEnlarged);
+                if (!writeImages) cv::imshow(filename, ballImageEnlarged);
+            }
+        }
+        if (!writeImages) cv::waitKey();
+    }
+}
