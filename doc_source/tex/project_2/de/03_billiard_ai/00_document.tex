@@ -2,6 +2,10 @@
 In diesem Kapitel werden die gewählte Architektur wie auch die bisher erarbeiteten theoretischen Ansätze behandelt.
 Weiterhin wird auf verschiedene Aspekte des Aufbaus und dessen Problematik eingegangen.
 
+
+\input{03_billiard_ai/01_setup}
+
+
 \section{Aufbau und Messung}\label{kap:aufbauMessung}
 Die Kamera wie auch der Projektor werden mittels eines Baugerüsts über dem Tisch platziert. Dieses ermöglicht die nötige
 Flexibilität, um die optischen Objekte unabhängig voneinander optimal auszurichten.
@@ -28,7 +32,7 @@ Um die Messung der Kugeln zu erläutern, muss zuerst das Koordinatensystem einge
 über eine Kamera aufgenommen und deren Position daher auch in einem Pixelkoordinatensystem bestimmt. Dies ist aus
 mehreren Gründen ungünstig. Einerseits soll die allgemeine Abhängigkeit zur Kamera vermieden werden, andererseits ist das
 Pixelkoordinatensystem für die Visualisierung nicht gut geeignet.\\
-Die Kugeln werden also in ein Modellkoordinatensystem übersetzt\footnote{Siehe Kapitel \ref{kap:koordinatenUmrechnung}}.
+Die Kugeln werden also in ein Modellkoordinatensystem übersetzt\footnote{Siehe Kapitel \ref{kap:model_coordinate_system}}.
 Bei diesem befindet sich der Ursprung in der Mitte des Tisches und die X- wie auch die Y-Achse bilden die Breite und Höhe
 in Millimeter ab.
 
@@ -75,5 +79,4 @@ folgenden:
     \item[billiard\textunderscore physics] Stellt Funktionalität bereit, um physikalische Berechnungen durchzuführen.
 \end{description}
 
-\section{Von Pixel zu Modellkoordinaten}\label{kap:koordinatenUmrechnung}
-TODO: Write ArUco
+\input{03_billiard_ai/02_model_coordinate_system}
