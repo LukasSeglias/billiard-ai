@@ -271,7 +271,7 @@ void state(State state) {
 Ball* map(const BallState* ballState, int ballSize);
 
 std::shared_ptr<RootObject> map(const State& state) {
-    KeyFrame keyFrame{0.0, map(state.balls, state.ballSize), state.ballSize};
+    KeyFrame keyFrame{0.0, map(state.balls, state.ballSize), state.ballSize, false};
 
     KeyFrame keyFrames[] = {
             keyFrame,
@@ -293,7 +293,7 @@ Ball* map(const BallState* ballState, int ballSize) {
 Ball* map(const std::vector<billiard::detection::Ball>& ballStates);
 
 std::shared_ptr<RootObject> map(const billiard::detection::State& state) {
-    KeyFrame keyFrame{0.0, map(state._balls), static_cast<int>(state._balls.size())};
+    KeyFrame keyFrame{0.0, map(state._balls), static_cast<int>(state._balls.size()), false};
 
     KeyFrame keyFrames[] = {
             keyFrame,
@@ -324,21 +324,21 @@ std::shared_ptr<RootObject> testState() {
             Ball {
                     "WHITE",
                     "WHITE",
-                    Vec2 {-0.5, 0.5},
+                    Vec2 {-0.4, 0.4},
                     Vec2 {0.172627, -0.172627},
                     true
             },
             Ball {
                     "RED",
                     "RED_1",
-                    Vec2 {-0.2, 0.2},
+                    Vec2 {-0.1, 0.1},
                     Vec2 {0, 0},
                     true
             },
             Ball {
                     "RED",
                     "RED_2",
-                    Vec2 {0.2, 0.2},
+                    Vec2 {0.1, 0.1},
                     Vec2 {0, 0},
                     true
             }
@@ -348,21 +348,21 @@ std::shared_ptr<RootObject> testState() {
             Ball {
                     "WHITE",
                     "WHITE",
-                    Vec2 {-0.23677, 0.23677},
+                    Vec2 {-0.13677, 0.13677},
                     Vec2 {0.090603, -0.090603},
                     true
             },
             Ball {
                     "RED",
                     "RED_1",
-                    Vec2 {-0.2, 0.2},
+                    Vec2 {-0.1, 0.1},
                     Vec2 {0, 0},
                     true
             },
             Ball {
                     "RED",
                     "RED_2",
-                    Vec2 {0.2, 0.2},
+                    Vec2 {0.1, 0.1},
                     Vec2 {0, 0},
                     false
             }
@@ -372,21 +372,21 @@ std::shared_ptr<RootObject> testState() {
             Ball {
                     "WHITE",
                     "WHITE",
-                    Vec2 {-0.23677, 0.23677},
+                    Vec2 {-0.13677, 0.13677},
                     Vec2 {0, 0},
                     true
             },
             Ball {
                     "RED",
                     "RED_1",
-                    Vec2 {-0.2, 0.2},
+                    Vec2 {-0.1, 0.1},
                     Vec2 {0.090603, -0.090603},
                     true
             },
             Ball {
                     "RED",
                     "RED_2",
-                    Vec2 {0.2, 0.2},
+                    Vec2 {0.1, 0.1},
                     Vec2 {0, 0},
                     false
             }
@@ -396,21 +396,21 @@ std::shared_ptr<RootObject> testState() {
             Ball {
                     "WHITE",
                     "WHITE",
-                    Vec2 {-0.23677, 0.23677},
+                    Vec2 {-0.13677, 0.13677},
                     Vec2 {0, 0},
                     true
             },
             Ball {
                     "RED",
                     "RED_1",
-                    Vec2 {-0.099921, 0.099921},
+                    Vec2 {0.000079, -0.000079},
                     Vec2 {0, 0},
                     false
             },
             Ball {
                     "RED",
                     "RED_2",
-                    Vec2 {0.2, 0.2},
+                    Vec2 {0.1, 0.1},
                     Vec2 {0, 0},
                     false
             }
@@ -420,21 +420,21 @@ std::shared_ptr<RootObject> testState() {
             Ball {
                     "WHITE",
                     "WHITE",
-                    Vec2 {-0.23677, 0.23677},
+                    Vec2 {-0.13677, 0.13677},
                     Vec2 {0, 0},
                     true
             },
             Ball {
                     "RED",
                     "RED_1",
-                    Vec2 {-0.099921, 0.099921},
+                    Vec2 {0.000079, -0.000079},
                     Vec2 {0, 0},
                     false
             },
             Ball {
                     "RED",
                     "RED_2",
-                    Vec2 {0.2, 0.2},
+                    Vec2 {0.1, 0.1},
                     Vec2 {0, 0},
                     true
             }
@@ -444,21 +444,21 @@ std::shared_ptr<RootObject> testState() {
             Ball {
                     "WHITE",
                     "WHITE",
-                    Vec2 {-0.23677, 0.23677},
+                    Vec2 {-0.13677, 0.13677},
                     Vec2 {0, 0},
                     true
             },
             Ball {
                     "RED",
                     "RED_1",
-                    Vec2 {-0.099921, 0.099921},
+                    Vec2 {0.000079, -0.000079},
                     Vec2 {0, 0},
                     false
             },
             Ball {
                     "RED",
                     "RED_2",
-                    Vec2 {0.2, 0.2},
+                    Vec2 {0.1, 0.1},
                     Vec2 {0, 0},
                     false
             }
@@ -468,32 +468,38 @@ std::shared_ptr<RootObject> testState() {
             KeyFrame {
                 0,
                 balls1,
-                3
+                3,
+                true
             },
             KeyFrame {
                 2,
                 balls2,
-                3
+                3,
+                false
             },
             KeyFrame {
                 2,
                 balls3,
-                3
+                3,
+                false
             },
             KeyFrame {
                 4.20918,
                 balls4,
-                3
+                3,
+                false
             },
             KeyFrame {
                 4.20918,
                 balls5,
-                3
+                3,
+                false
             },
             KeyFrame {
                 4.3,
                 balls6,
-                3
+                3,
+                false
             }
     };
 

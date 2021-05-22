@@ -20,6 +20,7 @@ public class KeyFrame
 {
     public double time;
     public Ball[] balls;
+	public bool firstFrame;
 }
 
 [Serializable]

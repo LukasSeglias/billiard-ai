@@ -22,6 +22,7 @@ public class TableBehaviour : MonoBehaviour
 	public StretchingBehaviour HeightStretching;
 	public StretchingBehaviour WidthStretching;
 	public float Scale = 1.0f;
+	public GameObject Queue;
 	
 	private RootObject root = new RootObject();
 	private Animator animator;
@@ -36,6 +37,7 @@ public class TableBehaviour : MonoBehaviour
     void Start()
     {
 		SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainScene"));
+		Queue.SetActive(false);
 		
 		foreach(var entry in Materials)
         {
@@ -84,7 +86,7 @@ public class TableBehaviour : MonoBehaviour
 		}
 		
 		if (animator == null && animations.Length > 0) {
-			animator = new Animator(root, animations[animationIndex].keyFrames, mappedMaterials, config, HeightStretching, WidthStretching, Scale);
+			animator = new Animator(root, animations[animationIndex].keyFrames, mappedMaterials, config, HeightStretching, WidthStretching, Scale, Queue);
 		}
 		
 		if (Input.GetKeyDown(KeyCode.Space)) {
@@ -228,21 +230,30 @@ public class TableBehaviour : MonoBehaviour
 	
 	private class Animator {
 		
+		private static readonly float QUEUE_DIST = 0.1f; // 10 cm
+		private static readonly float QUEUE_DISPLAY_TIME = 1f; // 2s
+		
 		private readonly KeyFrame[] frames;
 		private readonly Dictionary<string, GameObject> ballObjects = new Dictionary<string, GameObject>();
 		private readonly List<GameObject> lines = new List<GameObject>();
 		private readonly double endTime;
 		private readonly StretchingBehaviour heightStretching;
 		private readonly StretchingBehaviour widthStretching;
+		private readonly GameObject queue;
+		private readonly float scale;
+		
 		private int startFrameIndex;
+		private bool animateQueue;
 		private double time;
 		private bool activeByDefinition = true;
 		
 		public Animator(RootObject root, KeyFrame[] frames, Dictionary<string, Material> mappedMaterials, Configuration config,
-			StretchingBehaviour heightStretching, StretchingBehaviour widthStretching, float scale) {
+			StretchingBehaviour heightStretching, StretchingBehaviour widthStretching, float scale, GameObject queue) {
 			this.frames = frames;
 			this.heightStretching = heightStretching;
 			this.widthStretching = widthStretching;
+			this.queue = queue;
+			this.scale = scale;
 			foreach (var ball in frames[0].balls) {
 				var ballObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 				ballObject.GetComponent<MeshRenderer>().material = mappedMaterials[ball.type];
@@ -251,7 +262,7 @@ public class TableBehaviour : MonoBehaviour
 				ballInfo.type = ball.type;
 				ballObject.transform.position = position(convert(ball.position, 0), heightStretching, widthStretching);
 				float radius = config.radius;
-				ballObject.transform.localScale = new Vector3((float) radius/0.5f * scale, (float) radius/0.5f * scale, (float) radius/0.5f * scale);
+				ballObject.transform.localScale = new Vector3((float) radius, (float) radius, (float) radius) * 2 * scale;
 				
 				GameObject textObject = new GameObject();
 				textObject.name = ball.id + "_Position";
@@ -306,6 +317,11 @@ public class TableBehaviour : MonoBehaviour
 		public void reset() {
 			this.time = 0;
 			this.startFrameIndex = 0;
+			this.animateQueue = true;
+			
+			KeyFrame start = this.frames[this.startFrameIndex];
+			KeyFrame end = this.frames[this.startFrameIndex + 1];
+			updateBalls(start, end, 0);
 		}
 		
 		public void delete() {
@@ -330,20 +346,18 @@ public class TableBehaviour : MonoBehaviour
 			if (!isFinished()) {
 				KeyFrame start = this.frames[this.startFrameIndex];
 				KeyFrame end = this.frames[this.startFrameIndex + 1];
-				double duration = end.time - start.time;
-				double timeDeltaInAnimationWindow = time - start.time;
-					
-				foreach (var startBall in start.balls) {
-					var ballObject = ballObjects[startBall.id];
-					if (startBall.visible) {
-						var endBall = findBall(startBall.id, end);
-						
-						ballObject.SetActive(true);
-						updatePosition(startBall, endBall, ballObject, duration, timeDeltaInAnimationWindow);
-						updateLocationText(startBall.id, ballObject);
-					} else {
-						ballObject.SetActive(false);
+				
+				if (start.firstFrame && animateQueue) {
+					queue.SetActive(true);
+					animateQueue = doAnimateQueue(this.time, start);
+					if (!animateQueue) {
+						this.time = 0;
 					}
+				} else {
+					if (this.time >= QUEUE_DISPLAY_TIME) {
+						queue.SetActive(false);
+					}
+					updateBalls(start, end, time);
 				}
 			} else {
 				KeyFrame end = this.frames[this.startFrameIndex + 1];
@@ -370,6 +384,68 @@ public class TableBehaviour : MonoBehaviour
 				var textObject = entry.Value.transform.Find(entry.Key + "_Position").gameObject;
 				textObject.GetComponent<TMPro.TextMeshPro>().GetComponent<MeshRenderer>().enabled = !textObject.GetComponent<TMPro.TextMeshPro>().GetComponent<MeshRenderer>().enabled;
 			}
+		}
+		
+		private void updateBalls(KeyFrame start, KeyFrame end, double time) {
+			double duration = end.time - start.time;
+			double timeDeltaInAnimationWindow = time - start.time;
+						
+			foreach (var startBall in start.balls) {
+				var ballObject = ballObjects[startBall.id];
+				if (startBall.visible) {
+					var endBall = findBall(startBall.id, end);
+							
+					ballObject.SetActive(true);
+					updatePosition(startBall, endBall, ballObject, duration, timeDeltaInAnimationWindow);
+					updateLocationText(startBall.id, ballObject);
+				} else {
+					ballObject.SetActive(false);
+				}
+			}	
+		}
+		
+		private bool doAnimateQueue(double time, KeyFrame start) {
+			Ball whiteBall = null;
+			foreach (var ball in start.balls) {
+				if (ball.type == "WHITE") {
+					whiteBall = ball;
+					break;
+				}
+			}
+			
+			if (whiteBall == null) {
+				return false;
+			}
+			
+			var endSpeed = convert(whiteBall.velocity, 0);
+			var direction = Vector3.Normalize(endSpeed);
+			float radius = (ballObjects["WHITE"].transform.localScale.x / scale) / 2;
+			
+			var startDirection = direction * (QUEUE_DIST + radius);
+			direction = direction * (QUEUE_DIST);
+			var startPos = convert(whiteBall.position, 0) - startDirection;
+			var endPos = startPos + direction;
+			// endPos = a/2 * t^2 + startPos
+			// endPos = (endSpeed / t)/2 * t^2 + startPos
+			// endPos = (endSpeed / 2*t) * t^2 + startPos
+			// endPos = (endSpeed / 2) * t + startPos
+			// endPos - startPos = (endSpeed / 2) * t
+			// (endPos - startPos)/(endSpeed / 2) = t
+			var totalTime = Math.Abs((endPos - startPos).magnitude / (endSpeed / 2).magnitude);
+			var a = endSpeed / totalTime;
+			time = Math.Min(time, totalTime);
+			var currentPos = a / 2 * (float)(time * time) + startPos;
+			
+			float degrees = (float)(180 / Math.PI) * (float) Math.Acos(Vector3.Dot(new Vector3(1, 0, 0), endSpeed) / (new Vector3(1, 0, 0).magnitude * endSpeed.magnitude));
+			queue.transform.rotation = Quaternion.Euler(0, 0, degrees);
+			
+			float lengthToMove = queue.transform.localScale.y;
+			var toMove = Vector3.Normalize(endSpeed) * lengthToMove;
+			queue.transform.position = position(currentPos, heightStretching, widthStretching) - toMove;
+			
+			bool isFinished = time == totalTime;
+			
+			return !isFinished;
 		}
 		
 		private void updateLocationText(string id, GameObject ball) {
@@ -401,7 +477,7 @@ public class TableBehaviour : MonoBehaviour
 		private void updatePosition(Ball start, Ball end, GameObject gameObject, double duration, double timeDelta) {
 			Vector3 startVelocity = convert(start.velocity,0.0f);
 			Vector3 endVelocity = convert(end.velocity,0.0f);
-			Vector3 a = (endVelocity - startVelocity) * (float)(1/duration);
+			Vector3 a = duration == 0.0f ? new Vector3(0.0f, 0.0f, 0.0f) : (endVelocity - startVelocity) * (float)(1/duration);
 			gameObject.transform.position = position(0.5f * a * (float)(timeDelta * timeDelta) + startVelocity * (float)timeDelta + convert(start.position, 0),
 				heightStretching, widthStretching);			
 		}

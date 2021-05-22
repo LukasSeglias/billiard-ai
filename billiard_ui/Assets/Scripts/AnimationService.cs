@@ -110,6 +110,7 @@ public class AnimationService : MonoBehaviour
 		public double time;
 		public IntPtr balls;
 		public int ballSize;
+		[MarshalAs(UnmanagedType.I1)] public bool firstFrame;
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
@@ -377,6 +378,7 @@ public class AnimationService : MonoBehaviour
 		KeyFrame result = new KeyFrame();
 		result.balls = new Ball[from.ballSize];
 		result.time = from.time;
+		result.firstFrame = from.firstFrame;
 		Ball_t[] balls = GetNativeArray<Ball_t>(from.balls, from.ballSize);
 		
 		for(int i = 0; i < from.ballSize; i++) {

@@ -45,24 +45,27 @@ Ball& Ball::operator=(const Ball& other) noexcept {
     return *this;
 }
 
-KeyFrame::KeyFrame() : time(0), ballSize(0), balls(nullptr) {
+KeyFrame::KeyFrame() : time(0), ballSize(0), balls(nullptr), firstFrame(false) {
 }
 
-KeyFrame::KeyFrame(double time, Ball balls[], int ballSize) : time(time), ballSize(ballSize), balls(nullptr) {
+KeyFrame::KeyFrame(double time, Ball balls[], int ballSize, bool firstFrame) : time(time), ballSize(ballSize),
+                                                                               balls(nullptr), firstFrame(firstFrame) {
     this->balls = new Ball[ballSize];
     for (int i = 0; i < ballSize; i++) {
         this->balls[i] = Ball{std::move(balls[i])};
     }
 }
 
-KeyFrame::KeyFrame(const KeyFrame& other) noexcept : time(other.time), ballSize(other.ballSize), balls(nullptr) {
+KeyFrame::KeyFrame(const KeyFrame& other) noexcept: time(other.time), ballSize(other.ballSize), balls(nullptr),
+                                                    firstFrame(other.firstFrame) {
     this->balls = new Ball[ballSize];
     for (int i = 0; i < ballSize; i++) {
         this->balls[i] = Ball{other.balls[i]};
     }
 }
 
-KeyFrame::KeyFrame(KeyFrame&& other) noexcept : time(other.time), ballSize(other.ballSize), balls(other.balls) {
+KeyFrame::KeyFrame(KeyFrame&& other) noexcept: time(other.time), ballSize(other.ballSize), balls(other.balls),
+                                               firstFrame(other.firstFrame) {
     other.balls = nullptr;
 }
 
@@ -71,6 +74,7 @@ KeyFrame& KeyFrame::operator=(KeyFrame&& other) noexcept {
     ballSize = other.ballSize;
     balls = other.balls;
     other.balls = nullptr;
+    firstFrame = other.firstFrame;
     return *this;
 }
 
@@ -84,6 +88,7 @@ KeyFrame& KeyFrame::operator=(const KeyFrame& other) noexcept {
     for (int i = 0; i < ballSize; i++) {
         this->balls[i] = Ball{other.balls[i]};
     }
+    firstFrame = other.firstFrame;
 
     return *this;
 }

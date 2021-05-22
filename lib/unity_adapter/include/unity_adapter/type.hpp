@@ -116,7 +116,7 @@ extern "C" {
 
     struct EXPORT_UNITY_ADAPTER_LIB KeyFrame {
         KeyFrame();
-        KeyFrame(double time, Ball balls[], int ballSize);
+        KeyFrame(double time, Ball balls[], int ballSize, bool firstFrame);
         KeyFrame(const KeyFrame& other) noexcept;
         KeyFrame(KeyFrame&& other) noexcept;
         KeyFrame& operator=(KeyFrame&& other) noexcept;
@@ -126,6 +126,7 @@ extern "C" {
         double time;
         Ball* balls;
         int ballSize;
+        bool firstFrame;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB AnimationModel {
