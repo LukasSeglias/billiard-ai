@@ -50,14 +50,12 @@ Vorzeichen über den Quadranten bestimmt.
 \end{figure}
 
 \section{Architektur}
-Die eigentliche Funktionalität wird in einer Core-Library untergebracht, welche nativ in C++ entwickelt wird. Das
-Endprodukt soll aber weitaus mehr zu bieten haben, wie aus den Zielen ersichtlich wird. Deswegen wird in Unity eine
-Interaktionsmöglichkeit geschaffen, worüber der Benutzer einerseits die Resultate visualisiert erhält und
-andererseits der Core-Library seine nächsten Schritte mitteilen kann. Um dies zu erreichen, wird eine weitere native
-Komponente erstellt, welche die Interaktion zwischen Unity und der Core-Library ermöglicht. Es ist dies eine C/C++-Bibliothek,
-die ein C-Interface bereitstellt, welches in Unity geladen wird. Unity selbst erhält ebenfalls eine Abstraktionsschicht,
-um die Nativen auf die Applikationsmodelle zu mappen. Eine Darstellung kann in Abbildung \ref{fig:top-level-architecture} entnommen
-werden.
+Die eigentliche Funktionalität der Bildanalyse und Suche wird in einer Core-Library untergebracht, welche nativ in C++ entwickelt wird.
+Die Anzeige der Hilfestellungen für den Spieler soll mithilfe von Unity erfolgen. Unity stellt die Schnittstelle zwischen
+dem Spieler und der ganzen Applikation dar und muss sich daher mit der Core-Library austauschen.
+Dafür wird eine C/C++-Bibliothek entwickelt, die ein C-Interface zur Core-Library bereitstellt.
+Unity lädt diese Bibliothek und wandelt erhaltene native Objekte in Objekte um, welche in Unity verwendet werden können.
+Eine Darstellung kann in Abbildung \ref{fig:top-level-architecture} entnommen werden.
 
 \begin{figure}[h!]
     \begin{center}
@@ -67,15 +65,17 @@ werden.
     \label{fig:top-level-architecture}
 \end{figure}
 
-Die Core-Library selbst besteht aus mehreren Teilstücken. Es sind dies namentlich mitsamt Funktionalität die
-folgenden:
+Die Core-Library selbst besteht aus den folgenden Komponenten:
 \begin{description}
-    \item[billiard\textunderscore capture] Erfasst den aktuellen Spielstand und stellt diesen im OpenCV-Format bereit.
+    \item[billiard\textunderscore capture] Dient als Schnittstelle zur Kamera und stellt die Bilder im OpenCV-Format bereit.
     \item[billiard\textunderscore detection] Erstellt aus dem Spielstand eine interne Repräsentation, welchen den Status beschreibt.
+    \item[billiard\textunderscore snooker] Enthält Snooker-spezifische Funktionalität, u.a. die Erkennung der Snooker-Kugeln auf dem Billiardtisch.
     \item[billiard\textunderscore search] Verwendet den aktuellen Status wie auch eine zusätzliche Such-Beschreibung, um einen optimalen
     Stoss zu berechnen.
     \item[billiard\textunderscore physics] Stellt Funktionalität bereit, um physikalische Berechnungen durchzuführen.
 \end{description}
+
+Für die Umsetzung der Core-Library wird OpenCV\footnote{Siehe https://opencv.org} 5.4.2 verwendet.
 
 \input{03_billiard_ai/02_model_coordinate_system}
 
