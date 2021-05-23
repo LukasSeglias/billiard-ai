@@ -72,7 +72,15 @@ P_{C,z} = f\\
 P_C = \begin{pmatrix}P_{C,x}\\P_{C,y}\\P_{C,z}\end{pmatrix}
 \end{align}
 
-% TODO: evtl. Bild einfügen (dieses wäre gut: https://learnopencv.com/geometry-of-image-formation/)
+Abbildung \ref{fig:camera_projection_learnopencv} zeigt das Bildkoordinatensystem und stammt
+von \cite{learnopencv:geometry_of_image_formation},
+wo eine ausführlichere Beschreibung der intrinsischen und extrinsischen Kameramatrix entnommen werden kann.
+
+\begin{figure}[h!]
+    \includegraphics[width=0.8\linewidth]{../common/resources/coordinate_systems/camera_projection_learnopencv.png}
+    \caption{Bildkoordinatensystem. Bildquelle: \cite{learnopencv:geometry_of_image_formation}}
+    \label{fig:camera_projection_learnopencv}
+\end{figure}
 
 Damit ist diese Transformation abgeschlossen und der Punkt in Kamerakoordinaten kann in Weltkoordianten übersetzt werden.
 
@@ -80,7 +88,7 @@ Damit ist diese Transformation abgeschlossen und der Punkt in Kamerakoordinaten 
 
 Der Punkt $P_C$ in Kamerakoordinaten muss nun in die reale Welt überführt werden. Da der Punkt $P_C$ relativ zur Kamera
 positioniert ist, muss die Position der Kamera in der realen Welt bestimmt werden.
-Somit braucht es eine \emph{pose estimation} der Kamera, d.H. die Position und Orientierung der Kamera in der realen Welt müssen bestimmt werden.
+Somit braucht es eine \emph{pose estimation} der Kamera, d.h. die Position und Orientierung der Kamera in der realen Welt müssen bestimmt werden.
 Eine \emph{pose estimation} benötigt eine kalibrierte Kamera und ein Objekt bekannte Grösse, welches im Bild erkannt werden kann.
 
 Als Objekt bekannter Grösse und Position wurde ein ArUco-Board \cite{opencv:detection_of_aruco_boards} mit vier Markern verwendet.
@@ -166,10 +174,10 @@ C_W = E^{-1} \cdot C_C\\
 P_W = E^{-1} \cdot P_C\\
 \vec{q} = C_W\\
 \vec{v} = P_W - C_W\\
-L: \vec{B_W} = \vec{q} + \lambda \cdot \vec{v}\\
+L: B_W = \vec{q} + \lambda \cdot \vec{v}\\
 \vec{a} = \begin{pmatrix}0\\0\\H\end{pmatrix}\\
 \vec{n} = \begin{pmatrix}0\\0\\1\end{pmatrix}\\
-\Sigma: (\vec{B_W} - \vec{a}) \cdot \vec{n} = 0\\
+\Sigma: (B_W - \vec{a}) \cdot \vec{n} = 0\\
 \end{align}
 
 Durch Einsetzen der Liniengleichung in die Ebenengleichung kann der Schnittpunkt ermittelt werden.
@@ -210,11 +218,11 @@ ArUco boards und dessen Verschiebung zum Bandenursprung klar getrennt ist.
     \label{fig:table_world_to_rail}
 \end{figure}
 
-
-Wenn die Verschiebung von Welt-Ursprung zu Banden-Ursprung $T_{wb} = (\Delta x, \Delta y)$, dann ist
+Wenn die Verschiebung von Welt-Ursprung zu Banden-Ursprung $T_{wb} = (\Delta x, \Delta y, 0)$ ist, dann ist
 die Kugelposition in Bandenkoordinaten $B_R$:
 
 \begin{align}
+B_R = B_W + T_{wb}\\
 B_R = B_W + \begin{pmatrix}\Delta x\\\Delta y\\0\end{pmatrix}
 \end{align}
 
@@ -248,10 +256,58 @@ gemessen werden, siehe Abbildung \ref{fig:table_inner_lengths}.
 Wenn der Spielbereich die Länge $L$ und Breite $B$ hat, dann ist die Kugelposition in Modellkoordinaten $B_M$:
 
 \begin{align}
-\Delta x = \frac{L}{2}\\
-\Delta y = \frac{B}{2}\\
-B_M = B_R - \begin{pmatrix}\Delta x\\\Delta y\\0\end{pmatrix}
+\Delta x = - \frac{L}{2}\\
+\Delta y = - \frac{B}{2}\\
+T_{bm} = \begin{pmatrix}\Delta x\\\Delta y\\0\end{pmatrix}
+B_M = B_R + T_{bm}
 \end{align}
 
 Somit konnte die Kugelposition in Pixelkoordinaten in ein Modellkoordinatensystem umgewandelt werden, welches für
 die weitere Verarbeitung von Nutzen ist.
+
+\subsection{Modellkoordinaten zu Pixelkoordinaten}\label{kap:model_to_pixel}
+
+Im Rahmen der Erkennung der Kugeln auf einem Bild ist es von Nutzen, die Pixlekoordinate einer Modellkoordinate
+zu bestimmen. Beispielsweise kann der Radius der Kugeln in Pixel bestimmt werden, wenn die Länge des Tischs und der Radius
+der Kugeln in Millimeter bekannt sind. Dies ist nützlich, da somit die genaue Pixelgrösse der Kugeln nicht fix hinterlegt sein muss.
+
+Um dies zu bewerkstelligen, müssen einige der zu Beginn des Kapitels aufgeführten Transformationen rückgängig gemacht werden.
+Die totwendigen Schritte sind die folgenden:
+\begin{enumerate}
+  \item Modellkoordinaten zu Bandenkoordinaten
+  \item Bandenkoordinaten zu Weltkoordinaten
+  \item Weltkoordinaten zu Kamerakoordinaten
+  \item Weltkoordinaten zu Pixelkoordinaten
+\end{enumerate}
+
+Die Umwandlung von Modell- zu Bandenkoordinaten und von Banden- zu Weltkoordinaten sind die inversen Translationen, die
+in den Abschnitten \ref{kap:rail_to_model}, resp. \ref{kap:world_to_rail}, beschrieben wurden.
+
+Der Schritt von Welt- zu Pixelkoordinaten erfolgt direkt über die OpenCV-Funktion
+\emph{projectPoints} \cite{opencv:projectPoints_function},
+welche die extrinsische Kameramatrix, die intrinsische Kameramatrix und die Verzerrungskoeffizienten erfordert.
+Im Prinzip wendet die Funktion die extrinsische, gefolgt von der intrinsischen Kameramatrix auf die Weltkoordinaten an,
+führt die projektive Abbildung (\emph{perspective divide}) aus und wendet die Verzerrung an, um Pixelkoordinaten zu erhalten.
+
+\subsection{Kugelradius in Pixel}\label{kap:ballradius_in_pixel}
+
+Mithilfe des in Abschnitt \ref{kap:model_to_pixel} beschriebenen Algorithmus kann eine Modellkoordinate
+in eine Pixelkoordinate überführt werden.
+Der Radius der Kugel in Millimeter und die Länge des Spielbereichs (Länge zwischen den zwei kürzeren Banden) in Millimeter
+können genutzt werden, um den Pixelradius der Kugel zu bestimmen.
+Dazu werden zwei Punkte des Modellkoordinatensystems gewählt, $R_1$ und $R_2$, welche auf den gegenüberliegenden Banden
+im Abstand $L$ liegen.
+Sei $f(P_M)$ die Funktion, welche eine Modellkoordinate in eine Pixelkoordinate übersetzt,
+dann gilt für den Kugelradius $x$ in Pixel:
+
+\begin{align}
+l = \frac{L}{2}\\
+R_1 = \begin{pmatrix}-l\\0\\0\end{pmatrix}\\
+R_2 = \begin{pmatrix}l\\0\\0\end{pmatrix}\\
+P_1 = f(R_1)\\
+P_2 = f(R_2)\\
+\lambda = \frac{P_2 - P_1}{L}
+x = R \cdot \lambda
+\end{align}
+
+Dabei handelt es sich bei $\lambda$ um den Faktor Pixel pro Millimeter.
