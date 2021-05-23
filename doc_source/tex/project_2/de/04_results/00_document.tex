@@ -34,7 +34,13 @@ Der Radius setzt sich aus dem Fehler in X- wie auch in Y-Richtung zusammen. Er w
 \end{align}
 Zusätzlich muss noch der Fehler des Messgeräts berücksichtigt werden, welcher mit $\pm 1.5mm$ angegeben wird. Da dieser
 Fehler sowohl in X- wie auch Y-Richtung vorkommen kann, liegt der maximale Messfehler bei $\sqrt{1.5^2 + 1.5^2} = 2.12mm$. Somit liegt
-der Gesamtfehlerradius bei $4.12mm$, wobei allfällige Messfehler von Hand nicht berücksichtigt werden.
+der Gesamtfehlerradius bei $4.12mm$, wobei allfällige Messfehler von Hand nicht berücksichtigt werden. Wichtig zu beachten ist
+ebenfalls, dass der Kugelmittelpunkt von der Core-Library subpixelgenau bestimmt wird. Die Grundwahrheit wiederum wird in
+ganzen Pixel angegeben. So kommt eine weitere Abweichung dazu, welche maximal $0.983$ mm beträgt\footnote{Für Herleitung siehe Anhang \ref{anhang:fehler:grundwahrheit}},
+sollte das erkannte Subpixel zum Grundwahrheitspixel gehören.
+Diese Abweichung ist nun aber kein Fehler der Detektion, sondern der Grundwarheit an sich. Der Fehler könnte also um diesen
+Maximalwert reduziert werden. Darauf wird aber im Folgenden verzichtet, da lediglich der Worst-Case betrachtet wird. Es wird
+also angenommen, dass die Grundwahrheit genauer ist, als die Detektion.
 
 Um die Genauigkeit zu messen, wurden mehrere Testbilder\footnote{Alle Testbilder sind im Anhang \ref{anhang:uebersetzungsgenauigkeit:testbilder} ersichtlich}
 erstellt. Auf diesen ist jeweils eine Kugel ersichtlich, von der

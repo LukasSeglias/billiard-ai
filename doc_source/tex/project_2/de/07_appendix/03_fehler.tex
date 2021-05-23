@@ -105,3 +105,38 @@ auf maximal die halbe Tischlänge gekürzt und die Abweichung sinkt auf $27.31mm
 Es wird nun eine Länge des Fehlervektors gesucht, der auf eine Distanz von $900mm$ eine Abweichung von $2mm$ zulässt.
 Der Winkel ist demnach ca. $0.1273\deg$. Bei einer Fehlervektorlänge von $0.1mm$ ergeben sich $1.82mm$ Abweichung zur
 optimalen Bahn.
+
+\section{Fehler - Grundwahrheit}\label{anhang:fehler:grundwahrheit}
+Als Grundwahrheit zur Bestimmung der Gesamtabweichung in [mm] dient ein manuell annotiertes Testbild.
+Auf diesem wird also von einer Person der Kugelmittelpunkt in ganzen Pixeln eruiert. Die Grundwahrheit
+ist gegeben durch \ref{eq:8}.
+\begin{align}
+    G = (G_x, G_y)\label{eq:8}
+\end{align}
+Weiterhin ist bekannt, wie vielen Millimetern ein Pixel entspricht. Diese Information ist einerseits über die Masse des
+Tisches $T$ wie auch über die Auflösung des Bildes $B$ gegeben.
+\begin{align}
+    T = (T_x, T_y) [mm]\\
+    B = (B_x, B_y) [pixel]\\
+    TB = (T_x/B_x, T_y/B_y)
+\end{align}
+Unter der Annahme, dass bei einem Pixel das Zentrum angegeben wird, kann die Abweichung der Detektion $D$ wie in \ref{eq:9}
+dargestellt werden.
+\begin{align}
+    D = (D_x, D_y) [subpixel]\\
+    \Delta = TB - D\label{eq:9}
+\end{align}
+Die Informationen $T$ wie auch $B$ sind gegeben.
+\begin{align}
+    T = (1881, 943) [mm]\\
+    B = (1280, 720) [pixel]\\
+    TB = (1.469, 1.309) [\frac{mm}{pixel}]
+\end{align}
+Unter der Annhame, dass eine Pixelkoordinate dem Zentrum des Pixels entspricht, der Kugelmittelpunkt
+subpixelgenau erkannt wird und als Grundwahrheit das korrekte Pixel angegeben wurde, kann die
+maximale Abweichung $\Delta_{\max}$ wie in \ref{eq:10} angegeben werden.
+\begin{align}
+    \Delta_{\max} = \frac{1 [pixel]}{2} \cdot TB\label{eq:10}\\
+    \Delta_{\max} = (0.7345, 0.654) [mm]\\
+    \norm{\Delta_{\max}} = \sqrt{0.7345^2 +  0.654^2} = 0.983 mm
+\end{align}

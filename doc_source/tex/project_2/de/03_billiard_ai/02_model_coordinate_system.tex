@@ -7,8 +7,8 @@ von Spielzügen, nicht geeignet. Es wird ein Koordinatensystem benötigt, welche
 Position und Blickrichtung der Kamera ist.
 
 Idealerweise werden die Pixelkoordinaten in ein zu definierendes Koordinatensystem transformiert, welches für die weitere
-Verarbeitung verwendet werden kann. Nachfolgend wird dieses Koordinatensystem das Modellkoordinatensystem genannt
-und ist wie folgt definiert:
+Verarbeitung verwendet werden kann. Nachfolgend wird dieses Koordinatensystem, das Modellkoordinatensystem genannt wird,
+und wie folgt definiert ist:
 \begin{enumerate}
   \item Das Koordinatensystem ist zweidimensional.
   \item Der Ursprung befindet sich in der Mitte des Billiardtisches auf Höhe der Kugelmittelpunkte.
@@ -81,7 +81,7 @@ Damit ist diese Transformation abgeschlossen und der Punkt in Kamerakoordinaten 
 Der Punkt $P_C$ in Kamerakoordinaten muss nun in die reale Welt überführt werden. Da der Punkt $P_C$ relativ zur Kamera
 positioniert ist, muss die Position der Kamera in der realen Welt bestimmt werden.
 Somit braucht es eine \emph{pose estimation} der Kamera, d.H. die Position und Orientierung der Kamera in der realen Welt müssen bestimmt werden.
-Eine \emph{pose estimation} benötigt eine kalibrierte Kamera und ein Objekt bekannte Grösse, welches im Bild erkannt werden kann.
+Eine \emph{pose estimation} benötigt eine kalibrierte Kamera und ein Objekt bekannter Grösse, welches im Bild erkannt werden kann.
 
 Als Objekt bekannter Grösse und Position wurde ein ArUco-Board \cite{opencv:detection_of_aruco_boards} mit vier Markern verwendet.
 Die verwendeten Marker mit einer Seitenlänge von 50\si{\milli\metre} und einer Grösse von 3x3 bits sind
@@ -149,7 +149,7 @@ P_C = \begin{pmatrix}P_{C,x}\\P_{C,y}\\P_{C,z}\end{pmatrix}\\
 P_W = E^{-1} \cdot P_C
 \end{align}
 
-Es gilt zu beachten, dass die Position des Pixels in Weltkoordinaten $P_W$ nicht der Position des Kugel, welche evtl. an
+Es gilt zu beachten, dass die Position des Pixels in Weltkoordinaten $P_W$ nicht der Position der Kugel, welche evtl. an
 dieser Pixelposition detektiert wurde, entspricht. Die projektive Abbildung der realen Welt auf den Bildsensor kann
 nicht rückgängig gemacht werden, weil die Tiefeninformation verloren gegangen ist.
 
@@ -199,7 +199,7 @@ Damit ist die Weltkoordinate des Kugelmittelpunkts $B_W$ anhand dessen Pixel-Wel
 Die vorletzte Transformation von Weltkoordinaten zu Bandenkoordinaten ist eine einfache Translation des Ursprungs,
 siehe dazu Abbildung \ref{fig:table_world_to_rail}. Der Ursprung wird nicht rotiert, lediglich verschoben.
 Diese Verschiebung kann auch in der Angabe der Weltkoordinaten des ArUco boards berücksichtigt werden, wodurch diese
-Translation obsolet wird. Er wurde belassen, da dies eine kleine Operation darstellt und dadurch das Ausmessen des
+Translation obsolet wird. Sie wurde belassen, da dies eine kleine Operation darstellt und dadurch das Ausmessen des
 ArUco boards und dessen Verschiebung zum Bandenursprung klar getrennt ist.
 
 \begin{figure}[h!]
