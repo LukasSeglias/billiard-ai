@@ -12,10 +12,8 @@ public class Utility
 		widthStretching.Factor = config.correctionWidth.factor;
 		widthStretching.Translation = config.correctionWidth.translation;
 		widthStretching.init(config.width);
-		
-		float heightDistance = heightStretching.distance((float) config.height / 2);
-		float widthDistance = widthStretching.distance((float) config.width / 2);
-		table.transform.localScale = new Vector3((config.width - widthDistance) / 10.0f, 1, (config.height - heightDistance) / 10.0f);
-		table.transform.position = new Vector3(-(widthDistance / 2.0f) + widthStretching.Translation, -(heightDistance / 2.0f)+ heightStretching.Translation, 0);
+
+		table.transform.localScale = new Vector3((config.width * widthStretching.Factor) / 10.0f, 1, (config.height * heightStretching.Factor) / 10.0f);
+		table.transform.position = new Vector3(widthStretching.Translation, heightStretching.Translation, 0);
 	}
 }

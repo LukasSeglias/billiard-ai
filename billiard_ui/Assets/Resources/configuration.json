@@ -1,27 +1,13 @@
 {
 	"radius": 26,
-	"width": 1880,
-	"height": 942,
-	"scale": 2.83,
+	"width": 1881,
+	"height": 943,
+	"scale": 3.525,
 	"segments": [
-		{
-			"start": {"x": -940, "y": 471},
-			"end": {"x": 0, "y": 471}
-		},
-		{
-			"start": {"x": 0, "y": -471},
-			"end": {"x": 940, "y": -471}
-		}
+
 	],
 	"targets": [
-		{
-			"radius": 26,
-			"position": {"x": -940, "y": 471}
-		},
-		{
-			"radius": 26,
-			"position": {"x": 940, "y": -471}
-		}
+
 	],
 	"markers": {
 		"patternSize": 3,
@@ -47,25 +33,25 @@
 		"worldToRail": { "x": 79.0, "y": -71.5, "z": 0.0 }
 	},
 	"camera": {
-		"fx": 777.3083,
-		"fy": 777.6202,
-		"cx": 656.1982,
-		"cy": 357.4891,
-		"skew": 0.1715,
-		"k1": 0.1316,
-		"k2": -0.3062,
-		"k3": 0.2113,
-		"p1": 0.0010,
-		"p2": -0.0015,
+		"fx": 917.126,
+		"fy": 917.236,
+		"cx": 649.895,
+		"cy": 359.575,
+		"skew": 0,
+		"k1": 0,
+		"k2": 0,
+		"k3": 0,
+		"p1": 0,
+		"p2": 0,
 		"sx": 0.0014,
 		"sy": 0.0014
 	},
 	"correctionWidth": {
-		"factor": 2.8,
-		"translation": -0.84
+		"factor": 3.551,
+		"translation": -0.120
 	},
 	"correctionHeight": {
-		"factor": 2.83,
-		"translation": -0.472
+		"factor": 3.515,
+		"translation": -0.025
 	}
 }
