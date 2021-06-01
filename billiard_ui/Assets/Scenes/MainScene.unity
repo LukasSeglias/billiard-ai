@@ -384,9 +384,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Factor: 2.8
   Translation: -0.84
-  Mapping: 1
-  Table: {fileID: 487807124}
-  Axis: 1
+  Mapping: 0
 --- !u!114 &487807132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -401,9 +399,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Factor: 2.8
   Translation: -0.4
-  Mapping: 1
-  Table: {fileID: 487807124}
-  Axis: 0
+  Mapping: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

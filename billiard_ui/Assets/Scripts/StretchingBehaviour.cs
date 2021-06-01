@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum FunctionMapping {
-	LINEAR,
 	FACTOR
 }
 
@@ -12,24 +11,18 @@ public class StretchingBehaviour : MonoBehaviour
 {
 	public float Factor = 1.0f;
 	public float Translation = 0.0f;
-	public FunctionMapping Mapping = FunctionMapping.LINEAR;
+	public FunctionMapping Mapping = FunctionMapping.FACTOR;
 	
 	private MappingFunc mapping;
 	
-	private static readonly Dictionary<FunctionMapping, Func<float, float, float, float, float, MappingFunc>> MAPPING = new Dictionary<FunctionMapping, Func<float, float, float, float, float, MappingFunc>> {
-		{FunctionMapping.LINEAR, StretchingBehaviour.initLinearMapping},
+	private static readonly Dictionary<FunctionMapping, Func<float, float, MappingFunc>> MAPPING = new Dictionary<FunctionMapping, Func<float, float, MappingFunc>> {
 		{FunctionMapping.FACTOR, StretchingBehaviour.initFactorMapping}
 	};
 
 	
 
     public void init(float value) {
-		float x_0 = - value / 2;
-		float y_0 = x_0;
-		float x_1 = value / 2;
-		float y_1 = Factor * x_1;
-		
-		mapping = MAPPING[Mapping](x_0, y_0, x_1, y_1, Factor);
+		mapping = MAPPING[Mapping](value, Factor);
 	}
 	
 	public float forward(float value) {
@@ -50,30 +43,13 @@ public class StretchingBehaviour : MonoBehaviour
 		return position - (forward(position) - Translation);
 	}
 	
-	private static MappingFunc initLinearMapping(float x_0, float y_0, float x_1, float y_1, float factor) {
-		float m = (y_1 - y_0) / (x_1 - x_0);
-		float b = y_1 - m * x_1;
+	private static MappingFunc initFactorMapping(float value, float factor) {
 		Func<float, float> forwardMapping = (position) => {
-			return position * m + b;
+			return (position * factor);
 		};
 		
 		Func<float, float> inverseMapping = (position) => {
-			return (position - b) / m;
-		};
-		
-		return new MappingFunc(forwardMapping, inverseMapping);
-	}
-	
-	private static MappingFunc initFactorMapping(float x_0, float y_0, float x_1, float y_1, float factor) {
-		float toCenter = -x_0;
-		Func<float, float> forwardMapping = (position) => {
-			position += toCenter;
-			return (position * factor) - toCenter;
-		};
-		
-		Func<float, float> inverseMapping = (position) => {
-			position += toCenter;
-			return (position / factor) - toCenter;
+			return (position / factor);
 		};
 		
 		return new MappingFunc(forwardMapping, inverseMapping);

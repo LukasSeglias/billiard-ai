@@ -16,14 +16,14 @@ namespace billiard::snooker {
 
         // Error margin for ball radii
         double radiusErrorLow = 20 /* % (percent) */;
-        double radiusErrorHigh = 0 /* % (percent) */;
+        double radiusErrorHigh = 10 /* % (percent) */;
 
         // Hough: minimal distance between centers
         double houghMinDistance;
         // Hough: higher threshold of the two passed to the Canny edge detector (lower threshold is twice smaller)
         double houghCannyHigherThreshold = 60;
         // Hough: accumulator threshold for the circle centers (if the value is smaller, the more "circles" are detected)
-        double houghAccumulatorThreshold = 5;
+        double houghAccumulatorThreshold = 7;
         // Hough: min radius in pixels
         int minRadius;
         // Hough: max radius in pixels

@@ -205,6 +205,7 @@ namespace billiard::detection {
         //
         // Note that if v * n = 0, then there is no intersection
         //
+        // TODO: handle case where v * n = 0 -> no intersection
         double lambda = (planePoint - linePoint).dot(planeNormal) / lineDirection.dot(planeNormal);
 
         cv::Point3d worldPoint(linePoint + (lambda * lineDirection));
