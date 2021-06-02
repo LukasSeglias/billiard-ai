@@ -21,7 +21,20 @@ Sobald das physikalische Modell, dessen Berechnungen sowie die Heuristiken stehe
 implementiert werden. Um das Vorgehen zu vereinfachen, wurde die Unity-Applikation bereits
 entsprechend vorbereitet. Diese ist in der Lage, auf intuitive Weise verschiedenste Spielstatus zu
 faken.
-\newpage
+\section{Kalibrierung des Projektors}
+Aktuell wird der Tisch in Unity über Konfigurationsparameter skaliert und an den korrekten Platz verschoben. Dies
+geschieht also manuell. Der grosse Nachteil dabei ist, dass die Ausrichtung des Projektors relevant ist. Ist dieser leicht
+schräg montiert oder ein wenig geneigt, dann resultiert automatisch ein Fehler, der applikationsseitig nicht berücksichtigt
+wird. Es wäre denkbar, dass über eine kalibrierte Kamera ein Testmuster des Projektors aufgenommen wird und so dessen
+Transformationsmatrix bestimmt wird, um eine Kugel sowie den Tisch am korrekten Ort darzustellen. Dieser Umbau wird in
+Betracht gezogen, sollte die Genauigkeit nicht hoch genug sein. Als weiterer Vorteil kann die einfachere Installation
+und Inbetriebnahme genannt werden.
+\section{Automatische Filtermasken}
+Ebenfalls automatisieren könnte man die verwendeten Filtermasken bei der Kugeldetektion. Diese sind aktuell statisch
+implementiert und daher beleuchtungsabhängig. Sollte bemerkt werden, dass zu häufig Fehler bei der Detektion passieren,
+so könnten die Masken ebenfalls in einem Setup-Schritt bestimmt werden. Anzumerken ist, dass die Projektorkalibrierung
+und die automatischen Filtermasken spätestens nach der Bachelor-Thesis angestrebt werden. Wie bereits erwähnt handelt
+es sich dabei aber hauptsächlich um Optimierungen, die nur vorgängig gemacht werden, wenn es unbedingt nötig erscheint.
 \section{Verbesserung der Genauigkeit}
 Sollte im Verlaufe der Entwicklung erkannt werden, dass die Präzision des Systems unzureichend
 ist, kann diese über diverse Überlegungen eventuell verbessert werden. Eine bereits bekannte Problematik
@@ -34,7 +47,7 @@ zu einer Ebene auf Höhe des Kugelradius bestimmt wird. Der Schnittpunkt mit die
 wird jeweils der korrekte Kugelmittelpunkt erkannt. Dieses Szenario bildet auch die Grundlage für die Implementation und kann
 aus Abbildung \ref{fig:genauigkeit:optimal} entnommen werden.
 \begin{figure}[h!]
-    \includegraphics[width=0.4\linewidth]{../common/05_further_work/resources/00_genauigkeit_optimal.png}
+    \includegraphics[width=0.2\linewidth]{../common/05_further_work/resources/00_genauigkeit_optimal.png}
     \caption{Optimale Genauigkeitsbestimmung}
     \label{fig:genauigkeit:optimal}
 \end{figure}
