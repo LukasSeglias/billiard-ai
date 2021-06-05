@@ -7,4 +7,5 @@ target_sources(${PROJECT_NAME} PRIVATE
         hsv_range_filter.cpp
         billiard_detection_tryout.cpp
         billiard_detection_tryout_old.cpp
+        error_estimation.cpp
         )

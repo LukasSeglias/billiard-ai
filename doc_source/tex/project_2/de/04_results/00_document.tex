@@ -76,59 +76,68 @@ umgerechnet und es wird der absolute Fehlerwert in Millimeter angegeben.
         \begin{tabular}{lllll}
             \rowcolor{\seccolor!50}
             Bild & Pixelkoordinaten & Erwartete Modellkoordinaten & Detektierte Modellkoordinaten & Absoluter Fehler\\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:1} & [629, 743] & [-374.85, -216.15] & [-373.634, -215.162]  & [1.21591, 0.987723], 1.56653mm \\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:2} & [814, 287] & [-180.85, 283.15] & [-177.976, 282.742]  & [2.87359, -0.408301], 2.90245mm \\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:3} & [1273, 413] & [337.85, 142.15] & [335.588, 141.849]  & [-2.26196, -0.301047], 2.2819mm \\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:4} & [1561, 621] & [664.15, -91.85] & [661.33, -94.6072]  & [-2.81992, -2.75725], 3.9439mm \\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:5} & [475, 639] & [-560.85, -112.85] & [-559.861, -112.638]  & [0.988977, 0.211893], 1.01142mm \\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:6} & [980, 537] & [5.85, 0.15] & [7.47888, 0.241278]  & [1.62888, 0.0912778], 1.63144mm \\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:7} & [1640, 225] & [751.15, 350.15] & [752.38, 351.407]  & [1.22988, 1.25668], 1.75837mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:1} & [419, 495] & [-374.85, -216.15] & [-374.476, -214.318]  & [0.374078, 1.83167], 1.86948mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:2} & [543, 191] & [-180.85, 283.15] & [-178.817, 281.903]  & [2.03254, -1.24729], 2.38473mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:3} & [847, 276] & [337.85, 142.15] & [333.062, 139.322]  & [-4.7882, -2.82761], 5.56078mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:4} & [1040, 413] & [664.15, -91.85] & [660.469, -92.0677]  & [-3.68052, -0.217665], 3.68695mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:5} & [316, 425] & [-560.85, -112.85] & [-562.382, -111.791]  & [-1.53239, 1.05877], 1.86258mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:6} & [654, 358] & [5.85, 0.15] & [8.32362, 1.08577]  & [2.47362, 0.935769], 2.6447mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:7} & [1093, 150] & [751.15, 350.15] & [749.834, 352.246]  & [-1.31644, 2.0957], 2.47487mm \\\bfhmidline
         \end{tabular}
     \end{center}
     \caption{Messresultate Koordinatensystem}
     \label{tab:messresultate:koordinatensystem}
 \end{table}
-Der durchschnittliche Messfehler beträgt: 2.1565 [mm]\\
+Der durchschnittliche Messfehler beträgt: 2.95056 [mm]\\
 
 In einem zweiten Schritt wird nun noch die Detektion der Kugeln miteinbezogen. Es wird also nicht mehr manuell
 der Kugelmittelpunkt bestimmt, dies übernimmt nun ebenfalls die Core-Library. Der Fehler wird nun nochmals gleich
 berechnet wie bei Tabelle \ref{tab:messresultate:koordinatensystem} unter Verwendung derselben Testbilder
-(siehe Tabelle \ref{tab:messresultate:detektion}, Spalte \glqq Gesamter absoluter Fehler\grqq). Abschliessend
-kann der Fehler der Detektion in Millimeter über die absolute Differenz des Fehlerwerts ohne Detektion und des
-Fehlerwerts mit Detektion bestimmt werden (siehe Tabelle \ref{tab:messresultate:detektion}, Spalte \glqq Absoluter Fehler Detektion\grqq).
+(siehe Tabelle \ref{tab:messresultate:detektion}, Spalte \glqq Gesamter absoluter Fehler\grqq).
 
 \begin{table}[ht]
     \begin{center}
         \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
         \begin{tabular}{lllll}
             \rowcolor{\seccolor!50}
-            Bild & Erwartete Modellkoordinaten & Detektierte Modellkoordinaten & Gesamter absoluter Fehler & Absoluter Fehler Detektion\\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:1} & [-374.85, -216.15] & [-373.634, -215.162]  & [1.21591, 0.987723], 1.56653mm \\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:2} & [-180.85, 283.15] & [-177.976, 282.742]  & [2.87359, -0.408301], 2.90245mm \\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:3} & [337.85, 142.15] & [335.588, 141.849]  & [-2.26196, -0.301047], 2.2819mm \\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:4} & [664.15, -91.85] & [661.33, -94.6072]  & [-2.81992, -2.75725], 3.9439mm \\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:5} & [-560.85, -112.85] & [-559.861, -112.638]  & [0.988977, 0.211893], 1.01142mm \\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:6} & [5.85, 0.15] & [7.47888, 0.241278]  & [1.62888, 0.0912778], 1.63144mm \\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:7} & [751.15, 350.15] & [752.38, 351.407]  & [1.22988, 1.25668], 1.75837mm \\\bfhmidline
-        \end{tabular}
-    \end{center}
-    \caption{Messresultate Koordinatensystem}
-    \label{tab:messresultate:koordinatensystem}
-\end{table}
-Der durchschnittliche Fehler der Detektion beträgt: ? [mm]\\
-Der durchschnittliche Gesamtmessfehler beträgt: 2.1565 [mm]\\
-
-\begin{table}[ht]
-    \begin{center}
-        \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
-        \begin{tabular}{lllll}
-            \rowcolor{\seccolor!50}
-            Bild & Erwartete Modellkoordinaten & Detektierte Modellkoordinaten & Gesamter absoluter Fehler & Absoluter Fehler Detektion\\\bfhmidline
-            \ref{fig:uebersetzungsgenauigkeit:testbild:1} & [13, 13] & [9, 9] & [4, 4], 5.65mm & 5.65mm - 4.24mm = 1.41mm\\\bfhmidline
+            Bild & Erwartete Modellkoordinaten & Detektierte Modellkoordinaten & Gesamter absoluter Fehler\\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:1} & [-374.85, -216.15] & [-373.634, -215.162]  & [1.21591, 0.987723], 1.56653mm\\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:2} & [-180.85, 283.15] & [-177.976, 282.742]  & [2.87359, -0.408301], 2.90245mm\\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:3} & [337.85, 142.15] & [335.588, 141.849]  & [-2.26196, -0.301047], 2.2819mm\\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:4} & [664.15, -91.85] & [661.33, -94.6072]  & [-2.81992, -2.75725], 3.9439mm\\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:5} & [-560.85, -112.85] & [-559.861, -112.638]  & [0.988977, 0.211893], 1.01142mm\\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:6} & [5.85, 0.15] & [7.47888, 0.241278]  & [1.62888, 0.0912778], 1.63144mm\\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:7} & [751.15, 350.15] & [752.38, 351.407]  & [1.22988, 1.25668], 1.75837mm\\\bfhmidline
         \end{tabular}
     \end{center}
     \caption{Messresultate Detektion}
     \label{tab:messresultate:detektion}
 \end{table}
-Der durchschnittliche Fehler der Detektion beträgt: ? [mm]\\
-Der durchschnittliche Gesamtmessfehler beträgt: ? [mm]
+Der durchschnittliche Gesamtmessfehler beträgt: 2.1565 [mm]\\
+
+Abschliessend kann die absolute Differenz zwischen dem Gesamtfehler und dem Übersetzungsfehler gebildet, werden
+(siehe Tabelle \ref{tab:messresultate:total_vs_transformation_error}, Spalte \glqq Absolute Differenz zwischen Gesamt- und Übersetzungsfehler\grqq).
+
+\begin{table}[ht]
+    \begin{center}
+        \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+        \begin{tabular}{lllll}
+            \rowcolor{\seccolor!50}
+            Bild & Absolute Differenz zwischen Gesamt- und Übersetzungsfehler\\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:1} & $\norm{1.56653mm - 1.86948mm}$ = 0.303mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:2} & $\norm{2.90245mm - 2.38473mm}$ = 0.5177mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:3} & $\norm{2.2819mm - 5.56078mm}$ = 3.279mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:4} & $\norm{3.9439mm - 3.68695mm}$ = 0.257mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:5} & $\norm{1.01142mm - 1.86258mm}$ = 0.8512mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:6} & $\norm{1.63144mm - 2.6447mm}$ = 1.013mm \\\bfhmidline
+            \ref{fig:uebersetzungsgenauigkeit:testbild:7} & $\norm{1.75837mm - 2.47487mm}$ = 0.7165mm \\\bfhmidline
+        \end{tabular}
+    \end{center}
+    \caption{Differenz Gesamt- zu Übersetzungsfehler}
+    \label{tab:messresultate:total_vs_transformation_error}
+\end{table}
+Die durchschnittliche absolute Differenz zwischen Gesamt- und Übersetzungsfehler beträgt: 0.9911 [mm]\\
+
+Da der Fehler der Übersetzung teilweise grösser als der Gesamtfehler ist, kann daraus geschlossen werden, dass die
+den Testfällen hinterlegte Grundwahreit in Form von Pixelkoordinaten zu ungenau sein muss. Dies ist darauf zurückzuführen,
+dass die korrekte Auswahl des Zentrumspixel sehr schwierig ist\footnote{siehe Anhang \ref{anhang:fehler:grundwahrheit}}.
