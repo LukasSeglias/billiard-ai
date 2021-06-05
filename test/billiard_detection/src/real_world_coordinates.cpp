@@ -11,7 +11,7 @@ TEST(Detection, image_coordinates_to_world_coordinates) {
     billiard::detection::ArucoMarkers markers = getMarkers();
 
     bool live = false;
-    bool matlab_intrinsics = true;
+    bool matlab_intrinsics = false;
 
     double innerTableLength = table.innerTableLength; // millimeters
     double innerTableWidth  =  table.innerTableWidth;   // millimeters
@@ -90,6 +90,8 @@ TEST(Detection, image_coordinates_to_world_coordinates) {
 
         if (imageChanged) {
             imageChanged = false;
+
+            std::cout << "Image: " << imagePaths[imageIndex] << std::endl;
 
             if (matlab_intrinsics) {
                 std::cout << "using matlab intrinsics" << std::endl;
