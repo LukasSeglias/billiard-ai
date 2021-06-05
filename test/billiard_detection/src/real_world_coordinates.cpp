@@ -12,6 +12,7 @@ TEST(Detection, image_coordinates_to_world_coordinates) {
 
     bool live = false;
     bool matlab_intrinsics = false;
+    bool detect_pixel_position = false;
 
     double innerTableLength = table.innerTableLength; // millimeters
     double innerTableWidth  =  table.innerTableWidth;   // millimeters
@@ -19,47 +20,74 @@ TEST(Detection, image_coordinates_to_world_coordinates) {
     double ballRadius       = ballDiameter/2; // millimeters
     cv::Point2d innerTableCenter { innerTableLength/2, innerTableWidth/2 };
 
+    std::vector<cv::Point2d> expectedImagePoints = {
+//            cv::Point2d { 166, 957 }, // Ball 1
+//            cv::Point2d { 929, 926 }, // Ball 2
+//            cv::Point2d { 163, 150 }, // Ball 3
+//            cv::Point2d { 931, 170 }, // Ball 4
+//            cv::Point2d { 1743, 226 }, // Ball 5
+//            cv::Point2d { 1738, 864 }, // Ball 6
+//            cv::Point2d { 637, 524 },  // Ball 7
+            cv::Point2d { 419, 495 },  // Ball 8
+            cv::Point2d { 543, 191 },  // Ball 9
+            cv::Point2d { 849, 274 }, // Ball 10
+            cv::Point2d { 1040, 413 }, // Ball 11
+            cv::Point2d { 316, 425},  // Ball 12
+            cv::Point2d { 654, 358 },  // Ball 13
+            cv::Point2d { 1093, 150 },  // Ball 14
+    };
+
     double woodThickness = 44.5;
     std::vector<cv::Point2d> expectedModelPoints = {
+//            // Ball 1
+//            cv::Point2d { innerTableLength - (1730+woodThickness+ballRadius),innerTableWidth - (850+woodThickness+ballRadius) } - innerTableCenter,
+//            // Ball 2
+//            cv::Point2d { innerTableLength - (880+woodThickness+ballRadius),innerTableWidth - (830+woodThickness+ballRadius) } - innerTableCenter,
+//            // Ball 3
+//            cv::Point2d { innerTableLength - (1721+woodThickness+ballRadius),850+woodThickness+ballRadius } - innerTableCenter,
+//            // Ball 4
+//            cv::Point2d { innerTableLength - (877+woodThickness+ballRadius),833+woodThickness+ballRadius } - innerTableCenter,
+//            // Ball 5
+//            cv::Point2d { 1785+woodThickness+ballRadius,766+woodThickness+ballRadius } - innerTableCenter,
+//            // Ball 6
+//            cv::Point2d { 1786+woodThickness+ballRadius,innerTableWidth - (763+woodThickness+ballRadius) } - innerTableCenter,
+//            // Ball 7
+//            cv::Point2d { (540+woodThickness+ballRadius),innerTableWidth - (373+woodThickness+ballRadius) } - innerTableCenter,
             // Ball 1
-            cv::Point2d { innerTableLength - (1730+woodThickness+ballRadius),innerTableWidth - (850+woodThickness+ballRadius) } - innerTableCenter,
-            // Ball 2
-            cv::Point2d { innerTableLength - (880+woodThickness+ballRadius),innerTableWidth - (830+woodThickness+ballRadius) } - innerTableCenter,
-            // Ball 3
-            cv::Point2d { innerTableLength - (1721+woodThickness+ballRadius),850+woodThickness+ballRadius } - innerTableCenter,
-            // Ball 4
-            cv::Point2d { innerTableLength - (877+woodThickness+ballRadius),833+woodThickness+ballRadius } - innerTableCenter,
-            // Ball 5
-            cv::Point2d { 1785+woodThickness+ballRadius,766+woodThickness+ballRadius } - innerTableCenter,
-            // Ball 6
-            cv::Point2d { 1786+woodThickness+ballRadius,innerTableWidth - (763+woodThickness+ballRadius) } - innerTableCenter,
-            // Ball 7
-            cv::Point2d { (540+woodThickness+ballRadius),innerTableWidth - (373+woodThickness+ballRadius) } - innerTableCenter,
-            // Ball 8
             cv::Point2d { (495+woodThickness+ballRadius),innerTableWidth - (617+woodThickness+ballRadius) } - innerTableCenter,
-            // Ball 9
+            // Ball 2
             cv::Point2d { (689+woodThickness+ballRadius),684+woodThickness+ballRadius } - innerTableCenter,
-            // Ball 10
+            // Ball 3
             cv::Point2d { innerTableLength - (532+woodThickness+ballRadius),543+woodThickness+ballRadius } - innerTableCenter,
-            // Ball 11
+            // Ball 4
             cv::Point2d { (1534+woodThickness+ballRadius),309+woodThickness+ballRadius } - innerTableCenter,
-            // Ball 12
+            // Ball 5
             cv::Point2d { (309+woodThickness+ballRadius),288+woodThickness+ballRadius } - innerTableCenter,
-            // Ball 13
+            // Ball 6
             cv::Point2d { innerTableLength - (864+woodThickness+ballRadius),401+woodThickness+ballRadius } - innerTableCenter,
-            // Ball 14
+            // Ball 7
             cv::Point2d { (1621+woodThickness+ballRadius),751+woodThickness+ballRadius } - innerTableCenter,
     };
 
     unsigned long long imageIndex = 0;
     bool imageChanged = true;
 
-    std::vector<std::string> imagePaths;
-    for(int ball = 1; ball <= expectedModelPoints.size(); ball++) {
-        std::stringstream filePath;
-        filePath << "./resources/test_real_world_coordinates/real_world_" << std::to_string(ball) << ".png";
-        imagePaths.push_back(filePath.str());
-    }
+    std::vector<std::string> imagePaths = {
+//            "./resources/test_real_world_coordinates_old/real_world_1.png",
+//            "./resources/test_real_world_coordinates_old/real_world_2.png",
+//            "./resources/test_real_world_coordinates_old/real_world_3.png",
+//            "./resources/test_real_world_coordinates_old/real_world_4.png",
+//            "./resources/test_real_world_coordinates_old/real_world_5.png",
+//            "./resources/test_real_world_coordinates_old/real_world_6.png",
+//            "./resources/test_real_world_coordinates_old/real_world_7.png",
+            "./resources/test_real_world_coordinates/real_world_1.png",
+            "./resources/test_real_world_coordinates/real_world_2.png",
+            "./resources/test_real_world_coordinates/real_world_2.png",
+            "./resources/test_real_world_coordinates/real_world_2.png",
+            "./resources/test_real_world_coordinates/real_world_3.png",
+            "./resources/test_real_world_coordinates/real_world_4.png",
+            "./resources/test_real_world_coordinates/real_world_4.png",
+    };
 
     billiard::capture::CameraCapture capture {};
     if (live) {
@@ -72,9 +100,12 @@ TEST(Detection, image_coordinates_to_world_coordinates) {
     std::shared_ptr<billiard::detection::DetectionConfig> detectionConfig;
     billiard::detection::CameraIntrinsics intrinsics;
 
+    int t = 0;
+
     while(true) {
         cv::Mat frame;
         cv::Point2d expectedModelPoint;
+        cv::Point2d expectedImagePoint;
 
         if (live) {
             if (imageChanged) {
@@ -86,6 +117,7 @@ TEST(Detection, image_coordinates_to_world_coordinates) {
             frame = cv::imread(imagePaths[imageIndex]);
             cv::resize(frame, frame, cv::Size(1280, 720), 0, 0);
             expectedModelPoint = expectedModelPoints[imageIndex];
+            expectedImagePoint = expectedImagePoints[imageIndex];
         }
 
         if (imageChanged) {
@@ -112,16 +144,38 @@ TEST(Detection, image_coordinates_to_world_coordinates) {
                 return;
             }
 
-            billiard::detection::State pixelState = billiard::snooker::detect(billiard::detection::State(), frame);
+            billiard::detection::State pixelState;
+
+            if (detect_pixel_position) {
+                pixelState = billiard::snooker::detect(billiard::detection::State(), frame);
+            } else {
+                auto point = expectedImagePoint;
+                billiard::detection::Ball ball;
+                ball._position = glm::vec2{point.x, point.y};
+                ball._type = "RED";
+                ball._id = "1";
+                pixelState._balls.push_back(ball);
+            }
+
             billiard::detection::State state = billiard::detection::pixelToModelCoordinates(*detectionConfig, pixelState);
 
-            for (auto& ball : state._balls) {
+            for (int i = 0; i < state._balls.size(); i++) {
+                auto& pixelBall = pixelState._balls[i];
+                auto& ball = state._balls[i];
 
+                cv::Point2d imagePoint = cv::Point2d(pixelBall._position.x, pixelBall._position.y);
                 cv::Point2d modelPoint = cv::Point2d(ball._position.x, ball._position.y);
                 std::cout << "model point: " << modelPoint << " should be at " << expectedModelPoint
                           << " dist: " << (modelPoint - expectedModelPoint)
                           << " dist: " << cv::norm(modelPoint - expectedModelPoint) << std::endl;
+
+                if (!live) {
+                    std::cout << " image point: " << imagePoint << " should be at " << expectedImagePoint
+                              << " dist: " << (imagePoint - expectedImagePoint)
+                              << " dist: " << cv::norm(imagePoint - expectedImagePoint) << std::endl;
+                }
             }
+
         }
 
         cv::imshow("Image", frame);

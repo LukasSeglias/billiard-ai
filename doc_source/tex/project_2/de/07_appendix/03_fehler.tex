@@ -127,16 +127,17 @@ dargestellt werden.
     \Delta = TB - D\label{eq:9}
 \end{align}
 Die Informationen $T$ wie auch $B$ sind gegeben.
+$B$ ist die Breite und Höhe des Spielbereichs in Pixel und wurde anhand eines Bildes festgestellt.
 \begin{align}
     T = (1881, 943) [mm]\\
-    B = (1280, 720) [pixel]\\
-    TB = (1.469, 1.309) [\frac{mm}{pixel}]
+    B = (1118.72, 565.284) [pixel]\\
+    TB = (1.681, 1.668) [\frac{mm}{pixel}]
 \end{align}
 Unter der Annhame, dass eine Pixelkoordinate dem Zentrum des Pixels entspricht, der Kugelmittelpunkt
 subpixelgenau erkannt wird und als Grundwahrheit das korrekte Pixel angegeben wurde, kann die
 maximale Abweichung $\Delta_{\max}$ wie in \ref{eq:10} angegeben werden.
 \begin{align}
     \Delta_{\max} = \frac{1 [pixel]}{2} \cdot TB\label{eq:10}\\
-    \Delta_{\max} = (0.7345, 0.654) [mm]\\
-    \norm{\Delta_{\max}} = \sqrt{0.7345^2 +  0.654^2} = 0.983 mm
+    \Delta_{\max} = (0.8405, 0.834) [mm]\\
+    \norm{\Delta_{\max}} = \sqrt{0.8405^2 +  0.834^2} = 1.18406 mm
 \end{align}

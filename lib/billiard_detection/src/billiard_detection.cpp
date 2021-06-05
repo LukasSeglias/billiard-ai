@@ -489,9 +489,24 @@ namespace billiard::detection {
             cv::imshow("rail rectangle", railOutput);
 #endif
 
+            // resolutionX = bottom-right - bottom-left
             double resolutionX = (imagePoints[3].x - imagePoints[0].x) * config.scale;
             double tableLength = table.innerTableLength;
-            double pixelsPerMillimeter = resolutionX / tableLength;
+            double pixelsPerMillimeterX = resolutionX / tableLength;
+
+            // resolutionY = bottom-left - top-left
+            double resolutionY = (imagePoints[0].y - imagePoints[1].y) * config.scale;
+            double tableWidth = table.innerTableWidth;
+            double pixelsPerMillimeterY = resolutionY / tableWidth;
+
+            std::cout << " resolutionX: " << resolutionX
+                      << " tableLength: " << tableLength
+                      << " resolutionY: " << resolutionY
+                      << " tableWidth: " << tableWidth
+                      << " pixels per millimeter in X/Y: " << pixelsPerMillimeterX << "/" << pixelsPerMillimeterY
+                      << std::endl;
+
+            double pixelsPerMillimeter = pixelsPerMillimeterX; // Take X because that's the longer axis
             config.ballRadiusInPixel = ceil((table.ballDiameter / 2.0) * pixelsPerMillimeter);
         }
 
