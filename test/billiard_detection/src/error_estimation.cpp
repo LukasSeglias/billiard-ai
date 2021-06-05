@@ -47,8 +47,8 @@ TEST(Error, max) {
 
 TEST(Error, realistic) {
 
-    glm::vec2 M {400,0};
-    glm::vec2 T {900,0};
+    glm::vec2 M {100,0};
+    glm::vec2 T {950,0};
     glm::vec2 K {0,0};
     glm::vec2 F {0,2.15};
     float R = 26.15;

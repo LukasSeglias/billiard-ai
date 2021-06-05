@@ -2,25 +2,30 @@
 Die vorliegende Arbeit dient als Grundlage für die kommende Bachelor-Thesis. Daher gibt es diverse darauf aufbauende
 Tätigkeiten. Diese sind unterschiedlich anspruchsvoll und ebenso von verschiedener Wichtigkeit. Daher werden
 diese der Relevanz von definitiver Wichtigkeit bis potenzieller Wichtigkeit geordnet.
+
 \section{Klassifikation der Kugeln}
 In einem ersten Schritt muss die Klassifikation der Kugeln ergänzt werden. Hierbei geht es
 um die Bestimmung der Art einer Kugel, ist es also eine Weisse, Rote oder Blaue. Als
 Umsetzungshinweis sei hier der Hue-Kanal des Bildes gegeben.
+
 \section{Erarbeitung des theoretischen physikalischen Modells}
 Als Grundlage der Suche nach dem besten Stoss dient ein vereinfachtes theoretisches physikalisches
 Modell. Dessen Parameter und Eigenschaften müssen bestimmt und in einen algorithmischen Kontext
 verfasst werden. Hierbei sei angemerkt, dass eine Unmenge an möglichen Stössen betrachtet
 werden müssen. Es muss also ein Konzept erarbeitet werden, das parallel jeweils nur
 die besten Kandidaten verfolgt.
+
 \section{Bestimmen der Heuristiken}
 Zu einer erfolgreichen Suche gehört die Definition einer heuristischen Funktion, welche die
 Optimalität eines Stosses wie auch dessen Resultat beschreibt. Dies setzt eine gewisse Kenntniss
 über das Billardspiel voraus, wobei eventuell auf Wissen von Fachpersonen zugegriffen werden muss.
+
 \section{Implementation der Suche}
 Sobald das physikalische Modell, dessen Berechnungen sowie die Heuristiken stehen, kann die Suche
 implementiert werden. Um das Vorgehen zu vereinfachen, wurde die Unity-Applikation bereits
 entsprechend vorbereitet. Diese ist in der Lage, auf intuitive Weise verschiedenste Spielstatus zu
 faken.
+
 \section{Kalibrierung des Projektors}
 Aktuell wird der Tisch in Unity über Konfigurationsparameter skaliert und an den korrekten Platz verschoben. Dies
 geschieht also manuell. Der grosse Nachteil dabei ist, dass die Ausrichtung des Projektors relevant ist. Ist dieser leicht
@@ -29,43 +34,17 @@ wird. Es wäre denkbar, dass über eine kalibrierte Kamera ein Testmuster des Pr
 Transformationsmatrix bestimmt wird, um eine Kugel sowie den Tisch am korrekten Ort darzustellen. Dieser Umbau wird in
 Betracht gezogen, sollte die Genauigkeit nicht hoch genug sein. Als weiterer Vorteil kann die einfachere Installation
 und Inbetriebnahme genannt werden.
+
 \section{Automatische Filtermasken}
 Ebenfalls automatisieren könnte man die verwendeten Filtermasken bei der Kugeldetektion. Diese sind aktuell statisch
 implementiert und daher beleuchtungsabhängig. Sollte bemerkt werden, dass zu häufig Fehler bei der Detektion passieren,
 so könnten die Masken ebenfalls in einem Setup-Schritt bestimmt werden. Anzumerken ist, dass die Projektorkalibrierung
 und die automatischen Filtermasken spätestens nach der Bachelor-Thesis angestrebt werden. Wie bereits erwähnt handelt
 es sich dabei aber hauptsächlich um Optimierungen, die nur vorgängig gemacht werden, wenn es unbedingt nötig erscheint.
+
 \section{Verbesserung der Genauigkeit}
 Sollte im Verlaufe der Entwicklung erkannt werden, dass die Präzision des Systems unzureichend
-ist, kann diese über diverse Überlegungen eventuell verbessert werden. Eine bereits bekannte Problematik
-stellt die Tatsache dar, dass eine Kugel, welche weit aussen am Tischrand liegt, von der Kamera oval gesehen wird.
-Dies führt dazu, dass das Pixel, welches als Kugelmittelpunkt erkannt wird, nicht mit dem realen Mittelpunkt auf der Oberfläche übereinstimmt.
-Dieses Problem wird jedoch durch die Art und Weise, wie der Standort der Kugel ermittelt wird, bereits ein wenig entschärft.
-Die genaue Erläutering findet sich in Kapitel \ref{kap:camera_to_world}.
-Es muss lediglich bekannt sein, dass der Standort durch einen Ray-Shoot von der Kamera aus durch den erkannten Kugelmittelpunkt
-zu einer Ebene auf Höhe des Kugelradius bestimmt wird. Der Schnittpunkt mit dieser Ebene bildet die Position der Kugel. In einem optimalen Fall
-wird jeweils der korrekte Kugelmittelpunkt erkannt. Dieses Szenario bildet auch die Grundlage für die Implementation und kann
-aus Abbildung \ref{fig:genauigkeit:optimal} entnommen werden.
-\begin{figure}[h!]
-    \includegraphics[width=0.2\linewidth]{../common/05_further_work/resources/00_genauigkeit_optimal.png}
-    \caption{Optimale Genauigkeitsbestimmung}
-    \label{fig:genauigkeit:optimal}
-\end{figure}
-Es ist ersichtlich, dass der Schnittpunkt des Strahls der Kamera mit der Ebene genau im Kugelzentrum liegt.
-Wird nun angenommen, dass immer der reale Kugelmittelpunkt bestimmt werden kann, dann stimmt das Modell mit der Ebene
-durch die Kugelzentren jedoch nicht mehr. Da die Kamera die Kugel aber immer weiter von der Seite sehen wird, je weiter diese am Rand
-des Tischs liegt, wird diese zu einem Oval verzogen und es wird nicht mehr der reale Kugelmittelpunkt $M$ erkannt sondern ein Punkt $M'$
-auf der Seite zur Kamera zugewandt. Das scheinbar optimale Verhalten sowie das reale ist in Abbildung \ref{fig:genauigkeit:real}
-ersichtlich. Wie erkannt werden kann, ist die scheinbare Falscherkennung des Kugelmittelpunkts bei der Anwendung einer
-Ebene auf Höhe des Kugelradius sogar von Vorteil, da die Fehlerdistanz zum realen Standort minimiert wird.
-\begin{figure}[h!]
-    \includegraphics[width=0.4\linewidth]{../common/05_further_work/resources/01_genauigkeit_real.png}
-    \caption{Reale Genauigkeitsbestimmung}
-    \label{fig:genauigkeit:real}
-\end{figure}
-
-
-Nichtsdestotrotz kann es vonnöten sein, das Modell eventuell sogar der Realität entsprechend zu definieren, wenn erzielt
-werden kann, dass immer der reale Kugelmittelpunkt gefunden wird. Weiterhin muss in diesem Zusammenhang zuerst ein genaueres
+ist, müsste diese verbessert werden. Die genauen Ansätze müssten evaluiert werden.
+Weiterhin muss in diesem Zusammenhang zuerst ein genaueres
 externes Messgerät gefunden werden, damit überhaupt eine Verbesserung der Genauigkeit nachgewiesen werden kann.
 

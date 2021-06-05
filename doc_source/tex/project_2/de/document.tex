@@ -64,7 +64,7 @@ style=alphabetic,
 % Subtitle
 \subtitle{Ein intelligenter Billardtisch}
 % Titlepicture
-\titlepicture{../common/resources/Elektronik.jpg}
+\titlepicture{../common/resources/title_image.png}
 %%
 
 % Topic of Study
@@ -132,23 +132,8 @@ style=alphabetic,
 % Bibliography
     \printbibliography
 % Glossary
-    \printunsrtglossary[style={index}]
+%    \printunsrtglossary[style={index}]
 
 % Appendices
-    \chapter*{Versionskontrolle}
-    \renewcommand{\arraystretch}{2} % In order to set the correct linespacing.
-% Must be set here, since this also changes the linespacing for the array
-% environment
-%\arrayrulecolor{white}
-    \begin{center}
-        \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
-        \begin{tabular}{llll}
-            \rowcolor{\seccolor!50}
-            Version & Datum & Beschreibung & Autor\\\bfhmidline
-            0.1 & 01.03.2021 & Eröffnung Dokumentation & Luca Ritz\\\bfhmidline
-            0.2 & 04.03.2021 & Definition Ziele & Lukas Seglias \& Luca Ritz\\\bfhmidline
-        \end{tabular}
-    \end{center}
-
     \include{07_appendix/00_document}
 \end{document}
