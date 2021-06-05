@@ -30,7 +30,7 @@ TEST(Detection, image_coordinates_to_world_coordinates) {
 //            cv::Point2d { 637, 524 },  // Ball 7
             cv::Point2d { 419, 495 },  // Ball 8
             cv::Point2d { 543, 191 },  // Ball 9
-            cv::Point2d { 849, 274 }, // Ball 10
+            cv::Point2d { 847, 276 }, // Ball 10
             cv::Point2d { 1040, 413 }, // Ball 11
             cv::Point2d { 316, 425},  // Ball 12
             cv::Point2d { 654, 358 },  // Ball 13
@@ -175,6 +175,19 @@ TEST(Detection, image_coordinates_to_world_coordinates) {
                               << " dist: " << cv::norm(imagePoint - expectedImagePoint) << std::endl;
                 }
             }
+
+            int radius = 20;
+            int padding = 10;
+            float scale = 4.0;
+            cv::Mat drawn = frame.clone();
+            cv::circle(drawn, expectedImagePoint, 1, cv::Scalar(0, 100, 100), 3, cv::LINE_AA);
+            cv::circle(drawn, expectedImagePoint, radius, cv::Scalar(255, 0, 255), 1, cv::LINE_AA);
+            cv::Mat truth = drawn(cv::Rect{(int)(expectedImagePoint.x - radius - padding),
+                                           (int)(expectedImagePoint.y - radius - padding),
+                                           (int)(2*radius + 2*padding),
+                                           (int)(2*radius + 2*padding)});
+            cv::resize(truth, truth, cv::Size(), scale, scale);
+            cv::imshow("Truth", truth);
 
         }
 
