@@ -6,6 +6,7 @@
 #include <billiard_capture/billiard_capture.hpp>
 #include <librealsense2/rs.hpp>
 #include "config.hpp"
+#include <chrono>
 
 TEST(BallDetectionTests, snooker) {
 
@@ -102,15 +103,32 @@ TEST(BallDetectionTests, snooker) {
                 return;
             }
 
+            auto t1 = std::chrono::high_resolution_clock::now();
             billiard::detection::State pixelState = billiard::snooker::detect(billiard::detection::State(), frame);
             billiard::detection::State state = billiard::detection::pixelToModelCoordinates(*detectionConfig, pixelState);
+            auto t2 = std::chrono::high_resolution_clock::now();
+
+            std::chrono::duration<double, std::milli> ms_double = t2 - t1;
+            std::cout << ms_double.count() << "ms" << std::endl;
 
             for (auto& ball : state._balls) {
 
                 cv::Point2d modelPoint = cv::Point2d(ball._position.x, ball._position.y);
                 std::cout << "model point: " << modelPoint << std::endl;
             }
+
+            if (!live) {
+                std::cout << "" << std::to_string(state._balls.size()) << "/" << std::to_string(expectedBallCounts[imageIndex]) << " balls detected" << std::endl;
+            }
         }
+
+#ifdef NDEBUG
+        imageIndex++;
+        imageChanged = true;
+        if (imageIndex == imagePaths.size()) {
+            return;
+        }
+#endif
 
         char key = (char) cv::waitKey(30);
         if (key == 'q' || key == 27) {
