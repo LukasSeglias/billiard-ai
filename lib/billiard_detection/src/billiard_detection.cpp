@@ -499,12 +499,14 @@ namespace billiard::detection {
             double tableWidth = table.innerTableWidth;
             double pixelsPerMillimeterY = resolutionY / tableWidth;
 
+#ifdef BILLIARD_DETECTION_DEBUG_OUTPUT
             std::cout << " resolutionX: " << resolutionX
                       << " tableLength: " << tableLength
                       << " resolutionY: " << resolutionY
                       << " tableWidth: " << tableWidth
                       << " pixels per millimeter in X/Y: " << pixelsPerMillimeterX << "/" << pixelsPerMillimeterY
                       << std::endl;
+#endif
 
             double pixelsPerMillimeter = pixelsPerMillimeterX; // Take X because that's the longer axis
             config.ballRadiusInPixel = ceil((table.ballDiameter / 2.0) * pixelsPerMillimeter);
