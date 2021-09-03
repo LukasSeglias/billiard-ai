@@ -7,7 +7,7 @@ enable_testing()
 add_executable(${PROJECT_NAME})
 add_custom_command(TARGET ${PROJECT_NAME}
         POST_BUILD
-        
+
         # Copy dependencies to binary folder
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_physics> ${PROJECT_BINARY_DIR}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:gtest_main> ${PROJECT_BINARY_DIR}/

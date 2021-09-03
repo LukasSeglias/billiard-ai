@@ -41,4 +41,4 @@ jobs:
         run: |
           cd ${{ github.workspace }}/build/test/billiard_physics
           make
-          ./billiard_physics_test.exe
+          ./billiard_physics_test
