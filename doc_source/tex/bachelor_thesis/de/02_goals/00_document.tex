@@ -1,0 +1,165 @@
+\chapter{Ziele}
+Ins Billard-Spiel einzusteigen ist nicht ganz einfach. Zu Beginn lässt es sich schlecht abschätzen,
+welchen Weg eine Kugel nehmen wird, wenn man sie anschlägt und den optimalen Stoss über mehrere Züge hinaus zu planen,
+erst recht. Denn bei fortgeschrittenen Spielen ist es oft wichtig, dass die weisse Kugel optimal für den nächsten Stoss
+platziert wird.
+
+Es soll ein System entstehen, das dem Spieler den optimalen Stoss vorschlägt basierend auf Kriterien und
+optional einer festgelegten Tiefe des Spielstands. Dazu soll eine Kamera den Spielstand auf dem Billiartisch erkennen, verarbeiten und
+dem Spieler Hilfestellungen mittels eines Projektors anzeigen.
+
+Diese Arbeit setzt auf bereits geleisteter Tätigkeit aus \glqq{}Projekt 2\grqq{} auf\cite{project2:ziele}. Die
+Tätigkeiten werden nachfolgend beschrieben.
+\begin{description}
+    \item[Vorschlag eines optimalen Stosses] Es wird ein Stoss vorgeschlagen, welcher anhand der gewählten Kugel
+    möglichst optimal ist. Dieser Stoss kann direkt (einfach) oder indirekt (erweitert) sein.
+\end{description}
+
+Es ist weiterhin anzumerken, dass es in erster Linie um Snooker-Billard geht. Dies hat mehrere Gründe. Einerseits soll
+in dieser Arbeit nicht die Klassifikation der Kugeln im Zentrum stehen, sondern die Suche nach einem optimalen Stoss.
+Es wird angenommen, dass dies mit Snooker-Kugeln einfacher ist als mit Pool-Billard-Kugeln. Andererseits wird das
+Projekt zusammen mit einem Unternehmen durchgeführt, welches eventuell auch einen kommerziellen Ansatz verfolgen
+will. Da grössere Turniere wie Weltmeisterschaften in Snooker ausgetragen werden, kam schnell der Wunsch auf, das
+Hauptaugenmerk darauf zu legen. Nichtsdestotrotz wird die Anwendung so abstrakt gehalten, dass sie mit wenig Aufwand
+auf Pool-Billard portiert werden könnte. Dies bildet jedoch kein Ziel der Bachelor-Thesis.
+
+\newpage
+
+\subsection{Planung}
+Die initiale Planung beinhaltet eine Auflistung der Tätigkeiten, dem zugewiesenen Meilenstein sowie
+deren Schätzung in PT (Personen-Tage). Jedem Arbeitspaket wird eine ID zugewiesen,
+welche bei der Zeiterfassung verlinkt wird. Das Total der zu vergebenden PT beträgt 90.
+
+\begin{table}[ht]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llll}
+        \rowcolor{\seccolor!50}
+        ID & Name & Meilenstein & Schätzung in PT\\\bfhmidline
+        T-1 & Klassifikation der Kugeln & M-1 & 6\\\bfhmidline
+        T-2 & Aufsetzen Dokumentation & M-1 & 2\\\bfhmidline
+        T-3 & Beschreibung Suchalgorithmus & M-1 & 3\\\bfhmidline
+        T-4 & Implementation Suchalgorithmus & M-1 & 5\\\bfhmidline
+        T-5 & Beschreibung der physikalischen Eigenschaften für die einfache Suche & M-1 & 6\\\bfhmidline
+        T-6 & Implementation der einfachen Suche und deren Bewertungsfunktion& M-1 & 10\\\bfhmidline
+        T-7 & Beschreibung der physikalischen Eigenschaften für die erweiterte Suche & M-2 & 6\\\bfhmidline
+        T-8 & Implementation der erweiterten Suche und deren Bewertungsfunktion& M-2 & 8\\\bfhmidline
+        T-9 & Überprüfen/Verbessern der Detektionsgenauigkeit & M-1 & 6\\\bfhmidline
+        T-10 & Video erstellen & M-3 & 2\\\bfhmidline
+        T-11 & Plakat schreiben & M-3 & 2\\\bfhmidline
+        T-12 & Booklet-Eintrag schreiben & M-3 & 1\\\bfhmidline
+        T-13 & Präsentation des Finaltags vorbereiten & M-3 & 2\\\bfhmidline
+        T-14 & Präsentation der Verteidung vorbereiten & M-3 & 2\\\bfhmidline
+        T-15 & Finalisieren Dokumentation andere Arbeiten & M-3 & 4\\\bfhmidline
+        T-16 & Projektmanagement & Kein & 4\\\bfhmidline
+        T-17 & Effizienz Erfassung und Steigerung der einfachen Suche & M-1 & 4\\\bfhmidline
+        T-18 & Effizienz Erfassung und Steigerung der erweiterten Suche & M-2 & 2\\\bfhmidline
+        T-19 & Dokumentation der Resultate der einfachen Suche & M-1 & 6\\\bfhmidline
+        T-20 & Dokumentation der Resultate der erweiterten Suche & M-2 & 2\\\bfhmidline
+        T-21 & Umbau in Unity & M-1 & 6\\\bfhmidline
+        O-1 & Suche über mehrere Spielstände & M-2 & \\\bfhmidline
+        O-2 & Detektion des Queues in 2D & M-2 & \\\bfhmidline
+        O-3 & Detektion des Queues in 3D & M-2 & \\\bfhmidline
+        O-4 & Stossberechnung anhand detektiertem Queue in 2D & M-2 & \\\bfhmidline
+        O-5 & Stossberechnung anhand detektiertem Queue in 3D & M-2 & \\\bfhmidline
+        O-6 & Spielerabhängige Heuristik & M-2 & \\\bfhmidline
+        O-7 & Live-Verfolgung und Darstellung der Kugeln & M-2 & \\\bfhmidline
+        \multicolumn{3}{c|}{Total} & 90\\
+    \end{tabular}
+    \caption{Ziele}
+    \label{tab:targets}
+\end{table}
+
+\subsubsection{Meilensteine}
+Es werden drei Meilensteine definiert, welche auch aus optionalen Zielen bestehen können. Die Deadlines ergeben sich
+aus den Schätzungen der zugewiesenen Arbeitspakete.
+
+~\\
+
+\textit{\textbf{Meilenstein 1 - 15.11.2021}}
+Das Ziel ist eine sehr einfache simple Suche. Darunter zu verstehen ist eine Lösung, welche einen direkten Treffer findet
+(Weiss -> Kugel -> Loch).\\
+\textit{Code Deliverables:}
+\begin{description}
+    \item[Klassifikation - T-1]\hfill \\
+    Alle Kugeln können entsprechend ihrere Farbe klassifiziert werden.
+    \item[Suchalgorithmus für einfache Suche - T-4, T-6, T-17]\hfill \\
+    Ein direkter Stoss wird in akzeptabler Zeit gefunden.
+    \item[Unity-Umbau - T-21]\hfill \\
+    Unity ist bereit für den Einsatz. Zum Umbau gehören insbesondere die Farbe der Markierung der Kugeln und deren
+    Bahnen. Weiterhin muss Unity mehrere Suchergebnisse anzeigen können.
+\end{description}
+\textit{Dokumentation Deliverables:}
+\begin{description}
+    \item[Klassifikation - T-1]\hfill \\
+    Das Vorgehen der Klassifikation wie deren Resultate und Genauigkeit sind dokumentiert.
+    \item[Suchalgorithmus für Suche - T-3]\hfill \\
+    Der Algorithmus der Suche ist theoretisch und mit Pseudocode beschrieben.
+    Die theoretische Beschreibung muss nicht gänzlich mit der effektiven Implementation übereinstimmen, da diese auf
+    Performance optimiert wird.
+    \item[Resultate der einfachen Suche - T-19]\hfill \\
+    In den Resultaten ist die Genauigkeit und Performance des einfachen Suchvorgangs
+    beschrieben.
+    \item[Physik der einfachen Suche - T-5]\hfill \\
+    Die benötigte Physik der einfachen Suche ist beschrieben.
+    \item[Bewertungsfunktion - T-6]\hfill \\
+    Die Bewertungsfunktion der einfachen Suche ist dokumentiert.
+\end{description}
+
+~\\
+
+\textit{\textbf{Meilenstein 2 - 13.12.2021}}
+Das Ziel ist eine erweiterte Suche, die auch indirekte Stösse über weitere Kugeln oder Banden finden kann.
+Optional sollen auch mehrere Stösse berücksichtigt werden.\\
+\textit{Code Deliverables:}
+\begin{description}
+    \item[Suchalgorithmus für erweiterte Suche - T-8, T-18]\hfill \\
+    Ein indirekter Stoss wird in akzeptabler Zeit gefunden.
+    \item[Suchalgorithmus über mehrere Stösse - O-1]\hfill \\
+    Es werden mehrere Spielstände bei der Suche berücksichtigt.
+    \item[Queue in 2D detektieren - O-2]\hfill \\
+    Der Queue wird als 2D-Objekt detektiert.
+    \item[Queue in 3D detektieren - O-3]\hfill \\
+    Der Queue wird mittels Tiefeninformationen der Kamera als 3D-Objekt detektiert.
+    \item[Stossberechnung anhand detektiertem 2D-Queue - O-4]\hfill \\
+    Der Stoss wird je nach Haltung des Queues in 2D berechnet. Es wird angenommen, dass der Queue zentral auf die
+    weisse Kugel gerichtet ist.
+    \item[Stossberechnung anhand detektiertem 3D-Queue - O-5]\hfill \\
+    Der Stoss wird je nach Haltung des Queues in 3D berechnet. Der Queue muss nicht mehr zentral auf die weisse
+    Kugel gerichtet sein.
+    \item[Spielerabhängige Heuristik - O-6]\hfill \\
+    Je nach Spieler kann eine andere Heuristik zur Bewertung der Stösse eingestellt werden. Durch die Unterscheidung
+    können für professionelle Spieler erfolgsversprechendere schwerer durchzuführende und für Anfänger
+    eher leichtere Stösse gefunden werden.
+    \item[Live-Verfolgung und Darstellung der Kugeln - O-7]\hfill \\
+    Die Kugeln werden ohne Benutzereingabe getrackt und deren Position über den Projektor dargestellt.
+\end{description}
+\textit{Dokumentation Deliverables:}
+\begin{description}
+    \item[Physik der erweiterten Suche - T-7]\hfill \\
+    Die benötigte Physik der erweiterten Suche ist beschrieben.
+    \item[Resultate der erweiterten Suche - T-20]\hfill \\
+    In den Resultaten ist die Genauigkeit und Performance des erweiterten Suchvorgangs
+    beschrieben.
+    \item[Bewertungsfunktion - T-8]\hfill \\
+    Die Bewertungsfunktion der erweiterten Suche ist dokumentiert.
+\end{description}
+
+~\\
+
+\textit{\textbf{Meilenstein 3 - 17.01.2022}}
+Das Ziel ist der Abschluss aller Arbeiten zu denen auch Plakat, Booklet oder Video gehören.\\
+\textit{Deliverables:}
+\begin{description}
+    \item[Video - T-10]\hfill \\
+    Das finale Video ist erstellt.
+    \item[Plakat - T-11]\hfill \\
+    Das Plakat ist erstellt.
+    \item[Booklet - T-12]\hfill \\
+    Der Booklet-Eintrag ist erstellt.
+    \item[Präsentation für Finaltag - T-13]\hfill \\
+    Die Präsentation/Ausstellung für den Finaltag ist vorbereitet.
+    \item[Präsentation für Verteidigung - T-14]\hfill \\
+    Die Präsentation für die Verteidigung ist vorbereitet.
+    \item[Finalisieren der Arbeiten - T-15]\hfill \\
+    Die Dokumentation wie auch der Code sind abgeschlossen.
+\end{description}
