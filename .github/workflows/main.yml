@@ -1,0 +1,44 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v2
+
+      - name: Update ubuntu
+        run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get dist-upgrade
+
+      - name: Install prerequisites for librealsense
+        run: |
+          sudo apt-get install git libssl-dev libusb-1.0-0-dev pkg-config libgtk-3-dev
+          sudo apt-get install libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev at
+
+      # Run CMake
+      - name: Run CMake
+        run: |
+          cd ${{ github.workspace }}
+          mkdir build
+          cd build
+          cmake ../ -DCMAKE_BUILD_TYPE=Release
+
+      # Build and run billiard-capture-test
+      - name: Run billiard physics test
+        run: |
+          cd ${{ github.workspace }}/build/test/billiard_physics
+          make
+          ./billiard_physics_test.exe
