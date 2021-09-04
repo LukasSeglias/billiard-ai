@@ -14,8 +14,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  linux-build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test: [billiard_physics]
     steps:
       - name: Check out project
         uses: actions/checkout@v2
@@ -37,8 +40,39 @@ jobs:
           cmake ../ -DCMAKE_BUILD_TYPE=Release
 
       # Build and run billiard-capture-test
-      - name: Run billiard physics test
+      - name: Build and run test
         run: |
-          cd ${{ github.workspace }}/build/test/billiard_physics
+          cd ${{ github.workspace }}/build/test/${{ matrix.test }}
           make
-          ./billiard_physics_test
+          ./${{ matrix.test }}_test
+
+  windows-build:
+    runs-on: windows-2022
+    strategy:
+      matrix:
+        test: [ billiard_physics ]
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v2
+
+      - name: Install ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
+
+      # Run CMake
+      - name: Run CMake
+        shell: cmd
+        run: |
+          cd ${{ github.workspace }}
+          mkdir build
+          cd build
+          call "C:\Program Files\Microsoft Visual Studio\2022\Preview\VC\Auxiliary\Build\vcvars64.bat"
+          cmake ../ -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DOpenCV_DIR="%cd%\ext\opencv\opencv" -DOpenCV_FOUND=true
+        # cmake ../ -G "Visual Studio 17 2022" -DCMAKE_CONFIGURATION_TYPES=Release -DCMAKE_GENERATOR_PLATFORM=x64 -A x64
+
+      # Build and run billiard-capture-test
+      - name: Build and run test
+        run: |
+          cd ${{ github.workspace }}/build/test/${{ matrix.test }}
+          cmake --build .
+          ${{ matrix.test }}_test.exe
+        # cmake --build . --config Release
