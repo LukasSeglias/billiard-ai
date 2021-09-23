@@ -73,54 +73,20 @@ public class PickableManagerBehaviour : MonoBehaviour
 		}
 		
 		if (currentSelected != null) {
-			circleRenderer = getRenderer(currentSelected);
-			circleRenderer.material.color = currentSelected.GetComponent<MeshRenderer>().material.color;
-			circleRenderer.positionCount = segments + 2;
+			Utility.drawCircle(new List<GameObject> {currentSelected}, radius, segments);
+			circleRenderer = currentSelected.GetComponent<LineRenderer>();
 			
 			var pickableInfo = currentSelected.GetComponent<PickableInformation>();
 			if (pickableInfo.picked == 2) {
 				Color matColor = circleRenderer.material.color;
 				circleRenderer.material.color = new Color(matColor.r, matColor.g, matColor.b, 0.5f);
 			}
-			
-			CreatePoints (circleRenderer);
 		}
     }
-	
-	private LineRenderer getRenderer(GameObject currentSelected) {
-		LineRenderer circleRenderer = currentSelected.GetComponent<LineRenderer>();
-		if (circleRenderer != null) {
-			return circleRenderer;
-		}
-		circleRenderer = currentSelected.AddComponent<LineRenderer>();
-		circleRenderer.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-		circleRenderer.startWidth = 0.02f;
-		circleRenderer.endWidth = 0.02f;
-		circleRenderer.useWorldSpace = false;
-		return circleRenderer;
-	}
 	
 	private void clear() {
 		if (circleRenderer != null) {
 			circleRenderer.positionCount = 0;			
 		}
 	}
-	
-	private void CreatePoints (LineRenderer circleRenderer) {
-        float x;
-        float y;
-
-        float angle = 0f;
-		float angleStep = 360f / segments;
-
-        for (int i = 0; i < (segments + 2); i++)
-        {
-            y = Mathf.Cos (Mathf.Deg2Rad * angle) * radius;
-            x = Mathf.Sin (Mathf.Deg2Rad * angle) * radius;
-
-            circleRenderer.SetPosition(i, new Vector3(x, y, 0));
-
-            angle += angleStep;
-        }
-    }
 }

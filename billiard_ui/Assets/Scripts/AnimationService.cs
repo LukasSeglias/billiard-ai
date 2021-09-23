@@ -16,13 +16,23 @@ public class AnimationService : MonoBehaviour
 	////////////////////////////////////////////////////////////////////
 	public static event Action<RootObject> OnAnimationReceived;
 	public static event Action OnCaptureState;
+	
+	private static bool doCapture;
+	private static bool liveMode;
+	private static bool skipCapture;
 
 	void Start() {
+		doCapture = false;
+		liveMode = false;
+		
 		onStart();
 		debugger((message) => Debug.Log(message));
 			
 		// Register native events
-		onAnimationChangedEvent((rootObject) => OnAnimationReceived?.Invoke(map(rootObject)));
+		onAnimationChangedEvent((rootObject) => {
+			OnAnimationReceived?.Invoke(map(rootObject));
+			skipCapture = true;
+		});
 	}
 	
 	void OnApplicationQuit() {
@@ -32,6 +42,19 @@ public class AnimationService : MonoBehaviour
 	
 	void FixedUpdate() {
 		processEvents();
+	}
+	
+	void Update() {
+		if (doCapture) {
+			doCapture = false;
+			capture();
+		}
+		
+		if (liveMode && !skipCapture) {
+			captureState();
+		}
+		
+		skipCapture = false;
 	}
 	
 	public static void setConfiguration(Configuration config) {
@@ -46,12 +69,18 @@ public class AnimationService : MonoBehaviour
 	}
 	
 	public static void captureState() {
-		OnCaptureState?.Invoke();
-		capture();
+		if (!doCapture) {
+			OnCaptureState?.Invoke();
+			doCapture = true;
+		}
 	}
 	
 	public static void searchSolution(Search value) {
 		search(map(value));
+	}
+	
+	public static void live(bool live) {
+		liveMode = live;
 	}
 
 	////////////////////////////////////////////////////////////////////

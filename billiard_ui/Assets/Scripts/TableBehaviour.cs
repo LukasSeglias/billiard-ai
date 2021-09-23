@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
@@ -32,6 +33,7 @@ public class TableBehaviour : MonoBehaviour
     private int animationIndex = 0;
 	private List<GameObject> railSegments;
 	private List<GameObject> targets;
+	private bool isLive = false;
 	
 	// Start is called before the first frame update
     void Start()
@@ -113,9 +115,16 @@ public class TableBehaviour : MonoBehaviour
 			if (animator != null) {
 				animator.togglePositions();	
 			}
+		} else if (Input.GetKeyDown(KeyCode.L)) {
+			isLive = !isLive;
+			AnimationService.live(isLive);
 		}
 		
-		if (isPlaying) {
+		if (isLive) {
+			if (animator != null) {
+				animator.selectAllBalls();
+			}
+		} else if (isPlaying) {
 			animate(Time.deltaTime);
 		}
     }
@@ -157,8 +166,8 @@ public class TableBehaviour : MonoBehaviour
 			LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
 			lRend.enabled = false;
 			lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-			lRend.startColor = Color.red;
-			lRend.endColor = Color.red;
+			lRend.startColor = Color.white;
+			lRend.endColor = Color.white;
 			lRend.startWidth = 0.02f;
 			lRend.endWidth = 0.02f;
 			lRend.SetPosition(0, position(convert(segment.start, 0), heightStretching, widthStretching));
@@ -177,8 +186,8 @@ public class TableBehaviour : MonoBehaviour
 			LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
 			lRend.enabled = false;
 			lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-			lRend.startColor = Color.red;
-			lRend.endColor = Color.red;
+			lRend.startColor = Color.white;
+			lRend.endColor = Color.white;
 			lRend.startWidth = 0.02f;
 			lRend.endWidth = 0.02f;
 			lRend.sortingOrder = 0;
@@ -209,7 +218,7 @@ public class TableBehaviour : MonoBehaviour
     }
 	
 	private void disableInterface() {
-		Background.transform.position = new Vector3(0, 0, -0.8f);
+		//Background.transform.position = new Vector3(0, 0, -0.8f);
 	}
 	
 	private void enableInterface() {
@@ -272,7 +281,7 @@ public class TableBehaviour : MonoBehaviour
 				textObject.transform.SetParent(ballObject.transform, false);
 				textObject.transform.localPosition = new Vector3(0, -2, 0);
 				textObject.GetComponent<RectTransform>().sizeDelta = new Vector2(5, 2);
-				updateLocationText(ball.id, ballObject);
+				updateLocationText(ball.id, ball.type, ballObject);
 				
 				ballObjects.Add(ball.id, ballObject);
 			}
@@ -280,6 +289,14 @@ public class TableBehaviour : MonoBehaviour
 			
 			reset();
 			drawLines(mappedMaterials);
+		}
+		
+		public void selectAllBalls() {
+			Utility.drawCircle(ballObjects.Values.ToList(), 1, 50);
+			foreach (var line in lines) {
+				line.SetActive(false);
+			}
+			togglePositions();
 		}
 		
 		public void drawLines(Dictionary<string, Material> mappedMaterials) {
@@ -298,7 +315,7 @@ public class TableBehaviour : MonoBehaviour
 						lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
 						Gradient gradient = new Gradient();
 						gradient.SetKeys(
-							new GradientColorKey[] { new GradientColorKey(mappedMaterials[startBall.type].color, 1.0f), new GradientColorKey(mappedMaterials[startBall.type].color, 1.0f) },
+							new GradientColorKey[] { new GradientColorKey(Color.white, 1.0f), new GradientColorKey(Color.white, 1.0f) },
 							new GradientAlphaKey[] { new GradientAlphaKey(alpha, alpha), new GradientAlphaKey(alpha, alpha) }
 						);
 						lRend.colorGradient = gradient;
@@ -318,6 +335,10 @@ public class TableBehaviour : MonoBehaviour
 			this.time = 0;
 			this.startFrameIndex = 0;
 			this.animateQueue = true;
+			
+			foreach (var line in lines) {
+				line.SetActive(true);
+			}
 			
 			KeyFrame start = this.frames[this.startFrameIndex];
 			KeyFrame end = this.frames[this.startFrameIndex + 1];
@@ -397,7 +418,7 @@ public class TableBehaviour : MonoBehaviour
 							
 					ballObject.SetActive(true);
 					updatePosition(startBall, endBall, ballObject, duration, timeDeltaInAnimationWindow);
-					updateLocationText(startBall.id, ballObject);
+					updateLocationText(startBall.id, startBall.type, ballObject);
 				} else {
 					ballObject.SetActive(false);
 				}
@@ -448,11 +469,11 @@ public class TableBehaviour : MonoBehaviour
 			return !isFinished;
 		}
 		
-		private void updateLocationText(string id, GameObject ball) {
+		private void updateLocationText(string id, string type, GameObject ball) {
 			var textObject = ball.transform.Find(id + "_Position").gameObject;
 			var pos = new Vec2{x = ball.transform.position.x, y = ball.transform.position.y};
 			var invPos = invPosition(pos, heightStretching, widthStretching);
-			textObject.GetComponent<TMPro.TextMeshPro>().SetText(string.Format("[{0:F4}; {1:F4}]", invPos.x, invPos.y));
+			textObject.GetComponent<TMPro.TextMeshPro>().SetText(string.Format("[{0:F4}; {1:F4}]\n{2}", invPos.x, invPos.y, type));
 		}
 		
 		private void mayUpdateAnimationWindow(double time, KeyFrame[] frames) {
