@@ -1,4 +1,4 @@
-\section{Modellierung physikalisches System}
+\section{Modellierung physikalisches System}\label{kap:physikalisches_system}
 Der in Kapitel \ref{kap:algorithmus_suche} beschriebene Algorithmus benötigt ein möglichst optimales Datenmodell,
 um effizient arbeiten zu können.
 
@@ -106,8 +106,8 @@ Auf dem Tisch liegt eine weisse wie auch zwei rote Kugeln. Die zweite rote Kugel
 weswegen sie ihren Zustand nie verändert. Es ist ersichtlich, dass bei jedem Ereignis jeweils ein \glqq Out-of-energy-Node\grqq{}
 eingefügt wird. Das erste Event beschreibt die Kollision des dynamischen Objekts \glqq weisse Kugel\grqq{} sowie des
 statischen Objekts \glqq rote Kugel\grqq{}. Danach verliert die weisse Kugel sämtliche Energie und wechselt in den
-Status \glqq{} Out-of-energy\grqq{}. Da die rote Kugel zu diesem Zeitpunkt dynamisch ist, wird für sie ein
-\glqq{} Cutting-Node\grqq{} eingefügt. Zuletzt verlässt die rote Kugel das System, für sie wird ein \glqq{} Out-of-system-Node\grqq{}
+Status \glqq Out-of-energy\grqq{}. Da die rote Kugel zu diesem Zeitpunkt dynamisch ist, wird für sie ein
+\glqq Cutting-Node\grqq{} eingefügt. Zuletzt verlässt die rote Kugel das System, für sie wird ein \glqq Out-of-system-Node\grqq{}
 erstellt und das System hat sämtliche Energie verloren. Ein Endzustand wurde erreicht. Es gilt weiterhin die Beschreibung
 auf der linken Seite der Keyframes zu beachten. Ein Layer definiert immer deren zwei Keyframes, sofern es sich nicht um
 den Input- oder Output-Layer handelt. Um den Zustand des Systems zu einem beliebigen Zeitpunkt zu berechnen, kann
@@ -158,4 +158,4 @@ geprüft. Bei der Kollision mit konstanten Objekten können die Ereignisse \glqq
 System\grqq{} auftreten. Weiterhin wird geprüft, ob ein dynamisches Objekt seine Energie durch die Kantenfunktion
 verliert. Auf Basis dieses Events wird dann ein neuer Layer generiert, welcher für die am Event beteiligten Objekte
 den entsprechenden Node einfügen und für die anderen variablen Objekte entweder ein \glqq Cutting-Node\grqq{} oder ein
-\glqq{} Out-of-energy-Node\grqq{} berechnet wird.
+\glqq Out-of-energy-Node\grqq{} berechnet wird.

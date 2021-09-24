@@ -1,0 +1,47 @@
+\subsection{Simulation}
+Sobald ein möglicher Lösungskandidat gefunden wurde, wird eine Simulation durchgeführt, um
+die Lösung definitiv zu bestätigen. Durch das Anwenden verschiedener Input-Energien können in diesem Schritt mehrere
+Situationen evaluiert werden.
+\\
+
+Die Simulation wird durch die Definition eines physikalischen Systems wie in Kapitel \ref{kap:physikalisches_system} durchgeführt.
+Hierbei gelten die Zuordnungen wie sie nachfolgend beschrieben werden.\\
+\textbf{Ereignisse}
+\begin{description}
+    \item[Energy-Input-Node] Wird modelliert über die Eingabe der Energie der weissen Kugel. Ein spezifischer Node zur
+    Modellierung wird nicht implementiert, es wird der Energy-Transfer-Node verwendet, wobei nur der Output-Wert relevant ist.
+    \item[Energy-Transfer-Node] Tritt bei der Kollision zwischen zweier Kugeln oder einer Kugel mit der Bande auf.
+    \item[No-Energy-Node] Tritt auf, wenn eine Kugel vom dynamischen in den statischen Zustand wechselt (ausrollt). In jedem
+    Layer, wo eine Kugel statisch ist, wird sie durch diesen Node modelliert.
+    \item[Out-of-System-Node] Sobald eine Kugel mit dem Zielkreis kollidiert, tritt dieses Ereignis auf. Dem System wird die
+    Energie entzogen und die Kugel ist nicht mehr verfügbar.
+\end{description}
+
+\textbf{Kantenfunktion}
+Die Kantenfunktion zwischen den Übergängen innerhalb des Layers bildet der Reibungsverlust der
+Kugel über eine bestimmte Zeit oder einen bestimmten Ort.
+
+\textbf{Dynamische/Statische Objekte}
+Im Billiard gibt es nur die Kugeln als statische und/oder dynamische Objekte.
+
+\textbf{Konstante Objekte}
+Die konstanten Objekte bilden die Banden wie auch die Ziele.
+\\
+
+Es wird ungefähr der Pseudoalgorithmus wie in \ref{alg:physikalisches_system} angewendet, optimal auf das Problem \glqq{} Billiard\grqq{}
+abgestimmt. Es folgen die physikalischen Berechnungen zur Durchführung der Simulation.
+
+\subsubsection{Reibungsverlust über Strecke}
+TODO: T-5 Reibungsverslut über eine Strecke
+
+\subsubsection{Ereignis Out-Of-Energy}
+TODO: T-5 Auftrittszeitpunkt Out-Of-Energy über Reibungsverlust
+
+\subsubsection{Ereignis Energy-Transfer über Kugelkollision}
+TODO: T-5 Kollision mit Kugeln (statisch/dynamisch) berechnen
+
+\subsubsection{Ereignis Energy-Transfer über Bandenkollision}
+TODO: T-5 Kollision mit Banden berechnen.
+
+\subsubsection{Ereignis Out-Of-System}
+TODO: T-5 Kollision mit Zielkreis berechnen.

@@ -49,6 +49,7 @@ style=alphabetic,
 
 \usepackage{subcaption}
 \usepackage{pdfpages}
+\usepackage{tabularx}
 
 \newcommand{\norm}[1]{\lvert #1 \rvert}
 
@@ -120,8 +121,6 @@ style=alphabetic,
     \mainmatter % The main part
 %**************************************************************************
 %\part{Part One}
-   \includepdf[pages=-]{../common/resources/01_erklaerung.pdf}
-   \includepdf[pages=-]{../common/resources/01_erklaerung.pdf}
    \include{00_summary/00_document}
    \include{01_introduction/00_document}
    \include{02_goals/00_document}
@@ -138,6 +137,9 @@ style=alphabetic,
     \printbibliography
 % Glossary
 %    \printunsrtglossary[style={index}]
+
+    \includepdf[pages=-]{../common/resources/01_erklaerung.pdf}
+    \includepdf[pages=-]{../common/resources/01_erklaerung.pdf}
 
 % Appendices
     \include{07_appendix/00_document}

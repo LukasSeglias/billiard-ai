@@ -1,0 +1,79 @@
+\subsection{Berechnungsprozess}
+Die Berechnung eines optimalen Stosses wird aufgrund der vielen Möglichkeiten sehr zeitintensiv, weswegen
+die expandierten Teilschritte parallel gerechnet werden.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.8\linewidth]{../common/03_billiard_ai/resources/14_berechnungsprozess.png}
+    \end{center}
+    \caption{Berechnungsprozess}
+    \label{fig:berechnungsprozess}
+\end{figure}
+
+Abbildung \ref{fig:berechnungsprozess} erläutert die Durchführung dieser Expansionsschritte. Die Applikation auf der
+linken Seite repräsentiert in erster Linie den Code zur Expansion eines Nodes der Suche eines Lösungskandidaten oder Simulation.
+Diese ist weiterhin verantwortlich für die Durchführung der Suche an sich. Die Applikation benutzt für die Parallelisierung
+den Prozessmanager. Datenaustausche werden über gefärbte Kreise repräsentiert. Handelt es sich um einen asynchronen
+Datenaustausch, dann ist der entsprechende Kreis heller eingefärbt und die Verbindungslinie ist durch einen nicht
+ausgefüllten Punkt ausgezeichnet. Es werden die Farben Rot den zu bearbeitenden Daten,
+Gelb den Konfigurationsdaten und Grün den Resultaten zugeordnet. Signale sind durch ein ausgefülltes Quadrat an der
+Verbindungslinie gekennzeichnet. Das Signal oder die Daten sind jeweils beim Empfänger angegeben. Repetitive Aufgaben
+sind durch ein hinterlegtes oranges Rechteck markiert.
+\\
+
+Bei der Erstellung des Prozessmanagers werden alle Konfigurationen mitgeliefert. Der Prozessmanager erzeugt während seiner
+Instanziierung die Prozesse, welche ebenfalls direkt konfiguriert werden. Die Prozesse laufen nun im Hintergrund und
+warten auf Daten.\\
+
+Erhält die Applikation eine Suchanfrage, ruft sie in einem ersten Schritt den Prozessmanager auf.
+Dieser nimmt noch zu berechnende Daten entgegen. Im Fall von Billard sind dies die Root-Nodes des Suchbaums.
+Jeder Root-Node repräsentiert ein Loch. Der Prozessmanager gibt in dem Fall eine Datenstruktur zurück, welche es erlaubt,
+in Zukunft auf die Anfrage zu antworten. In dieser Antwort werden die Resultate geliefert. Der Ablauf des Hauptprozesses
+sieht vor, dass zuerst versucht wird, die Berechnung abzuschliessen. Dies ist der Fall, wenn entweder genügend Lösungen
+gefunden wurden oder die maximal zur Verfügung stehende Zeit abgelaufen ist. Sollte die Berechnung nicht abgebrochen
+werden, dann werden die offenen Anfragen der Berechnungsprozesse beantwortet. Der Prozessmanager verteilt alle ihm
+gemeldeten noch zu bearbeitenden Daten an die einzelnen Berechnungsprozesse und legt sich danach für eine Weile schlafen.
+In einem Zyklus eines Berechnungsprozesses wird zuerst geprüft, ob eine Berechnung abgebrochen werden soll. Dies ist der
+Fall, wenn der Prozessmanager ein \glqq Clear-Signal\grqq{} gesendet hat. Dieses Signal tritt auf, wenn eine neue
+Berechnung gestartet oder wenn eine aktuell Laufende erfolgreich beendet oder abgebrochen wird.
+Der Berechnungsprozess stellt in einem nächsten Schritt eine Datenanfragen an den Prozessmanager, sollte keine offene oder
+noch nicht bearbeitete Anfrage existieren. Danach erfolgt die Prüfung, ob die Zeit zwischen einem Synchronisationsschritt
+abgelaufen ist. In dem Fall liefert der Berechnungsprozess seine besten weiterzuführenden Berechnungen wie auch Resultate
+dem Prozessmanager. Er wird demnach für eine Weile an weniger erfolgsversprechenden Resultaten weiterarbeiten. In einem
+weiteren Schritt wird geprüft, ob eine Datenanfrage bereits beantwortet wurde. Ist dies der Fall, so werden die
+Daten den zu bearbeitenden Daten des Berechnungsprozesses hinzugefügt. Zuletzt erfolgt der Expansionsschritt, wobei der
+erfolgsversprechendste Kandidat expandiert wird.
+\\
+
+Die Synchronisation zwischen den Prozessen wird in Abbildung \ref{fig:berechnungsprozess_synchronisation} erläutert.
+Sie findet nach einer konfigurierten Zeit $k$ statt. Diese wird in Millisekunden $[ms]$
+angegeben. Da die Synchronisation ein exklusives Verwenden einer geteilten Ressource erfordert, um die erledigte Arbeit
+dem Prozessmanager mitzuteilen, erhalten alle laufenden Prozesse (dies umfasst den Hauptprozess des Prozessmanagers wie auch
+alle Berechnungsprozesse) ein Zeitfenster zugeteilt, welches nach $k$ Millisekunden startet. Danach kann jeder Prozess nach
+$k + i \cdot n$, wobei $i$ für die Prozessid beginnend bei $0$ und $n$ für das Zeitfenster einer Synchronisation steht,
+mit der Synchronisation beginnen. Es wird so verhindert, dass zu viele Prozesse auf die Ressource des Prozessmanagers
+warten müssen und untätig bleiben. Ein weiterer Vorteil dabei ist die Tatsache, dass in der Zeit der Synchronisation
+einige Prozesse Zeit erhalten, um eher schlechter bewertete Kandidaten weiterzuverfolgen. Dadurch ist es möglich,
+dass ein sehr gutes Ergebnis gefunden werden kann, obwohl dessen Kandidat anfänglich als schlecht beurteilt wurde.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.8\linewidth]{../common/03_billiard_ai/resources/15_berechnungsprozess_synchronisation.png}
+    \end{center}
+    \caption{Berechnungsprozesssynchronisation}
+    \label{fig:berechnungsprozess_synchronisation}
+\end{figure}
+
+Die Abbildung \ref{fig:berechnungsprozess_synchronisation} zeigt den Hauptprozess wie auch zwei Berechnungsprozesse, welche
+eine Synchronisation nach $k$ Millisekunden durchführen. Grüne Spalten stehen hierbei für die Zeit, welche für die Berechnung
+einer Lösung verwendet wird, also als produktiv bezeichnet werden kann. Rote Spalten hingegen signalisieren den unproduktiven
+Overhead, der bei der Synchronisation entsteht. Der Prozessmanager macht nebst seinem Synchronisationsfenster nichts,
+weswegen seine Spalten grau markiert sind. Eine mögliche Verbesserung wäre die Auslastung des Prozessmanagers mit zusätzlicher
+Berechnungsarbeit, wie sie die Berechnungsprozesse durchführen.
+\\
+
+Die Kandidaten, welche die Berechnungsprozesse dem Hauptprozess mitteilen, werden über eine heuristische Funktion bewertet
+und dementsprechend priorisiert. Sobald alle Berechnungsprozesse ihre Kandidaten dem Hauptprozess übergeben haben,
+priorisiert dieser die Kandidaten und verteilt sie zurück auf die Berechnungsprozesse über deren offenen Datenanfragen.
+Dadurch wird sichergestellt, dass jeder Berechnungsprozess an den optimalsten Kandidaten weiterarbeitet, um möglichst
+schnell möglichst gute Lösungen zu finden.
