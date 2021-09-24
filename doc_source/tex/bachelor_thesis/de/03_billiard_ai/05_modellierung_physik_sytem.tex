@@ -1,30 +1,39 @@
 \section{Modellierung physikalisches System}\label{kap:physikalisches_system}
-Der in Kapitel \ref{kap:algorithmus_suche} beschriebene Algorithmus benötigt ein möglichst optimales Datenmodell,
-um effizient arbeiten zu können.
+Ein Stoss kann für die Simulation mithilfe eines Modells beschrieben werden.
+Dieses Modell beschreibt den Ablauf eines Stosses durch Ereignisse, welche den beteiligten Objekten wiederfahren.
+Die Kugeln, Banden und Löcher sind die Objekte dieses Modells.
+Jedes Objekt dieses Modells hat einen veränderlichen Energiewert, bsp. sind Kugeln in Bewegung oder sie sind ruhend.
+Eine Bande oder ein Loch bewegen sich nie, d.h. deren Energiewert ist konstant 0.
+Kollisionen zweier Kugeln oder einer Kugel und der Bande sind beispiele von Ereignissen, welche Veränderungen
+der Energiezustände der Objekte bewirken.
 
-Das Modell beschreibt den Ablauf durch Effekte, wie zum Beispiel Kollisionen, welche auftreten.
-Das Modell wird in drei Teile gegliedert.
-Zum Einen gibt es Objekte, welche entweder variabel oder konstant sind.
-Variabel sind sie, sobald sie einen Energiewert besitzen, der sich über die Zeit oder durch
-Interaktionen mit anderen Objekten verändert.
-Konstant sind sie, wenn sie einen fixen Energiewert haben. Dieser kann auch 0 sein.
-Weiterhin gibt es Ereignisse (Events), welche Schlüsselveränderungen im System signalisieren.
-Zu guter Letzt existiert eine Kantenfunktion, die zwischen den Ereignissen auf den Status des Objekts angewendet werden kann.
+Objekte, die einen Energiewert besitzen, welcher sich über die Zeit oder durch Interaktionen mit anderen Objekten verändert,
+werden nachfolgend variabel genannt. Sofern ein variables Objekt einen Energiewert grösser 0 hat,
+dann wird es weiter als dynamisch bezeichnet. Sobald es den Energiewert 0 erreicht, ist es als statisches
+variables Objekt kategorisiert.
+Banden und Löcher, welche einen fixen Energiewert besitzen, werden als konstant beschrieben.
 
-\subsection{Objekte}
-Wie bereits erwähnt existieren zwei Arten von Objekten:
-\begin{description}
-    \item[Variabel] Energiewert ändert sich. Variable Objekte werden dynamisch genannt, sofern sie einen Energiewert grösser
-    0 haben und werden statisch genannt, sobald der Energiewert 0 erreicht.
-    \item[Konstant] Energiewert ändert sich nicht.
-\end{description}
+Zwischen den Ereignissen kann eine Energieabnahme stattfinden. Beispielsweise unterliegt eine rollende Kugel der
+Rollreibung und verliert dadurch bis zum nächsten Ereignis Energie.
+Diese Energieabnahme erfolgt durch die Anwendung der Kantenfunktion auf der Kante zwischen zwei Ereignissen.
+
+Diese Nomenklatur ist in Abbildung \ref{fig:physical_model_object_categories} ersichtlich.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/17_physical_model_categories.png}
+    \end{center}
+    \caption{Typen von Objekten}
+    \label{fig:physical_model_object_categories}
+\end{figure}
 
 \newpage
 \subsection{Ereignisse und ihre Repräsentation}
 Das Ziel ist der Aufbau eines graphenähnlichen Konstrukts, welches aus Layern besteht und Zustandsübergänge variabler
-Objekte durch Knoten repräsentiert. Einige dieser Knoten treten bei Ereignissen wie einer Kollision oder das Verlassen des Systems
-auf. Andere Knoten dienen der reinen Abbildung des variablen Objekts innerhalb des Layers. Es werden die nachfolgenden
-Knoten definiert.\\
+Objekte durch Knoten repräsentiert.
+Einige dieser Knoten treten bei Ereignissen wie einer Kollision oder wenn eine Kugel in ein Loch rollt auf.
+Andere Knoten dienen der reinen Abbildung des variablen Objekts innerhalb des Layers.
+Nachfolgend werden die Knoten definiert.
 
 \begin{minipage}[t]{0.2\textwidth}
     \begin{center}
@@ -33,6 +42,7 @@ Knoten definiert.\\
 \end{minipage}\hfill
 \begin{minipage}[t]{0.8\textwidth}
     \textbf{Energy-Input-Node}: Dieser Node beschreibt das Auftreten eines Energie-Inputs von Aussen.
+    Beispielsweise wenn die weisse Kugel mit dem Queue gestossen wird.
 \end{minipage}\vskip.2\baselineskip
 \begin{minipage}[t]{0.2\textwidth}
     \begin{center}
@@ -41,7 +51,7 @@ Knoten definiert.\\
 \end{minipage}\hfill
 \begin{minipage}[t]{0.8\textwidth}
     \textbf{Energy-Transfer-Node (Collision-Node)}: Dieser Node beschreibt die Übergabe von Energie auf die
-    beteiligten Objekte.
+    beteiligten Objekte. Ein Beispiel ist die Kollision zweier Kugeln, wobei diese Energie austauschen.
 \end{minipage}\vskip.2\baselineskip
 Der Energy-Transfer-Node wird in drei Schichten aufgeteilt. Bei der Input-Schicht wird die Kantenfunktion (siehe S. \pageref{cust:Kantenfunktion})
 angewendet. Diese berücksichtigt den Energieverlust bis zum Auftreten des Ereignisses. Die mittlere Schicht beschreibt
@@ -69,7 +79,8 @@ Objekte nach der Energieübergabe.
     \end{center}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.8\textwidth}
-    \textbf{Out-Of-System-Node}: Dieser Node wird eingesetzt, sobald ein variables Objekt das System verlässt.
+    \textbf{Out-Of-System-Node}: Dieser Node wird eingesetzt, sobald ein variables Objekt das System verlässt,
+    indem beispielsweise eine Kugel in ein Loch rollt.
 \end{minipage}\vskip.2\baselineskip
 \begin{minipage}[t]{0.2\textwidth}
     \begin{center}
@@ -89,29 +100,23 @@ Objekte nach der Energieübergabe.
 Die Kantenfunktion beschreibt eine Energieabnahme über die Zeit oder den Weg.
 
 \subsection{Layer} \label{cust:Layer}
-Sobald ein Ereignis auftritt wird ein neuer Layer im System eingefügt. Dieser beinhaltet sämtliche
-Veränderungen der variablen Objekte und beschreibt den Status des Systems komplett. Der erste sowie der letzte Layer sind speziell, da diese eigentlich
-nur deren Halbe sind. Ein Layer wird grundsätzlich in zwei Bereiche aufgeteilt. Es gibt den Inputbereich, welcher den
-Status eines variablen Objektes vor der Energieübertragung, sowie den Outputbereich, welcher den Status
-eines variablen Objektes nach der Energieübertragung beschreibt.
-Um den aktuellen Stand eines Systems zu ermitteln, kann zwischen der Zeit des Outputbereichts von Layer $n-1$ wie der
-Zeit des Inputbereichst von Layer $n$ interpoliert werden.
+Ein Layer beinhaltet sämtliche Veränderungen der variablen Objekte und beschreibt den Status aller Objekte zu diesem Zeitpunkt.
+Sobald ein Ereignis auftritt wird ein neuer Layer im Modell eingefügt.
 
 \subsection{Beispiel eines Graphen}
 Das beschriebene Datenmodell kann als Graph\footnote{Aus effizientsgründen wird auf einen Graphen in der Implementation
-verzichtet. Das System setzt sich aus verschiedenen Layern zusammen, bei welchen die Informationen der Events für jedes
+verzichtet. Das Modell setzt sich aus verschiedenen Layern zusammen, bei welchen die Informationen der Events für jedes
 variable Objekt separat und mit Zugriffszeit $O(1)$ abgelegt werden.} visualisiert werden. Als Beispiel wird die Idee
 eines Billardstosses in Abbildung \ref{fig:Beispiel für ein Resultat des Algorithmus phys_sys} hinzugezogen.
 Auf dem Tisch liegt eine weisse wie auch zwei rote Kugeln. Die zweite rote Kugel wird an keiner Interaktion beteiligt sein,
-weswegen sie ihren Zustand nie verändert. Es ist ersichtlich, dass bei jedem Ereignis jeweils ein \glqq Out-of-energy-Node\grqq{}
-eingefügt wird. Das erste Event beschreibt die Kollision des dynamischen Objekts \glqq weisse Kugel\grqq{} sowie des
+weswegen sie ihren Zustand nie verändert. Es ist ersichtlich, dass bei jedem Ereignis für diese Kugel ein \glqq Out-of-energy-Node\grqq{}
+eingefügt wird.
+Das erste Event beschreibt die Kollision des dynamischen Objekts \glqq weisse Kugel\grqq{} sowie des
 statischen Objekts \glqq rote Kugel\grqq{}. Danach verliert die weisse Kugel sämtliche Energie und wechselt in den
 Status \glqq Out-of-energy\grqq{}. Da die rote Kugel zu diesem Zeitpunkt dynamisch ist, wird für sie ein
-\glqq Cutting-Node\grqq{} eingefügt. Zuletzt verlässt die rote Kugel das System, für sie wird ein \glqq Out-of-system-Node\grqq{}
-erstellt und das System hat sämtliche Energie verloren. Ein Endzustand wurde erreicht. Es gilt weiterhin die Beschreibung
-auf der linken Seite der Keyframes zu beachten. Ein Layer definiert immer deren zwei Keyframes, sofern es sich nicht um
-den Input- oder Output-Layer handelt. Um den Zustand des Systems zu einem beliebigen Zeitpunkt zu berechnen, kann
-jeweils zwischen den KeyFrames $n$ und $n + 1$ zweier Layer interpoliert werden.
+\glqq Cutting-Node\grqq{} eingefügt. Zuletzt rollt die rote Kugel in das Loch, für sie wird ein \glqq Out-of-system-Node\grqq{}
+erstellt und das System hat sämtliche Energie verloren. Ein Endzustand wurde erreicht, da alle Kugeln nun statisch sind.
+
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=0.6\linewidth]{../common/03_billiard_ai/resources/10_datenmodell_beispiel.png}
@@ -156,6 +161,7 @@ Objekte statisch sind (das System hat keine Energie mehr). In jedem Schleifendur
 Die Events können diverser Natur sein. Es werden Kollisionen mit dynamischen, statischen wie auch konstanten Objekten
 geprüft. Bei der Kollision mit konstanten Objekten können die Ereignisse \glqq Energy transfer\grqq{} oder \glqq Out of
 System\grqq{} auftreten. Weiterhin wird geprüft, ob ein dynamisches Objekt seine Energie durch die Kantenfunktion
-verliert. Auf Basis dieses Events wird dann ein neuer Layer generiert, welcher für die am Event beteiligten Objekte
-den entsprechenden Node einfügen und für die anderen variablen Objekte entweder ein \glqq Cutting-Node\grqq{} oder ein
-\glqq Out-of-energy-Node\grqq{} berechnet wird.
+verliert.
+Aufgrund eines Ereignisses wird zunächst ein neuer Layer generiert, dann für die am Ereignis beteiligten Objekte
+den entsprechenden Node und zuletzt für die anderen variablen Objekte entweder ein \glqq Cutting-Node\grqq{} oder ein
+\glqq Out-of-energy-Node\grqq{} eingefügt.
