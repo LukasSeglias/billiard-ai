@@ -45,7 +45,7 @@ Abbildung \ref{fig:backwardsearch_2} zeigt, dass der Suchbaum um einen Knoten er
     \label{fig:backwardsearch_2}
 \end{figure}
 
-In Abbildung \ref{fig:backwardsearch_3} erfolgt der letzte Schritt. Hier sind verschiedene Optionen möglich, bsp.
+In Abbildung \ref{fig:backwardsearch_3} erfolgt der letzte Schritt. Hier sind verschiedene Optionen möglich, bspw.
 könnte die weisse Kugel direkt oder über die Bande an die zuvor gewählte rote Kugel gespielt werden. Es könnte aber auch
 die andere rote Kugel an die zuvor gewählte rote Kugel gespielt werden. Hier wird der Fall betrachtet, dass die weisse Kugel
 indirekt über eine Bande an die zuvor gewählte rote Kugel gespielt wird.
@@ -57,7 +57,9 @@ indirekt über eine Bande an die zuvor gewählte rote Kugel gespielt wird.
     \label{fig:backwardsearch_3}
 \end{figure}
 
-TODO: Algorithmus kurz beschreiben
+Algorithmus \ref{alg:backward_search} verdeutlicht den ablauf der \glqq Expand-Funktion\grqq. Zuerst wird eine
+leere Liste namens \glqq nodes\grqq{} angelegt. Diese wird danach mit Nodes gefüllt, welche entweder durch einen Stoss
+über eine weitere Kugel oder indirekt über die Bande zustande kommen. Die Nodes bilden das Ergebnis der Funktion.
 
 \begin{algorithm}[H]
     \DontPrintSemicolon
@@ -65,8 +67,8 @@ TODO: Algorithmus kurz beschreiben
     \SetKwProg{Fn}{Function}{}{}
     \Fn{\expand{node: Node, constantObjects: list} $\longrightarrow$ list[Node]}{
         nodes $\longleftarrow$ list()\\
-        nodes $\longleftarrow$ append(expandBalls(node, constantObjects))\\
-        nodes $\longleftarrow$ append(expandBank(node, constantObjects))\\
+        nodes $\longleftarrow$ append(expandBalls(node, constantObjects), nodes)\\
+        nodes $\longleftarrow$ append(expandBank(node, constantObjects), nodes)\\
         \KwRet nodes
     }
     \caption{Algorithmus zur Durchführung eines Expansionsschritts bei der Kandidatensuche}
