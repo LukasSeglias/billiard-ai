@@ -67,6 +67,10 @@ public class AnimationService : MonoBehaviour
 		billiardState.ballSize = ballStates.Length;
 		state(billiardState);
 	}
+
+	public static void imageCapture() {
+	    image();
+	}
 	
 	public static void captureState() {
 		if (!doCapture) {
@@ -107,6 +111,9 @@ public class AnimationService : MonoBehaviour
 	
 	[DllImport("unity_adapter", CallingConvention = CallingConvention.Cdecl)]
 	private static extern void capture();
+
+	[DllImport("unity_adapter", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void image();
 	
 	[DllImport("unity_adapter", CallingConvention = CallingConvention.Cdecl)]
 	private static extern void search(Search_t search);

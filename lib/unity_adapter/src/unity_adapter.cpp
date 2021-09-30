@@ -245,6 +245,14 @@ void capture() {
     _animationChangedEventQueue->push(_currentState);
 }
 
+void image() {
+    static int imageNumber = 1;
+    if (cameraCapture) {
+        auto frames = cameraCapture->read();
+        cv::imwrite("screenshot-" + std::to_string(imageNumber++) + ".png", frames.color);
+    }
+}
+
 void search(Search search) {
     // TODO: Capture state
     // TODO: Start search
