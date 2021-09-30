@@ -405,6 +405,8 @@ public class TableBehaviour : MonoBehaviour
 				var textObject = entry.Value.transform.Find(entry.Key + "_Position").gameObject;
 				textObject.GetComponent<TMPro.TextMeshPro>().GetComponent<MeshRenderer>().enabled = !textObject.GetComponent<TMPro.TextMeshPro>().GetComponent<MeshRenderer>().enabled;
 			}
+			this.activeByDefinition = true;
+			toggleBalls();
 		}
 		
 		private void updateBalls(KeyFrame start, KeyFrame end, double time) {
