@@ -142,20 +142,29 @@ den entsprechenden Node und zuletzt für die anderen variablen Objekte entweder 
     \DontPrintSemicolon
     \SetKwFunction{simulate}{simulate}
     \SetKwFunction{nextEvent}{nextEvent}
+    \SetKwFunction{atMoment}{atMoment}
     \SetKwProg{Fn}{Function}{}{}
+    \Struct{Event}{
+        timestamp: datetime\\
+        me: string\\
+        partner: string\\
+        partnerType: [BALL, TARGET, RAIL]\\
+        event: [OutOfEnergy, Collision]\\
+    }
+    \;
     \Fn{\simulate{start: Layer, constantObjects: list} $\longrightarrow$ System}{
         system $\longleftarrow$ System()\\
         system $\longleftarrow$ appendLayer(system, start)\\
         \While{! system.isStatic()}{
             nextEvent $\longleftarrow$ nextEvent(system.lastLayer(), constantObjects)\\
-            layer $\longleftarrow$ atMoment(nextEvent)\\
+            layer $\longleftarrow$ atMoment(system.lastLayer(), nextEvent)\\
             system $\longleftarrow$ appendLayer(system, start)
         }
         \KwRet system
     }
     \;
-    \Fn{\nextEvent{layer: Layer, constantObjects: list} $\longrightarrow$ Node}{
-        nextEvent: Node $\longleftarrow$ none\\
+    \Fn{\nextEvent{layer: Layer, constantObjects: list} $\longrightarrow$ Event}{
+        nextEvent: Event $\longleftarrow$ none\\
         \For{object in layer.dynamicObjects()}{
             nextEvent $\longleftarrow$ min(nextEvent, outOfEnergy(object))\\
             nextEvent $\longleftarrow$ min(nextEvent, collision(object, layer.dynamicObjects()))\\
@@ -163,6 +172,23 @@ den entsprechenden Node und zuletzt für die anderen variablen Objekte entweder 
             nextEvent $\longleftarrow$ min(nextEvent, collision(object, constantObjects))
         }
         \KwRet nextEvent
+    }
+    \;
+    \Fn{\atMoment{layer: Layer, event: Event} $\longrightarrow$ Event}{
+        nextLayer $\longleftarrow$ layer()
+        \For{node in layer.objects()}{
+            \If{node.first == event.me or node.first == event.partner}{
+                nextLayer $\longleftarrow$ append(nodeForEvent(node, event))
+            }
+            \Else{
+                \If{node.second.hasEnergy()}{
+                    nextLayer $\longleftarrow$ append(cuttingNode(node, event.timestamp))
+                }\Else{
+                    nextLayer $\longleftarrow$ append(node, nextLayer)
+                }
+            }
+        }
+        \KwRet nextLayer
     }
     \caption{Algorithmus zum Aufbau eines physikalischen Systems}
     \label{alg:physikalisches_system}
