@@ -352,6 +352,9 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: bdc29fb2509a6b04882a95c7681c217b, type: 2}
   - key: BLACK
     material: {fileID: 2100000, guid: 9296eb178bcf71844a6da438e7a9516a, type: 2}
+  - key: UNKNOWN
+    material: {fileID: 2100000, guid: d7818f7eb54398a4d8c1d5de20429cbf, type: 2}
+  transparent: {fileID: 2100000, guid: 4655613da7739f949b2f5dbfd0a95f01, type: 2}
   infoText: {fileID: 960878234}
   HeightStretching: {fileID: 487807132}
   WidthStretching: {fileID: 487807131}
@@ -971,6 +974,49 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1889006403
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1889006405}
+  - component: {fileID: 1889006404}
+  m_Layer: 0
+  m_Name: ImageCapture
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1889006404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889006403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 124be3c2d63f81242a13661f75409476, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1889006405
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889006403}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2045513748
 GameObject:

@@ -19,6 +19,7 @@ public class TableBehaviour : MonoBehaviour
 	public GameObject Table;
 	public GameObject Background;
 	public List<GameObjectMap> Materials;
+	public Material transparent;
 	public TextMeshPro infoText;
 	public StretchingBehaviour HeightStretching;
 	public StretchingBehaviour WidthStretching;
@@ -88,7 +89,8 @@ public class TableBehaviour : MonoBehaviour
 		}
 		
 		if (animator == null && animations.Length > 0) {
-			animator = new Animator(root, animations[animationIndex].keyFrames, mappedMaterials, config, HeightStretching, WidthStretching, Scale, Queue);
+			animator = new Animator(root, animations[animationIndex].keyFrames, mappedMaterials, transparent, config,
+			    HeightStretching, WidthStretching, Scale, Queue);
 		}
 		
 		if (Input.GetKeyDown(KeyCode.Space)) {
@@ -113,7 +115,7 @@ public class TableBehaviour : MonoBehaviour
 			toggleConfigProperties();
 		} else if (Input.GetKeyDown(KeyCode.D)) {
 			if (animator != null) {
-				animator.togglePositions();	
+				animator.togglePositions();
 			}
 		} else if (Input.GetKeyDown(KeyCode.L)) {
 			isLive = !isLive;
@@ -250,19 +252,25 @@ public class TableBehaviour : MonoBehaviour
 		private readonly StretchingBehaviour widthStretching;
 		private readonly GameObject queue;
 		private readonly float scale;
+		private readonly Material transparent;
+		private readonly Dictionary<string, Material> mappedMaterials;
 		
 		private int startFrameIndex;
 		private bool animateQueue;
 		private double time;
 		private bool activeByDefinition = true;
-		
-		public Animator(RootObject root, KeyFrame[] frames, Dictionary<string, Material> mappedMaterials, Configuration config,
-			StretchingBehaviour heightStretching, StretchingBehaviour widthStretching, float scale, GameObject queue) {
+		private bool debugModeActive = false;
+
+		public Animator(RootObject root, KeyFrame[] frames, Dictionary<string, Material> mappedMaterials, Material transparent,
+		    Configuration config, StretchingBehaviour heightStretching, StretchingBehaviour widthStretching,
+		    float scale, GameObject queue) {
 			this.frames = frames;
 			this.heightStretching = heightStretching;
 			this.widthStretching = widthStretching;
 			this.queue = queue;
 			this.scale = scale;
+			this.transparent = transparent;
+			this.mappedMaterials = mappedMaterials;
 			foreach (var ball in frames[0].balls) {
 				var ballObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 				ballObject.GetComponent<MeshRenderer>().material = mappedMaterials[ball.type];
@@ -296,7 +304,16 @@ public class TableBehaviour : MonoBehaviour
 			foreach (var line in lines) {
 				line.SetActive(false);
 			}
-			togglePositions();
+
+            foreach(KeyValuePair<string, GameObject> entry in ballObjects) {
+            	var textObject = entry.Value.transform.Find(entry.Key + "_Position").gameObject;
+            	textObject.GetComponent<TMPro.TextMeshPro>().GetComponent<MeshRenderer>().enabled = true;
+            }
+
+            foreach (var ballObject in ballObjects.Values) {
+                PickableInformation ballInfo = ballObject.GetComponent<PickableInformation>();
+                ballObject.GetComponent<MeshRenderer>().material = transparent;
+            }
 		}
 		
 		public void drawLines(Dictionary<string, Material> mappedMaterials) {
@@ -401,12 +418,17 @@ public class TableBehaviour : MonoBehaviour
 		}
 		
 		public void togglePositions() {
+		    this.debugModeActive = !this.debugModeActive;
 			foreach(KeyValuePair<string, GameObject> entry in ballObjects) {
 				var textObject = entry.Value.transform.Find(entry.Key + "_Position").gameObject;
-				textObject.GetComponent<TMPro.TextMeshPro>().GetComponent<MeshRenderer>().enabled = !textObject.GetComponent<TMPro.TextMeshPro>().GetComponent<MeshRenderer>().enabled;
+				textObject.GetComponent<TMPro.TextMeshPro>().GetComponent<MeshRenderer>().enabled = this.debugModeActive;
 			}
-			this.activeByDefinition = true;
-			toggleBalls();
+
+			foreach (var ballObject in ballObjects.Values) {
+			    PickableInformation ballInfo = ballObject.GetComponent<PickableInformation>();
+			    var material = this.debugModeActive ? transparent : this.mappedMaterials[ballInfo.type];
+			    ballObject.GetComponent<MeshRenderer>().material = material;
+            }
 		}
 		
 		private void updateBalls(KeyFrame start, KeyFrame end, double time) {
