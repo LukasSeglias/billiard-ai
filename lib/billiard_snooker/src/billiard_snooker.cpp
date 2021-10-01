@@ -8,10 +8,23 @@
         #define BILLIARD_SNOOKER_DEBUG_OUTPUT 1
     #endif
 #endif
+#ifndef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
+    #ifdef NDEBUG
+        #undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
+    #endif
+    #ifndef NDEBUG
+        #define BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT 1
+    #endif
+#endif
+
+// TODO: remove this
+//#undef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
 
 namespace billiard::snooker {
 
     SnookerDetectionConfig config;
+    SnookerClassificationConfig classificationConfig;
 
     bool configure(const billiard::detection::DetectionConfig& detectionConfig) {
 
@@ -33,6 +46,9 @@ namespace billiard::snooker {
         config.innerTableMask = detectionConfig.innerTableMask;
 
         config.valid = true;
+
+        classificationConfig.roiRadius = detectionConfig.ballRadiusInPixel * classificationConfig.roiRadiusFactor;
+        classificationConfig.valid = true;
         return true;
     }
 
@@ -385,13 +401,207 @@ namespace billiard::snooker {
         for (int i = 0; i < imagePoints.size(); i++) {
             auto& point = imagePoints[i];
             billiard::detection::Ball ball;
-            ball._type = "RED"; // TODO: remove this!!!!!!!!!!
+            ball._type = "UNKNOWN";
             ball._id = std::to_string(i);
             ball._position = glm::vec2 {point.x, point.y};
             state._balls.push_back(ball);
         }
 
         return state;
+    }
+
+    /**
+     * Based on https://docs.opencv.org/2.4/doc/tutorials/imgproc/histograms/histogram_calculation/histogram_calculation.html#code
+     */
+    std::vector<Histogram> histogram(const cv::Mat& input) {
+        std::vector<cv::Mat> planes;
+        cv::split(input, planes);
+
+        int histSize = 256;
+        float range[] = { 0, 256 } ;
+        const float* histRange = { range };
+        bool uniform = true;
+        bool accumulate = false;
+
+        std::vector<Histogram> histograms;
+        for (const auto& plane : planes) {
+            cv::Mat histogramPlane;
+            cv::calcHist(&plane, 1, nullptr, cv::Mat(), histogramPlane, 1, &histSize, &histRange, uniform, accumulate);
+
+            double min, max;
+            cv::Point minLocation, maxLocation;
+            cv::minMaxLoc(histogramPlane, &min, &max, &minLocation, &maxLocation);
+
+            histograms.emplace_back(Histogram{histogramPlane, maxLocation});
+        }
+
+        return histograms;
+    }
+
+
+    /**
+     * Based on https://docs.opencv.org/2.4/doc/tutorials/imgproc/histograms/histogram_calculation/histogram_calculation.html#code
+     */
+    void showHistograms(const std::vector<Histogram>& histograms) {
+        int bins = 256;
+        int hist_w = 512;
+        int hist_h = 400;
+        int bin_w = cvRound( (double) hist_w/bins );
+
+        cv::Mat histImage( hist_h, hist_w, CV_8UC3, cv::Scalar( 0,0,0) );
+
+        for (int i = 0; i < histograms.size(); i++) {
+            auto histogram = histograms[i].histogram;
+            cv::normalize(histogram, histogram, 0, histImage.rows, cv::NORM_MINMAX, -1, cv::Mat());
+
+            int blue = i == 0 || i > 2 ? 255 : 0;
+            int green = i == 1 || i > 2 ? 255 : 0;
+            int red = i == 2 || i > 2 ? 255 : 0;
+
+            for (int bin = 1; bin < bins; bin++) {
+                cv::line(histImage, cv::Point(bin_w * (bin - 1), hist_h - cvRound(histogram.at<float>(bin - 1))),
+                         cv::Point(bin_w * (bin), hist_h - cvRound(histogram.at<float>(bin))),
+                         cv::Scalar(blue, green, red), 2, 8, 0);
+            }
+        }
+
+        std::cout << "Max Hue" << ": " << std::setfill(' ') << std::setw(3) << histograms[0].maxLocation.y << " "
+                    << "Max Saturation" << ": " << std::setfill(' ') << std::setw(3) << histograms[1].maxLocation.y << " "
+                    << "Max Value" << ": " << std::setfill(' ') << std::setw(3) << histograms[2].maxLocation.y
+                    << std::endl;
+
+        cv::imshow("Histogram", histImage);
+    }
+
+    void classify(const billiard::detection::State& previousState,
+                  billiard::detection::State& currentState,
+                  const cv::Mat& image) {
+
+        double radius = classificationConfig.roiRadius;
+
+        for (auto& ball : currentState._balls) {
+
+            const glm::vec2& pixelPosition = ball._position;
+            const cv::Rect& roi = cv::Rect{
+                    (int) (pixelPosition.x - radius),
+                    (int) (pixelPosition.y - radius),
+                    (int) (2 * radius),
+                    (int) (2 * radius)
+            };
+            cv::Mat ballBgr = image(roi);
+
+            classify(ball, ballBgr);
+        }
+
+    }
+
+    void classify(billiard::detection::Ball& ball, const cv::Mat& original) {
+
+        cv::Mat blurred;
+        cv::GaussianBlur(original, blurred, classificationConfig.blurSize, 0, 0);
+
+        cv::Mat hsv;
+        cv::cvtColor(blurred, hsv, cv::COLOR_BGR2HSV);
+
+        auto histogramByChannels = histogram(hsv);
+
+        Histogram hueHist = histogramByChannels[0];
+        Histogram saturationHist = histogramByChannels[1];
+        Histogram valueHist = histogramByChannels[2];
+        int maxHue = hueHist.maxLocation.y;
+        int maxSaturation = saturationHist.maxLocation.y;
+        int maxValue = valueHist.maxLocation.y;
+
+        std::string label = "UNKNOWN";
+
+        const auto between = [](int value, int min, int max)  {
+            return value >= min && value <= max;
+        };
+
+        cv::Vec2f redPinkSeparatorLine = cv::Point2f { 1.0, 1.0 }; // Separate by (saturation, value)
+
+        if (between(maxHue, 10, 35) && between(maxSaturation, 230, 255) && between(maxValue, 245, 255)) {
+            label = "YELLOW";
+        }
+        else if (between(maxHue, 10, 40) && between(maxSaturation, 0, 80) && between(maxValue, 245, 255)) {
+            label = "WHITE";
+        }
+        else if (between(maxValue, 0, 60)) {
+            label = "BLACK";
+        }
+        else if (between(maxHue, 100, 120)) {
+            label = "BLUE";
+        }
+        else if (between(maxHue, 80, 99)) {
+            label = "GREEN";
+        }
+        else if(between(maxHue, 0, 10) || between(maxHue, 170, 180)) {
+            // BROWN or RED or PINK
+
+            if (between(maxHue, 0, 10) && between(maxSaturation, 200, 240) && between(maxValue, 150, 255)) {
+                label = "BROWN";
+            }
+            else {
+                cv::Vec2f point { (float) maxSaturation / 255, (float) maxValue / 255 }; // Separate by (saturation, value)
+
+                float perpProduct = redPinkSeparatorLine[0] * point[1] - redPinkSeparatorLine[1] * point[0];
+                std::cout << "redPinkSeparatorLine: " << redPinkSeparatorLine <<  " point: " << point << " perp product: " << perpProduct << std::endl;
+                if (perpProduct <= 0) {
+                    label = "RED";
+                } else {
+                    label = "PINK";
+                }
+            }
+        }
+//        else if (between(maxHue, 0, 10) && between(maxSaturation, 230, 255) && between(maxValue, 150, 255)) {
+//            label = "RED";
+//        }
+        else if (between(maxHue, 0, 10) && between(maxSaturation, 200, 255) && between(maxValue, 150, 255)) {
+            label = "BROWN";
+        }
+//        else if (between(maxHue, 0, 10) && between(maxSaturation, 60, 255) && between(maxValue, 230, 255)) {
+//            label = "PINK";
+//        }
+//        else if (between(maxHue, 170, 180) && between(maxSaturation, 60, 255) && between(maxValue, 230, 255)) {
+//            label = "PINK";
+//        }
+//        else if (between(maxHue, 0, 5)) {
+//            label = "RED";
+//        }
+//        else if (between(maxHue, 170, 180)) {
+//            label = "RED";
+//        }
+
+        ball._type = label;
+
+#ifdef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
+        std::cout << "Ball " << ball._id << " at (" << ball._position.x << ", " << ball._position.y << ")" << " classified as " << label << std::endl;
+
+        cv::Mat rgbDebug {original.rows + 100, 3*original.cols + 100, CV_8UC3, cv::Scalar{120, 120, 120}};
+        original.copyTo(rgbDebug(cv::Rect{cv::Point(0, 0), cv::Size{original.cols, original.rows}}));
+        blurred.copyTo(rgbDebug(cv::Rect {cv::Point(original.cols, 0), cv::Size {blurred.cols, blurred.rows}}));
+        cv::imshow("original, blurred", rgbDebug);
+
+        cv::Mat hue, saturation, value;
+        {
+            std::vector<cv::Mat> channels;
+            cv::split(hsv, channels);
+            hue = channels[0];
+            saturation = channels[1];
+            value = channels[2];
+        }
+
+        cv::Mat hsvDebug {hue.rows + 100, 3*hue.cols + 100, CV_8UC1, cv::Scalar{120, 120, 120}};
+        hue.copyTo(hsvDebug(cv::Rect{cv::Point(0, 0), cv::Size{hue.cols, hue.rows}}));
+        saturation.copyTo(hsvDebug(cv::Rect {cv::Point(hsv.cols, 0), cv::Size {saturation.cols, saturation.rows}}));
+        value.copyTo(hsvDebug(cv::Rect {cv::Point(2*hsv.cols, 0), cv::Size {value.cols, value.rows}}));
+        cv::imshow("hsv", hsvDebug);
+
+        showHistograms(histogramByChannels);
+
+//        cv::waitKey();
+#endif
+
     }
 
 }

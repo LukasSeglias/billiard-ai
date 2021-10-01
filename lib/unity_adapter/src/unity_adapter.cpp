@@ -166,7 +166,12 @@ void configuration(Configuration config) {
     if (LIVE) {
         stateTracker = std::make_shared<billiard::detection::StateTracker>(cameraCapture,
                                                                            detectionConfig,
-                                                                           billiard::snooker::detect);
+                                                                           billiard::snooker::detect,
+                                                                           [](const billiard::detection::State& previousState,
+                                                                              billiard::detection::State& currentState,
+                                                                              const cv::Mat& image) {
+            billiard::snooker::classify(previousState, currentState, image);
+        });
     }
 
     _debugger("All configuration mapped");

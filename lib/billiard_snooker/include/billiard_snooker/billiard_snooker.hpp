@@ -42,7 +42,22 @@ namespace billiard::snooker {
         cv::Mat innerTableMask;
     };
 
+    struct EXPORT_BILLIARD_SNOOKER_LIB SnookerClassificationConfig {
+        bool valid = false;
+
+        // Factor of the ball's radius to be used to define a ROI for classification
+        // Example: roiRadius = ballRadius * roiRadiusFactor
+        double roiRadiusFactor = 0.5;
+        double roiRadius = 0.0;
+
+        cv::Size blurSize {5, 5};
+    };
+
     EXPORT_BILLIARD_SNOOKER_LIB bool configure(const billiard::detection::DetectionConfig& detectionConfig);
 
     EXPORT_BILLIARD_SNOOKER_LIB billiard::detection::State detect(const billiard::detection::State& previousState, const cv::Mat& image);
+    EXPORT_BILLIARD_SNOOKER_LIB void classify(const billiard::detection::State& previousState,
+                                              billiard::detection::State& currentState,
+                                              const cv::Mat& image);
+    EXPORT_BILLIARD_SNOOKER_LIB void classify(billiard::detection::Ball& ball, const cv::Mat& image);
 }

@@ -146,7 +146,6 @@ TEST(BallDetectionTests, snooker) {
 
 }
 
-
 TEST(BallDetectionTests, snooker_performance) {
 
     const int NUMBER_OF_ROUNDS = 50;

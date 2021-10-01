@@ -9,16 +9,22 @@
     #endif
 #endif
 
+// TODO: remove this
+//#undef BILLIARD_DETECTION_DEBUG_OUTPUT
+
 billiard::detection::StateTracker::StateTracker(const std::shared_ptr<capture::CameraCapture>& capture,
                                                 const std::shared_ptr<billiard::detection::DetectionConfig>& config,
                                                 const std::function<State(const State& previousState,
-                                                                          const cv::Mat&)>& detect)
+                                                                          const cv::Mat&)>& detect,
+                                                const std::function<void (const State& previousState,
+                                                                          State& currentState,
+                                                                          const cv::Mat&)>& classify)
         :
         _exitSignal(),
         _lock(),
         _waiting(),
         _thread(std::thread(StateTracker::work, _exitSignal.get_future(), std::ref(_lock),
-                            capture, config, detect, std::ref(_waiting))) {
+                            capture, config, detect, classify, std::ref(_waiting))) {
 }
 
 billiard::detection::StateTracker::~StateTracker() {
@@ -40,6 +46,7 @@ void billiard::detection::StateTracker::work(std::future<void> exitSignal,
           const std::shared_ptr<capture::CameraCapture>& capture,
           const std::shared_ptr<billiard::detection::DetectionConfig>& config,
           const std::function<State (const State& previousState, const cv::Mat&)>& detect,
+          const std::function<void (const State& previousState, State& currentState, const cv::Mat&)>& classify,
           std::queue<std::promise<State>>& waiting) {
     State previousState;
     while (exitSignal.wait_for(std::chrono::nanoseconds(10)) == std::future_status::timeout) {
@@ -53,6 +60,7 @@ void billiard::detection::StateTracker::work(std::future<void> exitSignal,
 #endif
         auto image = capture->read();
         auto state = detect(previousState, image.color);
+        classify(previousState, state, image.color);
         previousState = state;
         lock.lock();
         if (!waiting.empty()) {
