@@ -1,0 +1,206 @@
+{
+  "test": "Simple Test Case",
+  "description": [
+    "    |-100 |-90  |-80  |-70  |-60  |-50  |-40  |-30  |-20  |-10  | 0   | 10  | 20  | 30  | 40  | 50  | 60  | 70  | 80  | 90  | 100 |",
+    " 80 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    " 70 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    " 60 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    " 50 |     |     |     |     |     |  W  |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    " 40 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    " 30 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    " 20 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    " 10 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    " 0  |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    "-10 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    "-20 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    "-30 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    "-40 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    "-50 |     |     |     |     |     |     |     |     |     |     |  R  |     |     |     |     |  R  |     |     |     |     |     |",
+    "-60 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    "-70 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    "-80 |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |     |",
+    "-----------------------------------------------------------------------------------------------------------------------------------"
+  ],
+  "state": {
+    "balls": [
+      {
+        "id": "1",
+        "type": "RED",
+        "position": {"x": 0, "y": -50}
+      },
+      {
+        "id": "2",
+        "type": "RED",
+        "position": {"x": 50, "y": -50}
+      },
+      {
+        "id": "4",
+        "type": "WHITE",
+        "position": {"x": -50, "y": 50}
+      }
+    ]
+  },
+  "search": {
+    "id": "1",
+    "type": ""
+  },
+  "configuration": {
+    "ball": {
+      "radius": 52
+    },
+    "pockets": [
+      {
+        "description": "Top left",
+        "id": "1",
+        "type": "CORNER",
+        "position": {"x": -120, "y": 100},
+        "radius": 52
+      },
+      {
+        "description": "Top center",
+        "id": "2",
+        "type": "CENTER",
+        "position": {"x": 0, "y": 100},
+        "radius": 52
+      },
+      {
+        "description": "Top right",
+        "id": "3",
+        "type": "CORNER",
+        "position": {"x": 120, "y": 100},
+        "radius": 52
+      },
+      {
+        "description": "Bottom left",
+        "id": "4",
+        "type": "CORNER",
+        "position": {"x": -120, "y": -100},
+        "radius": 52
+      },
+      {
+        "description": "Bottom center",
+        "id": "5",
+        "type": "CENTER",
+        "position": {"x": 0, "y": -100},
+        "radius": 52
+      },
+      {
+        "description": "Bottom right",
+        "id": "6",
+        "type": "CORNER",
+        "position": {"x": -120, "y": -100},
+        "radius": 52
+      }
+    ],
+    "banks": [
+      {
+        "description": "Small top left 1",
+        "id": "1",
+        "start": {"x": -94, "y": 100},
+        "end": {"x": -89, "y": 80}
+      },
+      {
+        "description": "Small top left 2",
+        "id": "2",
+        "start": {"x": -120, "y": 74},
+        "end": {"x": -100, "y": 69}
+      },
+      {
+        "description": "Small bottom left 1",
+        "id": "3",
+        "start": {"x": -94, "y": -100},
+        "end": {"x": -89, "y": -80}
+      },
+      {
+        "description": "Small bottom left 2",
+        "id": "4",
+        "start": {"x": -120, "y": -74},
+        "end": {"x": -100, "y": -69}
+      },
+      {
+        "description": "Small top right 1",
+        "id": "5",
+        "start": {"x": 94, "y": 100},
+        "end": {"x": 89, "y": 80}
+      },
+      {
+        "description": "Small top right 2",
+        "id": "6",
+        "start": {"x": 120, "y": 74},
+        "end": {"x": 100, "y": 69}
+      },
+      {
+        "description": "Small bottom right 1",
+        "id": "7",
+        "start": {"x": 94, "y": -100},
+        "end": {"x": 89, "y": -80}
+      },
+      {
+        "description": "Small bottom right 2",
+        "id": "8",
+        "start": {"x": 120, "y": -74},
+        "end": {"x": 100, "y": -69}
+      },
+      {
+        "description": "Small top center 1",
+        "id": "9",
+        "start": {"x": -26, "y": 100},
+        "end": {"x": -31, "y": 80}
+      },
+      {
+        "description": "Small top center 2",
+        "id": "10",
+        "start": {"x": 26, "y": 100},
+        "end": {"x": 31, "y": 80}
+      },
+      {
+        "description": "Small bottom center 1",
+        "id": "11",
+        "start": {"x": -26, "y": -100},
+        "end": {"x": -31, "y": -80}
+      },
+      {
+        "description": "Small bottom center 2",
+        "id": "12",
+        "start": {"x": 26, "y": -100},
+        "end": {"x": 31, "y": -80}
+      },
+      {
+        "description": "Left",
+        "id": "13",
+        "start": {"x": -100, "y": 69},
+        "end": {"x": -100, "y": -69}
+      },
+      {
+        "description": "Right",
+        "id": "14",
+        "start": {"x": 100, "y": 69},
+        "end": {"x": 100, "y": -69}
+      },
+      {
+        "description": "Top left",
+        "id": "15",
+        "start": {"x": -89, "y": 80},
+        "end": {"x": -31, "y": 80}
+      },
+      {
+        "description": "Top right",
+        "id": "16",
+        "start": {"x": 89, "y": 80},
+        "end": {"x": 31, "y": 80}
+      },
+      {
+        "description": "Bottom left",
+        "id": "17",
+        "start": {"x": -89, "y": -80},
+        "end": {"x": -31, "y": -80}
+      },
+      {
+        "description": "Bottom right",
+        "id": "18",
+        "start": {"x": 89, "y": -80},
+        "end": {"x": 31, "y": -80}
+      }
+    ]
+  }
+}

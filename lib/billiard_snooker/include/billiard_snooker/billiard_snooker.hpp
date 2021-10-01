@@ -5,6 +5,7 @@
 #include <opencv2/aruco.hpp>
 #include "type.hpp"
 #include <billiard_detection/billiard_detection.hpp>
+#include <billiard_search/type.hpp>
 
 namespace billiard::snooker {
 
@@ -60,4 +61,12 @@ namespace billiard::snooker {
                                               billiard::detection::State& currentState,
                                               const cv::Mat& image);
     EXPORT_BILLIARD_SNOOKER_LIB void classify(billiard::detection::Ball& ball, const cv::Mat& image);
+
+    EXPORT_BILLIARD_SNOOKER_LIB std::string nextSearchType(const std::string& previousType); // TODO: Naming
+
+    EXPORT_BILLIARD_SNOOKER_LIB billiard::search::node::Layer
+    stateAfterBreak(const billiard::search::node::Layer& layer); // TODO: Naming
+
+    EXPORT_BILLIARD_SNOOKER_LIB bool
+    validEndState(const std::string& expectedType, const billiard::search::node::Layer& layer); // TODO: Naming
 }

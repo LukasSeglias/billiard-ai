@@ -1,3 +1,3 @@
 target_sources(${PROJECT_NAME} PRIVATE
         main.cpp
-        billiard_search_test.cpp)
+        process_test.cpp)
