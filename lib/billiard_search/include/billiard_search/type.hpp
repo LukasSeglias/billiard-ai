@@ -117,13 +117,6 @@ namespace billiard::search {
             glm::vec2 _position;
             glm::vec2 _velocity;
         };
-
-        struct EXPORT_BILLIARD_SEARCH_LIB PocketState {
-            PocketState(std::string id, const glm::vec2& position);
-
-            std::string _id;
-            glm::vec2 _position;
-        };
     }
 
     namespace node {
@@ -133,8 +126,8 @@ namespace billiard::search {
             BALL_COLLISION,
             BALL_RAIL_COLLISION,
             BALL_POTTING,
-            BALL_IN_REST, // TODO: besserer name
-            POCKET
+            BALL_SHOT,
+            BALL_IN_REST // TODO: besserer name
         };
 
         struct EXPORT_BILLIARD_SEARCH_LIB BallMovingNode {
@@ -196,23 +189,25 @@ namespace billiard::search {
             state::BallState _ball;
         };
 
-        struct EXPORT_BILLIARD_SEARCH_LIB PocketNode {
-            explicit PocketNode(const state::PocketState& pocket);
-            PocketNode(const PocketNode& node) = default;
-
-            state::PocketState _pocket;
-        };
-
-        using NodeVariant = std::variant<BallCollisionNode, BallRailCollisionNode, BallPottingNode, BallInRestNode, BallShotNode, BallNode, BallMovingNode, PocketNode>;
+        using NodeVariant = std::variant<BallCollisionNode, BallRailCollisionNode, BallPottingNode, BallInRestNode, BallShotNode, BallNode, BallMovingNode>;
 
         struct EXPORT_BILLIARD_SEARCH_LIB Node {
-            Node(NodeType type,NodeVariant body);
+            Node(NodeType type, std::string ballType, NodeVariant body);
             Node& operator=(const Node& node) = default;
 
-            std::optional<BallInRestNode> toInRest();
-            std::optional<BallPottingNode> toPotted();
+            [[nodiscard]] std::optional<BallInRestNode> toInRest() const;
+            [[nodiscard]] std::optional<BallPottingNode> toPotted() const;
+            [[nodiscard]] std::optional<BallCollisionNode> toBallCollision() const;
+            [[nodiscard]] std::optional<BallRailCollisionNode> toBallRailCollision() const;
+            [[nodiscard]] std::optional<BallShotNode> toBallShot() const;
+            [[nodiscard]] std::optional<BallMovingNode> toBallMoving() const;
+
+            [[nodiscard]] std::optional<state::BallState> before() const;
+            [[nodiscard]] std::optional<state::BallState> after() const;
+
 
             NodeType _type;
+            std::string _ballType;
             NodeVariant _body; // TODO: besserer name
         };
 
@@ -228,6 +223,8 @@ namespace billiard::search {
             std::unordered_map<std::string, Node> _dynamic;
             std::unordered_map<std::string, Node> _static;
             std::unordered_map<std::string, Node> _nodes;
+            bool _isFirst;
+            bool _isLast;
 
         private:
             static std::unordered_map<std::string, Node> getDynamic(const std::unordered_map<std::string, Node>& nodes);
@@ -240,6 +237,7 @@ namespace billiard::search {
             [[nodiscard]] const Layer& lastLayer() const;
             [[nodiscard]] bool empty() const;
             [[nodiscard]] bool final() const;
+            void append(Layer layer);
 
             std::vector<Layer> _layers;
         };

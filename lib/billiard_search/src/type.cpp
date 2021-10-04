@@ -64,11 +64,6 @@ billiard::search::state::BallState::BallState(const glm::vec2& position, const g
     _velocity(velocity) {
 }
 
-billiard::search::state::PocketState::PocketState(std::string id, const glm::vec2& position) :
-    _id(id),
-    _position(position) {
-}
-
 billiard::search::node::BallMovingNode::BallMovingNode(const state::BallState& before, const state::BallState& after) :
         _before(before),
         _after(after) {
@@ -109,35 +104,124 @@ billiard::search::node::BallNode::BallNode(const state::BallState& ball) :
     _ball(ball) {
 }
 
-billiard::search::node::PocketNode::PocketNode(const state::PocketState& pocket) :
-    _pocket(pocket) {
-}
-
-billiard::search::node::Node::Node(NodeType type, NodeVariant body)
+billiard::search::node::Node::Node(NodeType type, std::string ballType, NodeVariant body)
         :
         _type(type),
+        _ballType(ballType),
         _body(std::move(body)) {
 }
 
-std::optional<billiard::search::node::BallInRestNode> billiard::search::node::Node::toInRest() {
+std::optional<billiard::search::node::BallInRestNode> billiard::search::node::Node::toInRest() const {
     if (_type == NodeType::BALL_IN_REST) {
         return std::make_optional(std::get<BallInRestNode>(_body));
     }
     return std::nullopt;
 }
 
-std::optional<billiard::search::node::BallPottingNode> billiard::search::node::Node::toPotted() {
+std::optional<billiard::search::node::BallPottingNode> billiard::search::node::Node::toPotted() const {
     if (_type == NodeType::BALL_POTTING) {
         return std::make_optional(std::get<BallPottingNode>(_body));
     }
     return std::nullopt;
 }
 
+std::optional<billiard::search::node::BallCollisionNode> billiard::search::node::Node::toBallCollision() const {
+    if (_type == NodeType::BALL_COLLISION) {
+        return std::make_optional(std::get<BallCollisionNode>(_body));
+    }
+    return std::nullopt;
+}
+
+std::optional<billiard::search::node::BallRailCollisionNode> billiard::search::node::Node::toBallRailCollision() const {
+    if (_type == NodeType::BALL_RAIL_COLLISION) {
+        return std::make_optional(std::get<BallRailCollisionNode>(_body));
+    }
+    return std::nullopt;
+}
+
+std::optional<billiard::search::node::BallShotNode> billiard::search::node::Node::toBallShot() const {
+    if (_type == NodeType::BALL_SHOT) {
+        return std::make_optional(std::get<BallShotNode>(_body));
+    }
+    return std::nullopt;
+}
+
+std::optional<billiard::search::node::BallMovingNode> billiard::search::node::Node::toBallMoving() const {
+    if (_type == NodeType::BALL_MOVING) {
+        return std::make_optional(std::get<BallMovingNode>(_body));
+    }
+    return std::nullopt;
+}
+
+
+std::optional<billiard::search::state::BallState> billiard::search::node::Node::before() const {
+    auto inRest = toInRest();
+    if (inRest) {
+        return inRest->_ball;
+    }
+
+    auto potted = toPotted();
+    if(potted) {
+        return potted->_before;
+    }
+
+    auto ballCollision = toBallCollision();
+    if(ballCollision) {
+        return ballCollision->_before;
+    }
+
+    auto ballRailCollision = toBallRailCollision();
+    if(ballRailCollision) {
+        return ballRailCollision->_before;
+    }
+
+    auto ballMoving = toBallMoving();
+    if(ballMoving) {
+        return ballMoving->_before;
+    }
+
+    return std::nullopt;
+}
+
+std::optional<billiard::search::state::BallState> billiard::search::node::Node::after() const {
+    auto inRest = toInRest();
+    if (inRest) {
+        return inRest->_ball;
+    }
+
+    auto potted = toPotted();
+    if(potted) {
+        return potted->_after;
+    }
+
+    auto ballCollision = toBallCollision();
+    if(ballCollision) {
+        return ballCollision->_after;
+    }
+
+    auto ballRailCollision = toBallRailCollision();
+    if(ballRailCollision) {
+        return ballRailCollision->_after;
+    }
+
+    auto ballMoving = toBallMoving();
+    if(ballMoving) {
+        return ballMoving->_after;
+    }
+
+    auto ballShot = toBallShot();
+    if(ballShot) {
+        return ballShot->_ball;
+    }
+}
+
 billiard::search::node::Layer::Layer(float time, std::unordered_map<std::string, Node> nodes) :
     _time(time),
     _dynamic(getDynamic(nodes)),
     _static(getStatic(nodes)),
-    _nodes(std::move(nodes)) {
+    _nodes(std::move(nodes)),
+    _isFirst(false),
+    _isLast(false) {
 }
 
 bool billiard::search::node::Layer::final() const {
@@ -211,4 +295,14 @@ bool billiard::search::node::System::empty() const {
 
 bool billiard::search::node::System::final() const {
     return !empty() && lastLayer().final();
+}
+
+void billiard::search::node::System::append(Layer layer) {
+    layer._isLast = true;
+    if (_layers.empty()) {
+        layer._isFirst = true;
+    } else {
+        _layers.at(_layers.size() - 1)._isLast = false;
+    }
+    _layers.emplace_back(std::move(layer));
 }
