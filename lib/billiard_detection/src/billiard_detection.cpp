@@ -41,6 +41,15 @@ std::future<billiard::detection::State> billiard::detection::StateTracker::captu
     return future;
 }
 
+void assignIds(const billiard::detection::State& previousState, billiard::detection::State& currentState) {
+
+    int id = 1;
+    // TODO: check previous state (if not empty) and try tracking of balls?
+    for (auto& ball : currentState._balls) {
+        ball._id = ball._type + "-" + std::to_string(id++);
+    }
+}
+
 void billiard::detection::StateTracker::work(std::future<void> exitSignal,
           std::mutex& lock,
           const std::shared_ptr<capture::CameraCapture>& capture,
@@ -61,6 +70,7 @@ void billiard::detection::StateTracker::work(std::future<void> exitSignal,
         auto image = capture->read();
         auto state = detect(previousState, image.color);
         classify(previousState, state, image.color);
+        assignIds(previousState, state);
         previousState = state;
         lock.lock();
         if (!waiting.empty()) {
