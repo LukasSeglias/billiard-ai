@@ -1,0 +1,109 @@
+\section{Herleitung Event - Kollision dynamischer Objekte}\label{anhang:herleitung:event:dynamicObjectCollision}
+In diesem Kapitel erfolgt die Herleitung zur Bestimmung des Kollisionszeitpunkts zweier dynamischer Objekte. Beim Billard
+sind dies zwei Kugeln, welche in Bewegung sind.
+
+Um die Formel herzuleiten, wird die Ortsgleichung der gleichförmig beschleunigten Bewegung betrachtet:
+\begin{align}
+    \vec{s(t)} = \frac{1}{2} \cdot \vec{a} \cdot t^2 + \vec{v_0} \cdot t + \vec{s_0}\\
+    \begin{pmatrix}s(t)_x\\s(t)_y\end{pmatrix} = \frac{1}{2} \cdot \begin{pmatrix}a_x\\a_y\end{pmatrix} \cdot t^2 + \begin{pmatrix}v_{0, x}\\v_{0, y}\end{pmatrix} \cdot t + \begin{pmatrix}s_{0, x}\\s_{0, y}\end{pmatrix}
+\end{align}
+Diese ist für beide Kugeln unterschiedlich:
+\begin{align}
+    \vec{s_1(t)} = \frac{1}{2} \cdot \vec{a_1} \cdot t^2 + \vec{v_{1}} \cdot t + \vec{s_{1}}\\
+    \vec{s_2(t)} = \frac{1}{2} \cdot \vec{a_2} \cdot t^2 + \vec{v_{2}} \cdot t + \vec{s_{2}}
+\end{align}
+Da die Objekte zweidimensional sind, also eine bestimmte Fläche aufweisen, können die Gleichungen nicht einfach gleichgesetzt
+werden. Der Radius der Kugel muss mitbeachtet werden, weswegen die Gleichungen einen Punkt suchen, wo die
+Distanz zwischen ihnen dem Kugeldurchmesser entspricht. Dies ist der Ort, wo die Kugeln im zweidimensionalen
+(auch im dreidimensionalen) Raum kollidieren werden. Dazu wird die Parameterform nach $\vec{d}$ bestimmt.
+\begin{align}
+    \vec{d} = \vec{s_1(t)} - \vec{s_2(t)}\\
+    \vec{d} = \frac{1}{2} \cdot \vec{a_1} \cdot t^2 + \vec{v_{1}} \cdot t + \vec{s_{1}} - (\frac{1}{2} \cdot \vec{a_2} \cdot t^2 + \vec{v_{2}} \cdot t + \vec{s_{2}})\\
+    \vec{d} = \frac{1}{2} \cdot \vec{a_1} \cdot t^2 + \vec{v_{1}} \cdot t + \vec{s_{1}} - \frac{1}{2} \cdot \vec{a_2} \cdot t^2 - \vec{v_{2}} \cdot t - \vec{s_{2}}\\
+    \vec{d} = \frac{1}{2} \cdot (\vec{a_1} - \vec{a_2}) \cdot t^2 + \vec{v_{1}} \cdot t + \vec{s_{1}} - \vec{v_{2}} \cdot t - \vec{s_{2}}\\
+    \vec{d} = \frac{1}{2} \cdot (\vec{a_1} - \vec{a_2}) \cdot t^2 + \vec{v_{1}} \cdot t - \vec{v_{2}} \cdot t + \vec{s_{1}} - \vec{s_{2}}\\
+    \vec{d} = \frac{1}{2} \cdot (\vec{a_1} - \vec{a_2}) \cdot t^2 + t \cdot (\vec{v_{1}} - \vec{v_{2}}) + \vec{s_{1}} - \vec{s_{2}}\\
+    \vec{d} = t^2 \cdot \frac{1}{2} \cdot \begin{pmatrix}a_{1,x} - a_{2,x}\\a_{1,y} - a_{2,y}\end{pmatrix} + t \cdot \begin{pmatrix}v_{1,x} - v_{2,x}\\v_{1,y} - v_{2,y}\end{pmatrix} + \begin{pmatrix}s_{1,x} - s_{2,x}\\s_{1,y} - s_{2,y}\end{pmatrix}\\
+\end{align}
+Die Parameterform wird nach Komponenten aufgeteilt:
+\begin{align}
+    \begin{pmatrix}d_{x}\\d_{y}\end{pmatrix} = t^2 \cdot \frac{1}{2} \cdot \begin{pmatrix}a_{1,x} - a_{2,x}\\a_{1,y} - a_{2,y}\end{pmatrix} + t \cdot \begin{pmatrix}v_{1,x} - v_{2,x}\\v_{1,y} - v_{2,y}\end{pmatrix} + \begin{pmatrix}s_{1,x} - s_{2,x}\\s_{1,y} - s_{2,y}\end{pmatrix}\\
+    d_x = t^2 \cdot \frac{1}{2} \cdot (a_{1,x} - a_{2,x}) + t \cdot (v_{1,x} - v_{2,x}) + s_{1,x} - s_{2,x}\\
+    d_y = t^2 \cdot \frac{1}{2} \cdot (a_{1,y} - a_{2,y}) + t \cdot (v_{1,y} - v_{2,y}) + s_{1,y} - s_{2,y}
+\end{align}
+Wobei bekannt ist, dass $\vec{d}$ die Länge $D$ hat (entspricht dem Kugeldurchmesser):
+\begin{align}
+    \norm{\vec{d}} = \sqrt{(d_x)^2 + (d_y)^2} = D\\
+    (d_x)^2 + (d_y)^2 = D^2\label{eq:dynamic_object_collision_event:00}
+\end{align}
+Die einzelnen Komponenten werden wie folgt substituiert:
+\begin{align}
+    \Delta a_x = a_{1,x} - a_{2,x}\\
+    \Delta a_y = a_{1,y} - a_{2,y}\\
+    \Delta v_x = v_{1,x} - v_{2,x}\\
+    \Delta v_y = v_{1,y} - v_{2,y}\\
+    \Delta s_x = s_{1,x} - s_{2,x}\\
+    \Delta s_y = s_{1,y} - s_{2,y}
+\end{align}
+Daraus folgt:
+\begin{align}
+    d_x = t^2 \cdot \frac{1}{2} \cdot \Delta a_x + t \cdot \Delta v_x + \Delta s_x\\
+    d_y = t^2 \cdot \frac{1}{2} \cdot \Delta a_y + t \cdot \Delta v_y + \Delta s_y\\
+    d_x^2 = (t^2 \cdot \frac{1}{2} \cdot \Delta a_x + t \cdot \Delta v_x + \Delta s_x)^2\\
+    d_x^2 = t^4 \cdot (\frac{1}{2})^2 \cdot \Delta a_x^2 + 2 \cdot t^3 \cdot \frac{1}{2} \cdot \Delta a_x \cdot \Delta v_x + 2 \cdot t^2 \cdot \frac{1}{2} \cdot \Delta a_x \cdot \Delta s_x  + t^2 \cdot \Delta v_x^2 + 2 \cdot t \cdot \Delta v_x \cdot \Delta s_x + \Delta s_x^2\\
+    d_x^2 = (\frac{1}{2})^2 \cdot \Delta a_x^2 \cdot t^4 + \Delta a_x \cdot \Delta v_x t^3 + (\Delta a_x \cdot \Delta s_x + \Delta v_x^2) t^2 + 2 \cdot \Delta v_x \cdot \Delta s_x \cdot t + \Delta s_x^2\label{eq:dynamic_object_collision_event:01}
+\end{align}
+Aus Gleichung \ref{eq:dynamic_object_collision_event:01} folgt für $d_y^2$:
+\begin{align}
+    d_y^2 = (\frac{1}{2})^2 \cdot \Delta a_y^2 \cdot t^4 + \Delta a_y \cdot \Delta v_y t^3 + (\Delta a_y \cdot \Delta s_y + \Delta v_y^2) t^2 + 2 \cdot \Delta v_y \cdot \Delta s_y \cdot t + \Delta s_y^2\label{eq:dynamic_object_collision_event:02}
+\end{align}
+Aus Gleichung \ref{eq:dynamic_object_collision_event:00}, \ref{eq:dynamic_object_collision_event:01} und \ref{eq:dynamic_object_collision_event:02} folgt:
+\begin{multline}
+    D^2 = (\frac{1}{2})^2 \cdot \Delta a_x^2 \cdot t^4 +\\\
+    \Delta a_x \cdot \Delta v_x t^3 +\\\
+    (\Delta a_x \cdot \Delta s_x + \Delta v_x^2) t^2 +\\\
+    2 \cdot \Delta v_x \cdot \Delta s_x \cdot t +\\\
+    \Delta s_x^2 +\\
+    (\frac{1}{2})^2 \cdot \Delta a_y^2 \cdot t^4 +\\\
+    \Delta a_y \cdot \Delta v_y t^3 +\\\
+    (\Delta a_y \cdot \Delta s_y + \Delta v_y^2) t^2 +\\\
+    2 \cdot \Delta v_y \cdot \Delta s_y \cdot t +\\\
+    \Delta s_y^2\\
+\end{multline}
+Daraus ergibt sich das folgende Polynom vierten Grades:
+\begin{multline}
+    D^2 = (\frac{1}{2})^2 \cdot (\Delta a_x^2 + \Delta a_y^2) \cdot t^4 +\\\
+    (\Delta a_x \cdot \Delta v_x + \Delta a_y \cdot \Delta v_y) \cdot t^3 +\\\
+    (\Delta a_x \cdot \Delta s_x + \Delta v_x^2 + \Delta a_y \cdot \Delta s_y + \Delta v_y^2) t^2 +\\\
+    2 \cdot (\Delta v_x \cdot \Delta s_x + \Delta v_y \cdot \Delta s_y) \cdot t +\\\
+    \Delta s_x^2 + \Delta s_y^2\label{eq:dynamic_object_collision_event:03}\\\
+\end{multline}
+
+Die Koeffizienten können als Skalarprodukte von Vektoren repräsentiert werden. Dies geschieht durch Ausnutzung der
+Eigenschaft, dass die quadrierte Norm dem Skalarprodukt des Vektors mit sich selbst entspricht.
+\begin{align}
+    \vec{a} = \begin{pmatrix}a_x\\a_y\end{pmatrix}\\
+    \norm{\vec{a}} = \sqrt{a_x^2 + a_y^2}\\
+    \norm{\vec{a}}^2 = a_x^2 + a_y^2\\
+    \norm{\vec{a}}^2 = \vec{a} \cdot \vec{a}\\
+    a_x^2 + a_y^2 = \vec{a} \cdot \vec{a}\label{eq:dynamic_object_collision_event:04}
+ \end{align}
+
+Wird \ref{eq:dynamic_object_collision_event:04} auf die Gleichung \ref{eq:dynamic_object_collision_event:03} angewendet, resultieren die nachfolgenden
+Eigenschaften.
+\begin{align}
+    \Delta a_x^2 + \Delta a_y^2 = \vec{\Delta a} \cdot \vec{\Delta a} \\
+    \Delta a_x \cdot \Delta v_x + \Delta a_y \cdot \Delta v_y = \vec{\Delta a} \cdot \vec{\Delta v} \\
+    \Delta a_x \cdot \Delta s_x + \Delta v_x^2 + \Delta a_y \cdot \Delta s_y + \Delta v_y^2 = \vec{\Delta a} \cdot \vec{\Delta s} + \vec{\Delta v} \cdot \vec{\Delta v} \\
+    2 \cdot (\Delta v_x \cdot \Delta s_x + \Delta v_y \cdot \Delta s_y) = 2 \cdot (\vec{\Delta v} \cdot \vec{\Delta s}) \\
+    \Delta s_x^2 + \Delta s_y^2 = \vec{\Delta s} \cdot \vec{\Delta s}
+\end{align}
+
+Eingesetzt in \ref{eq:dynamic_object_collision_event:03}:
+\begin{align}
+    D^2 = (\frac{1}{2})^2 \cdot (\vec{\Delta a} \cdot \vec{\Delta a}) \cdot t^4 +
+        (\vec{\Delta a} \cdot \vec{\Delta v}) \cdot t^3 +
+        (\vec{\Delta a} \cdot \vec{\Delta s} + \vec{\Delta v} \cdot \vec{\Delta v}) t^2 +
+        2 \cdot (\vec{\Delta v} \cdot \vec{\Delta s}) \cdot t +
+        \vec{\Delta s} \cdot \vec{\Delta s}
+\end{align}

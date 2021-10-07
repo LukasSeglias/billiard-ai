@@ -110,11 +110,50 @@ der Position $C$ im Weg und es würde eine Kollision stattfinden, sofern die Aus
 Dies wird für jede Kugel geprüft.
 
 
-\subsubsection{Ereignis Out-Of-Energy}
-TODO: T-5 Auftrittszeitpunkt Out-Of-Energy über Reibungsverlust
+\subsubsection{Ereignis - Energie-Transfer über Kugelkollision}
+Dieses Ereignis beschreibt die Kollision mit einer anderen Kugel zum Zeitpunkt $t$.
+Bekannt sind dabei die Beschleunigung $\vec{a}$\footnote{Die Beschleunigung $\vec{a}$ ist durch die Herleitung in Kapitel \ref{anhang:herleitung:beschleunigung}
+gegeben.}, die Geschwindigkeit $\vec{v}$ und der Ort $\vec{s}$ beider Kugeln.
+Diese werden entsprechend indexiert.
 
-\subsubsection{Ereignis Energy-Transfer über Kugelkollision}
-TODO: T-5 Kollision mit Kugeln (statisch/dynamisch) berechnen
+Weiterhin sind folgende Abstraktionen bekannt:
+\begin{align}
+    \vec{\Delta a} = \vec{\Delta a}_1 - \vec{\Delta a}_2\\
+    \vec{\Delta v} = \vec{\Delta v}_1 - \vec{\Delta v}_2\\
+    \vec{\Delta s} = \vec{\Delta s}_1 - \vec{\Delta s}_2
+\end{align}
+
+Es entsteht ein Polynom vierten Grades\footnote{Für Herleitung, siehe Anhang \ref{anhang:herleitung:event:dynamicObjectCollision}}.
+Um diese Gleichung zu lösen bedarf es der entsprechenden Lösungsformel \cite{wiki.polynom:1}:
+\begin{align}
+    ax^4 + bx^3 + cx^2 + dx + e = 0\\
+    x_{1,2} = -\frac{b}{4a} - S \pm \frac{1}{2}\sqrt{-4S^2 - 2p + \frac{q}{S}}\\
+    x_{3,4} = -\frac{b}{4a} + S \pm \frac{1}{2}\sqrt{-4S^2 - 2p - \frac{q}{S}}\\
+    p = \frac{8ac - 3b^2}{8a^2}\\
+    q = \frac{b^3 - 4abc + 8a^{2}d}{8a^3}\\
+    S = \frac{1}{2}\sqrt{-\frac{2}{3}p + \frac{1}{3a}(Q + \frac{\Delta_0}{Q})}\\
+    Q = \sqrt[3]{\frac{\Delta_1 + \sqrt{\Delta_{1}^2 - 4\Delta_{0}^3}}{2}}\\
+    \Delta_0 = c^2 - 3bd + 12ae\\
+    \Delta_1 = 2c^3 - 9bcd + 27b^{2}e + 27ad^2 - 72ace
+\end{align}
+
+Wobei die Koeffizienten folgendermassen lauten:
+\begin{align}
+    a = \frac{1}{4} \cdot (\vec{\Delta a} \cdot \vec{\Delta a})\\
+    b = \vec{\Delta a} \cdot \vec{\Delta v}\\
+    c = \vec{\Delta a} \cdot \vec{\Delta s} + \vec{\Delta v} \cdot \vec{\Delta v}\\
+    d = 2 \cdot (\vec{\Delta v} \cdot \vec{\Delta s})\\
+    e = \vec{\Delta s} \cdot \vec{\Delta s} - D^2
+\end{align}
+
+Durch Lösen des Polynoms werden alle Zeitpunkte $x_{1-4} = t_{1-4}$ bestimmt, wobei der relevante Zeitpunkt $t$ der
+Erste ist.
+\begin{align}
+    t = \min{(t_1, t_2, t_3, t_4)}
+\end{align}
+
+Das Lösen dieses Gleichungssystems erfordert viel Rechenzeit, was die Frage nach Performanceverbesserungen aufwirft.
+TODO: Precondition Checks
 
 \subsubsection{Ereignis Energy-Transfer über Bandenkollision}
 Dieses Event beschreibt die Kollision mit der Bande. Es soll der Zeitpunkt $t$ der Kollision mit der Bande festgestellt werden.
@@ -169,5 +208,41 @@ Bevor die Lösung zu $t_1$ und $t_2$ berechnet wird, muss jedoch die Radikale au
 Nur in diesem Fall gibt es eine Lösung und somit an dieser Position eine Kollision. Ansonsten hat die Kugel vorher schon
 ihre Gesamtenergie verloren und steht still. Damit ist der Zeitpunkt der Kollision berechnet.
 
-\subsubsection{Ereignis Out-Of-System}
-TODO: T-5 Kollision mit Zielkreis berechnen.
+\subsubsection{Ereignis - Totaler Energieverlust}
+Dieses Ereignis trifft ein, sobald eine Kugel stillsteht. Der Zeitpunkt wird über die Formel \ref{eq:ereignis:out_of_energy:00}
+beschrieben\footnote{Die Herleitung erfolgt in Kapitel \ref{anhang:herleitung:event:outOfEnergy}.
+Die Beschleunigung $\vec{a}$ ist durch die Herleitung in Kapitel \ref{anhang:herleitung:beschleunigung}
+gegeben.}.
+
+\begin{align}
+    t = \max{(\frac{-v_{0,x}}{a_x}, \frac{-v_{0,y}}{a_y})}\label{eq:ereignis:out_of_energy:00}
+\end{align}
+
+\subsubsection{Ereignis - Verlassen des Systems}
+Der Ereigniszeitpunkt erfolgt über zwei Schritte. Im ersten Schritt wird der Kollisionspunkt der Kugel mit dem
+Zielkreis bestimmt. Anhand dieser Information kann die zurückgelegte Distanz der Kugel bestimmt werden.
+Es gelten die folgenden Definitionen:\\
+$\vec{C} = $ Zielmittelpunkt\\
+$\vec{p} = $ Position der Kugel\\
+$\hat{v} = $ Normierte Geschwindigkeit der Kugel\\
+
+Die nachfolgende Formel definiert, mit welchem Faktor der Geschwindigkeitsvektor multipliziert werden muss, damit
+er die Länge der zurückzulegenden Distanz zum Kollisionsort mit dem Ziel erreicht\footnote{
+Für Herleitung, siehe Anhang \ref{anhang:herleitung:event:targetCollision}.}. Zu beachten ist, dass $l$ nur gültig ist,
+wenn es grösser als $0$ ist.
+\begin{align}
+    l_1 = \frac{-(2 \cdot \hat{v} \cdot (\vec{p} - \vec{C})) + \sqrt{4 \cdot (\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) \cdot r^2}}{2}\\
+    l_2 = \frac{-(2 \cdot \hat{v} \cdot (\vec{p} - \vec{C})) - \sqrt{4 \cdot (\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) \cdot r^2}}{2}\\
+    l = \max{(\min{(l_1, l_2)}, 0)}\\
+    \vec{d(l)} = l \cdot \hat{v}
+\end{align}
+
+Nachdem die Distanz bestimmt wurde, kann der Kollisionszeitpunkt berechnet werden\footnote{Für Herleitung, siehe Anhang \ref{anhang:herleitung:event:targetCollision}.
+Die Beschleunigung $\vec{a}$ ist durch die Herleitung in Kapitel \ref{anhang:herleitung:beschleunigung} gegeben.}.
+Zu beachten ist, dass keine Lösung existiert, wenn die Diskriminante kleiner denn $0$ ist. Die Kugel rollt zu langsam und
+der Reibungsverlust ist zu gross, als dass sie den Zielkreis erreichen könnte.
+\begin{align}
+    t_1 = \frac{-\norm{\vec{v}} + \sqrt{\norm{\vec{v}}^2 + 2 \cdot \norm{\vec{a}} \norm{\vec{d(l)}}}}{\norm{\vec{a}}}\\
+    t_2 = \frac{-\norm{\vec{v}} - \sqrt{\norm{\vec{v}}^2 + 2 \cdot \norm{\vec{a}} \norm{\vec{d(l)}}}}{\norm{\vec{a}}}\\
+    t = \min{(t_1, t_2)}
+\end{align}

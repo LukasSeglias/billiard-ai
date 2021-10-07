@@ -1,0 +1,78 @@
+TODO: Beschreiben oder löschen
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \SetKwFunction{simulate}{simulate}
+    \SetKwFunction{events}{events}
+    \SetKwFunction{nextEvent}{nextEvent}
+    \SetKwFunction{append}{append}
+    \SetKwFunction{delete}{delete}
+    \SetKwProg{Fn}{Function}{}{}
+    struct Event \{\\
+    timestamp: datetime\\
+    me: string\\
+    partner: string\\
+    event: [OutOfEnergy, Collision, OutOfSystem]\\
+    \}\\
+    \;
+    \Fn{\simulate{start: Layer, constantObjects: list} $\longrightarrow$ System}{
+        system $\longleftarrow$ System()\\
+        system $\longleftarrow$ appendLayer(system, start)\\
+        events: Map[string, Event[]] = Map()\\
+
+        \While{! system.isStatic()}{
+            events $\longleftarrow$ events(system.lastLayer(), constantObjects, events)\\
+            nextEvent $\longleftarrow$ nextEvent(events)\\
+            events $\longleftarrow$ delete(events, nextEvent)\\
+            layer $\longleftarrow$ atMoment(nextEvent)\\
+            system $\longleftarrow$ appendLayer(system, layer)
+        }
+        \KwRet system
+    }
+    \;
+    \Fn{\events{layer: Layer, constantObjects: list, events: Map[string, Event[]]} $\longrightarrow$ Map[string, Event[]]}{
+        \For{object in layer.dynamicObjects()}{
+            \If{object.id not in events.keys}{
+                events = append(outOfEnergy(object), events)\\
+                events = append(collision(object, layer.dynamicObjects()), events)\\
+                events = append(collision(object, layer.staticObjects()), events)\\
+                events = append(collision(object, constantObjects), events)\\
+                events = append(outOfSystem(object, constantObjects), events)\\
+            }
+        }
+        \KwRet events
+    }
+    \;
+    \Fn{\append{events: Map[string, Event[]], event: Event} $\longrightarrow$ Map[string, Event[]]}{
+        events $\longleftarrow$ append(event.me, event, events)\\
+        \If{event.me != event.partner}{
+            events $\longleftarrow$ append(event.partner, event, events)\\
+        }
+        \KwRet events
+    }
+    \;
+    \Fn{\delete{events: Map[string, Event[]], event: Event} $\longrightarrow$ Map[string, Event[]]}{
+        events $\longleftarrow$ drop(event.me, events)\\
+        events $\longleftarrow$ drop(event.partner, events)\\
+        \For{pair in events}{
+            \For{myEvent in pair.second}{
+                \If{myEvent.partner == event.me or myEvent.partner == event.partner}{
+                    cleaned $\longleftarrow$ drop(myEvent.partner, pair.second)\\
+                    events $\longleftarrow$ replace(pair.first, cleaned, events)
+                }
+            }
+        }
+        \KwRet events
+    }
+    \;
+    \Fn{\nextEvent{events: Map[string, Event[]]} $\longrightarrow$ Event}{
+        nextEvent: Node $\longleftarrow$ none\\
+        \For{pair in events}{
+            \For{event in pair.second} {
+                nextEvent $\longleftarrow$ min(nextEvent, event)
+            }
+        }
+        \KwRet nextEvent
+    }
+    \caption{Algorithmus zum Aufbau eines physikalischen Systems}
+    \label{alg:physikalisches_system}
+\end{algorithm}
