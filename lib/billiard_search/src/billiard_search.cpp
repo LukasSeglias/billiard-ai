@@ -32,17 +32,12 @@ namespace billiard::search {
 
 std::future<std::vector<std::vector<billiard::search::node::System>>> EXPORT_BILLIARD_SEARCH_LIB
 billiard::search::search(const billiard::search::State& state, const billiard::search::Search& search,
-                         uint16_t solutions, Configuration config) {
+                         uint16_t solutions, const Configuration& config) {
     static process::ProcessManager<std::shared_ptr<SearchNode>, SearchState, std::vector<node::System>> processManager {
             PROCESSES,
             SYNC_PERIOD_MS,
             expand,
             mapToSolution};
-
-    std::unordered_map<std::string, Ball> mappedState;
-    for (auto& ball : state._balls) {
-        mappedState.insert({ball._id, ball});
-    }
 
     return processManager.process(addPocketsAsInitialTargets(state, search, config), solutions,
                                   std::make_shared<SearchState>(SearchState{config}));
@@ -262,16 +257,16 @@ namespace billiard::search {
     addPocketsAsInitialTargets(const State& state, const Search& search, const Configuration& config) {
         std::vector<std::shared_ptr<SearchNode>> expanded;
 
+        std::unordered_map<std::string, Ball> ballState;
+        for (auto& ball : state._balls) {
+            ballState.insert({ball._id, ball});
+        }
+
         for (auto& pocket : config._table._pockets) {
             auto node = SearchNode::search();
             auto nodeSearch = node->asSearch();
 
-            std::unordered_map<std::string, Ball> ballState;
-            for (auto& ball : state._balls) {
-                ballState.insert({ball._id, ball});
-            }
-
-            nodeSearch->_state = std::move(ballState);
+            nodeSearch->_state = ballState;
             nodeSearch->_search = search;
             nodeSearch->_action = SearchActionType::NONE;
 
@@ -323,7 +318,7 @@ namespace billiard::search {
         auto unused = searchInput->_unusedBalls;
         for (auto& ball : unused) {
 
-            if (searchInput->_action != SearchActionType::NONE ||
+            if ((searchInput->_action != SearchActionType::NONE && ball.second._type == "WHITE") ||
                 (ball.first == searchInput->_search._id || ball.second._type == searchInput->_search._type)) {
 
                 auto result = expandSearchNodeByBall(input, state, searchInput, ball);
@@ -340,7 +335,7 @@ namespace billiard::search {
                          const std::pair<std::string, Ball>& ball) {
         std::vector<std::shared_ptr<SearchNode>> expanded;
 
-        auto result = SearchNode::search(input) ;// TODO: Remove and try to get result by expansion of ball. Use the last entry in "_backwardSearch".
+        auto result = SearchNode::search(input) ;// TODO: Remove and try to get result by expansion of ball.
 
         if (result) {
             auto resultSearchNode = result->asSearch();
@@ -379,7 +374,7 @@ namespace billiard::search {
                                 ball.second._position,
                                 force}
                 };
-                node::Node result{node::NodeType::BALL_MOVING, node::NodeVariant(initialEnergyNode)};
+                node::Node result{node::NodeType::BALL_MOVING, ball.second._type, node::NodeVariant(initialEnergyNode)};
                 nodes.insert({ball.first, result});
             } else {
                 node::BallInRestNode inRestNode{
@@ -388,7 +383,7 @@ namespace billiard::search {
                                 glm::vec2{0, 0}
                         }
                 };
-                node::Node result{node::NodeType::BALL_IN_REST, node::NodeVariant(inRestNode)};
+                node::Node result{node::NodeType::BALL_IN_REST, ball.second._type, node::NodeVariant(inRestNode)};
                 nodes.insert({ball.first, result});
             }
         }
@@ -411,7 +406,7 @@ namespace billiard::search {
 
             auto output = SearchNode::simulation(input);
             auto simulationSearchNode = output->asSimulation();
-            simulationSearchNode->_simulation._layers.emplace_back(layer);
+            simulationSearchNode->_simulation.append(layer);
 
             expanded.emplace_back(output);
         }
@@ -496,7 +491,7 @@ namespace billiard::search {
 
             if (event) {
                 auto layer = createLayer(*event, system.lastLayer());
-                system._layers.emplace_back(layer);
+                system.append(layer);
 
                 if (layer.final()) {
 
@@ -566,11 +561,12 @@ namespace billiard::search {
     nextRailCollision(const std::pair<std::string, node::Node>& ball, const std::vector<Rail>& rails);
     std::optional<event::Event>
     nextPocketCollision(const std::pair<std::string, node::Node>& ball, const std::vector<Pocket>& pockets);
-    std::shared_ptr<event::Event> min(std::optional<event::Event> event, std::shared_ptr<event::Event> currentEvent);
+    std::optional<event::Event> min(const std::optional<event::Event>& event,
+                                    const std::optional<event::Event>& currentEvent);
 
     std::optional<event::Event> nextEvent(const node::Layer& layer, const std::shared_ptr<SearchState>& state) {
 
-        std::shared_ptr<event::Event> nextEvent;
+        std::optional<event::Event> nextEvent = std::nullopt;
 
         for (auto& ball : layer.dynamicBalls()) {
 
@@ -620,13 +616,17 @@ namespace billiard::search {
         return state.count(id) ? state.at(id)._type : "";
     }
 
-    std::shared_ptr<event::Event> min(std::optional<event::Event> event, std::shared_ptr<event::Event> currentEvent) {
-        if (!event.has_value()) {
+    std::optional<event::Event> min(const std::optional<event::Event>& event,
+                                    const std::optional<event::Event>& currentEvent) {
+
+        if (event.has_value() && currentEvent.has_value()) {
+            return event->_time < currentEvent->_time ? event : currentEvent;
+        } else if (event.has_value()) {
+            return event;
+        } else if (currentEvent.has_value()) {
             return currentEvent;
         }
-
-        return currentEvent == nullptr || event->_time < currentEvent->_time ? std::make_shared<event::Event>(*event)
-                                                                             : std::move(currentEvent);
+        return std::nullopt;
     }
 }
 
