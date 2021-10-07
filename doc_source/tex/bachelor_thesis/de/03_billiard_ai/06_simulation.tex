@@ -26,13 +26,89 @@ Im Billiard gibt es nur die Kugeln als statische und/oder dynamische Objekte.
 
 \textbf{Konstante Objekte}
 Die konstanten Objekte bilden die Banden wie auch die Ziele.
-\\
 
 Es wird ungefähr der Pseudoalgorithmus wie in \ref{alg:physikalisches_system} angewendet, optimal auf das Problem \glqq{} Billiard\grqq{}
 abgestimmt. Es folgen die physikalischen Berechnungen zur Durchführung der Simulation.
 
-\subsubsection{Reibungsverlust über Strecke}
-TODO: T-5 Reibungsverslut über eine Strecke
+
+\subsubsection{Reibungsverlust über die Zeit}
+Die Geschwindigkeit einer Kugel wird durch die Reibung über die Zeit reduziert. Dazu wird die Formel der gleichförmig
+beschleunigten Bewegung verwendet, wobei $\vec{v_0}$, $\vec{a}$ sowie $t$ gegeben sind.
+\begin{align}
+    \vec{v} = \vec{a} \cdot t + \vec{v_0}
+\end{align}
+
+
+\subsubsection{Elastischer Stoss zweier Kugeln}
+Die Kollision zweier Kugeln wird im folgenden als zweidimensionaler elastischer Stoss angesehen. Dabei ist es wichtig,
+zwei Komponenten beim Zusammenprall zu betrachten. Dies ist einerseits das Liniensegment $s_z$ zwischen den Mittelpunkten
+der Kugeln sowie die orthogonal dazu stehende Gerade $s_t$. Die Kugel, welche Energie mitbringt, übergibt der anderen
+Kugel Energie in Richtung von $s_z$. Die übrig gebliebene Energie zeigt in Richtung von $s_t$ \cite{wiki.elastischer_stoss_physik:1}.
+In Abbildung \ref{fig:Elastischer Stoss zweier Kugeln} ist ein solcher Stoss dargestellt.
+Kugel eins bringt dabei die Geschwindigkeit $\vec{v_1}$ und Kugel zwei die Geschwindigkeit $\vec{v_2}$ mit. Ein Anteil
+der Geschwindigkeit von Kugel eins wird der Kugel zwei in Richtung von $s_z$ übergeben. Dasselbe gilt für die
+Kugel zwei. Sie übergibt einen Teil ihrer Geschwindigkeit an Kugel eins ebenfalls in Richtung von $s_z$. Die verbleibende
+Energie der Kugeln zeigt jeweils in Richtung von $s_t$.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/23_elastischer_stoss.png}
+    \end{center}
+    \caption{Elastischer Stoss zweier Kugeln}
+    \label{fig:Elastischer Stoss zweier Kugeln}
+\end{figure}
+
+Um nun die neuen Geschwindigkeiten $\vec{u_1}$ und $\vec{u_2}$ zu berechnen, müssen die initialen Geschwindigkeiten
+$\vec{v_1}$ sowie $\vec{v_2}$ auf die Komponenten in Richtung von $s_z$ und $s_t$ aufgeteilt werden.
+\begin{align}
+    \vec{z} = \vec{Z_2} - \vec{Z_1}\\
+    \hat{z} = \frac{\vec{z}}{\norm{\vec{z}}}
+\end{align}
+Von Interesse ist dabei nur $\hat{z}$. Mittels diesem Vektor kann die Komponente in Richtung von $s_z$ beider Geschwindigkeiten
+ausgerechnet werden.
+\begin{align}
+    \vec{v_{1,z}} = (\vec{v_1} \cdot \hat{z}) \cdot \hat{z}\\
+    \vec{v_{2,z}} = (\vec{v_2} \cdot \hat{z}) \cdot \hat{z}
+\end{align}
+Mittels dieses neuen Vektors in $s_z$ Richtung kann nun der Vektor in $s_t$ Richtung berechnet werden.
+\begin{align}
+    \vec{v} = \vec{v_t} + \vec{v_z}\\
+    \vec{v_t} = \vec{v} - \vec{v_z}
+\end{align}
+Daraus folgt für die jeweiligen Kugeln:
+\begin{align}
+    \vec{v_{1,t}} = \vec{v_1} - \vec{v_{1,z}}\\
+    \vec{v_{2,t}} = \vec{v_2} - \vec{v_{2,z}}
+\end{align}
+Die neuen Geschwindigkeitsvektoren setzen sich nun wie beschrieben aus den jeweiligen Komponenten zusammen.
+Das Resultat lautet nun wie folgt:
+\begin{align}
+    \vec{u_1} = \vec{v_{2,z}} + \vec{v_{1,t}}\\
+    \vec{u_2} = \vec{v_{1,z}} + \vec{v_{2,t}}
+\end{align}
+Somit können bei gegebener Kollision zweier Kugeln die Geschwindigkeiten nach der Kollision bestimmt werden.
+
+
+\subsubsection{Bandenreflektion}
+Sofern eine Kugel an eine Bande stösst, so wird diese abgelenkt. In dem hier beschriebenen Modell wird der Drall\cite{wiki.spin:1},
+welcher die Bahn einer Kugel nach Kollision mit der Bande ablenken würde, ignoriert.
+Das bedeutet, es wird davon ausgegangen, dass der Ausfallswinkel nach der Bandenreflektion gleich dem Eifallswinkel sei.
+Dazu kann die folgende Formel\cite{paulbourke.reflected_ray:1} verwendet werden, wobei $I$ der einfallende
+und $R$ der ausgehende Weg der Kugel und $N$ der Normalenvektor der Bande sind:
+\begin{align}
+    R = I - 2 \cdot N \cdot (I \cdot N)
+\end{align}
+
+
+\subsubsection{Kollisionsprüfung}
+Während der Simulation ist es notwendig zu prüfen, welche Kugeln mit welchen kollidieren könnten.
+Um zu wissen, ob eine Kugel eine Strecke zurücklegen kann, ohne mit einer anderen Kugel zu kollidieren,
+muss für jede andere Kugel geprüft werden, ob diese im Weg liegt. Daher sollte dieser Test effizient sein.
+Für den Test wird die zurückzulegende Strecke als Liniensegment zwischen Punkt $A$ und Punkt $B$ und die Position
+einer zu testenden Kugel $C$ als Punkt verstanden. Anschliessend wird der Abstand zwischen dem Punkt $C$ und dem
+Liniensegment $AB$ geprüft, ob dieser kleiner als der Kugeldurchmesser ist. Sofern dies der Fall ist, liegt die Kugel an
+der Position $C$ im Weg und es würde eine Kollision stattfinden, sofern die Ausgangskugel die Strecke $AB$ rollt.
+Dies wird für jede Kugel geprüft.
+
 
 \subsubsection{Ereignis Out-Of-Energy}
 TODO: T-5 Auftrittszeitpunkt Out-Of-Energy über Reibungsverlust
@@ -41,7 +117,57 @@ TODO: T-5 Auftrittszeitpunkt Out-Of-Energy über Reibungsverlust
 TODO: T-5 Kollision mit Kugeln (statisch/dynamisch) berechnen
 
 \subsubsection{Ereignis Energy-Transfer über Bandenkollision}
-TODO: T-5 Kollision mit Banden berechnen.
+Dieses Event beschreibt die Kollision mit der Bande. Es soll der Zeitpunkt $t$ der Kollision mit der Bande festgestellt werden.
+Der Algorithmus funktioniert so, dass zuerst geprüft wird, ob eine Kollision stattfinden kann.
+Dies erfolgt über einen Schnittpunkt-Test zwischen einer Linie und einem Liniensegment.
+Eine Bande kann als Liniensegment zwischen dem Startpunkt $R_1$ und $R_2$ betrachtet werden. Diese Punkte müssen demnach bekannt sein.
+Weiterhin ist der Geschwindigkeitsvektor $\vec{v}$ und die Position der Kugel $C$ bekannt.
+Aufgrund dieser Informationen kann eine Linie definiert werden.
+
+Die Punkte $R_1$ und $R_2$ werden um den Kugelradius zur Tischmitte verschoben,
+damit dem Kugelradius Rechnung getragen wird und dieser nicht weiter betrachtet werden muss.
+Daraus ergeben sich $R_1'$ und $R_{2'}$\footnote{Für Herleitung, siehe Anhang \ref{anhang:herleitung:event:collisionWithRail}}.
+
+Erster Schritt - Prüfe, ob Kollision möglich:\\
+Dazu kann die in Anhang \ref{anhang:herleitung:event:collisionWithRail} erarbeitete Formel mit einigen Variablensubstitutionen verwendet werden:
+\begin{align}
+    P = \vec{R_1'}\\
+    D = \vec{\Delta R'}\\
+    Q = \vec{C}\\
+    V = \vec{v}\\
+    \lambda_1 = \frac{V_x \cdot P_y - V_y \cdot P_x + Q_x \cdot V_y - Q_y \cdot V_x}{D_x \cdot V_y - \cdot D_y \cdot V_x}\\
+    \lambda_2 = \frac{P_x \cdot D_y - P_y \cdot D_x - Q_x \cdot D_y + Q_y \cdot D_x}{V_x \cdot D_y - V_y \cdot D_x}
+\end{align}
+
+Betrachte den Nenner eines der $\lambda$. Ergibt dieser $0$, so gibt es keinen Schnittpunkt
+und eine weitere Betrachtung erübrigt sich. Ansonsten muss für $\lambda$ folgendes gelten:
+\begin{align}
+    0 \leq \lambda_1 \leq 1\\
+    0 \leq \lambda_2
+\end{align}
+Das bedeutet, dass der Schnittpunkt mit der Bande in positiver Richtung des Geschwindigkeitsvektors der Kugel sowie an
+der effektiven Bande, also am Segment zwischen den Punkten $R_1'$ und $R_2'$, sein muss.
+Ist dies gegeben und beide $\lambda$ erfüllen die Bedingungen, dann kann der Zeitpunkt der Kollision berechnet werden.
+
+Zweiter Schritt - Ort der Kollision bestimmen:\\
+Betrachte dazu eine der Gleichungen mit zugehörigem $\lambda$:
+\begin{align}
+    \vec{s(\lambda_1)} = \vec{R_1'} + \lambda_1 \cdot \vec{\Delta R'}\\
+    \vec{s(\lambda_2)} = \vec{C} + \lambda_2 \cdot \vec{v}
+\end{align}
+
+Dritter Schritt - Zeitpunkt der Kollision bestimmen:\\
+Dies kann über die folgenden Gleichungen gelöst werden:
+\begin{align}
+    t_1 = \frac{-v_x + \sqrt{v_x^2 - 2 \cdot a_x \cdot \Delta s_x}}{a_x}\\
+    t_2 = \frac{-v_x - \sqrt{v_x^2 - 2 \cdot a_x \cdot \Delta s_x}}{a_x}
+\end{align}
+Bevor die Lösung zu $t_1$ und $t_2$ berechnet wird, muss jedoch die Radikale auf folgende Eigenschaft geprüft werden:
+\begin{align}
+    0 \leq v_x^2 - 2 \cdot a_x \cdot \Delta s_x
+\end{align}
+Nur in diesem Fall gibt es eine Lösung und somit an dieser Position eine Kollision. Ansonsten hat die Kugel vorher schon
+ihre Gesamtenergie verloren und steht still. Damit ist der Zeitpunkt der Kollision berechnet.
 
 \subsubsection{Ereignis Out-Of-System}
 TODO: T-5 Kollision mit Zielkreis berechnen.

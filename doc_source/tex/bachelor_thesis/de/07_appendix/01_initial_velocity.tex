@@ -1,0 +1,38 @@
+\section{Herleitung Startgeschwindigkeit auf Basis bekannter Endgeschwindigkeit unter Einbezug von Reibung}\label{anhang:herleitung:StartgeschwAnhandEndgeschwMitReibung}
+Dies erfordert den Energieerhaltungssatz. Dazu wird die kinetische Energie vor sowie nachher betrachtet.
+\begin{align}
+    E_{kin} = \frac{1}{2} \cdot m \cdot \norm{\vec{v}}^2\\
+    E_{vorher} = \frac{1}{2} \cdot m \cdot \norm{\vec{v_1}}^2\\
+    E_{nachher} = \frac{1}{2} \cdot m \cdot \norm{\vec{v_2}}^2
+\end{align}
+Die Rollreibung $F_R$ wird mithilfe der Normalkraft $F_N$ und dem Rollwiderstandskoeffizienten $c_R$ definiert\cite{wiki.rollreibung:1}.
+Mithilfe der Masse $m$ der Kugel und der Schwerebeschleunigung $g$ kann die Normalkraft $F_N$ berechnet werden.
+\begin{align}
+    F_R = c_R \cdot F_N\\
+    F_N = m \cdot g
+\end{align}
+Die Rollreibung $F_R$ wird über eine bestimmte Strecke $\Delta s$, welche die Kugel zurücklegt, angewendet.
+Dadurch entsteht eine Arbeit $E_{Reibung}$\cite{wiki.arbeit_physik:1}:
+\begin{align}
+    E_{Reibung} = F_R \cdot \Delta s
+\end{align}
+Nun kann der Energieerhaltungssatz angewendet werden:
+\begin{align}
+    E_{vorher} = E_{nachher} + E_{Reibung}\\
+    \frac{1}{2} \cdot m \cdot \norm{\vec{v_1}}^2 = \frac{1}{2} \cdot m \cdot \norm{\vec{v_2}}^2 + F_R \cdot \Delta s\\
+    m \cdot \norm{\vec{v_1}}^2 = m \cdot \norm{\vec{v_2}}^2 + 2 \cdot F_R \cdot \Delta s\\
+    \norm{\vec{v_1}}^2 = \frac{m \cdot \norm{\vec{v_2}}^2 + 2 \cdot F_R \cdot \Delta s}{m}\\
+    \norm{\vec{v_1}}^2 = \frac{m \cdot \norm{\vec{v_2}}^2 + 2 \cdot m \cdot g \cdot c_R \cdot \Delta s}{m}\\
+    \norm{\vec{v_1}}^2 = \norm{\vec{v_2}}^2 + 2 \cdot g \cdot c_R \cdot \Delta s\\
+    \norm{\vec{v_1}} = \sqrt{\norm{\vec{v_2}}^2 + 2 \cdot g \cdot c_R \cdot \Delta s}
+\end{align}
+Damit ist die Startgeschwindigkeit bestimmt. Nun stellt sich noch die Frage nach der Richtung. Diese zeigt in dieselbe,
+wie die Endgeschwindigkeit. Daher kann nun die bekannte Länge mit dem normalisieren Vektor $v_2$ multipliziert
+werden:
+\begin{align}
+    \vec{v_1} = \norm{\vec{v_1}} \cdot \frac{\vec{v_2}}{\norm{\vec{v_2}}}
+\end{align}
+Daraus folgt die Formel:
+\begin{align}
+    \vec{v_1} = \sqrt{\norm{\vec{v_2}}^2 + 2 \cdot g \cdot c_R \cdot \Delta s} \cdot \frac{\vec{v_2}}{\norm{\vec{v_2}}}
+\end{align}

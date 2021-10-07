@@ -1,0 +1,110 @@
+\section{Herleitung Ereignis - Kollision mit Bande}\label{anhang:herleitung:event:collisionWithRail}
+Das Ziel ist es, die Position einer Kugel zum Zeitpunkt einer Kollision mit einer Bande zu bestimmen.
+
+Die Bande wird über zwei Punkte beschrieben $R_1$ und $R_2$ (für Rail).
+Diese Punkte müssen um den Kugelradius zur
+Tischmitte hin verschoben werden, damit der Kugelradius berücksichtigt wird.
+Diese verschobenen Punkte seien $R_1'$ und $R_2'$.
+
+Auf Basis dieser Punkte kann eine Geradengleichung formuliert werden:
+\begin{align}
+    \vec{\Delta R'} = \vec{R_2'} - \vec{R_1'}\\
+    \vec{s(\lambda_1)} = \vec{R_1'} + \lambda_1 \cdot \vec{\Delta R'}
+\end{align}
+
+Weiterhin kann aufgrund der Position $C$ und der bekannten Geschwindigkeit $\vec{v}$ der Kugel eine Linie definiert werden:
+\begin{align}
+    \vec{s(\lambda_2)} = \vec{C} + \lambda_2 \cdot \vec{v}
+\end{align}
+
+Der Kollisionspunkt mit der Bande ist damit der Schnittpunkt dieser Linie und dem Banden-Liniensegment.
+Nun kann der Schnittpunkt der beiden Geraden anhand der Formel in Anhang \ref{anhang:herleitung:linie-linie-schnittpunkt} bestimmt werden.
+Dabei sind einige Variablensubstitutionen zu tun:
+\begin{align}
+    P = \vec{R_1'}\\
+    D = \vec{\Delta R'}\\
+    Q = \vec{C}\\
+    V = \vec{v}\\
+\end{align}
+Damit gilt dann:
+\begin{align}
+    \lambda_1 = \frac{V_x \cdot P_y - V_y \cdot P_x + Q_x \cdot V_y - Q_y \cdot V_x}{D_x \cdot V_y - \cdot D_y \cdot V_x}\\
+    \lambda_2 = \frac{P_x \cdot D_y - P_y \cdot D_x - Q_x \cdot D_y + Q_y \cdot D_x}{V_x \cdot D_y - V_y \cdot D_x}
+\end{align}
+\iffalse % Nicht im Dokument enthalten
+Nach der Variablensubstitution gilt:
+\begin{align}
+    \lambda_1 = \frac{\vec{v}_x \cdot \vec{R_1'}_y - \vec{v}_y \cdot \vec{R_1'}_x + \vec{C}_x \cdot \vec{v}_y - \vec{C}_y \cdot \vec{v}_x}{\vec{\Delta R'}_x \cdot \vec{v}_y - \cdot \vec{\Delta R'}_y \cdot \vec{v}_x}\\
+    \lambda_2 = \frac{\vec{R_1'}_x \cdot \vec{\Delta R'}_y - \vec{R_1'}_y \cdot \vec{\Delta R'}_x - \vec{C}_x \cdot \vec{\Delta R'}_y + \vec{C}_y \cdot \vec{\Delta R'}D_x}{\vec{v}_x \cdot \vec{\Delta R'}_y - \vec{v}_y \cdot \vec{\Delta R'}_x}
+\end{align}
+\fi
+Es findet nur dann eine Kollision statt, wenn der Nenner der $\lambda$ ungleich $0$ ist.
+
+Da die Bande nur ein Liniensegment darstellt, muss $\lambda_1$ zwischen $0$ und $1$ liegen.
+Ausserdem muss $\lambda_2$ grösser oder gleich $0$ sein, da der Weg der Kugel eine Half-Line darstellt und ansonsten
+Schnittpunkte hinter der Kugel möglich wären.
+
+Sofern die beiden $\lambda$ diese Bedingungen einhalten, dann kann der Ort der Kollision $s(t)$ über eines der beiden bestimmt werden.
+
+Der Zeitpunkt $t$ der Kollision kann nun mit der Formel der gleichmässig beschleunigten Bewegung berechnet werden.
+\begin{align}
+    \vec{s(t)} = \frac{1}{2} \cdot \vec{a} \cdot t^2 + \vec{v} \cdot t + \vec{s_0}
+\end{align}
+
+Die Beschleunigung $\vec{a}$, Geschwindigkeit $\vec{v}$, Startposition $\vec{s_0}$ zum Zeitpunkt $t_0$
+und die Position $\vec{s_1}$ zum Zeitpunkt $t_1$ sind bekannt.
+
+Da die Startposition der Kugel zum Zeitpunkt $t_0$ bekannt ist,
+kann die Formel auch mit der zurückzulegenden Strecke $\Delta \vec{s}$ definiert werden:
+\begin{align}
+    t = t_1 - t_0\\
+    \Delta \vec{s} = \vec{s_1} - \vec{s_0}\\
+    \Delta \vec{s} = \frac{1}{2} \cdot \vec{a} \cdot t^2 + \vec{v} \cdot t + \vec{s_0} - \vec{s_0}\\
+    \Delta \vec{s} = \frac{1}{2} \cdot \vec{a} \cdot t^2 + \vec{v} \cdot t
+\end{align}
+
+Das zweidimensionale Problem kann auf eine Dimension reduziert werden, indem die Beträge der Vektoren verwendet werden,
+weil die Vektoren $\Delta \vec{s}$, $\vec{a}$ und $\vec{v}$ kollinear sind:
+\begin{align}
+    \Delta s = \norm{\Delta \vec{s}}\\
+    a = \norm{\vec{a}}\\
+    v = \norm{\vec{v}}\\
+    \norm{\Delta \vec{s}} = \frac{1}{2} \cdot \norm{\vec{a}} \cdot t^2 + \norm{\vec{v}} \cdot t\\
+    \Delta s = \frac{1}{2} \cdot a \cdot t^2 + v \cdot t
+\end{align}
+
+Umgeformt zu einer quadratischen Gleichung folgt:
+\begin{align}
+    0 = \frac{1}{2} \cdot a \cdot t^2 + v \cdot t - \Delta s
+\end{align}
+
+Diese Gleichung kann nun mit der allgemeinen Lösungsformel für quadratische Gleichungen nach $t$ gelöst werden \cite{wiki.mitternachtsformel:1}:
+\begin{align}
+    t_{1,2} = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+\end{align}
+Diese beiden $t_1$ und $t_2$ sind nicht zu verwechseln mit den gleichnamigen Variablen zuvor, es handelt sich um Lösungen für $t$.
+
+Wobei für die Koeffizienten gilt:
+\begin{align}
+    a = \frac{1}{2} \cdot a\\
+    b = v\\
+    c = - \Delta s\\
+\end{align}
+
+Die Lösungen lauten daher:
+\begin{align}
+    \Delta t_1 = \frac{-v + \sqrt{v^2 + 2 \cdot a \cdot \Delta s}}{a}\\
+    \Delta t_2 = \frac{-v - \sqrt{v^2 + 2 \cdot a \cdot \Delta s}}{a}
+\end{align}
+
+Eine der erhaltenen Lösungen $t_1$ oder $t_2$ wird positiv und die andere negativ sein.
+Da in diesem Kontext nur die positive Lösung sinnvoll ist, wird diese verwendet.
+\begin{align}
+    t = max(t_1, t_2)
+\end{align}
+
+Da es sich bei $t$ nur um die vergangene Zeit von dem Startzeitpunkt $t_0$ bis zum Kollisionszeitpunkt $t_1$ handelt,
+muss der Startzeitpunkt wieder aufaddiert werden, sofern der Absolute Zeitpunkt relevant ist:
+\begin{align}
+    t_1 = t_0 + t
+\end{align}

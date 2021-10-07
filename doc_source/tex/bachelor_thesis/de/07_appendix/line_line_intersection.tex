@@ -1,0 +1,76 @@
+\section{Herleitung Linie-Linie-Schnittpunkt}\label{anhang:herleitung:linie-linie-schnittpunkt}
+Der Schnittpunkt zweier Linien ist zu finden. Die Linien $L_1$ und $L_2$ seien anhand parametrischer Gleichungen wie folgt definiert:
+\begin{align}
+    L_1(\lambda_1): P + \lambda_1 \cdot D\\
+    L_2(\lambda_2): Q + \lambda_2 \cdot V
+\end{align}
+Wobei $P$ und $Q$ Punkte auf den Linien und $D$ und $V$ Richtungsvektoren der Linien sind.
+
+Der Schnittpunkt kann bestimmt werden, indem beide Gleichungen gleichgesetzt werden:
+\begin{align}
+    L_1(\lambda_1) = L_2(\lambda_2)\\
+    P + \lambda_1 \cdot D = Q + \lambda_2 \cdot V
+\end{align}
+Komponentenweise formuliert folgt:
+\begin{align}
+    P_x + \lambda_1 \cdot D_x = Q_x + \lambda_2 \cdot V_x\\
+    P_y + \lambda_1 \cdot D_y = Q_y + \lambda_2 \cdot V_y
+\end{align}
+Nach Isolation einer Unbekannten auf eine Seite:
+\begin{align}
+    \lambda_2 = \frac{P_x + \lambda_1 \cdot D_x - Q_x}{V_x}\label{eq:event_rail_collision_lambda_2x}\\
+    \lambda_2 = \frac{P_y + \lambda_1 \cdot D_y - Q_y}{V_y}\label{eq:event_rail_collision_lambda_2y}
+\end{align}
+Nun können beide Gleichungen gleichgesetzt werden, um die Variable $\lambda_2$ zu entfernen:
+\begin{align}
+    \frac{P_x + \lambda_1 \cdot D_x - Q_x}{V_x} = \frac{P_y + \lambda_1 \cdot D_y - Q_y}{V_y}
+\end{align}
+Nun kann nach $\lambda_1$ umformuliert werden:
+\begin{align}
+    \frac{P_x + \lambda_1 \cdot D_x - Q_x}{V_x} = \frac{P_y + \lambda_1 \cdot D_y - Q_y}{V_y}\\
+    (P_x + \lambda_1 \cdot D_x - Q_x) \cdot V_y = (P_y + \lambda_1 \cdot D_y - Q_y) \cdot V_x\\
+    P_x \cdot V_y + \lambda_1 \cdot D_x \cdot V_y - Q_x \cdot V_y = P_y \cdot V_x + \lambda_1 \cdot D_y \cdot V_x - Q_y \cdot V_x\\
+    \lambda_1 \cdot D_x \cdot V_y - \lambda_1 \cdot D_y \cdot V_x = P_y \cdot V_x - P_x \cdot V_y - Q_y \cdot V_x + Q_x \cdot V_y\\
+    \lambda_1 \cdot (D_x \cdot V_y - \cdot D_y \cdot V_x) = P_y \cdot V_x - P_x \cdot V_y - Q_y \cdot V_x + Q_x \cdot V_y\\
+    \lambda_1 = \frac{P_y \cdot V_x - P_x \cdot V_y - Q_y \cdot V_x + Q_x \cdot V_y}{D_x \cdot V_y - \cdot D_y \cdot V_x}\\
+    \lambda_1 = \frac{V_x \cdot P_y - V_y \cdot P_x + Q_x \cdot V_y - Q_y \cdot V_x}{D_x \cdot V_y - \cdot D_y \cdot V_x}\label{eq:event_rail_collision_lambda1}
+\end{align}
+
+Wenn der Nenner der Gleichung \ref{eq:event_rail_collision_lambda1} null ist, dann gibt es keinen Schnittpunkt der
+beiden Linien und weitere Berechnungen können abgebrochen werden.
+
+Die Variable $\lambda_2$ kann durch Einsetzen von $\lambda_1$ in Gleichung \ref{eq:event_rail_collision_lambda_2x}
+oder \ref{eq:event_rail_collision_lambda_2y} gefunden werden.
+
+Die Lösung nach $\lambda_2$ kann auch analog $\lambda_1$ umgestellt werden:
+\begin{align}
+    \lambda_2 = \frac{P_x \cdot D_y - P_y \cdot D_x - Q_x \cdot D_y + Q_y \cdot D_x}{V_x \cdot D_y - V_y \cdot D_x}
+\end{align}
+
+
+\iffalse
+% Das geich für lambda_2:
+Komponentenweise formuliert folgt:
+\begin{align}
+    P_x + \lambda_1 \cdot D_x = Q_x + \lambda_2 \cdot V_x\\
+    P_y + \lambda_1 \cdot D_y = Q_y + \lambda_2 \cdot V_y
+\end{align}
+Nach Isolation einer Unbekannten auf eine Seite:
+\begin{align}
+    \lambda_1 = \frac{Q_x + \lambda_2 \cdot V_x - P_x}{D_x}\\
+    \lambda_1 = \frac{Q_y + \lambda_2 \cdot V_y - P_y}{D_y}
+\end{align}
+Nun können beide Gleichungen gleichgesetzt werden, um die Variable $\lambda_1$ zu entfernen:
+\begin{align}
+    \frac{Q_x + \lambda_2 \cdot V_x - P_x}{D_x} = \frac{Q_y + \lambda_2 \cdot V_y - P_y}{D_y}
+\end{align}
+Nun kann nach $\lambda_2$ umformuliert werden:
+\begin{align}
+    \frac{Q_x + \lambda_2 \cdot V_x - P_x}{D_x} = \frac{Q_y + \lambda_2 \cdot V_y - P_y}{D_y}\\
+    (Q_x + \lambda_2 \cdot V_x - P_x) \cdot D_y = (Q_y + \lambda_2 \cdot V_y - P_y) \cdot D_x\\
+    Q_x \cdot D_y + \lambda_2 \cdot V_x \cdot D_y - P_x \cdot D_y = Q_y \cdot D_x + \lambda_2 \cdot V_y \cdot D_x - P_y \cdot D_x\\
+    \lambda_2 \cdot V_x \cdot D_y - \lambda_2 \cdot V_y \cdot D_x = P_x \cdot D_y - P_y \cdot D_x - Q_x \cdot D_y + Q_y \cdot D_x\\
+    \lambda_2 (\cdot V_x \cdot D_y - V_y \cdot D_x) = P_x \cdot D_y - P_y \cdot D_x - Q_x \cdot D_y + Q_y \cdot D_x\\
+    \lambda_2 = \frac{P_x \cdot D_y - P_y \cdot D_x - Q_x \cdot D_y + Q_y \cdot D_x}{V_x \cdot D_y - V_y \cdot D_x}
+\end{align}
+\fi
