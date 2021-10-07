@@ -61,7 +61,7 @@ public class StateCreator : MonoBehaviour
 			
 			var ballObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 			ballObject.GetComponent<MeshRenderer>().material = Materials[currentCreationIndex].material;
-			PickableInformation ballInfo = ballObject.AddComponent<PickableInformation>();
+			BallObjectInformation ballInfo = ballObject.AddComponent<BallObjectInformation>();
 			ballInfo.id = Materials[currentCreationIndex].key + id++;
 			ballInfo.type = Materials[currentCreationIndex].key;
 			ballObject.transform.position = objectPos;
@@ -73,7 +73,7 @@ public class StateCreator : MonoBehaviour
 			bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
 			if (hit) {
 				var gameObject = hitInfo.transform.gameObject;
-				if (gameObject.GetComponent<PickableInformation>() != null) {
+				if (gameObject.GetComponent<BallObjectInformation>() != null) {
 					ballObjects.Remove(gameObject);
 					Destroy(gameObject);
 				}

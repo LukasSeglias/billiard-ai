@@ -13,6 +13,7 @@ extern "C" {
     //// Application Interface
     ///////////////////////////////////////////////////////
     EXPORT_UNITY_ADAPTER_LIB void onAnimationChangedEvent(AnimationChangedEventCallback callback);
+    EXPORT_UNITY_ADAPTER_LIB void onStateChangedEvent(StateChangedEventCallback callback);
 
     EXPORT_UNITY_ADAPTER_LIB void configuration(Configuration config);
     EXPORT_UNITY_ADAPTER_LIB void capture();

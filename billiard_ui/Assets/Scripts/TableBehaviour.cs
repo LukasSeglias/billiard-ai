@@ -27,14 +27,18 @@ public class TableBehaviour : MonoBehaviour
 	public GameObject Queue;
 	
 	private RootObject root = new RootObject();
+	private RootState state = new RootState();
 	private Animator animator;
+	private StatePresenter statePresenter;
 	private Dictionary<string, Material> mappedMaterials = new Dictionary<string, Material>();
 	private bool isPlaying = true;
 	private Configuration config;
     private int animationIndex = 0;
 	private List<GameObject> railSegments;
 	private List<GameObject> targets;
-	private bool isLive = false;
+	private bool isLive = true;
+	private bool isDebug = false;
+	private bool showBallHalos = true;
 	
 	// Start is called before the first frame update
     void Start()
@@ -51,7 +55,8 @@ public class TableBehaviour : MonoBehaviour
         }
 		
 		AnimationService.OnAnimationReceived += animationChanged;
-		AnimationService.OnCaptureState += disableInterface;
+		AnimationService.OnStateReceived += stateChanged;
+		AnimationService.captureState(isLive);
 		
 		config = ConfigurationLoader.load();
 		Utility.applyConfig(ref config, ref HeightStretching, ref WidthStretching, ref Table);
@@ -66,11 +71,12 @@ public class TableBehaviour : MonoBehaviour
 	
 	void OnDestroy() {
 		AnimationService.OnAnimationReceived -= animationChanged;
-		AnimationService.OnCaptureState -= disableInterface;
+		AnimationService.OnStateReceived -= stateChanged;
 	}
 
     void Update()
-    {
+    {	
+		
 		AnimationModel[] animations = root.animations;
 		
 		if (Input.GetKey(KeyCode.UpArrow)) {
@@ -114,19 +120,22 @@ public class TableBehaviour : MonoBehaviour
 		} else if (Input.GetKeyDown(KeyCode.T)) {
 			toggleConfigProperties();
 		} else if (Input.GetKeyDown(KeyCode.D)) {
-			if (animator != null) {
-				animator.togglePositions();
-			}
+			this.isDebug = !isDebug;
 		} else if (Input.GetKeyDown(KeyCode.L)) {
 			isLive = !isLive;
-			AnimationService.live(isLive);
+			AnimationService.captureState(isLive);
+		} else if (Input.GetKeyDown(KeyCode.H)) {
+			showBallHalos = !showBallHalos;
+		} else if (Input.GetKeyDown(KeyCode.Return)) {
+			AnimationService.captureState();
 		}
 		
-		if (isLive) {
-			if (animator != null) {
-				animator.selectAllBalls();
-			}
-		} else if (isPlaying) {
+		if (statePresenter != null) {
+			statePresenter.enableDebug(isDebug);
+			statePresenter.showHalo(showBallHalos);
+		}
+		
+		if (isPlaying) {
 			animate(Time.deltaTime);
 		}
     }
@@ -151,13 +160,21 @@ public class TableBehaviour : MonoBehaviour
 	private void animationChanged(RootObject root) {
 		infoText.SetText("");
 		infoText.gameObject.SetActive(false);
-		enableInterface();
+
 		this.root = root;
 		
 		if (this.animator != null) {
 			this.animator.delete();
 			this.animator = null;
 		}
+	}
+	
+	private void stateChanged(RootState state) {
+		if (this.statePresenter == null) {
+			statePresenter = new StatePresenter(transparent, Scale, config, HeightStretching, WidthStretching);
+		}
+		
+		statePresenter.update(state);
 	}
 	
 	private List<GameObject> drawRailSegments(ref Configuration config, ref StretchingBehaviour heightStretching, ref StretchingBehaviour widthStretching) {
@@ -209,7 +226,7 @@ public class TableBehaviour : MonoBehaviour
 
         for (int i = 0; i < (segments + 2); i++)
         {
-			var movedPos = position(convert(circle.position, 0), heightStretching, widthStretching);
+			var movedPos = position(convert(circle.position, -0.01f), heightStretching, widthStretching);
             y = Mathf.Cos (Mathf.Deg2Rad * angle) * (circle.radius * scale) + movedPos.y;
             x = Mathf.Sin (Mathf.Deg2Rad * angle) * (circle.radius * scale) + movedPos.x;
 
@@ -218,14 +235,6 @@ public class TableBehaviour : MonoBehaviour
             angle += angleStep;
         }
     }
-	
-	private void disableInterface() {
-		//Background.transform.position = new Vector3(0, 0, -0.8f);
-	}
-	
-	private void enableInterface() {
-		Background.transform.position = new Vector3(0, 0, 0.5f);
-	}
 	
 	private static Vector3 convert(Vec2 vector, float z) {
 		return new Vector3((float)vector.x, (float)vector.y, z);
@@ -237,6 +246,92 @@ public class TableBehaviour : MonoBehaviour
 	
 	private static Vec2 invPosition(Vec2 pos, StretchingBehaviour heightStretching, StretchingBehaviour widthStretching) {
 		return new Vec2{x = widthStretching.inverse((float) pos.x), y = heightStretching.inverse((float) pos.y)};
+	}
+	
+	private class StatePresenter {
+		private readonly List<GameObject> ballObjects = new List<GameObject>();
+		private readonly StretchingBehaviour heightStretching;
+		private readonly StretchingBehaviour widthStretching;
+		private readonly float scale;
+		private readonly Configuration config;
+		private readonly Material transparent;
+		
+		public StatePresenter(Material transparent,
+			float scale, Configuration config, StretchingBehaviour heightStretching, StretchingBehaviour widthStretching) {
+			this.heightStretching = heightStretching;
+			this.widthStretching = widthStretching;
+			this.scale = scale;
+			this.config = config;
+			this.transparent = transparent;
+		}
+		
+				
+		public void update(RootState state) {
+			for (int i = 0; i < state.balls.Length; i++) {
+				if (i > (ballObjects.Count - 1)) {
+					append();
+				}
+				
+				update(state.balls[i], ballObjects[i]);
+			}
+			
+			for (int i = ballObjects.Count - 1; i >= state.balls.Length; i--) {
+				var gameObject = ballObjects[i];
+				Destroy(gameObject);
+				ballObjects.RemoveAt(i);
+			}
+		}
+		
+		private void update(BallState ball, GameObject ballObject) {
+			BallObjectInformation ballInfo = ballObject.GetComponent<BallObjectInformation>();
+			ballInfo.id = ball.id;
+			ballInfo.type = ball.type;
+			ballInfo.selectable = true;
+			ballObject.transform.position = position(convert(ball.position, -0.01f), heightStretching, widthStretching);
+			float radius = config.radius;
+			ballObject.transform.localScale = new Vector3((float) radius, (float) radius, (float) radius) * 2 * scale;
+			updateLocationText(ball.type, ballObject);
+		}
+		
+		private void append() {
+			var ballObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			ballObject.GetComponent<MeshRenderer>().material = transparent;
+			ballObject.AddComponent<BallObjectInformation>();
+				
+			GameObject textObject = new GameObject("Text");
+			TMPro.TextMeshPro textMesh = textObject.AddComponent<TMPro.TextMeshPro>();
+			textMesh.fontSize = 4;
+			textMesh.GetComponent<MeshRenderer >().enabled = false;
+			textObject.transform.SetParent(ballObject.transform, false);
+			textObject.transform.localPosition = new Vector3(0, -2, 0);
+			textObject.GetComponent<RectTransform>().sizeDelta = new Vector2(5, 2);
+			
+			ballObjects.Add(ballObject);
+		}
+		
+		public void enableDebug(bool debug) {
+			foreach(var ball in ballObjects) {
+            	var textObject = ball.transform.Find("Text").gameObject;
+            	textObject.GetComponent<TMPro.TextMeshPro>().GetComponent<MeshRenderer>().enabled = debug;
+            }
+		}
+		
+		public void showHalo(bool show) {
+			if (show) {
+				Utility.drawCircle(ballObjects, 1, 50);
+			} else {
+				foreach (var ball in ballObjects) {
+					Destroy(ball.GetComponent<LineRenderer>());
+				}
+			}
+		}
+		
+		private void updateLocationText(string type, GameObject ball) {
+			var textObject = ball.transform.Find("Text").gameObject;
+			var pos = new Vec2{x = ball.transform.position.x, y = ball.transform.position.y};
+			var invPos = invPosition(pos, heightStretching, widthStretching);
+			textObject.GetComponent<TMPro.TextMeshPro>().SetText(string.Format("[{0:F4}; {1:F4}]\n{2}", invPos.x, invPos.y, type));
+		}
 	}
 	
 	private class Animator {
@@ -259,7 +354,6 @@ public class TableBehaviour : MonoBehaviour
 		private bool animateQueue;
 		private double time;
 		private bool activeByDefinition = true;
-		private bool debugModeActive = false;
 
 		public Animator(RootObject root, KeyFrame[] frames, Dictionary<string, Material> mappedMaterials, Material transparent,
 		    Configuration config, StretchingBehaviour heightStretching, StretchingBehaviour widthStretching,
@@ -274,22 +368,13 @@ public class TableBehaviour : MonoBehaviour
 			foreach (var ball in frames[0].balls) {
 				var ballObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 				ballObject.GetComponent<MeshRenderer>().material = mappedMaterials[ball.type];
-				PickableInformation ballInfo = ballObject.AddComponent<PickableInformation>();
+				BallObjectInformation ballInfo = ballObject.AddComponent<BallObjectInformation>();
 				ballInfo.id = ball.id;
 				ballInfo.type = ball.type;
+				ballInfo.selectable = false;
 				ballObject.transform.position = position(convert(ball.position, 0), heightStretching, widthStretching);
 				float radius = config.radius;
 				ballObject.transform.localScale = new Vector3((float) radius, (float) radius, (float) radius) * 2 * scale;
-				
-				GameObject textObject = new GameObject();
-				textObject.name = ball.id + "_Position";
-				TMPro.TextMeshPro textMesh = textObject.AddComponent<TMPro.TextMeshPro>();
-				textMesh.fontSize = 4;
-				textMesh.GetComponent<MeshRenderer >().enabled = false;
-				textObject.transform.SetParent(ballObject.transform, false);
-				textObject.transform.localPosition = new Vector3(0, -2, 0);
-				textObject.GetComponent<RectTransform>().sizeDelta = new Vector2(5, 2);
-				updateLocationText(ball.id, ball.type, ballObject);
 				
 				ballObjects.Add(ball.id, ballObject);
 			}
@@ -297,23 +382,6 @@ public class TableBehaviour : MonoBehaviour
 			
 			reset();
 			drawLines(mappedMaterials);
-		}
-		
-		public void selectAllBalls() {
-			Utility.drawCircle(ballObjects.Values.ToList(), 1, 50);
-			foreach (var line in lines) {
-				line.SetActive(false);
-			}
-
-            foreach(KeyValuePair<string, GameObject> entry in ballObjects) {
-            	var textObject = entry.Value.transform.Find(entry.Key + "_Position").gameObject;
-            	textObject.GetComponent<TMPro.TextMeshPro>().GetComponent<MeshRenderer>().enabled = true;
-            }
-
-            foreach (var ballObject in ballObjects.Values) {
-                PickableInformation ballInfo = ballObject.GetComponent<PickableInformation>();
-                ballObject.GetComponent<MeshRenderer>().material = transparent;
-            }
 		}
 		
 		public void drawLines(Dictionary<string, Material> mappedMaterials) {
@@ -338,8 +406,8 @@ public class TableBehaviour : MonoBehaviour
 						lRend.colorGradient = gradient;
 						lRend.startWidth = 0.02f;
 						lRend.endWidth = 0.02f;
-						lRend.SetPosition(0, position(convert(startBall.position, 0), heightStretching, widthStretching));
-						lRend.SetPosition(1, position(convert(endBall.position, 0), heightStretching, widthStretching));
+						lRend.SetPosition(0, position(convert(startBall.position, -0.01f), heightStretching, widthStretching));
+						lRend.SetPosition(1, position(convert(endBall.position, -0.01f), heightStretching, widthStretching));
 						lRend.sortingOrder = 0;
 						lines.Add(lineObject);
 					}
@@ -417,20 +485,6 @@ public class TableBehaviour : MonoBehaviour
 			return this.time == this.endTime;
 		}
 		
-		public void togglePositions() {
-		    this.debugModeActive = !this.debugModeActive;
-			foreach(KeyValuePair<string, GameObject> entry in ballObjects) {
-				var textObject = entry.Value.transform.Find(entry.Key + "_Position").gameObject;
-				textObject.GetComponent<TMPro.TextMeshPro>().GetComponent<MeshRenderer>().enabled = this.debugModeActive;
-			}
-
-			foreach (var ballObject in ballObjects.Values) {
-			    PickableInformation ballInfo = ballObject.GetComponent<PickableInformation>();
-			    var material = this.debugModeActive ? transparent : this.mappedMaterials[ballInfo.type];
-			    ballObject.GetComponent<MeshRenderer>().material = material;
-            }
-		}
-		
 		private void updateBalls(KeyFrame start, KeyFrame end, double time) {
 			double duration = end.time - start.time;
 			double timeDeltaInAnimationWindow = time - start.time;
@@ -442,7 +496,6 @@ public class TableBehaviour : MonoBehaviour
 							
 					ballObject.SetActive(true);
 					updatePosition(startBall, endBall, ballObject, duration, timeDeltaInAnimationWindow);
-					updateLocationText(startBall.id, startBall.type, ballObject);
 				} else {
 					ballObject.SetActive(false);
 				}
@@ -491,13 +544,6 @@ public class TableBehaviour : MonoBehaviour
 			bool isFinished = time == totalTime;
 			
 			return !isFinished;
-		}
-		
-		private void updateLocationText(string id, string type, GameObject ball) {
-			var textObject = ball.transform.Find(id + "_Position").gameObject;
-			var pos = new Vec2{x = ball.transform.position.x, y = ball.transform.position.y};
-			var invPos = invPosition(pos, heightStretching, widthStretching);
-			textObject.GetComponent<TMPro.TextMeshPro>().SetText(string.Format("[{0:F4}; {1:F4}]\n{2}", invPos.x, invPos.y, type));
 		}
 		
 		private void mayUpdateAnimationWindow(double time, KeyFrame[] frames) {

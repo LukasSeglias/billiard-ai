@@ -101,11 +101,12 @@ extern "C" {
 
     struct EXPORT_UNITY_ADAPTER_LIB  Ball {
         Ball();
-        Ball(char* type, char* id, Vec2 position, Vec2 velocity, bool visible);
+        Ball(const char* type, const char* id, Vec2 position, Vec2 velocity, bool visible);
         Ball(Ball&& other) noexcept;
         Ball(const Ball& other) noexcept;
         Ball& operator=(Ball&& other) noexcept;
         Ball& operator=(const Ball& other) noexcept;
+        ~Ball();
 
         char* type;
         char* id;
@@ -155,14 +156,32 @@ extern "C" {
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB BallState {
+        BallState();
+        BallState(const char* type, const char* id, Vec2 position, bool fromUnity = true);
+        BallState(BallState&& other) noexcept;
+        BallState(const BallState& other) noexcept;
+        BallState& operator=(BallState&& other) noexcept;
+        BallState& operator=(const BallState& other) noexcept;
+        ~BallState();
+
         char* type;
         char* id;
         Vec2 position;
+        bool fromUnity;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB State {
+        State();
+        State(BallState* balls, int ballSize, bool fromUnity = true);
+        State(State&& other) noexcept;
+        State(const State& other) noexcept;
+        State& operator=(State&& other) noexcept;
+        State& operator=(const State& other) noexcept;
+        ~State();
+
         BallState* balls;
         int ballSize;
+        bool fromUnity;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB Search {
@@ -171,5 +190,6 @@ extern "C" {
     };
 
     typedef void (__stdcall* AnimationChangedEventCallback)(RootObject);
+    typedef void (__stdcall* StateChangedEventCallback)(State);
     typedef void (__stdcall* Debugger)(const char*);
 }

@@ -3,8 +3,50 @@
 	"width": 1881,
 	"height": 943,
 	"scale": 3.525,
+	"segmentSize": 6,
 	"segments": [
-
+		{
+			"description": "Left",
+			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
+			"start": {"x": -940.5, "y": 421.5},
+			"end": {"x": -940.5, "y": -421.5},
+			"location": 3
+		},
+		{
+			"description": "Right",
+			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
+			"start": {"x": 940.5, "y": -421.5},
+			"end": {"x": 940.5, "y": 421.5},
+			"location": 2
+		},
+		{
+			"description": "Top left",
+			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
+			"start": {"x": -50, "y": 471.5},
+			"end": {"x": -890.5, "y": 471.5},
+			"location": 0
+		},
+		{
+			"description": "Top right",
+			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
+			"start": {"x": 890.5, "y": 471.5},
+			"end": {"x": 50, "y": 471.5},
+			"location": 0
+		},
+		{
+			"description": "Bottom left",
+			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
+			"start": {"x": -890.5, "y": -471.5},
+			"end": {"x": -50, "y": -471.5},
+			"location": 1
+		},
+		{
+			"description": "Bottom right",
+			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
+			"start": {"x": 50, "y": -471.5},
+			"end": {"x": 890.5, "y": -471.5},
+			"location": 1
+		}
 	],
 	"targets": [
 

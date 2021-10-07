@@ -201,13 +201,25 @@ public class Correction {
 [Serializable]
 public class Search
 {
-    public string id;
-	public string type;
+    public string id = "";
+	public string type = "";
 }
 
-public class PickableInformation : MonoBehaviour
+[Serializable]
+public class RootState {
+	public BallState[] balls = new BallState[0];
+}
+
+[Serializable]
+public class BallState {
+	public string type;
+	public string id;
+    public Vec2 position;
+}
+
+public class BallObjectInformation : MonoBehaviour
 {
     public string id;
 	public string type;
-	public int picked = 0;
+	public bool selectable;
 }

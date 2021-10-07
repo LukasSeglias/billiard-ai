@@ -15,23 +15,22 @@ public class AnimationService : MonoBehaviour
 	// Public Interface
 	////////////////////////////////////////////////////////////////////
 	public static event Action<RootObject> OnAnimationReceived;
-	public static event Action OnCaptureState;
+	public static event Action<RootState> OnStateReceived;
 	
 	private static bool doCapture;
-	private static bool liveMode;
-	private static bool skipCapture;
+	private static bool isLive;
 
-	void Start() {
-		doCapture = false;
-		liveMode = false;
-		
+	void Start() {		
 		onStart();
 		debugger((message) => Debug.Log(message));
 			
 		// Register native events
 		onAnimationChangedEvent((rootObject) => {
 			OnAnimationReceived?.Invoke(map(rootObject));
-			skipCapture = true;
+		});
+		
+		onStateChangedEvent((state) => {
+			OnStateReceived?.Invoke(map(state));
 		});
 	}
 	
@@ -40,21 +39,15 @@ public class AnimationService : MonoBehaviour
 		onTearDown();
 	}
 	
-	void FixedUpdate() {
-		processEvents();
-	}
-	
 	void Update() {
 		if (doCapture) {
-			doCapture = false;
 			capture();
+			doCapture = false;
+		} else if(isLive){
+			doCapture = true;
 		}
-		
-		if (liveMode && !skipCapture) {
-			captureState();
-		}
-		
-		skipCapture = false;
+
+		processEvents();
 	}
 	
 	public static void setConfiguration(Configuration config) {
@@ -72,19 +65,16 @@ public class AnimationService : MonoBehaviour
 	    image();
 	}
 	
+	public static void captureState(bool captureState) {
+		isLive = captureState;
+	}
+	
 	public static void captureState() {
-		if (!doCapture) {
-			OnCaptureState?.Invoke();
-			doCapture = true;
-		}
+		capture();
 	}
 	
 	public static void searchSolution(Search value) {
 		search(map(value));
-	}
-	
-	public static void live(bool live) {
-		liveMode = live;
 	}
 
 	////////////////////////////////////////////////////////////////////
@@ -93,6 +83,8 @@ public class AnimationService : MonoBehaviour
 	
 	[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 	private delegate void AnimationChangedEventCallback(RootObject_t rootObject);
+	[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+	private delegate void StateChangedEventCallback(RootState_t rootState);
 	[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 	private delegate void Debugger(string message);
 	
@@ -105,6 +97,9 @@ public class AnimationService : MonoBehaviour
 	
 	[DllImport("unity_adapter", CallingConvention = CallingConvention.Cdecl)]
 	private static extern void onAnimationChangedEvent([MarshalAs(UnmanagedType.FunctionPtr)] AnimationChangedEventCallback callback);
+	
+	[DllImport("unity_adapter", CallingConvention = CallingConvention.Cdecl)]
+	private static extern void onStateChangedEvent([MarshalAs(UnmanagedType.FunctionPtr)] StateChangedEventCallback callback);
 	
 	[DllImport("unity_adapter", CallingConvention = CallingConvention.Cdecl)]
 	private static extern void configuration(Configuration_t config);
@@ -161,6 +156,12 @@ public class AnimationService : MonoBehaviour
         public double y;
         public double z;
     }
+	
+	[StructLayout(LayoutKind.Sequential)]
+	public class RootState_t {
+		public IntPtr balls;
+		public int ballSize;
+	}
 
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
 	struct Ball_t
@@ -285,6 +286,7 @@ public class AnimationService : MonoBehaviour
 		public BilliardState_t(BallState_t[] ballStates) {
 			this.balls = allocate(ballStates);
 			this.ballSize = ballStates.Length;
+			this.fromUnity = true;
 		}
 		
 		~BilliardState_t() {
@@ -293,6 +295,7 @@ public class AnimationService : MonoBehaviour
 		
 		public IntPtr balls;
 		public int ballSize;
+		[MarshalAs(UnmanagedType.I1)] public bool fromUnity;
 	}
 
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -300,6 +303,7 @@ public class AnimationService : MonoBehaviour
 		public string type;
 		public string id;
 		public Vec2_t position;
+		[MarshalAs(UnmanagedType.I1)] public bool fromUnity = true;
 	}
 	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -460,10 +464,10 @@ public class AnimationService : MonoBehaviour
 		
 		for (int i = 0; i < balls.Count; i++) {
 			var ball = balls[i];
-			var pickableInfo = ball.GetComponent<PickableInformation>();
+			var info = ball.GetComponent<BallObjectInformation>();
 			BallState_t ballState = new BallState_t {
-				type = pickableInfo.type,
-				id = pickableInfo.id,
+				type = info.type,
+				id = info.id,
 				position = new Vec2_t {
 					x = widthBehaviour.inverse(ball.transform.position.x),
 					y = heightBehaviour.inverse(ball.transform.position.y)
@@ -474,6 +478,27 @@ public class AnimationService : MonoBehaviour
 		
 		
 		return ballStates;
+	}
+	
+	private static RootState map(RootState_t from) {
+		RootState result = new RootState();
+		result.balls = new BallState[from.ballSize];
+		BallState_t[] balls = GetNativeArray<BallState_t>(from.balls, from.ballSize);
+		
+		for(int i = 0; i < from.ballSize; i++) {
+			result.balls[i] = map(balls[i]);
+		}
+		
+		return result;
+	}
+	
+	private static BallState map(BallState_t from) {
+		BallState result = new BallState();
+		result.type = from.type;
+		result.id = from.id;
+		result.position = map(from.position) / 1000;
+			
+		return result;
 	}
 	
 	////////////////////////////////////////////////////////////////////

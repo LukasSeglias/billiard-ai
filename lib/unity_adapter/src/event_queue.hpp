@@ -32,6 +32,12 @@ namespace unity {
             _guard.unlock();
         }
 
+        void clear() {
+            _guard.lock();
+            _queue = std::queue<std::shared_ptr<Event>>{};
+            _guard.unlock();
+        }
+
     private:
         std::mutex _guard;
         std::queue<std::shared_ptr<Event>> _queue;

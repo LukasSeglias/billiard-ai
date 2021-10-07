@@ -21,7 +21,7 @@ public class CursorBehaviour : MonoBehaviour
 		bool mouseOverObject = false;
 		if (hit) {
 			var gameObject = hitInfo.transform.gameObject;
-			if (gameObject == Observed || gameObject.GetComponent<PickableInformation>() != null) {
+			if (gameObject == Observed || gameObject.GetComponent<BallObjectInformation>() != null) {
 				mouseOverObject = true;
 				Cursor.SetCursor(cursorTexture, Center, CursorMode.Auto);
 			} else {

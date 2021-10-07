@@ -2,7 +2,7 @@
 
 Ball::Ball() : type(), id(), position(), velocity(), visible() {}
 
-Ball::Ball(char* type, char* id, Vec2 position, Vec2 velocity, bool visible) : type(_strdup(type)), id(_strdup(id)),
+Ball::Ball(const char* type, const char* id, Vec2 position, Vec2 velocity, bool visible) : type(_strdup(type)), id(_strdup(id)),
                                                                          position(position),
                                                                          velocity(velocity), visible(visible) {
 }
@@ -44,6 +44,12 @@ Ball& Ball::operator=(const Ball& other) noexcept {
     visible = other.visible;
     return *this;
 }
+Ball::~Ball() {
+    delete id;
+    id = nullptr;
+    delete type;
+    type = nullptr;
+}
 
 KeyFrame::KeyFrame() : time(0), ballSize(0), balls(nullptr), firstFrame(false) {
 }
@@ -67,6 +73,7 @@ KeyFrame::KeyFrame(const KeyFrame& other) noexcept: time(other.time), ballSize(o
 KeyFrame::KeyFrame(KeyFrame&& other) noexcept: time(other.time), ballSize(other.ballSize), balls(other.balls),
                                                firstFrame(other.firstFrame) {
     other.balls = nullptr;
+    other.ballSize = 0;
 }
 
 KeyFrame& KeyFrame::operator=(KeyFrame&& other) noexcept {
@@ -74,6 +81,7 @@ KeyFrame& KeyFrame::operator=(KeyFrame&& other) noexcept {
     ballSize = other.ballSize;
     balls = other.balls;
     other.balls = nullptr;
+    other.ballSize = 0;
     firstFrame = other.firstFrame;
     return *this;
 }
@@ -117,12 +125,14 @@ AnimationModel::AnimationModel(const AnimationModel& other) noexcept : keyFrameS
 
 AnimationModel::AnimationModel(AnimationModel&& other) noexcept : keyFrameSize(other.keyFrameSize), keyFrames(other.keyFrames) {
     other.keyFrames = nullptr;
+    other.keyFrameSize = 0;
 }
 
 AnimationModel& AnimationModel::operator=(AnimationModel&& other) noexcept {
     keyFrameSize = other.keyFrameSize;
     keyFrames = other.keyFrames;
     other.keyFrames = nullptr;
+    other.keyFrameSize = 0;
     return *this;
 }
 
@@ -153,6 +163,7 @@ RootObject::RootObject(AnimationModel* animations, int animationSize) : animatio
 
 RootObject::RootObject(RootObject&& other) noexcept : animations(other.animations), animationSize(other.animationSize) {
     other.animations = nullptr;
+    other.animationSize = 0;
 }
 
 RootObject::RootObject(const RootObject& other) noexcept : animations(nullptr), animationSize(other.animationSize) {
@@ -166,6 +177,7 @@ RootObject& RootObject::operator=(RootObject&& other) noexcept {
     animations = other.animations;
     animationSize = other.animationSize;
     other.animations = nullptr;
+    other.animationSize = 0;
     return *this;
 }
 
@@ -185,4 +197,127 @@ RootObject& RootObject::operator=(const RootObject& other) noexcept {
 RootObject::~RootObject() {
     delete[] animations;
     animations = nullptr;
+}
+
+BallState::BallState() :
+    type(nullptr),
+    id(nullptr),
+    position(),
+    fromUnity(false) {
+}
+
+BallState::BallState(const char* type, const char* id, Vec2 position, bool fromUnity) :
+    type(_strdup(type)),
+    id(_strdup(id)),
+    position(position),
+    fromUnity(fromUnity) {
+}
+
+BallState::BallState(BallState&& other) noexcept :
+    type(other.type),
+    id(other.id),
+    position(other.position),
+    fromUnity(other.fromUnity) {
+    other.type = nullptr;
+    other.id = nullptr;
+}
+
+BallState::BallState(const BallState& other) noexcept :
+    type(_strdup(other.type)),
+    id(_strdup(other.id)),
+    position(other.position),
+    fromUnity(other.fromUnity) {
+}
+
+BallState& BallState::operator=(BallState&& other) noexcept {
+    type = other.type;
+    id = other.id;
+    position = other.position;
+    fromUnity = other.fromUnity;
+    other.type = nullptr;
+    other.id = nullptr;
+
+    return *this;
+}
+
+BallState& BallState::operator=(const BallState& other) noexcept {
+    if (&other == this) {
+        return *this;
+    }
+
+    type = _strdup(other.type);
+    id = _strdup(other.id);
+    position = other.position;
+    fromUnity = other.fromUnity;
+
+    return *this;
+}
+
+BallState::~BallState() {
+    if (!fromUnity) {
+        delete type;
+        type = nullptr;
+        delete id;
+        id = nullptr;
+    }
+}
+
+State::State() :
+    balls(nullptr),
+    ballSize(0),
+    fromUnity(false) {
+}
+
+State::State(BallState* balls, int ballSize, bool fromUnity) :
+    balls(balls),
+    ballSize(ballSize),
+    fromUnity(fromUnity) {
+}
+
+State::State(State&& other) noexcept :
+    balls(other.balls),
+    ballSize(other.ballSize),
+    fromUnity(other.fromUnity) {
+    other.balls = nullptr;
+    other.ballSize = 0;
+}
+
+State::State(const State& other) noexcept :
+    balls(new BallState[other.ballSize]),
+    ballSize(other.ballSize),
+    fromUnity(other.fromUnity) {
+    for(int i = 0; i < ballSize; i++) {
+        this->balls[i] = BallState{other.balls[i]};
+    }
+}
+
+State& State::operator=(State&& other) noexcept {
+    balls = other.balls;
+    ballSize = other.ballSize;
+    fromUnity = other.fromUnity;
+    other.balls = nullptr;
+    other.ballSize = 0;
+
+    return *this;
+}
+
+State& State::operator=(const State& other) noexcept {
+    if (&other == this) {
+        return *this;
+    }
+
+    ballSize = other.ballSize;
+    fromUnity = other.fromUnity;
+    this->balls = new BallState[ballSize];
+    for(int i = 0; i < ballSize; i++) {
+        this->balls[i] = BallState{other.balls[i]};
+    }
+    return *this;
+}
+
+State::~State() {
+    if (!fromUnity) {
+        delete[] balls;
+        balls = nullptr;
+    }
 }
