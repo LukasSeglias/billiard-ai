@@ -168,25 +168,9 @@ damit dem Kugelradius Rechnung getragen wird und dieser nicht weiter betrachtet 
 Daraus ergeben sich $R_1'$ und $R_{2'}$\footnote{Für Herleitung, siehe Anhang \ref{anhang:herleitung:event:collisionWithRail}}.
 
 Erster Schritt - Prüfe, ob Kollision möglich:\\
-Dazu kann die in Anhang \ref{anhang:herleitung:event:collisionWithRail} erarbeitete Formel mit einigen Variablensubstitutionen verwendet werden:
-\begin{align}
-    P = \vec{R_1'}\\
-    D = \vec{\Delta R'}\\
-    Q = \vec{C}\\
-    V = \vec{v}\\
-    \lambda_1 = \frac{V_x \cdot P_y - V_y \cdot P_x + Q_x \cdot V_y - Q_y \cdot V_x}{D_x \cdot V_y - \cdot D_y \cdot V_x}\\
-    \lambda_2 = \frac{P_x \cdot D_y - P_y \cdot D_x - Q_x \cdot D_y + Q_y \cdot D_x}{V_x \cdot D_y - V_y \cdot D_x}
-\end{align}
-
-Betrachte den Nenner eines der $\lambda$. Ergibt dieser $0$, so gibt es keinen Schnittpunkt
-und eine weitere Betrachtung erübrigt sich. Ansonsten muss für $\lambda$ folgendes gelten:
-\begin{align}
-    0 \leq \lambda_1 \leq 1\\
-    0 \leq \lambda_2
-\end{align}
-Das bedeutet, dass der Schnittpunkt mit der Bande in positiver Richtung des Geschwindigkeitsvektors der Kugel sowie an
-der effektiven Bande, also am Segment zwischen den Punkten $R_1'$ und $R_2'$, sein muss.
-Ist dies gegeben und beide $\lambda$ erfüllen die Bedingungen, dann kann der Zeitpunkt der Kollision berechnet werden.
+Dazu wird festgestellt, ob ein Schnittpunkt zwischen der Lauflinie der Kugel und dem Liniensegment der
+Bande existiert \footnote{Siehe Anhang \ref{anhang:herleitung:event:collisionWithRail}}.
+Sofern kein Schnittpunkt vorliegt, können weitere Tests abgebrochen werden, da keine Kollision mit der Bande stattfinden wird.
 
 Zweiter Schritt - Ort der Kollision bestimmen:\\
 Betrachte dazu eine der Gleichungen mit zugehörigem $\lambda$:
