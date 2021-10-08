@@ -177,6 +177,7 @@ public class AnimationService : MonoBehaviour
 	struct RailSegment_t {
 		public Vec2_t start;
 		public Vec2_t end;
+		public RailLocation location;
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
@@ -215,6 +216,7 @@ public class AnimationService : MonoBehaviour
         public double arucoHeightAboveInnerTable;
         public double railWorldPointZComponent;
         public Vec3_t worldToRail;
+        public float minimalPocketVelocity;
     }
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -329,7 +331,7 @@ public class AnimationService : MonoBehaviour
 	}
 	
 	private static RailSegment_t map(RailSegment from) {
-		return new RailSegment_t{start = map(from.start), end = map(from.end)};
+		return new RailSegment_t{start = map(from.start), end = map(from.end), location = from.location};
 	}
 	
 	private static Circle_t[] map(Circle[] from) {
@@ -375,7 +377,8 @@ public class AnimationService : MonoBehaviour
                 ballDiameter = from.ballDiameter,
                 arucoHeightAboveInnerTable = from.arucoHeightAboveInnerTable,
                 railWorldPointZComponent = from.railWorldPointZComponent,
-                worldToRail = map(from.worldToRail)
+                worldToRail = map(from.worldToRail),
+                minimalPocketVelocity = from.minimalPocketVelocity
             };
         }
 
@@ -432,8 +435,8 @@ public class AnimationService : MonoBehaviour
 		Ball result = new Ball();
 		result.type = from.type;
 		result.id = from.id;
-		result.position = map(from.position);
-		result.velocity = map(from.velocity);
+		result.position = map(from.position) / 1000;
+		result.velocity = map(from.velocity) / 1000;
 		result.visible = from.visible;
 			
 		return result;
@@ -469,8 +472,8 @@ public class AnimationService : MonoBehaviour
 				type = info.type,
 				id = info.id,
 				position = new Vec2_t {
-					x = widthBehaviour.inverse(ball.transform.position.x),
-					y = heightBehaviour.inverse(ball.transform.position.y)
+					x = widthBehaviour.inverse(ball.transform.position.x) * 1000,
+					y = heightBehaviour.inverse(ball.transform.position.y) * 1000
 				}
 			};
 			ballStates[i] = ballState;

@@ -1,5 +1,6 @@
 #include <billiard_search/type.hpp>
 #include <algorithm>
+#include <billiard_physics/billiard_physics.hpp>
 
 billiard::search::Search::Search(std::string id, std::string type) :
     _id(std::move(id)),
@@ -27,10 +28,31 @@ billiard::search::Pocket::Pocket(std::string id, PocketType type, glm::vec2 posi
         _radius(radius) {
 }
 
-billiard::search::Rail::Rail(std::string id, const glm::vec2& start, const glm::vec2& end) :
+billiard::search::Rail::Rail(std::string id, const glm::vec2& start, const glm::vec2& end,
+                             float ballRadius,
+                             const RailLocation& location) :
         _id(std::move(id)),
         _start(start),
-        _end(end) {
+        _end(end),
+        _location(location),
+        _shiftedStart(shift(start, ballRadius, location)),
+        _shiftedEnd(shift(end, ballRadius, location)),
+        _normal(glm::normalize(billiard::physics::perp(end - start))){
+}
+
+glm::vec2 billiard::search::Rail::shift(glm::vec2 position, float ballRadius, const RailLocation& location) {
+    switch(location) {
+        case RailLocation::TOP:
+            return glm::vec2{position.x, position.y - ballRadius};
+        case RailLocation::BOTTOM:
+            return glm::vec2{position.x, position.y + ballRadius};
+        case RailLocation::LEFT:
+            return glm::vec2{position.x + ballRadius, position.y};
+        case RailLocation::RIGHT:
+            return glm::vec2{position.x - ballRadius, position.y};
+    }
+
+    return glm::vec2{0.0, 0.0};
 }
 
 billiard::search::event::BallCollision::BallCollision(std::string ball1, std::string ball2) :
@@ -52,16 +74,70 @@ billiard::search::event::BallInRest::BallInRest(std::string ball) :
     _ball(std::move(ball)) {
 }
 
-billiard::search::event::Event::Event(EventType type, float time,
-                               std::variant<BallCollision, BallRailCollision, BallPotting, BallInRest> body) :
+billiard::search::event::Event::Event(EventType type, float time, EventVariant body) :
                                _type(type),
                                _time(time),
                                _body(std::move(body)) {
 }
 
-billiard::search::state::BallState::BallState(const glm::vec2& position, const glm::vec2& velocity) :
+std::optional<billiard::search::event::BallPotting> billiard::search::event::Event::toPotting() const {
+    if (_type == EventType::BALL_POTTING) {
+        return std::get<BallPotting>(_body);
+    }
+    return std::nullopt;
+}
+
+std::optional<billiard::search::event::BallRailCollision> billiard::search::event::Event::toRailCollision() const {
+    if (_type == EventType::BALL_RAIL_COLLISION) {
+        return std::get<BallRailCollision>(_body);
+    }
+    return std::nullopt;
+}
+
+std::optional<billiard::search::event::BallCollision> billiard::search::event::Event::toBallCollision() const {
+    if (_type == EventType::BALL_COLLISION) {
+        return std::get<BallCollision>(_body);
+    }
+    return std::nullopt;
+}
+
+std::optional<billiard::search::event::BallInRest> billiard::search::event::Event::toInRest() const {
+    if (_type == EventType::BALL_IN_REST) {
+        return std::get<BallInRest>(_body);
+    }
+    return std::nullopt;
+}
+
+std::set<std::string> billiard::search::event::Event::affected() const {
+    auto asPotting = toPotting();
+    if (asPotting) {
+        return std::set<std::string>{asPotting->_ball};
+    }
+
+    auto asBallCollision = toBallCollision();
+    if (asBallCollision) {
+        return std::set<std::string>{asBallCollision->_ball1, asBallCollision->_ball2};
+    }
+
+    auto asRailCollision = toRailCollision();
+    if (asRailCollision) {
+        return std::set<std::string>{asRailCollision->_ball};
+    }
+
+    auto asInRest = toInRest();
+    if (asInRest) {
+        return std::set<std::string>{asInRest->_ball};
+    }
+
+    return std::set<std::string>{};
+}
+
+billiard::search::state::BallState::BallState(const glm::vec2& position, const glm::vec2& velocity,
+                                              float accelerationLength) :
     _position(position),
-    _velocity(velocity) {
+    _velocity(velocity),
+    _velocityNormed(billiard::physics::normalize(velocity)),
+    _acceleration(billiard::physics::accelerationByNormed(_velocityNormed, accelerationLength)){
 }
 
 billiard::search::node::BallMovingNode::BallMovingNode(const state::BallState& before, const state::BallState& after) :
@@ -86,7 +162,7 @@ billiard::search::node::BallRailCollisionNode::BallRailCollisionNode(const state
 }
 
 billiard::search::node::BallPottingNode::BallPottingNode(const state::BallState& before, const state::BallState& after,
-                                        event::BallPotting cause) :
+                                                         event::BallPotting cause) :
                                         _before(before),
                                         _after(after),
                                         _cause(std::move(cause)) {
@@ -107,7 +183,7 @@ billiard::search::node::BallNode::BallNode(const state::BallState& ball) :
 billiard::search::node::Node::Node(NodeType type, std::string ballType, NodeVariant body)
         :
         _type(type),
-        _ballType(ballType),
+        _ballType(std::move(ballType)),
         _body(std::move(body)) {
 }
 
@@ -213,6 +289,12 @@ std::optional<billiard::search::state::BallState> billiard::search::node::Node::
     if(ballShot) {
         return ballShot->_ball;
     }
+
+    return std::nullopt;
+}
+
+bool billiard::search::node::Node::isStatic() const {
+    return _type == NodeType::BALL_IN_REST || _type == NodeType::BALL_POTTING;
 }
 
 billiard::search::node::Layer::Layer(float time, std::unordered_map<std::string, Node> nodes) :
@@ -263,7 +345,6 @@ billiard::search::node::Layer::getDynamic(const std::unordered_map<std::string, 
 std::unordered_map<std::string, billiard::search::node::Node>
 billiard::search::node::Layer::getStatic(const std::unordered_map<std::string, Node>& nodes) {
     static const std::vector<billiard::search::node::NodeType> staticTypes{
-            billiard::search::node::NodeType::BALL_POTTING,
             billiard::search::node::NodeType::BALL_IN_REST
     };
 
@@ -304,5 +385,18 @@ void billiard::search::node::System::append(Layer layer) {
     } else {
         _layers.at(_layers.size() - 1)._isLast = false;
     }
+
+    for(auto& node : layer._nodes) { // TODO: effizienter implementieren
+        if (node.second._type == NodeType::BALL_COLLISION) {
+            _lastRailCollisions.erase(node.first);
+        }
+
+        auto asRailCollision = node.second.toBallRailCollision();
+        if (asRailCollision) {
+            _lastRailCollisions.erase(node.first);
+            _lastRailCollisions.insert({node.first, asRailCollision->_cause._rail});
+        }
+    }
+
     _layers.emplace_back(std::move(layer));
 }

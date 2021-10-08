@@ -613,6 +613,6 @@ namespace billiard::snooker {
     }
 
     bool validEndState(const std::string& expectedType, const billiard::search::node::Layer& layer) {
-        return false; // TODO: Implement check if potted ball(s) is/are of the expected type
+        return true; // TODO: Implement check if potted ball(s) is/are of the expected type
     }
 }

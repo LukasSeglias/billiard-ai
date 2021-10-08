@@ -17,9 +17,17 @@ extern "C" {
         double z;
     };
 
+    enum RailLocation {
+        TOP,
+        BOTTOM,
+        RIGHT,
+        LEFT
+    };
+
     struct EXPORT_UNITY_ADAPTER_LIB RailSegment {
         Vec2 start;
         Vec2 end;
+        RailLocation location;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB Circle {
@@ -52,6 +60,7 @@ extern "C" {
         double arucoHeightAboveInnerTable;
         double railWorldPointZComponent;
         Vec3 worldToRail;
+        float minimalPocketVelocity;
     };
 
     /**

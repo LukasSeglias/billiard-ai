@@ -1,4 +1,20 @@
 #include <billiard_physics/billiard_physics.hpp>
+#include <billiard_debug/billiard_debug.hpp>
+#include <ostream>
+
+std::ostream& operator<<(std::ostream& os, const glm::vec2& vector){
+    os << "(" << vector.x << ", " << vector.y << ")";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const std::vector<float>& values){
+    os << "vector { ";
+    for (auto value : values) {
+        os << "" << value << ", ";
+    }
+    os << " }";
+    return os;
+}
 
 namespace billiard::physics::intersection {
     std::vector<std::complex<double>> solveQuartic(std::complex<double> firstPart, std::complex<double> discriminant);
@@ -91,6 +107,11 @@ std::pair<glm::vec2, glm::vec2> billiard::physics::elasticCollision(const glm::v
 }
 
 glm::vec2 billiard::physics::railCollision(const glm::vec2& velocity, const glm::vec2& normal) {
+    DEBUG("[railCollision]: "
+              << "velocity=" << velocity << " "
+              << "normal=" << normal << " "
+              << std::endl);
+
     return glm::reflect(velocity, normal);
 }
 
@@ -122,14 +143,24 @@ std::optional<float> billiard::physics::timeToCollisionWithRail(const glm::vec2&
     }
 
     if (lambda < 0.0f) {
+        DEBUG("[timeToCollisionWithRail]: no rail collision ... "
+                      << "segment intersection lambda=" << lambda
+                      << std::endl);
         return std::nullopt;
     }
 
     float distance = glm::length(lambda * ballVelocity);
 
     if (distance <= 0.00000000001f) { // TODO: Epsilon definieren
+        DEBUG("[timeToCollisionWithRail]: no rail collision ... "
+                      << "lambda=" << lambda
+                      << "distance=" << distance
+                      << std::endl);
         return std::nullopt;
     }
+
+    // Kugel A rollt zu dieser Position und kollidiert mit der Bande.
+    glm::vec2 ballTargetPoint = ballPosition + lambda * ballVelocity; // TODO: remove
 
     //float distance = glm::distance(ballPosition, ballTargetPoint);
     float velocity = glm::length(ballVelocity);
@@ -137,20 +168,43 @@ std::optional<float> billiard::physics::timeToCollisionWithRail(const glm::vec2&
 
     auto result = billiard::physics::intersection::solveQuadraticFormula(0.5f * a, velocity, -distance);
     if (result.empty()) {
+        DEBUG("[timeToCollisionWithRail]: "
+                      << "no time of collision"
+                      << std::endl);
         return std::nullopt;
     } else {
         // Values in Result of solveQuadraticFormula are sorted
         float time = result[0];
 
+        DEBUG("[timeToCollisionWithRail]: "
+                      << "lambda1=" << lambda << " "
+                      << "ballTargetPoint=" << ballTargetPoint << " "
+                      << "distance=" << distance << " "
+                      << "velocity=" << velocity << " "
+                      << "acceleration=" << acceleration << " "
+                      << "a=" << a << " "
+                      << "time=" << time << " "
+                      << std::endl);
+
         return std::make_optional(time);
     }
 
+    DEBUG("[timeToCollisionWithRail]: "
+              << "no intersection point found"
+              << std::endl);
     return std::nullopt;
 }
 
 float billiard::physics::timeToStop(const glm::vec2& acceleration, const glm::vec2& velocity) {
     float timeX = (-velocity.x / acceleration.x);
     float timeY = (-velocity.y / acceleration.y);
+
+    DEBUG("[timeToStop]: "
+              << "acceleration=" << acceleration << " "
+              << "velocity=" << velocity << " "
+              << "timeX=" << timeX << " "
+              << "timeY=" << timeY << " "
+              << std::endl);
 
     return std::max(timeX, timeY);
 }
@@ -193,9 +247,14 @@ std::optional<float> billiard::physics::timeToCollision(const glm::vec2& acceler
 
             glm::vec2 from1To2 = position2 - position1;
             glm::vec2 velocity1Normalised = glm::normalize(velocity1);
+            glm::vec2 velocity2Normalised = glm::normalize(velocity2);
             glm::vec2 offset = from1To2 - velocity1Normalised * glm::dot(from1To2, velocity1Normalised);
+            glm::vec2 backwardOffset1 = velocity1Normalised * -radius;
+            glm::vec2 backwardOffset2 = velocity2Normalised * -radius;
 
-            auto shiftedIntersection = intersection::halfLineIntersectsHalfLine(position1 + offset, velocity1, position2, velocity2);
+            auto shiftedIntersection = intersection::halfLineIntersectsHalfLine(position1 + offset + backwardOffset1,
+                                                                                velocity1, position2 + backwardOffset2,
+                                                                                velocity2);
             if (!shiftedIntersection) {
                 return std::nullopt;
             }
@@ -227,6 +286,23 @@ std::optional<float> billiard::physics::timeToCollision(const glm::vec2& acceler
     }
     float firstCollision = collisionTimes.at(0);
 
+    DEBUG("[timeToCollision]: "
+              << "acceleration1=" << acceleration1 << " "
+              << "acceleration2=" << acceleration2 << " "
+              << "velocity1=" << velocity1 << " "
+              << "velocity2=" << velocity2 << " "
+              << "position1=" << position1 << " "
+              << "position2=" << position2 << " "
+              << "diameter=" << diameter << " "
+              << "a=" << a << " "
+              << "b=" << b << " "
+              << "c=" << c << " "
+              << "d=" << d << " "
+              << "e=" << e << " "
+              << "collisionTimes=" << collisionTimes << " "
+              << "firstCollision=" << firstCollision << " "
+              << std::endl);
+
     return firstCollision < 0.0f ? std::nullopt : std::make_optional<float>(firstCollision);
 }
 
@@ -243,11 +319,27 @@ std::optional<float> billiard::physics::timeToTarget(const glm::vec2& targetPosi
     auto velocityFactor = intersection::lineIntersectsCircle(targetPosition, radius, position, normalizedVelocity);
 
     if (velocityFactor.empty()) {
+        DEBUG("[timeToTarget] Velocity factors is empty "
+                  << "targetPosition=" << targetPosition << " "
+                  << "position=" << position << " "
+                  << "normalizedVelocity=" << normalizedVelocity << " "
+                  << "velocity=" << velocity << " "
+                  << "acceleration=" << acceleration << " "
+                  << "radius=" << radius << " "
+                  << std::endl);
         return std::nullopt;
     }
 
     float l = velocityFactor.at(0);
     if (l < 0.0f) { // Loch ist entgegengesetzt zu Kugel-Velocity
+        DEBUG("[timeToTarget] Target on opposite direction "
+                  << "targetPosition=" << targetPosition << " "
+                  << "position=" << position << " "
+                  << "normalizedVelocity=" << normalizedVelocity << " "
+                  << "velocity=" << velocity << " "
+                  << "acceleration=" << acceleration << " "
+                  << "radius=" << radius << " "
+                  << std::endl);
         return std::nullopt;
     }
 
@@ -257,10 +349,33 @@ std::optional<float> billiard::physics::timeToTarget(const glm::vec2& targetPosi
     auto c = - glm::length(distance);
     auto times = intersection::solveQuadraticFormula(a, b, c);
     if (times.empty()) { // Kugel rollt vorher aus
+        DEBUG("[timeToTarget] Ball stops before "
+                  << "targetPosition=" << targetPosition << " "
+                  << "position=" << position << " "
+                  << "normalizedVelocity=" << normalizedVelocity << " "
+                  << "velocity=" << velocity << " "
+                  << "acceleration=" << acceleration << " "
+                  << "radius=" << radius << " "
+                  << std::endl);
         return std::nullopt;
     }
 
     float firstIntersection = times.at(0);
+
+    DEBUG("[timeToTarget]: "
+              << "a=" << a << " "
+              << "b=" << b << " "
+              << "c=" << c << " "
+              << "l=" << l << " "
+              << "distance=" << distance << " "
+              << "targetPosition=" << targetPosition << " "
+              << "position=" << position << " "
+              << "normalizedVelocity=" << normalizedVelocity << " "
+              << "velocity=" << velocity << " "
+              << "acceleration=" << acceleration << " "
+              << "radius=" << radius << " "
+              << "firstIntersection=" << firstIntersection << " "
+              << std::endl);
 
     return firstIntersection < 0.0f ? std::nullopt : std::make_optional<float>(firstIntersection);
 }
@@ -324,6 +439,13 @@ std::vector<std::complex<double>> billiard::physics::intersection::solveQuarticF
     solutions.insert(solutions.end(), solutions2.begin(), solutions2.end());
     std::sort(solutions.begin(), solutions.end(), complex_order());
 
+    DEBUG("[solveQuarticFormula] Complex soutions -> "
+              << "x0=" << solutions.at(0) << " "
+              << "x1=" << solutions.at(1) << " "
+              << "x2=" << solutions.at(2) << " "
+              << "x3=" << solutions.at(3) << " "
+              << std::endl);
+
     return solutions;
 }
 
@@ -331,6 +453,14 @@ std::vector<std::complex<double>> billiard::physics::intersection::solveQuartic(
     std::complex<double> sqrt = 0.5 * std::sqrt(discriminant);
     auto x0 = firstPart + sqrt;
     auto x1 = firstPart - sqrt;
+
+    DEBUG("[solveQuartic]: "
+              << "firstPart=" << firstPart << " "
+              << "discriminant=" << discriminant << " "
+              << "sqrt=" << sqrt << " "
+              << "x0=" << x0 << " "
+              << "x1=" << x1 << " "
+              << std::endl);
 
     return std::vector<std::complex<double>> {x0, x1};
 }

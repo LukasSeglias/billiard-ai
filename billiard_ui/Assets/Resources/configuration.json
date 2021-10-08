@@ -1,5 +1,5 @@
 {
-	"radius": 26,
+	"radius": 26.15,
 	"width": 1881,
 	"height": 943,
 	"scale": 3.525,
@@ -49,7 +49,12 @@
 		}
 	],
 	"targets": [
-
+		{ "id": "1", "position": {"x": -915.5, "y": -456.5}, "radius": 50 },
+		{ "id": "2", "position": {"x": -915.5, "y": 456.5}, "radius": 50 },
+		{ "id": "3", "position": {"x": 0, "y": 486.5}, "radius": 50 },
+		{ "id": "4", "position": {"x": 915.5, "y": 456.5}, "radius": 50 },
+		{ "id": "5", "position": {"x": 915.5, "y": -456.5}, "radius": 50 },
+		{ "id": "6", "position": {"x": 0, "y": -486.5}, "radius": 50 }
 	],
 	"markers": {
 		"patternSize": 3,
@@ -72,7 +77,9 @@
 		"ballDiameter": 52.3,
 		"arucoHeightAboveInnerTable": 38.1,
 		"railWorldPointZComponent": 0.0,
-		"worldToRail": { "x": 79.0, "y": -71.5, "z": 0.0 }
+		"worldToRail": { "x": 79.0, "y": -71.5, "z": 0.0 },
+		"minimalPocketVelocity": 10,
+		"COMMENT": "TODO: bessere zahl für minimalPocketVelocity finden"
 	},
 	"camera": {
 		"fx": 917.126,

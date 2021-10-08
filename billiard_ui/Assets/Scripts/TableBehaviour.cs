@@ -88,6 +88,7 @@ public class TableBehaviour : MonoBehaviour
 			
 		} else if (Input.GetKey(KeyCode.DownArrow)) {
 			animationIndex = (animationIndex - 1) % animations.Length;
+			animationIndex = animationIndex > 0 ? animationIndex : -animationIndex;
 			if (this.animator != null) {
 				this.animator.delete();
 				this.animator = null;
@@ -189,8 +190,8 @@ public class TableBehaviour : MonoBehaviour
 			lRend.endColor = Color.white;
 			lRend.startWidth = 0.02f;
 			lRend.endWidth = 0.02f;
-			lRend.SetPosition(0, position(convert(segment.start, 0), heightStretching, widthStretching));
-			lRend.SetPosition(1, position(convert(segment.end, 0), heightStretching, widthStretching));
+			lRend.SetPosition(0, position(convert(segment.start, -0.01f), heightStretching, widthStretching));
+			lRend.SetPosition(1, position(convert(segment.end, -0.01f), heightStretching, widthStretching));
 			lRend.sortingOrder = 0;
 			railSegments.Add(lineObject);
 		}
@@ -230,7 +231,7 @@ public class TableBehaviour : MonoBehaviour
             y = Mathf.Cos (Mathf.Deg2Rad * angle) * (circle.radius * scale) + movedPos.y;
             x = Mathf.Sin (Mathf.Deg2Rad * angle) * (circle.radius * scale) + movedPos.x;
 
-            circleRenderer.SetPosition(i, new Vector3(x, y, 0));
+            circleRenderer.SetPosition(i, new Vector3(x, y, -0.01f));
 
             angle += angleStep;
         }
@@ -398,12 +399,7 @@ public class TableBehaviour : MonoBehaviour
 						GameObject lineObject = new GameObject(string.Format("Line{0}", startBall.id));
 						LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
 						lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-						Gradient gradient = new Gradient();
-						gradient.SetKeys(
-							new GradientColorKey[] { new GradientColorKey(Color.white, 1.0f), new GradientColorKey(Color.white, 1.0f) },
-							new GradientAlphaKey[] { new GradientAlphaKey(alpha, alpha), new GradientAlphaKey(alpha, alpha) }
-						);
-						lRend.colorGradient = gradient;
+						lRend.material.color = Color.white;
 						lRend.startWidth = 0.02f;
 						lRend.endWidth = 0.02f;
 						lRend.SetPosition(0, position(convert(startBall.position, -0.01f), heightStretching, widthStretching));
@@ -517,7 +513,7 @@ public class TableBehaviour : MonoBehaviour
 			
 			var endSpeed = convert(whiteBall.velocity, 0);
 			var direction = Vector3.Normalize(endSpeed);
-			float radius = (ballObjects["WHITE"].transform.localScale.x / scale) / 2;
+			float radius = (ballObjects[whiteBall.id].transform.localScale.x / scale) / 2;
 			
 			var startDirection = direction * (QUEUE_DIST + radius);
 			direction = direction * (QUEUE_DIST);
@@ -534,8 +530,8 @@ public class TableBehaviour : MonoBehaviour
 			time = Math.Min(time, totalTime);
 			var currentPos = a / 2 * (float)(time * time) + startPos;
 			
-			float degrees = (float)(180 / Math.PI) * (float) Math.Acos(Vector3.Dot(new Vector3(1, 0, 0), endSpeed) / (new Vector3(1, 0, 0).magnitude * endSpeed.magnitude));
-			queue.transform.rotation = Quaternion.Euler(0, 0, degrees);
+			float degrees = (float)(180 / Math.PI) * (float) Math.Acos(Vector3.Dot(new Vector3(0, -1, 0), endSpeed) / (endSpeed.magnitude));
+			queue.transform.eulerAngles = new Vector3(0, 0, endSpeed.x > 0 ? degrees : -degrees);
 			
 			float lengthToMove = queue.transform.localScale.y;
 			var toMove = Vector3.Normalize(endSpeed) * lengthToMove;

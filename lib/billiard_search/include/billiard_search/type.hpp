@@ -3,12 +3,14 @@
 #include "macro_definition.hpp"
 
 #include <vector>
+#include <set>
 #include <string>
 #include <glm/glm.hpp>
 #include <variant>
 #include <unordered_map>
 #include <functional>
 #include <optional>
+#include <atomic>
 
 namespace billiard::search {
 
@@ -55,12 +57,26 @@ namespace billiard::search {
         //std::vector<PocketPottingPoint> _pottingPoints;
     };
 
-    struct EXPORT_BILLIARD_SEARCH_LIB Rail{
-            Rail(std::string id, const glm::vec2& start, const glm::vec2& end);
+    enum RailLocation {
+        TOP,
+        BOTTOM,
+        RIGHT,
+        LEFT
+    };
 
-            std::string _id;
-            glm::vec2 _start;
-            glm::vec2 _end;
+    struct EXPORT_BILLIARD_SEARCH_LIB Rail {
+        Rail(std::string id, const glm::vec2& start, const glm::vec2& end, float ballRadius, const RailLocation& location);
+
+        std::string _id;
+        glm::vec2 _start;
+        glm::vec2 _end;
+        RailLocation _location;
+        glm::vec2 _shiftedStart; // Bandenstart um den Radius der Kugel zum Zentrum verschoben
+        glm::vec2 _shiftedEnd; // Bandenende um den Radius der Kugel zum Zentrum verschoben
+        glm::vec2 _normal;
+
+    private:
+        glm::vec2 shift(glm::vec2 position, float ballRadius, const RailLocation& railType);
     };
 
     namespace event {
@@ -99,23 +115,32 @@ namespace billiard::search {
             std::string _ball;
         };
 
+        using EventVariant = std::variant<BallCollision, BallRailCollision, BallPotting, BallInRest>;
+
         struct EXPORT_BILLIARD_SEARCH_LIB Event {
-            Event(EventType type, float time,
-                  std::variant<BallCollision, BallRailCollision, BallPotting, BallInRest> body);
+            Event(EventType type, float time, EventVariant body);
 
             EventType _type;
             float _time;
-            std::variant<BallCollision, BallRailCollision, BallPotting, BallInRest> _body;
+            EventVariant _body;
+
+            [[nodiscard]] std::optional<BallPotting> toPotting() const;
+            [[nodiscard]] std::optional<BallRailCollision> toRailCollision() const;
+            [[nodiscard]] std::optional<BallCollision> toBallCollision() const;
+            [[nodiscard]] std::optional<BallInRest> toInRest() const;
+            [[nodiscard]] std::set<std::string> affected() const;
         };
     }
 
     namespace state {
 
         struct EXPORT_BILLIARD_SEARCH_LIB BallState {
-            BallState(const glm::vec2& position, const glm::vec2& velocity);
+            BallState(const glm::vec2& position, const glm::vec2& velocity, float accelerationLength);
 
             glm::vec2 _position;
             glm::vec2 _velocity;
+            glm::vec2 _velocityNormed;
+            glm::vec2 _acceleration;
         };
     }
 
@@ -159,8 +184,7 @@ namespace billiard::search {
         };
 
         struct EXPORT_BILLIARD_SEARCH_LIB BallPottingNode {
-            BallPottingNode(const state::BallState& before, const state::BallState& after,
-                            event::BallPotting cause);
+            BallPottingNode(const state::BallState& before, const state::BallState& after, event::BallPotting cause);
             BallPottingNode(const BallPottingNode& node) = default;
 
             state::BallState _before;
@@ -205,6 +229,8 @@ namespace billiard::search {
             [[nodiscard]] std::optional<state::BallState> before() const;
             [[nodiscard]] std::optional<state::BallState> after() const;
 
+            [[nodiscard]] bool isStatic() const;
+
 
             NodeType _type;
             std::string _ballType;
@@ -240,6 +266,8 @@ namespace billiard::search {
             void append(Layer layer);
 
             std::vector<Layer> _layers;
+            std::unordered_map<std::string, std::string> _lastRailCollisions;
+            unsigned int _id;
         };
     }
 
@@ -247,6 +275,8 @@ namespace billiard::search {
 
         struct {
             float _radius = 0; // in millimeters
+            float _diameterSquared = 0;
+            float _diameter = 0;
         } _ball;
 
         struct {
@@ -257,6 +287,8 @@ namespace billiard::search {
             // o--o--o
             std::vector<Pocket> _pockets;
             std::vector<Rail> _rails;
+            // Minimale erwünschte Geschwindigkeit einer Kugel zum Zeitpunkt, wenn diese ins Loch rollt.
+            float minimalPocketVelocity;
             // TODO: deceleration?
         } _table;
 
@@ -266,5 +298,216 @@ namespace billiard::search {
             std::function<bool(const std::string&, const node::Layer&)> _isValidEndState = [](
                     const std::string& expectedPottedType, const node::Layer& layer) { return true; };
         } _rules;
+    };
+
+    struct EXPORT_BILLIARD_SEARCH_LIB SearchState {
+
+        Configuration _config;
+
+        struct {
+            float _accelerationLength = 0.0;
+        } _ball;
+    };
+
+    /*pocket = {
+            parent: null,
+            action: NONE,
+            id: null
+            events: []
+    };
+    red = {
+            parent: pocket,
+            action: DIRECT,
+            ballId: red
+            events: [{
+                type: POCKET_COLLISION,
+                targetPosition: pocket.position
+            },
+            {
+                type: BALL_KICK,
+                targetPosition: red's position
+            }]
+    };
+    lightred = {
+            parent: pocket,
+            action: DIRECT,
+            ballId: red
+            events: [{
+                type: BALL_COLLISION,
+                targetPosition: 1
+            },
+            {
+                type: BALL_KICK,
+                targetPosition: lightred's position
+            }]
+    };
+    white = {
+            parent: red,
+            action: BY_RAIL,
+            ballId: white
+            events: [
+            {
+                type: BALL_COLLISION,
+                targetPosition: point 1
+            },
+            {
+                type: RAIL_COLLISION,
+                targetPosition: point 2
+            },
+            {
+                type: BALL_KICK,
+                targetPosition: point 3
+            }
+            ]
+    };*/
+
+    enum PhysicalEventType {
+        BALL_COLLISION,
+        RAIL_COLLISION,
+        POCKET_COLLISION,
+        BALL_KICK
+    };
+
+    struct PhysicalEvent {
+        PhysicalEventType _type;
+        glm::vec2 _targetPosition;
+    };
+
+    enum SearchActionType {
+        DIRECT,
+        RAIL,
+        NONE
+    };
+
+    enum SearchNodeType {
+        SEARCH,
+        SIMULATION
+    };
+
+    struct SearchNodeSearch {
+        SearchActionType _action;
+        std::string _ballId; // None if pocket?
+        std::vector<PhysicalEvent> _events;
+        std::unordered_map<std::string, Ball> _unusedBalls;
+        billiard::search::Search _search;
+        std::unordered_map<std::string, Ball> _state;
+    };
+
+    struct SearchNodeSimulation {
+        node::System _simulation;
+    };
+
+    struct SearchNode {
+
+        explicit SearchNode(SearchNodeType type,
+                            std::variant<std::shared_ptr<SearchNodeSearch>, std::shared_ptr<SearchNodeSimulation>> body) :
+                _parent(nullptr),
+                _type(type),
+                _body(std::move(body)),
+                _cost(0),
+                _isSolution(false) {
+        }
+
+        SearchNode(const SearchNode& data) = delete;
+        SearchNode(SearchNode&& data) = delete;
+        SearchNode operator=(const SearchNode& searchNode) = delete;
+        SearchNode operator=(SearchNode&& searchNode) = delete;
+
+        static std::shared_ptr<SearchNode> search(std::shared_ptr<SearchNode> parent = nullptr) {
+            auto node = std::make_shared<SearchNode>(SearchNodeType::SEARCH, std::make_shared<SearchNodeSearch>());
+
+            if (parent) {
+                auto parentSearch = parent->asSearch();
+                auto search = node->asSearch();
+
+                search->_state = parentSearch->_state;
+                search->_search = parentSearch->_search;
+                search->_unusedBalls = parentSearch->_unusedBalls;
+            }
+
+            node->_parent = std::move(parent);
+
+            return node;
+        }
+
+        static std::shared_ptr<SearchNode> simulation(std::shared_ptr<SearchNode> parent = nullptr) {
+            auto node = std::make_shared<SearchNode>(SearchNodeType::SIMULATION, std::make_shared<SearchNodeSimulation>());
+
+            static std::atomic<unsigned int> id { 1 };
+
+            node->asSimulation()->_simulation._id = id++;
+            node->_parent = std::move(parent);
+
+            return node;
+        }
+
+        [[nodiscard]] std::vector<const SearchNode*> currentPath() const {
+            std::vector<const SearchNode*> solution;
+            auto node = this;
+            while (node != nullptr && node->_type == SearchNodeType::SEARCH) {
+                solution.push_back(node);
+                node = node->_parent.get();
+            }
+            return solution;
+        }
+
+        [[nodiscard]] std::vector<const SearchNode*> path() const {
+            std::vector<const SearchNode*> solution;
+            auto node = this;
+            while (node != nullptr) {
+                solution.push_back(node);
+                node = node->_parent.get();
+            }
+            return solution;
+        }
+
+        [[nodiscard]] std::vector<node::System> allSimulations() const {
+            std::vector<node::System> allSystems;
+            auto node = this;
+            while (node != nullptr) {
+                auto simulationNode = node->asSimulation();
+                if (simulationNode) {
+                    allSystems.push_back(simulationNode->_simulation);
+                }
+                node = node->_parent.get();
+            }
+            return allSystems;
+        }
+
+        std::shared_ptr<SearchNodeSearch> asSearch() {
+            if (SearchNodeType::SEARCH == _type) {
+                return std::get<std::shared_ptr<SearchNodeSearch>>(_body);
+            }
+            return nullptr;
+        }
+
+        [[nodiscard]] std::shared_ptr<SearchNodeSearch> asSearch() const {
+            if (SearchNodeType::SEARCH == _type) {
+                return std::get<std::shared_ptr<SearchNodeSearch>>(_body);
+            }
+            return nullptr;
+        }
+
+        std::shared_ptr<SearchNodeSimulation> asSimulation() {
+            if (SearchNodeType::SIMULATION == _type) {
+                return std::get<std::shared_ptr<SearchNodeSimulation>>(_body);
+            }
+            return nullptr;
+        }
+
+        [[nodiscard]] std::shared_ptr<SearchNodeSimulation> asSimulation() const {
+            if (SearchNodeType::SIMULATION == _type) {
+                return std::get<std::shared_ptr<SearchNodeSimulation>>(_body);
+            }
+            return nullptr;
+        }
+
+        std::shared_ptr<SearchNode> _parent;
+        SearchNodeType _type;
+        std::variant<std::shared_ptr<SearchNodeSearch>, std::shared_ptr<SearchNodeSimulation>> _body;
+
+        // Interface
+        uint64_t _cost;
+        bool _isSolution;
     };
 }

@@ -15,6 +15,7 @@ add_custom_command(TARGET ${PROJECT_NAME}
         # Copy dependencies to unity folder
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${realsense2_LIBRARY}> ${UNITY_PLUGINS}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:unity_adapter> ${UNITY_PLUGINS}/
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_debug> ${UNITY_PLUGINS}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_search> ${UNITY_PLUGINS}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_capture> ${UNITY_PLUGINS}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_snooker> ${UNITY_PLUGINS}/
@@ -28,4 +29,4 @@ foreach(OpenCV_LIB ${OpenCV_LIBS})
             )
 endforeach()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE billiard_search billiard_detection billiard_snooker billiard_capture)
+target_link_libraries(${PROJECT_NAME} PRIVATE billiard_search billiard_detection billiard_snooker billiard_capture billiard_debug)

@@ -2,28 +2,37 @@
 #include "event_queue.hpp"
 #include <memory>
 #include <string>
+#include <iostream>
+#include <fstream>
 #include <billiard_detection/billiard_detection.hpp>
 #include <billiard_snooker/billiard_snooker.hpp>
 #include <billiard_capture/billiard_capture.hpp>
+#include <billiard_search/billiard_search.hpp>
+#include <billiard_debug/billiard_debug.hpp>
+#include <cstring>
+
 
 Debugger _debugger;
 
-bool LIVE = true;
+bool WRITE_LOG_FILE = true;
+bool LIVE = false;
 std::string IMAGE_PATH = "D:\\Dev\\billiard-ai\\cmake-build-debug\\test\\billiard_detection\\resources\\test_detection\\1_scaled_HD.png";
 
 ///////////////////////////////////////////////////////
 //// Event-Queues
 ///////////////////////////////////////////////////////
 using AnimationChangedEventQueue = unity::EventQueue<RootObject, AnimationChangedEventCallback>;
+using StateChangedEventQueue = unity::EventQueue<State, StateChangedEventCallback>;
 AnimationChangedEventQueue* _animationChangedEventQueue = nullptr;
+StateChangedEventQueue* _stateChangedEventQueue = nullptr;
+std::future<std::vector<std::vector<billiard::search::node::System>>> _search;
 
 ///////////////////////////////////////////////////////
 //// Mappings - Declaration
 ///////////////////////////////////////////////////////
-std::shared_ptr<RootObject> map(const State& state); // Unity - CPP
-std::shared_ptr<RootObject> map(const billiard::detection::State& state); // Unity - CPP
-// TODO: Add mapping from external config to internal config (Apply config)
-// TODO: Add mapping from internal animation to external animation (Search)
+std::shared_ptr<State> map(const billiard::detection::State& state); // Unity - CPP
+std::shared_ptr<RootObject> map(const std::vector<std::vector<billiard::search::node::System>>& simulations); // CPP - Unity
+std::shared_ptr<RootObject> mayMap(std::future<std::vector<std::vector<billiard::search::node::System>>>& simulations); // CPP - Unity
 
 ///////////////////////////////////////////////////////
 //// Implementation
@@ -31,25 +40,62 @@ std::shared_ptr<RootObject> map(const billiard::detection::State& state); // Uni
 std::shared_ptr<billiard::detection::StateTracker> stateTracker;
 std::shared_ptr<billiard::capture::CameraCapture> cameraCapture;
 std::shared_ptr<billiard::detection::DetectionConfig> detectionConfig;
-std::shared_ptr<RootObject> _currentState;
-std::shared_ptr<RootObject> testState(); // TODO: Delete
+std::shared_ptr<billiard::search::Configuration> searchConfig;
+std::shared_ptr<State> _currentState;
+
+#ifdef BILLIARD_DEBUG
+    std::ofstream _logFileStream {"log.txt"};
+    std::ostringstream _unityStream;
+
+    void sendStream(std::ostringstream& stream);
+    std::vector<std::string> getMessages(std::string input);
+    std::ostream& operator<<(std::ostream& os, const RootObject& root);
+#endif
 
 void onStart() {
     _animationChangedEventQueue = new AnimationChangedEventQueue{};
-    _currentState = testState(); // TODO: Delete
+    _stateChangedEventQueue = new StateChangedEventQueue{};
+
+#ifdef BILLIARD_DEBUG
+    if (WRITE_LOG_FILE) {
+        std::cout.rdbuf(_logFileStream.rdbuf());
+    } else {
+        std::cout.rdbuf(_unityStream.rdbuf());
+    }
+#endif
 }
 
 void onTearDown() {
     delete _animationChangedEventQueue;
     _animationChangedEventQueue = nullptr;
+
+    delete _stateChangedEventQueue;
+    _stateChangedEventQueue = nullptr;
 }
 
 void processEvents() {
+    auto result = mayMap(_search);
+    if (result) {
+        DEBUG("Result: " << *result << std::endl);
+        _animationChangedEventQueue->push(result);
+    }
     _animationChangedEventQueue->process();
+
+    _stateChangedEventQueue->process();
+
+#ifdef BILLIARD_DEBUG
+    if (!WRITE_LOG_FILE) {
+        sendStream(_unityStream);
+    }
+#endif
 }
 
 void onAnimationChangedEvent(AnimationChangedEventCallback callback) {
     _animationChangedEventQueue->callback(callback);
+}
+
+void onStateChangedEvent(StateChangedEventCallback callback) {
+    _stateChangedEventQueue->callback(callback);
 }
 
 inline cv::Point3d toPoint3d(const Vec3& vec) {
@@ -67,46 +113,46 @@ inline cv::Vec3d toVec3d(const Vec3& vec) {
 inline billiard::detection::CameraIntrinsics toIntrinsics(const CameraIntrinsics& camera);
 inline billiard::detection::ArucoMarkers createArucoMarkers(const ArucoMarkers& input);
 inline billiard::detection::Table toTable(const Table& table);
+inline billiard::search::Configuration toSearchConfig(const Configuration& config);
 
 void configuration(Configuration config) {
     // TODO: Map configuration and pass it to the library, delete all debugger outputs
-    _debugger((std::string("radius: ") + std::to_string(config.radius)).c_str());
-    _debugger((std::string("width: ") + std::to_string(config.width)).c_str());
-    _debugger((std::string("height: ") + std::to_string(config.height)).c_str());
-    _debugger((std::string("segments: ") + std::to_string(config.segmentSize)).c_str());
-    _debugger((std::string("targets: ") + std::to_string(config.targetSize)).c_str());
+    DEBUG("radius: " << std::to_string(config.radius));
+    DEBUG("width: " << std::to_string(config.width));
+    DEBUG("height: " << std::to_string(config.height));
+    DEBUG("segments: " << std::to_string(config.segmentSize));
+    DEBUG("targets: " << std::to_string(config.targetSize));
 
-    _debugger((std::string("marker pattern size: ") + std::to_string(config.markers.patternSize) + ", side length: " + std::to_string(config.markers.sideLength) + "mm").c_str());
-    _debugger((std::string("world to model") + " translation is (" + std::to_string(config.worldToModel.translation.x) + ", " + std::to_string(config.worldToModel.translation.y) + ", " + std::to_string(config.worldToModel.translation.z) + ")").c_str());
-    _debugger((std::string("marker 0") + " is at (" + std::to_string(config.markers.m0.x) + ", " + std::to_string(config.markers.m0.y) + ", " + std::to_string(config.markers.m0.z) + ")").c_str());
-    _debugger((std::string("marker 1") + " is at (" + std::to_string(config.markers.m1.x) + ", " + std::to_string(config.markers.m1.y) + ", " + std::to_string(config.markers.m1.z) + ")").c_str());
-    _debugger((std::string("marker 2") + " is at (" + std::to_string(config.markers.m2.x) + ", " + std::to_string(config.markers.m2.y) + ", " + std::to_string(config.markers.m2.z) + ")").c_str());
-    _debugger((std::string("marker 3") + " is at (" + std::to_string(config.markers.m3.x) + ", " + std::to_string(config.markers.m3.y) + ", " + std::to_string(config.markers.m3.z) + ")").c_str());
-    _debugger((std::string("ball plane") + " is: (p - " + "(" + std::to_string(config.ballPlane.point.x) + ", " + std::to_string(config.ballPlane.point.y) + ", " + std::to_string(config.ballPlane.point.z) + ")" + ") * " + "(" + std::to_string(config.ballPlane.normal.x) + ", " + std::to_string(config.ballPlane.normal.y) + ", " + std::to_string(config.ballPlane.normal.z) + ")" + " = 0").c_str());
-    _debugger((std::string("camera intrinsics:")
-                + " f: " + "(" + std::to_string(config.camera.fx) + ", " + std::to_string(config.camera.fy) + ")"
-                + " c: " + "(" + std::to_string(config.camera.cx) + ", " + std::to_string(config.camera.cy) + ")"
-                + " skew: " + std::to_string(config.camera.skew)
-                + " k: " + "(" + std::to_string(config.camera.k1) + ", " + std::to_string(config.camera.k2) + ", " + std::to_string(config.camera.k3) + ")"
-                + " p: " + "(" + std::to_string(config.camera.p1) + ", " + std::to_string(config.camera.p2) + ")"
-                ).c_str());
+    DEBUG("marker pattern size: " << std::to_string(config.markers.patternSize) << ", side length: " << std::to_string(config.markers.sideLength) << "mm");
+    DEBUG("world to model" << " translation is (" << std::to_string(config.worldToModel.translation.x) << std::to_string(config.worldToModel.translation.y) << ", " << std::to_string(config.worldToModel.translation.z) << ")");
+    DEBUG("marker 0" << " is at (" << std::to_string(config.markers.m0.x) << ", " << std::to_string(config.markers.m0.y) << ", " << std::to_string(config.markers.m0.z) << ")");
+    DEBUG("marker 1" << " is at (" << std::to_string(config.markers.m1.x) << ", " << std::to_string(config.markers.m1.y) << ", " << std::to_string(config.markers.m1.z) << ")");
+    DEBUG("marker 2" << " is at (" << std::to_string(config.markers.m2.x) << ", " << std::to_string(config.markers.m2.y) << ", " << std::to_string(config.markers.m2.z) << ")");
+    DEBUG("marker 3" << " is at (" << std::to_string(config.markers.m3.x) << ", " << std::to_string(config.markers.m3.y) << ", " << std::to_string(config.markers.m3.z) << ")");
+    DEBUG("ball plane" << " is: (p - " << "(" << std::to_string(config.ballPlane.point.x) << ", " << std::to_string(config.ballPlane.point.y) << ", " << std::to_string(config.ballPlane.point.z) << ")" << ") * " << "(" << std::to_string(config.ballPlane.normal.x) << ", " << std::to_string(config.ballPlane.normal.y) << ", " << std::to_string(config.ballPlane.normal.z) << ")" << " = 0");
+    DEBUG("camera intrinsics:"
+                << " f: " << "(" << std::to_string(config.camera.fx) << ", " << std::to_string(config.camera.fy) << ")"
+                << " c: " << "(" << std::to_string(config.camera.cx) << ", " << std::to_string(config.camera.cy) << ")"
+                << " skew: " << std::to_string(config.camera.skew)
+                << " k: " << "(" << std::to_string(config.camera.k1) << ", " << std::to_string(config.camera.k2) << ", " << std::to_string(config.camera.k3) << ")"
+                << " p: " << "(" << std::to_string(config.camera.p1) << ", " << std::to_string(config.camera.p2) << ")");
 
     for(int i = 0; i < config.segmentSize; i++) {
         auto& segment = config.segments[i];
-        _debugger((std::string("rail segment [") + std::to_string(i) + "] has start at [" + std::to_string(segment.start.x) + ";" + std::to_string(segment.start.y) + "] and end at [" + std::to_string(segment.end.x) + ";" + std::to_string(segment.end.y) + "]").c_str());
+        DEBUG("rail segment [" << std::to_string(i) << "] has start at [" << std::to_string(segment.start.x) << ";" << std::to_string(segment.start.y) << "] and end at [" << std::to_string(segment.end.x) << ";" << std::to_string(segment.end.y) << "]");
     }
 
     for(int i = 0; i < config.targetSize; i++) {
         auto& target = config.targets[i];
-        _debugger((std::string("target [") + std::to_string(i) + "] is located at [" + std::to_string(target.position.x) + ";" + std::to_string(target.position.y) + "] and has radius " + std::to_string(target.radius)).c_str());
+        DEBUG("target [" << std::to_string(i) << "] is located at [" << std::to_string(target.position.x) << ";" << std::to_string(target.position.y) << "] and has radius " << std::to_string(target.radius));
     }
 
-    billiard::detection::CameraIntrinsics intrinsics = toIntrinsics(config.camera);
-    _debugger("CameraIntrinsics created");
+   /* billiard::detection::CameraIntrinsics intrinsics = toIntrinsics(config.camera);
+    DEBUG("CameraIntrinsics created");
 
     billiard::detection::ArucoMarkers markers = createArucoMarkers(config.markers);
-    _debugger("Aruco-board created");
-    _debugger((std::string("Markers:")
+    DEBUG("Aruco-board created");
+    DEBUG((std::string("Markers:")
                + " patternSize: " + std::to_string(markers.patternSize)
                + " sideLength: " + std::to_string(markers.sideLength)
                + " bottomLeft: " + "" + std::to_string(markers.bottomLeft.x) + ", " + std::to_string(markers.bottomLeft.y) + ", " + std::to_string(markers.bottomLeft.z)
@@ -116,7 +162,7 @@ void configuration(Configuration config) {
               ).c_str());
 
     billiard::detection::Table table = toTable(config.table);
-    _debugger((std::string("Table: ")
+    DEBUG((std::string("Table: ")
                 + " innerTableLength: " + std::to_string(table.innerTableLength)
                 + " innerTableWidth: " + std::to_string(table.innerTableWidth)
                 + " ballDiameter: " + std::to_string(table.ballDiameter)
@@ -133,9 +179,9 @@ void configuration(Configuration config) {
     if (LIVE) {
         cameraCapture = std::make_shared<billiard::capture::CameraCapture>();
         if (cameraCapture->open()) {
-            _debugger("[SUCCESS]: Opened camera capture");
+            DEBUG("[SUCCESS]: Opened camera capture");
         } else {
-            _debugger("[ERROR]: Unable to open camera capture");
+            DEBUG("[ERROR]: Unable to open camera capture");
             return;
         }
 
@@ -150,16 +196,16 @@ void configuration(Configuration config) {
 
     detectionConfig = std::make_shared<billiard::detection::DetectionConfig>(billiard::detection::configure(image, table, markers, intrinsics));
     if (detectionConfig->valid) {
-        _debugger("[SUCCESS]: Detection configured");
+        DEBUG("[SUCCESS]: Detection configured");
     } else {
-        _debugger("[ERROR]: Unable to configure detection");
+        DEBUG("[ERROR]: Unable to configure detection");
         return;
     }
 
     if (billiard::snooker::configure(*detectionConfig)) {
-        _debugger("[SUCCESS]: Snooker detection configured");
+        DEBUG("[SUCCESS]: Snooker detection configured");
     } else {
-        _debugger("[ERROR]: Unable to configure snooker detection");
+        DEBUG("[ERROR]: Unable to configure snooker detection");
         return;
     }
 
@@ -174,7 +220,12 @@ void configuration(Configuration config) {
         });
     }
 
-    _debugger("All configuration mapped");
+    searchConfig = std::make_shared<billiard::search::Configuration>(toSearchConfig(config));
+
+    DEBUG("All configuration mapped");*/
+
+    searchConfig = std::make_shared<billiard::search::Configuration>(toSearchConfig(config));
+
 }
 
 inline billiard::detection::Table toTable(const Table& table) {
@@ -212,17 +263,81 @@ inline billiard::detection::ArucoMarkers createArucoMarkers(const ArucoMarkers& 
 }
 
 inline void printState(const billiard::detection::State& state) {
-    _debugger(("[Detection]: Detected " + std::to_string(state._balls.size()) + " balls").c_str());
+    DEBUG("[Detection]: Detected " << std::to_string(state._balls.size()) << " balls");
     for (auto& ball : state._balls) {
-        _debugger(("[Detection]: Ball: " + ball._id + " " + ball._type + " at (" + std::to_string(ball._position[0]) + ", " + std::to_string(ball._position[1]) + ")").c_str());
+        DEBUG("[Detection]: Ball: " << ball._id << " " << ball._type << " at (" << std::to_string(ball._position[0]) << ", " << std::to_string(ball._position[1]) << ")");
     }
 }
 
+std::vector<billiard::search::Pocket> getPockets(double innerTableLength,
+                               double innerTableWidth) {
+    // TODO: Duplicate of billiard_detection::getPockets
+
+    // Translation from rail-coordinate system to model-coordinate system
+    double railToModelX = innerTableLength/2;
+    double railToModelY = innerTableWidth/2;
+
+    float middlePocketRadius = 50.0f;
+    float cornerPocketRadius = 50.0f;
+
+    double pocketTop = innerTableWidth - railToModelY;
+    double pocketBottom = 0.0 - railToModelY;
+    double pocketLeft = 0.0 - railToModelX;
+    double pocketRight = innerTableLength - railToModelX;
+    double pocketMiddle = innerTableLength/2 - railToModelX;
+
+    return { // In model coordinates
+            billiard::search::Pocket {"1", billiard::search::PocketType::CORNER, glm::vec2{pocketLeft  + 25, pocketBottom + 15}, cornerPocketRadius}, // Bottom-left
+            billiard::search::Pocket {"2", billiard::search::PocketType::CORNER, glm::vec2{pocketLeft  + 25, pocketTop    - 15}, cornerPocketRadius}, // Top-left
+            billiard::search::Pocket {"3", billiard::search::PocketType::CENTER, glm::vec2{pocketMiddle,     pocketTop    + 15}, middlePocketRadius}, // Top-middle
+            billiard::search::Pocket {"4", billiard::search::PocketType::CORNER, glm::vec2{pocketRight - 25, pocketTop    - 15}, cornerPocketRadius}, // Top-right
+            billiard::search::Pocket {"5", billiard::search::PocketType::CORNER, glm::vec2{pocketRight - 25, pocketBottom + 15}, cornerPocketRadius}, // Bottom-right
+            billiard::search::Pocket {"6", billiard::search::PocketType::CENTER, glm::vec2{pocketMiddle,     pocketBottom - 15}, middlePocketRadius}, // Bottom-middle
+    };
+}
+
+inline billiard::search::RailLocation map(RailLocation location) {
+    switch (location) {
+        case RailLocation::TOP:
+            return billiard::search::RailLocation::TOP;
+        case RailLocation::BOTTOM:
+            return billiard::search::RailLocation::BOTTOM;
+        case RailLocation::LEFT:
+            return billiard::search::RailLocation::LEFT;
+        case RailLocation::RIGHT:
+        default:
+            return billiard::search::RailLocation::RIGHT;
+    }
+}
+
+inline billiard::search::Configuration toSearchConfig(const Configuration& config) {
+    billiard::search::Configuration billiardSearchConfig;
+
+    billiardSearchConfig._ball._radius = config.radius;
+    billiardSearchConfig._ball._diameterSquared = (config.radius * 2) * (config.radius * 2);
+    billiardSearchConfig._ball._diameter = config.radius * 2;
+    billiardSearchConfig._table._pockets = getPockets(config.table.innerTableLength, config.table.innerTableWidth);
+    billiardSearchConfig._table.minimalPocketVelocity = config.table.minimalPocketVelocity;
+
+    for (int i = 0; i < config.segmentSize; i++) {
+        billiardSearchConfig._table._rails.emplace_back(billiard::search::Rail{
+            std::to_string(i),
+            glm::vec2{config.segments[i].start.x, config.segments[i].start.y},
+            glm::vec2{config.segments[i].end.x, config.segments[i].end.y},
+            billiardSearchConfig._ball._radius,
+            map(config.segments[i].location)
+        });
+    }
+
+    billiardSearchConfig._table._center = glm::vec2{0, 0};
+    billiardSearchConfig._rules._nextTypeToSearch = billiard::snooker::nextSearchType;
+    billiardSearchConfig._rules._modifyState = billiard::snooker::stateAfterBreak;
+    billiardSearchConfig._rules._isValidEndState = billiard::snooker::validEndState;
+
+    return billiardSearchConfig;
+}
+
 void capture() {
-    _debugger("[COMMAND]: Capture");
-    // TODO: Capture state and update _currentState
-    // TODO: Push _currentState to the animationChangedEventQueue
-    // TODO: Hint, write a mapping function according to the existing "map" to create an animation from a state.
 
     if (LIVE) {
         if (stateTracker) {
@@ -235,6 +350,7 @@ void capture() {
             _currentState = map(state);
         }
     } else {
+
         if (detectionConfig) {
 
             cv::Mat image = cv::imread(IMAGE_PATH);
@@ -247,7 +363,9 @@ void capture() {
         }
     }
 
-    _animationChangedEventQueue->push(_currentState);
+    if (_currentState) {
+        _stateChangedEventQueue->push(_currentState);
+    }
 }
 
 void image() {
@@ -258,12 +376,32 @@ void image() {
     }
 }
 
-void search(Search search) {
-    // TODO: Capture state
-    // TODO: Start search
-    // TODO: When search finished, the result has to be mapped and pushed to _animationChangedEventQueue
+billiard::search::State toSearchState(const std::shared_ptr<State>& state) {
+    std::vector<billiard::search::Ball> balls;
 
-    _animationChangedEventQueue->push(_currentState); // TODO: Delete
+    for (int i = 0; i < state->ballSize; i++) {
+        auto& ball = state->balls[i];
+        balls.emplace_back(billiard::search::Ball{
+                glm::vec2{ball.position.x, ball.position.y},
+                ball.type,
+                ball.id,
+
+        });
+
+        DEBUG("Ball [" << ball.id << "]  --> [" << ball.position.x << ", " << ball.position.y << "]" << std::endl);
+    }
+
+    return billiard::search::State{ balls };
+}
+
+void search(Search search) {
+    if (!_currentState) {
+        DEBUG("[COMMAND]: search failed -> call capture first" << std::endl);
+        return;
+    }
+
+    auto searchInfo = billiard::search::Search{search.id, search.type};
+    _search = billiard::search::search(toSearchState(_currentState), searchInfo, 10, *searchConfig);
 }
 
 void debugger(Debugger debugger) {
@@ -271,251 +409,217 @@ void debugger(Debugger debugger) {
 }
 
 void state(State state) {
-    #ifndef NDEBUG
-        _currentState = map(state);
-        _animationChangedEventQueue->push(_currentState);
-    #endif
+    _currentState = std::make_shared<State>(state);
+    _stateChangedEventQueue->clear();
 }
 
 ///////////////////////////////////////////////////////
 //// Mappings - Implementation
 ///////////////////////////////////////////////////////
 
-Ball* map(const BallState* ballState, int ballSize);
+BallState* map(const std::vector<billiard::detection::Ball>& ballStates);
 
-std::shared_ptr<RootObject> map(const State& state) {
-    KeyFrame keyFrame{0.0, map(state.balls, state.ballSize), state.ballSize, false};
-
-    KeyFrame keyFrames[] = {
-            keyFrame,
-            keyFrame
-    };
-    AnimationModel models[] = {AnimationModel{keyFrames, 2}};
-    return std::make_shared<RootObject>(models, 1);
+std::shared_ptr<State> map(const billiard::detection::State& state) {
+    return std::make_shared<State>(map(state._balls), static_cast<int>(state._balls.size()), false);
 }
 
-Ball* map(const BallState* ballState, int ballSize) {
-    Ball* balls = new Ball[ballSize];
-
-    for (int i = 0; i < ballSize; i++) {
-        balls[i] = Ball{ballState[i].type, ballState[i].id, ballState[i].position, Vec2{0, 0}, true};
-    }
-    return balls;
-}
-
-Ball* map(const std::vector<billiard::detection::Ball>& ballStates);
-
-std::shared_ptr<RootObject> map(const billiard::detection::State& state) {
-    KeyFrame keyFrame{0.0, map(state._balls), static_cast<int>(state._balls.size()), false};
-
-    KeyFrame keyFrames[] = {
-            keyFrame,
-            keyFrame
-    };
-    AnimationModel models[] = {AnimationModel{keyFrames, 2}};
-    return std::make_shared<RootObject>(models, 1);
-}
-
-Ball* map(const std::vector<billiard::detection::Ball>& ballStates) {
-    Ball* balls = new Ball[ballStates.size()];
+BallState* map(const std::vector<billiard::detection::Ball>& ballStates) {
+    auto* balls = new BallState[ballStates.size()];
 
     double scale = 0.001; // millimeters to meters
 
     for (int i = 0; i < ballStates.size(); i++) {
         auto& ballState = ballStates[i];
         const Vec2& position = Vec2{ballState._position[0] * scale, ballState._position[1] * scale};
-        balls[i] = Ball{_strdup(ballState._type.c_str()), _strdup(ballState._id.c_str()), position, Vec2{0, 0}, true};
+        balls[i] = BallState{ballState._type.c_str(), ballState._id.c_str(), position, false};
     }
+
     return balls;
 }
 
-// TODO: Add mapping from internal animation to external animation (Search)
+std::shared_ptr<RootObject> mayMap(std::future<std::vector<std::vector<billiard::search::node::System>>>& simulations) {
+    if (!simulations.valid() || simulations.wait_for(std::chrono::seconds(0)) != std::future_status::ready) {
+        return nullptr;
+    }
+    DEBUG("Solution found!" << std::endl);
 
-// TODO: Delete all after this comment
-std::shared_ptr<RootObject> testState() {
-    Ball balls1[] = {
-            Ball {
-                    "WHITE",
-                    "WHITE",
-                    Vec2 {-0.4, 0.4},
-                    Vec2 {0.172627, -0.172627},
-                    true
-            },
-            Ball {
-                    "RED",
-                    "RED_1",
-                    Vec2 {-0.1, 0.1},
-                    Vec2 {0, 0},
-                    true
-            },
-            Ball {
-                    "RED",
-                    "RED_2",
-                    Vec2 {0.1, 0.1},
-                    Vec2 {0, 0},
-                    true
-            }
-    };
-
-    Ball balls2[] = {
-            Ball {
-                    "WHITE",
-                    "WHITE",
-                    Vec2 {-0.13677, 0.13677},
-                    Vec2 {0.090603, -0.090603},
-                    true
-            },
-            Ball {
-                    "RED",
-                    "RED_1",
-                    Vec2 {-0.1, 0.1},
-                    Vec2 {0, 0},
-                    true
-            },
-            Ball {
-                    "RED",
-                    "RED_2",
-                    Vec2 {0.1, 0.1},
-                    Vec2 {0, 0},
-                    false
-            }
-    };
-
-    Ball balls3[] = {
-            Ball {
-                    "WHITE",
-                    "WHITE",
-                    Vec2 {-0.13677, 0.13677},
-                    Vec2 {0, 0},
-                    true
-            },
-            Ball {
-                    "RED",
-                    "RED_1",
-                    Vec2 {-0.1, 0.1},
-                    Vec2 {0.090603, -0.090603},
-                    true
-            },
-            Ball {
-                    "RED",
-                    "RED_2",
-                    Vec2 {0.1, 0.1},
-                    Vec2 {0, 0},
-                    false
-            }
-    };
-
-    Ball balls4[] = {
-            Ball {
-                    "WHITE",
-                    "WHITE",
-                    Vec2 {-0.13677, 0.13677},
-                    Vec2 {0, 0},
-                    true
-            },
-            Ball {
-                    "RED",
-                    "RED_1",
-                    Vec2 {0.000079, -0.000079},
-                    Vec2 {0, 0},
-                    false
-            },
-            Ball {
-                    "RED",
-                    "RED_2",
-                    Vec2 {0.1, 0.1},
-                    Vec2 {0, 0},
-                    false
-            }
-    };
-
-    Ball balls5[] = {
-            Ball {
-                    "WHITE",
-                    "WHITE",
-                    Vec2 {-0.13677, 0.13677},
-                    Vec2 {0, 0},
-                    true
-            },
-            Ball {
-                    "RED",
-                    "RED_1",
-                    Vec2 {0.000079, -0.000079},
-                    Vec2 {0, 0},
-                    false
-            },
-            Ball {
-                    "RED",
-                    "RED_2",
-                    Vec2 {0.1, 0.1},
-                    Vec2 {0, 0},
-                    true
-            }
-    };
-
-    Ball balls6[] = {
-            Ball {
-                    "WHITE",
-                    "WHITE",
-                    Vec2 {-0.13677, 0.13677},
-                    Vec2 {0, 0},
-                    true
-            },
-            Ball {
-                    "RED",
-                    "RED_1",
-                    Vec2 {0.000079, -0.000079},
-                    Vec2 {0, 0},
-                    false
-            },
-            Ball {
-                    "RED",
-                    "RED_2",
-                    Vec2 {0.1, 0.1},
-                    Vec2 {0, 0},
-                    false
-            }
-    };
-
-    KeyFrame keyFrames[6] = {
-            KeyFrame {
-                0,
-                balls1,
-                3,
-                true
-            },
-            KeyFrame {
-                2,
-                balls2,
-                3,
-                false
-            },
-            KeyFrame {
-                2,
-                balls3,
-                3,
-                false
-            },
-            KeyFrame {
-                4.20918,
-                balls4,
-                3,
-                false
-            },
-            KeyFrame {
-                4.20918,
-                balls5,
-                3,
-                false
-            },
-            KeyFrame {
-                4.3,
-                balls6,
-                3,
-                false
-            }
-    };
-
-    AnimationModel models[] = {AnimationModel{keyFrames, 6}};
-    return std::make_shared<RootObject>(models, 1);
+    return map(simulations.get());
 }
+
+Ball nodeToBall(const std::pair<std::string, billiard::search::node::Node>& node, bool before) {
+
+    auto state = before ? node.second.before() : node.second.after();
+
+    if (state) {
+        return Ball {
+                node.second._ballType.c_str(),
+                node.first.c_str(),
+                Vec2 {state->_position.x, state->_position.y},
+                Vec2 {state->_velocity.x, state->_velocity.y},
+                node.second._type != billiard::search::node::NodeType::BALL_POTTING
+        };
+    }
+
+    return Ball {
+        "UNKNOWN",
+        "ERROR",
+        Vec2 {0, 0},
+        Vec2 {0, 0},
+        true
+    };
+}
+
+std::shared_ptr<RootObject> map(const std::vector<std::vector<billiard::search::node::System>>& simulations) {
+
+    auto* models = new AnimationModel[simulations.size()];
+
+    int modelIndex = 0;
+    for (auto& simulation : simulations) {
+        std::vector<KeyFrame> keyFrames;
+        for (auto& system : simulation) {
+
+            for(auto& layer : system._layers) {
+                Ball* ballsEnterKeyFrame = new Ball[layer._nodes.size()];
+                Ball* ballsExitKeyFrame = new Ball[layer._nodes.size()];
+
+                int ballIndex = 0;
+                for(auto& node : layer._nodes) {
+                    if (!layer._isFirst) {
+                        ballsEnterKeyFrame[ballIndex] = nodeToBall(node, true);
+                    }
+
+                    if (!layer._isLast) {
+                        ballsExitKeyFrame[ballIndex] = nodeToBall(node, false);
+                    }
+
+                    ballIndex++;
+                }
+
+                if (!layer._isFirst) {
+                    keyFrames.emplace_back(KeyFrame{
+                            layer._time,
+                            ballsEnterKeyFrame,
+                            static_cast<int>(layer._nodes.size()),
+                            false
+                    });
+                } else {
+                    delete[] ballsEnterKeyFrame;
+                }
+                if (!layer._isLast) {
+                    keyFrames.emplace_back(KeyFrame{
+                            layer._time,
+                            ballsExitKeyFrame,
+                            static_cast<int>(layer._nodes.size()),
+                            layer._isFirst
+                    });
+                } else {
+                    delete[] ballsExitKeyFrame;
+                }
+            }
+        }
+
+        auto* keyFramesArray = new KeyFrame[keyFrames.size()];
+        std::copy(keyFrames.begin(), keyFrames.end(), keyFramesArray);
+        models[modelIndex].keyFrames = keyFramesArray;
+        models[modelIndex].keyFrameSize = static_cast<int>(keyFrames.size());
+        modelIndex++;
+    }
+
+    return std::make_shared<RootObject>(models, simulations.size());
+}
+
+#ifdef BILLIARD_DEBUG
+    void sendStream(std::ostringstream& stream) {
+        if(billiard::debug::Debug::lock()) {
+            auto debug = stream.str();
+            stream.str("");
+            billiard::debug::Debug::unlock();
+            if (!debug.empty()) {
+                auto messages = getMessages(debug);
+                for(auto& message : messages) {
+                    _debugger(message.c_str());
+                }
+            }
+        }
+        billiard::debug::Debug::unlock();
+    }
+
+    std::vector<std::string> getMessages(std::string input) {
+        static std::string delimiter = "\n";
+        std::vector<std::string> messages;
+        size_t pos = 0;
+        std::string token;
+        while ((pos = input.find(delimiter)) != std::string::npos) {
+            token = input.substr(0, pos);
+            messages.emplace_back(token);
+            input.erase(0, pos + delimiter.length());
+        }
+        return messages;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const Vec2& vec) {
+        os << "{" << " "
+           << "\"x\":" << vec.x << ", "
+           << "\"y\":" << vec.y << ", "
+           << " " << "}";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const Ball& ball) {
+        os << "{" << " "
+           << "\"id\": \"" << ball.id << "\", "
+           << "\"type\": \"" << ball.type << "\", "
+           << "\"position\": " << ball.position << ", "
+           << "\"velocity\": " << ball.velocity << ", "
+           << "\"visible\": " << ball.visible << " "
+           << " " << "}";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const KeyFrame& keyFrame) {
+        os << "{" << " "
+           << "\"time\": " << keyFrame.time << ", "
+           << "\"firstFrame\": " << keyFrame.firstFrame << ", "
+           << "\"balls\": [" << " ";
+        for (int i = 0; i < keyFrame.ballSize; i++) {
+            os << keyFrame.balls[i];
+            if (i < keyFrame.ballSize - 1) {
+                os << ", ";
+            }
+        }
+        os << " " << "]";
+        os << " " << "}";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const AnimationModel& animation) {
+        os << "{" << " "
+           << "\"keyFrameSize\": " << animation.keyFrameSize << ", "
+           << "\"keyframes\": [ ";
+
+        for(int i = 0; i < animation.keyFrameSize; i++) {
+            os << animation.keyFrames[i];
+            if (i < animation.keyFrameSize - 1) {
+                os << ", ";
+            }
+        }
+        os << " " << "]";
+        os << " " << "}";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const RootObject& root) {
+        os << "{" << " "
+           << "\"animationSize\": " << root.animationSize << ", "
+           << "\"animations\": [";
+        for(int i = 0; i < root.animationSize; i++) {
+            os << root.animations[i];
+            if (i < root.animationSize - 1) {
+                os << ", ";
+            }
+        }
+        os << " " << "]";
+        os << " " << "}";
+        return os;
+    }
+#endif

@@ -11,6 +11,7 @@ add_custom_command(TARGET ${PROJECT_NAME}
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/resources/ $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
 
         # Copy dependencies to binary folder
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_debug> ${PROJECT_BINARY_DIR}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_search> ${PROJECT_BINARY_DIR}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_snooker> ${PROJECT_BINARY_DIR}/
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:billiard_detection> ${PROJECT_BINARY_DIR}/
@@ -34,4 +35,4 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
         BILLIARD_SEARCH_IMPORT
         GTEST_LINKED_AS_SHARED_LIBRARY=1)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE billiard_search billiard_snooker nlohmann_json::nlohmann_json gtest gtest_main gmock gmock_main)
+target_link_libraries(${PROJECT_NAME} PRIVATE billiard_search billiard_physics billiard_snooker nlohmann_json::nlohmann_json gtest gtest_main gmock gmock_main)

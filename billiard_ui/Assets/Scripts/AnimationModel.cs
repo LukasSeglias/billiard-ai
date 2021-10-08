@@ -54,10 +54,18 @@ public class Ball
 	public bool visible;
 }
 
+public enum RailLocation {
+    TOP,
+    BOTTOM,
+    LEFT,
+    RIGHT
+}
+
 [Serializable]
 public class RailSegment {
 	public Vec2 start;
 	public Vec2 end;
+	public RailLocation location;
 	
 	public static RailSegment operator /(RailSegment segment, float value) => new RailSegment{
 		start = segment.start / value,
@@ -139,6 +147,7 @@ public class Table {
     public double arucoHeightAboveInnerTable;
     public double railWorldPointZComponent;
 	public Vec3 worldToRail;
+	public float minimalPocketVelocity;
 }
 
 [Serializable]
@@ -178,7 +187,8 @@ public class Configuration {
             ballDiameter = config.table.ballDiameter,
             arucoHeightAboveInnerTable = config.table.arucoHeightAboveInnerTable,
             railWorldPointZComponent = config.table.railWorldPointZComponent,
-            worldToRail = new Vec3 { x = config.table.worldToRail.x, y = config.table.worldToRail.y, z = config.table.worldToRail.z }
+            worldToRail = new Vec3 { x = config.table.worldToRail.x, y = config.table.worldToRail.y, z = config.table.worldToRail.z },
+            minimalPocketVelocity = config.table.minimalPocketVelocity
         },
         camera = new CameraIntrinsics {fx = config.camera.fx, fy = config.camera.fy,
                            cx = config.camera.cx, cy = config.camera.cy,

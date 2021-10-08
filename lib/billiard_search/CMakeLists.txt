@@ -9,4 +9,4 @@ target_include_directories(${PROJECT_NAME}
 
 add_subdirectory(src)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC glm PRIVATE process)
+target_link_libraries(${PROJECT_NAME} PUBLIC glm PRIVATE process billiard_physics billiard_debug)

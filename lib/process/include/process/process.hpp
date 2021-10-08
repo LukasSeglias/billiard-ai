@@ -8,7 +8,7 @@
 
 namespace process {
 
-    #define SYNC_STEP 2
+    #define SYNC_STEP 4
 
     template <class Data, class Parameter, class Solution>
     class Process;
@@ -133,11 +133,11 @@ namespace process {
                 auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(
                         std::chrono::system_clock::now().time_since_epoch()).count();
                 if (manager->_isRunning && (currentTime - lastRun >= manager->_syncPeriod || manager->_startedNew)) {
-                    manager->_startedNew = false;
                     lastRun = currentTime;
 
                     manager->_lock.lock();
 
+                    manager->_startedNew = false;
                     mayCompleteResult(manager);
                     mayCompleteRequests(manager);
 
@@ -197,6 +197,7 @@ namespace process {
         void pushData(const Process<Data, Parameter, Solution>* const process, const std::vector<Data>& inProgress,
                       const std::vector<Data>& solutions) {
             _lock.lock();
+
             if (!process->_clearFlag) {
                 for(auto& data : inProgress) {
                     _inProgress.push(data);
@@ -221,12 +222,12 @@ namespace process {
         }
 
         void clear() {
-            for (auto worker : _workers) {
-                worker->clear();
-            }
             _inProgress = priority_queue<Data>{};
             _solutions = priority_queue<Data>{};
             _isRunning = false;
+            for (auto worker : _workers) {
+                worker->clear();
+            }
         }
     };
 
@@ -277,14 +278,12 @@ namespace process {
         static void work(Process<Data, Parameter, Solution>* const process) {
             auto exitListener = process->_exitSignal.get_future();
 
-            uint8_t cyclesSinceLastDataCheck = 0;
             while (exitListener.wait_for(std::chrono::nanoseconds (0)) == std::future_status::timeout) {
                 mayClear(process);
                 mayAskForData(process);
-                cyclesSinceLastDataCheck = mayPushData(process, cyclesSinceLastDataCheck);
+                mayPushData(process);
                 mayAppendDataFromRequest(process);
                 expand(process);
-                cyclesSinceLastDataCheck++;
             }
         }
 
@@ -305,12 +304,7 @@ namespace process {
             }
         }
 
-        static uint8_t
-        mayPushData(Process<Data, Parameter, Solution>* const process, uint8_t cyclesSinceLastDataCheck) {
-            if (cyclesSinceLastDataCheck < 100) {
-                return cyclesSinceLastDataCheck;
-            }
-
+        static void mayPushData(Process<Data, Parameter, Solution>* const process) {
             uint64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(
                     std::chrono::system_clock::now().time_since_epoch()).count();
             if (currentTime - process->_lastSynced > process->_syncPeriod) {
@@ -319,10 +313,10 @@ namespace process {
                 auto synchronizeInProgress = getForSynchronization(process->_inProgress, 0.6);
                 auto synchronizeSolutions = getForSynchronization(process->_solutions, 1);
 
-                process->_processManager->pushData(process, synchronizeInProgress, synchronizeSolutions);
-                return 0;
+                if (!synchronizeInProgress.empty() || !synchronizeSolutions.empty()) {
+                    process->_processManager->pushData(process, synchronizeInProgress, synchronizeSolutions);
+                }
             }
-            return cyclesSinceLastDataCheck;
         }
 
         static void mayAppendDataFromRequest(Process<Data, Parameter, Solution>* const process) {
@@ -343,7 +337,7 @@ namespace process {
 
             auto data = process->_inProgress.top();
             process->_inProgress.pop();
-            for(auto& expanded : process->_expand(data, process->_expandParameter)) {
+            for(auto expanded : process->_expand(data, process->_expandParameter)) {
                 if (expanded->_isSolution) {
                     process->_solutions.push(expanded);
                 } else {
