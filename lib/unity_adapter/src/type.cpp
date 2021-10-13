@@ -2,14 +2,16 @@
 
 Ball::Ball() : type(), id(), position(), velocity(), visible() {}
 
-Ball::Ball(const char* type, const char* id, Vec2 position, Vec2 velocity, bool visible) : type(_strdup(type)), id(_strdup(id)),
+Ball::Ball(const char* type, const char* id, Vec2 position, Vec2 velocity, bool visible) :
+                                                                        type(_strdup(type)),
+                                                                        id(_strdup(id)),
                                                                          position(position),
                                                                          velocity(velocity), visible(visible) {
 }
 
 Ball::Ball(Ball&& other) noexcept :
-        type(_strdup(other.type)),
-        id(_strdup(other.id)),
+        type(other.type),
+        id(other.id),
         position(other.position),
         velocity(other.velocity),
         visible(other.visible) {
@@ -17,14 +19,17 @@ Ball::Ball(Ball&& other) noexcept :
     other.id = nullptr;
 }
 
-Ball::Ball(const Ball& other) noexcept : type(_strdup(other.type)), id(_strdup(other.id)), position(other.position),
-                                   velocity(other.velocity),
-                                   visible(other.visible) {
+Ball::Ball(const Ball& other) noexcept:
+        type(_strdup(other.type)),
+        id(_strdup(other.id)),
+        position(other.position),
+        velocity(other.velocity),
+        visible(other.visible) {
 }
 
 Ball& Ball::operator=(Ball&& other) noexcept {
-    type = _strdup(other.type);
-    id = _strdup(other.id);
+    type = other.type;
+    id = other.id;
     position = other.position;
     velocity = other.velocity;
     visible = other.visible;
