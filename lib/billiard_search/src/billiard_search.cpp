@@ -170,15 +170,26 @@ namespace billiard::search {
         auto& unused = searchInput->_unusedBalls;
         for (auto& ball : unused) {
 
-            if ((searchInput->_action != SearchActionType::NONE && ball.second._type == "WHITE") ||
-//                (searchInput->_action == SearchActionType::NONE && (ball.first == searchInput->_search._id || ball.second._type == searchInput->_search._type))) {
-                ((ball.first == searchInput->_search._id || ball.second._type == searchInput->_search._type))) {
+            if ((/* Parent is pocket and ball is either the ball or one of the balls we want to pocket */
+                    searchInput->_action == SearchActionType::NONE
+                    && (ball.first == searchInput->_search._id || ball.second._type == searchInput->_search._type)
+                ) || searchInput->_action != SearchActionType::NONE) {
 
                 DEBUG("[expandSearchNodeByBalls] Expand " << ball.first << " child of " << input->asSearch()->_ballId << " type " << input->asSearch()->_action  << std::endl);
 
                 auto result = expandSearchNodeByBall(input, state, searchInput, ball);
                 expanded.insert(expanded.end(), result.begin(), result.end());
             }
+
+//            if ((searchInput->_action != SearchActionType::NONE && ball.second._type == "WHITE") ||
+////                (searchInput->_action == SearchActionType::NONE && (ball.first == searchInput->_search._id || ball.second._type == searchInput->_search._type))) {
+//                ((ball.first == searchInput->_search._id || ball.second._type == searchInput->_search._type))) {
+//
+//                DEBUG("[expandSearchNodeByBalls] Expand " << ball.first << " child of " << input->asSearch()->_ballId << " type " << input->asSearch()->_action  << std::endl);
+//
+//                auto result = expandSearchNodeByBall(input, state, searchInput, ball);
+//                expanded.insert(expanded.end(), result.begin(), result.end());
+//            }
         }
 
         return expanded;
