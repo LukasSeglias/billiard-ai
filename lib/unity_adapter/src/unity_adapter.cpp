@@ -44,6 +44,7 @@ std::shared_ptr<billiard::search::Configuration> searchConfig;
 std::shared_ptr<State> _currentState;
 
 #ifdef BILLIARD_DEBUG
+
     std::ofstream _logFileStream {"log.txt"};
     std::ostringstream _unityStream;
 
@@ -330,7 +331,7 @@ inline billiard::search::Configuration toSearchConfig(const Configuration& confi
     }
 
     billiardSearchConfig._table._center = glm::vec2{0, 0};
-    billiardSearchConfig._rules._nextTypeToSearch = billiard::snooker::nextSearchType;
+    billiardSearchConfig._rules._nextSearch = billiard::snooker::nextSearch;
     billiardSearchConfig._rules._modifyState = billiard::snooker::stateAfterBreak;
     billiardSearchConfig._rules._isValidEndState = billiard::snooker::validEndState;
 
@@ -400,7 +401,7 @@ void search(Search search) {
         return;
     }
 
-    auto searchInfo = billiard::search::Search{search.id, search.type};
+    auto searchInfo = billiard::search::Search{search.id, std::vector<std::string>{search.type}};
     _search = billiard::search::search(toSearchState(_currentState), searchInfo, 10, *searchConfig);
 }
 

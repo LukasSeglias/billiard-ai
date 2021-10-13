@@ -155,7 +155,8 @@ namespace billiard::search {
 
             if ((searchInput->_action != SearchActionType::NONE && ball.second._type == "WHITE") ||
 //                (searchInput->_action == SearchActionType::NONE && (ball.first == searchInput->_search._id || ball.second._type == searchInput->_search._type))) {
-                ((ball.first == searchInput->_search._id || ball.second._type == searchInput->_search._type))) {
+                ((ball.first == searchInput->_search._id ||
+                std::count(searchInput->_search._types.begin(), searchInput->_search._types.end(), ball.second._type)))) {
 
                 auto result = expandSearchNodeByBall(input, state, searchInput, ball);
                 expanded.insert(expanded.end(), result.begin(), result.end());
@@ -513,7 +514,7 @@ namespace billiard::search {
 
         for (auto& ball : searchInput->_unusedBalls) {
             if (searchInput->_action != SearchActionType::NONE || (ball.first == searchInput->_search._id ||
-                ball.second._type == searchInput->_search._type)) {
+                std::count(searchInput->_search._types.begin(), searchInput->_search._types.end(), ball.second._type))) {
                 auto result = expandSearchNodeByBankBall(input, state, searchInput, depth, ball);
                 expanded.insert(expanded.end(), result.begin(), result.end());
             }
@@ -621,7 +622,7 @@ namespace billiard::search {
 
     std::optional<event::Event> nextEvent(const node::System& system, const std::shared_ptr<SearchState>& state);
     node::Layer createLayer(const event::Event& event, const node::Layer& previousLayer, const std::shared_ptr<SearchState>& state);
-    std::string getTypeOf(const std::string& id, const std::string& type, const std::unordered_map<std::string, Ball>& state);
+    std::vector<std::string> getTypeOf(const Search& search, const std::unordered_map<std::string, Ball>& state);
     uint64_t simulationCost(const node::System& system);
 
     std::vector<std::shared_ptr<SearchNode>>
@@ -655,12 +656,9 @@ namespace billiard::search {
 #endif
 
                 if (layer.final()) {
-
-                    if (!state->_config._rules._isValidEndState(
-                            getTypeOf(parentSearchInput->_search._id,
-                                      parentSearchInput->_search._type,
-                                      parentSearchInput->_state),
-                            layer)) {
+                    auto searchedTypes = getTypeOf(parentSearchInput->_search,
+                                                parentSearchInput->_state);
+                    if (!state->_config._rules._isValidEndState(searchedTypes, layer)) { // TODO: search._type to vector of string
                         DEBUG(agent << "End state is not valid" << std::endl);
                         return expanded;
                     }
@@ -677,14 +675,13 @@ namespace billiard::search {
 
                     if (simCount < BREAKS) {
                         DEBUG(agent << "Prepare simulated output for next break" << std::endl);
-                        auto typeToSearch = state->_config._rules._nextTypeToSearch(
-                                parentSearchInput->_state.at(path.at(1)->asSearch()->_ballId)._type);
+                        auto search = state->_config._rules._nextSearch(parentSearchInput->_search, searchedTypes);
                         auto modifiedLayer = state->_config._rules._modifyState(layer);
 
                         std::vector<Ball> newBallPositions;
                         for (auto& node : modifiedLayer._nodes) {
-                            if (node.second._type == node::NodeType::BALL_IN_REST) {
-                                auto inRest = node.second.toInRest();
+                            auto inRest = node.second.toInRest();
+                            if (inRest) {
                                 newBallPositions.emplace_back(Ball{
                                         inRest->_ball._position,
                                         parentSearchInput->_state.at(node.first)._type,
@@ -692,12 +689,19 @@ namespace billiard::search {
                             }
                         }
 
-                        auto enrichedWithPockets = addPocketsAsInitialTargets(State{newBallPositions}, Search{"", typeToSearch}, state->_config);
-                        for (auto& output : enrichedWithPockets) {
-                            output->_parent = input;
-                            output->_cost = input->_cost + cost;
+                        auto enrichedWithPockets = addPocketsAsInitialTargets(State{newBallPositions}, search, state->_config);
+                        if (!enrichedWithPockets.empty()) {
+                            for (auto& output : enrichedWithPockets) {
+                                output->_parent = input;
+                                output->_cost = input->_cost + cost;
+                            }
+                            expanded.insert(expanded.end(), enrichedWithPockets.begin(), enrichedWithPockets.end());
+                        } else {
+                            DEBUG(agent << "Solution found with cost " << cost << std::endl);
+                            input->_isSolution = true;
+                            input->_cost = cost;
+                            expanded.emplace_back(input);
                         }
-                        expanded.insert(expanded.end(), enrichedWithPockets.begin(), enrichedWithPockets.end());
                     } else {
                         DEBUG(agent << "Solution found with cost " << cost << std::endl);
                         input->_isSolution = true;
@@ -1096,12 +1100,12 @@ namespace billiard::search {
         return node::Layer{previousLayer._time + event._time, nodes};
     }
 
-    std::string getTypeOf(const std::string& id, const std::string& type, const std::unordered_map<std::string, Ball>& state) {
-        if (!type.empty()) {
-            return type;
+    std::vector<std::string> getTypeOf(const Search& search, const std::unordered_map<std::string, Ball>& state) {
+        if (!search._types.empty()) {
+            return search._types;
         }
 
-        return state.count(id) ? state.at(id)._type : "";
+        return state.count(search._id) ? std::vector<std::string>{state.at(search._id)._type} : std::vector<std::string>{};
     }
 
     std::optional<event::Event> min(const std::optional<event::Event>& event,

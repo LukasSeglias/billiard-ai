@@ -604,15 +604,21 @@ namespace billiard::snooker {
 
     }
 
-    std::string nextSearchType(const std::string& previousType) {
-        return ""; // TODO: Switch between search types -> From RED to color and vice versa
+    billiard::search::Search nextSearch(const billiard::search::Search& previousSearch,
+                                        const std::vector<std::string>& previousTypes) {
+        return previousSearch; // TODO: Switch between search types -> From RED to color and vice versa
     }
 
     billiard::search::node::Layer stateAfterBreak(const billiard::search::node::Layer& layer) {
         return layer; // TODO: Replace colorized balls at their positions. (Pass config and append configuration)
     }
 
-    bool validEndState(const std::string& expectedType, const billiard::search::node::Layer& layer) {
+    bool validEndState(const std::vector<std::string>& expectedTypes, const billiard::search::node::Layer& layer) {
+        for(auto& node : layer._nodes) {
+            if (node.second._ballType == "WHITE" && node.second._type == billiard::search::node::NodeType::BALL_POTTING) {
+                return false;
+            }
+        }
         return true; // TODO: Implement check if potted ball(s) is/are of the expected type
     }
 }

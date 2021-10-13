@@ -2,9 +2,9 @@
 #include <algorithm>
 #include <billiard_physics/billiard_physics.hpp>
 
-billiard::search::Search::Search(std::string id, std::string type) :
+billiard::search::Search::Search(std::string id, std::vector<std::string> types) :
     _id(std::move(id)),
-    _type(std::move(type)) {
+    _types(std::move(types)) {
 }
 
 billiard::search::Ball::Ball(const glm::vec2& position, std::string type, std::string id) :

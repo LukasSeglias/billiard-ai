@@ -62,11 +62,12 @@ namespace billiard::snooker {
                                               const cv::Mat& image);
     EXPORT_BILLIARD_SNOOKER_LIB void classify(billiard::detection::Ball& ball, const cv::Mat& image);
 
-    EXPORT_BILLIARD_SNOOKER_LIB std::string nextSearchType(const std::string& previousType); // TODO: Naming
+    EXPORT_BILLIARD_SNOOKER_LIB billiard::search::Search nextSearch(const billiard::search::Search& previousSearch,
+                                                                    const std::vector<std::string>& previousTypes); // TODO: Naming
 
     EXPORT_BILLIARD_SNOOKER_LIB billiard::search::node::Layer
     stateAfterBreak(const billiard::search::node::Layer& layer); // TODO: Naming
 
     EXPORT_BILLIARD_SNOOKER_LIB bool
-    validEndState(const std::string& expectedType, const billiard::search::node::Layer& layer); // TODO: Naming
+    validEndState(const std::vector<std::string>& expectedTypes, const billiard::search::node::Layer& layer); // TODO: Naming
 }

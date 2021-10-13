@@ -11,14 +11,15 @@
 #include <functional>
 #include <optional>
 #include <atomic>
+#include <algorithm>
 
 namespace billiard::search {
 
     struct EXPORT_BILLIARD_SEARCH_LIB Search {
-        Search(std::string id = "", std::string type = "");
+        Search(std::string id = "", std::vector<std::string> types = {});
 
         std::string _id;
-        std::string _type;
+        std::vector<std::string> _types;
     };
 
     struct EXPORT_BILLIARD_SEARCH_LIB Ball {
@@ -293,10 +294,11 @@ namespace billiard::search {
         } _table;
 
         struct {
-            std::function<std::string (const std::string&)> _nextTypeToSearch = [](const std::string& previousType) {return "";};
+            std::function<Search (const Search&, const std::vector<std::string>&)> _nextSearch =
+                    [](const Search& previousType, const std::vector<std::string>& previousTypes) {return Search{};};
             std::function<node::Layer (const node::Layer&)> _modifyState = [](const node::Layer& layer) {return layer;};
-            std::function<bool(const std::string&, const node::Layer&)> _isValidEndState = [](
-                    const std::string& expectedPottedType, const node::Layer& layer) { return true; };
+            std::function<bool(const std::vector<std::string>&, const node::Layer&)> _isValidEndState = [](
+                    const std::vector<std::string>& expectedTypes, const node::Layer& layer) { return true; };
         } _rules;
     };
 
@@ -471,6 +473,7 @@ namespace billiard::search {
                 }
                 node = node->_parent.get();
             }
+            std::reverse(allSystems.begin(), allSystems.end());
             return allSystems;
         }
 

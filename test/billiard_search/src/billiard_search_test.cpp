@@ -303,7 +303,7 @@ billiard::search::Configuration billiard::search::test::config(nlohmann::json& j
     conf._table._pockets = pockets;
     conf._table._rails = rails;
     conf._rules._modifyState = billiard::snooker::stateAfterBreak;
-    conf._rules._nextTypeToSearch = billiard::snooker::nextSearchType;
+    conf._rules._nextSearch = billiard::snooker::nextSearchType;
     conf._rules._isValidEndState = billiard::snooker::validEndState;
 
     return conf;
