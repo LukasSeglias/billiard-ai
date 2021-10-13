@@ -19,12 +19,8 @@ namespace billiard::search::test {
 class BilliardSearchTest :public ::testing::TestWithParam<std::string> {
 };
 
-TEST(BilliardSearchTest, visualizationOfManualCase) {
-
-    billiard::search::State state { {} };
-    billiard::search::Search search { "", "RED" };
-    uint16_t solutions = 10;
-    billiard::search::Configuration config {};
+void showResults(const billiard::search::State& state, const billiard::search::Search& search,
+                 int solutions, const billiard::search::Configuration& config) {
 
     auto future = billiard::search::searchOnly(state, search, solutions, config);
 
@@ -71,6 +67,73 @@ TEST(BilliardSearchTest, visualizationOfManualCase) {
             resultChanged = true;
         }
     }
+}
+
+TEST(BilliardSearchTest, three_balls_in_a_row_with_cueball_and_pocket_manually_set) {
+
+    float ballDiameter = 52.3;
+
+    billiard::search::State state { {
+            billiard::search::Ball { glm::vec2 {-739.289, -241.31}, "WHITE", "WHITE-1" },
+            billiard::search::Ball { glm::vec2 {-772.974, -292.356}, "RED", "RED-3" },
+            billiard::search::Ball { glm::vec2 {-810.029, -336.596}, "RED", "RED-2" },
+            billiard::search::Ball { glm::vec2 {-843.714, -384.238}, "RED", "RED-1" },
+    } };
+    billiard::search::Search search { "RED-1", "" };
+    uint16_t solutions = 10;
+    billiard::search::Configuration config {};
+    config._ball._radius = ballDiameter / 2.0f;
+    config._ball._diameter = ballDiameter;
+    config._ball._diameterSquared = ballDiameter * ballDiameter;
+    config._table._pockets = {
+            billiard::search::Pocket { "BOTTOM-LEFT", billiard::search::PocketType::CORNER, glm::vec2 {-915.5, -456.5}, 52}
+    };
+    config._table.minimalPocketVelocity = 10.0f;
+
+    showResults(state, search, solutions, config);
+}
+
+TEST(BilliardSearchTest, three_balls_in_a_row_with_cueball_and_pocket) {
+
+    float ballDiameter = 52.3;
+    float space = 0.1;
+    glm::vec2 whitePosition {0, 0};
+    glm::vec2 pocketPosition { -700, -400};
+    glm::vec2 whiteToPocket = pocketPosition - whitePosition;
+    glm::vec2 whiteToPocketDirection = glm::normalize(whiteToPocket);
+    glm::vec2 red3 = whitePosition + (ballDiameter + space) * whiteToPocketDirection;
+    glm::vec2 red2 = red3 + (ballDiameter + space) * whiteToPocketDirection;
+    glm::vec2 red1 = red2 + (ballDiameter + space) * whiteToPocketDirection;
+
+    billiard::search::State state { {
+        billiard::search::Ball { whitePosition, "WHITE", "WHITE-1" },
+        billiard::search::Ball { red3, "RED", "RED-3" },
+        billiard::search::Ball { red2, "RED", "RED-2" },
+        billiard::search::Ball { red1, "RED", "RED-1" },
+    } };
+
+    billiard::search::Search search { "RED-1", "" };
+    uint16_t solutions = 10;
+    billiard::search::Configuration config {};
+    config._ball._radius = ballDiameter / 2.0f;
+    config._ball._diameter = ballDiameter;
+    config._ball._diameterSquared = ballDiameter * ballDiameter;
+    config._table._pockets = {
+            billiard::search::Pocket { "BOTTOM-LEFT", billiard::search::PocketType::CORNER, pocketPosition, 52}
+    };
+    config._table.minimalPocketVelocity = 10.0f;
+
+    showResults(state, search, solutions, config);
+}
+
+TEST(BilliardSearchTest, visualizationOfManualCase) {
+
+    billiard::search::State state { {} };
+    billiard::search::Search search { "", "RED" };
+    uint16_t solutions = 10;
+    billiard::search::Configuration config {};
+
+    showResults(state, search, solutions, config);
 }
 
 TEST(BilliardSearchTest, visualizationOfTestCase) {

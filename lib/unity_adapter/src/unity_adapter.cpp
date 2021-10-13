@@ -78,6 +78,7 @@ void processEvents() {
     auto result = mayMap(_search);
     if (result) {
         DEBUG("Result: " << *result << std::endl);
+        DEBUG("Search ended" << std::endl << "---------------------------------------------------------------------------" << std::endl);
         _animationChangedEventQueue->push(result);
     }
     _animationChangedEventQueue->process();
@@ -118,34 +119,35 @@ inline billiard::search::Configuration toSearchConfig(const Configuration& confi
 
 void configuration(Configuration config) {
     // TODO: Map configuration and pass it to the library, delete all debugger outputs
-    DEBUG("radius: " << std::to_string(config.radius));
-    DEBUG("width: " << std::to_string(config.width));
-    DEBUG("height: " << std::to_string(config.height));
-    DEBUG("segments: " << std::to_string(config.segmentSize));
-    DEBUG("targets: " << std::to_string(config.targetSize));
+    DEBUG("radius: " << std::to_string(config.radius) << " "
+    << "width: " << std::to_string(config.width) << " "
+       << "height: " << std::to_string(config.height) << " "
+       << "segments: " << std::to_string(config.segmentSize) << " "
+       << "targets: " << std::to_string(config.targetSize)
+       << std::endl);
 
-    DEBUG("marker pattern size: " << std::to_string(config.markers.patternSize) << ", side length: " << std::to_string(config.markers.sideLength) << "mm");
-    DEBUG("world to model" << " translation is (" << std::to_string(config.worldToModel.translation.x) << std::to_string(config.worldToModel.translation.y) << ", " << std::to_string(config.worldToModel.translation.z) << ")");
-    DEBUG("marker 0" << " is at (" << std::to_string(config.markers.m0.x) << ", " << std::to_string(config.markers.m0.y) << ", " << std::to_string(config.markers.m0.z) << ")");
-    DEBUG("marker 1" << " is at (" << std::to_string(config.markers.m1.x) << ", " << std::to_string(config.markers.m1.y) << ", " << std::to_string(config.markers.m1.z) << ")");
-    DEBUG("marker 2" << " is at (" << std::to_string(config.markers.m2.x) << ", " << std::to_string(config.markers.m2.y) << ", " << std::to_string(config.markers.m2.z) << ")");
-    DEBUG("marker 3" << " is at (" << std::to_string(config.markers.m3.x) << ", " << std::to_string(config.markers.m3.y) << ", " << std::to_string(config.markers.m3.z) << ")");
-    DEBUG("ball plane" << " is: (p - " << "(" << std::to_string(config.ballPlane.point.x) << ", " << std::to_string(config.ballPlane.point.y) << ", " << std::to_string(config.ballPlane.point.z) << ")" << ") * " << "(" << std::to_string(config.ballPlane.normal.x) << ", " << std::to_string(config.ballPlane.normal.y) << ", " << std::to_string(config.ballPlane.normal.z) << ")" << " = 0");
+    DEBUG("marker pattern size: " << std::to_string(config.markers.patternSize) << ", side length: " << std::to_string(config.markers.sideLength) << "mm" << std::endl);
+    DEBUG("world to model" << " translation is (" << std::to_string(config.worldToModel.translation.x) << std::to_string(config.worldToModel.translation.y) << ", " << std::to_string(config.worldToModel.translation.z) << ")" << std::endl);
+    DEBUG("marker 0" << " is at (" << std::to_string(config.markers.m0.x) << ", " << std::to_string(config.markers.m0.y) << ", " << std::to_string(config.markers.m0.z) << ")" << std::endl);
+    DEBUG("marker 1" << " is at (" << std::to_string(config.markers.m1.x) << ", " << std::to_string(config.markers.m1.y) << ", " << std::to_string(config.markers.m1.z) << ")" << std::endl);
+    DEBUG("marker 2" << " is at (" << std::to_string(config.markers.m2.x) << ", " << std::to_string(config.markers.m2.y) << ", " << std::to_string(config.markers.m2.z) << ")" << std::endl);
+    DEBUG("marker 3" << " is at (" << std::to_string(config.markers.m3.x) << ", " << std::to_string(config.markers.m3.y) << ", " << std::to_string(config.markers.m3.z) << ")" << std::endl);
+    DEBUG("ball plane" << " is: (p - " << "(" << std::to_string(config.ballPlane.point.x) << ", " << std::to_string(config.ballPlane.point.y) << ", " << std::to_string(config.ballPlane.point.z) << ")" << ") * " << "(" << std::to_string(config.ballPlane.normal.x) << ", " << std::to_string(config.ballPlane.normal.y) << ", " << std::to_string(config.ballPlane.normal.z) << ")" << " = 0" << std::endl);
     DEBUG("camera intrinsics:"
                 << " f: " << "(" << std::to_string(config.camera.fx) << ", " << std::to_string(config.camera.fy) << ")"
                 << " c: " << "(" << std::to_string(config.camera.cx) << ", " << std::to_string(config.camera.cy) << ")"
                 << " skew: " << std::to_string(config.camera.skew)
                 << " k: " << "(" << std::to_string(config.camera.k1) << ", " << std::to_string(config.camera.k2) << ", " << std::to_string(config.camera.k3) << ")"
-                << " p: " << "(" << std::to_string(config.camera.p1) << ", " << std::to_string(config.camera.p2) << ")");
+                << " p: " << "(" << std::to_string(config.camera.p1) << ", " << std::to_string(config.camera.p2) << ")" << std::endl);
 
     for(int i = 0; i < config.segmentSize; i++) {
         auto& segment = config.segments[i];
-        DEBUG("rail segment [" << std::to_string(i) << "] has start at [" << std::to_string(segment.start.x) << ";" << std::to_string(segment.start.y) << "] and end at [" << std::to_string(segment.end.x) << ";" << std::to_string(segment.end.y) << "]");
+        DEBUG("rail segment [" << std::to_string(i) << "] has start at [" << std::to_string(segment.start.x) << ";" << std::to_string(segment.start.y) << "] and end at [" << std::to_string(segment.end.x) << ";" << std::to_string(segment.end.y) << "]" << std::endl);
     }
 
     for(int i = 0; i < config.targetSize; i++) {
         auto& target = config.targets[i];
-        DEBUG("target [" << std::to_string(i) << "] is located at [" << std::to_string(target.position.x) << ";" << std::to_string(target.position.y) << "] and has radius " << std::to_string(target.radius));
+        DEBUG("target [" << std::to_string(i) << "] is located at [" << std::to_string(target.position.x) << ";" << std::to_string(target.position.y) << "] and has radius " << std::to_string(target.radius) << std::endl);
     }
 
    /* billiard::detection::CameraIntrinsics intrinsics = toIntrinsics(config.camera);
@@ -400,6 +402,7 @@ void search(Search search) {
         DEBUG("[COMMAND]: search failed -> call capture first" << std::endl);
         return;
     }
+    DEBUG("Search started" << std::endl << "---------------------------------------------------------------------------" << std::endl);
 
     auto searchInfo = billiard::search::Search{search.id, std::vector<std::string>{search.type}};
     _search = billiard::search::search(toSearchState(_currentState), searchInfo, 10, *searchConfig);
@@ -565,6 +568,7 @@ std::shared_ptr<RootObject> map(const std::vector<std::vector<billiard::search::
            << " " << "}";
         return os;
     }
+
 
     std::ostream& operator<<(std::ostream& os, const Ball& ball) {
         os << "{" << " "
