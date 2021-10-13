@@ -73,6 +73,21 @@ billiard::search::searchOnly(const billiard::search::State& state, const billiar
 
 namespace billiard::search {
 
+#ifdef BILLIARD_DEBUG
+    std::string readable(const PhysicalEventType& eventType);
+    std::string readable(const event::EventType& eventType);
+    std::string readable(const node::NodeType& nodeType);
+    void logBalls(const std::unordered_map<std::string, node::Node>& balls);
+    std::ostream& operator<<(std::ostream& os, const glm::vec2& vector);
+    std::ostream& operator<<(std::ostream& os, const PhysicalEvent& event);
+    std::ostream& operator<<(std::ostream& os, const std::vector<PhysicalEvent>& events);
+    std::ostream& operator<<(std::ostream& os, const state::BallState& ball);
+    std::ostream& operator<<(std::ostream& os, const node::Node& node);
+    std::ostream& operator<<(std::ostream& os, const std::set<std::string>& set);
+    std::ostream& operator<<(std::ostream& os, const std::optional<event::Event>& event);
+    std::ostream& operator<<(std::ostream& os, const node::Layer& layer);
+#endif
+
     std::vector<node::System> mapToSolution(const std::shared_ptr<SearchNode>& solution) {
         return solution->allSimulations();
     }
@@ -104,6 +119,8 @@ namespace billiard::search {
             nodeSearch->_action = SearchActionType::NONE;
             nodeSearch->_ballId = pocket._id;
             nodeSearch->_unusedBalls = ballState;
+
+            DEBUG("[addPocketsAsInitialTargets] Place pocket " << pocket._id << " at " << pocket._position << std::endl);
 
             expanded.emplace_back(node);
         }
@@ -156,6 +173,8 @@ namespace billiard::search {
             if ((searchInput->_action != SearchActionType::NONE && ball.second._type == "WHITE") ||
 //                (searchInput->_action == SearchActionType::NONE && (ball.first == searchInput->_search._id || ball.second._type == searchInput->_search._type))) {
                 ((ball.first == searchInput->_search._id || ball.second._type == searchInput->_search._type))) {
+
+                DEBUG("[expandSearchNodeByBalls] Expand " << ball.first << " child of " << input->asSearch()->_ballId << " type " << input->asSearch()->_action  << std::endl);
 
                 auto result = expandSearchNodeByBall(input, state, searchInput, ball);
                 expanded.insert(expanded.end(), result.begin(), result.end());
@@ -213,6 +232,12 @@ namespace billiard::search {
             float squaredDistance = billiard::physics::pointToLineSegmentSquaredDistance(ball._position, targetPosition,
                                                                                          other.second._position);
             if (squaredDistance <= ballDiameterSquared) {
+
+                DEBUG("Ball " << ball._id
+                << " collides on the way to " << targetPosition
+                << " with ball " << other.first
+                << " squaredDistance=" << squaredDistance
+                << std::endl);
                 return true;
             }
         }
@@ -290,6 +315,7 @@ namespace billiard::search {
                                                      const std::shared_ptr<SearchState>& state,
                                                      const std::shared_ptr<SearchNodeSearch>& searchInput,
                                                      const std::pair<std::string, Ball>& ball) {
+
         auto& parent = searchInput;
         if (parent->_action == SearchActionType::NONE) {
             // Must hit pocket
@@ -314,6 +340,13 @@ namespace billiard::search {
             resultSearchNode->_unusedBalls.erase(resultSearchNode->_unusedBalls.find(ball.first));
             result->_cost = input->_cost + searchCost(resultSearchNode->_events);
 
+            DEBUG("[expandSearchNodeByBall] " << "expanded" << " "
+                                              << "ball=" << resultSearchNode->_ballId << " "
+                                              << "action=" << resultSearchNode->_action << " "
+                                              << "events=" << resultSearchNode->_events << " "
+                                              << "parent=" << result->_parent->asSearch()->_ballId << " "
+                                              << std::endl);
+
             if (ball.second._type == "WHITE") {
                 auto prepared = prepareForSimulation(result, state); // TODO: Comment if search test
                 expanded.insert(expanded.end(), prepared.begin(), prepared.end());
@@ -327,28 +360,11 @@ namespace billiard::search {
         return expanded;
     }
 
-#ifdef BILLIARD_DEBUG
-    std::string readable(const PhysicalEventType& eventType);
-    void logBalls(const std::unordered_map<std::string, node::Node>& balls);
-
-    std::ostream& operator<<(std::ostream& os, const glm::vec2& vector){
-        os << "(" << vector.x << ", " << vector.y << ")";
-        return os;
-    }
-
-    std::ostream& operator<<(std::ostream& os, const PhysicalEvent& event){
-        os << "PhysicalEvent { "
-              << "type=" << readable(event._type) << " "
-              << "targetPosition=" << event._targetPosition
-              << " }";
-        return os;
-    }
-#endif
-
     glm::vec2
     calculateMinimalVelocity(const std::vector<const SearchNode*>& nodes, const std::shared_ptr<SearchState>& state) {
         static glm::vec2 zero{0, 0};
         float minimalVelocityInPocket = state->_config._table.minimalPocketVelocity; // TODO: find a good number
+        assert(minimalVelocityInPocket > 0.0f);
         glm::vec2 minimalForce { 0, 0 };
 
         PhysicalEvent* previousEvent = nullptr;
@@ -553,71 +569,6 @@ namespace billiard::search {
     ///////////////////////////////////////////////////////////////////////
     //// SIMULATION
     ///////////////////////////////////////////////////////////////////////
-
-#ifdef BILLIARD_DEBUG
-    std::string readable(const event::EventType& eventType);
-    std::string readable(const node::NodeType& nodeType);
-
-    std::ostream& operator<<(std::ostream& os, const state::BallState& ball){
-        os << "BallState { "
-           << "position=" << ball._position << " "
-           << "velocity=" << ball._velocity << " "
-           << "acceleration=" << ball._acceleration << " }";
-        return os;
-    }
-
-    std::ostream& operator<<(std::ostream& os, const node::Node& node){
-        auto beforeState = node.before();
-        assert(beforeState);
-        auto afterState = node.after();
-        assert(afterState);
-        os << "Node { "
-           << "type=" << readable(node._type) << " "
-           << "balltype=" << node._ballType << " "
-           << "before= " << *beforeState << " "
-           << "after= " << *afterState
-           << " }";
-        return os;
-    }
-
-    std::ostream& operator<<(std::ostream& os, const std::set<std::string>& set) {
-        os << "Set { ";
-        uint32_t index = 0;
-        for(auto& value : set) {
-            os << value;
-            if (index < set.size() - 1) {
-                os << ", ";
-            }
-            index++;
-        }
-        os << " }";
-        return os;
-    }
-
-    std::ostream& operator<<(std::ostream& os, const std::optional<event::Event>& event){
-        if (event) {
-            os << "Event { "
-               << "time=" << event->_time << " "
-               << "type=" << readable(event->_type) << " "
-               << "affected=" << event->affected()
-               << " }";
-        } else {
-            os << "Event { " << "none" << " }";
-        }
-        return os;
-    }
-
-    std::ostream& operator<<(std::ostream& os, const node::Layer& layer){
-        os << "Layer { "
-        << "time=" << layer._time << " "
-        << "first=" << layer._isFirst << " "
-        << "last=" << layer._isLast << " "
-        << "final=" << layer.final()
-        << " }";
-        return os;
-    }
-
-#endif
 
     std::optional<event::Event> nextEvent(const node::System& system, const std::shared_ptr<SearchState>& state);
     node::Layer createLayer(const event::Event& event, const node::Layer& previousLayer, const std::shared_ptr<SearchState>& state);
@@ -1133,45 +1084,125 @@ namespace billiard::search {
         return "NO PHYSICAL EVENT TYPE FOUND";
     }
 
-        std::string readable(const event::EventType& eventType) {
-            switch (eventType) {
-                case event::EventType::BALL_COLLISION:
-                    return "BALL_COLLISION";
-                case event::EventType::BALL_RAIL_COLLISION:
-                    return "BALL_RAIL_COLLISION";
-                case event::EventType::BALL_POTTING:
-                    return "BALL_POTTING";
-                case event::EventType::BALL_IN_REST:
-                    return "BALL_IN_REST";
-            }
-
-            return "NO EVENT TYPE FOUND";
+    std::string readable(const event::EventType& eventType) {
+        switch (eventType) {
+            case event::EventType::BALL_COLLISION:
+                return "BALL_COLLISION";
+            case event::EventType::BALL_RAIL_COLLISION:
+                return "BALL_RAIL_COLLISION";
+            case event::EventType::BALL_POTTING:
+                return "BALL_POTTING";
+            case event::EventType::BALL_IN_REST:
+                return "BALL_IN_REST";
         }
 
-        std::string readable(const node::NodeType& nodeType) {
-            switch (nodeType) {
-                case node::NodeType::BALL_MOVING:
-                    return "BALL_MOVING";
-                case node::NodeType::BALL_COLLISION:
-                    return "BALL_COLLISION";
-                case node::NodeType::BALL_RAIL_COLLISION:
-                    return "BALL_RAIL_COLLISION";
-                case node::NodeType::BALL_POTTING:
-                    return "BALL_POTTING";
-                case node::NodeType::BALL_SHOT:
-                    return "BALL_SHOT";
-                case node::NodeType::BALL_IN_REST:
-                    return "BALL_IN_REST";
-            }
-            return "NO NODE TYPE FOUND";
-        }
+        return "NO EVENT TYPE FOUND";
+    }
 
-        void logBalls(const std::unordered_map<std::string, node::Node>& balls) {
-            for(auto& ball : balls) {
-                DEBUG("[simulate] dynamic ball: " << ball.first << " " << ball.second << std::endl);
-            }
+    std::string readable(const node::NodeType& nodeType) {
+        switch (nodeType) {
+            case node::NodeType::BALL_MOVING:
+                return "BALL_MOVING";
+            case node::NodeType::BALL_COLLISION:
+                return "BALL_COLLISION";
+            case node::NodeType::BALL_RAIL_COLLISION:
+                return "BALL_RAIL_COLLISION";
+            case node::NodeType::BALL_POTTING:
+                return "BALL_POTTING";
+            case node::NodeType::BALL_SHOT:
+                return "BALL_SHOT";
+            case node::NodeType::BALL_IN_REST:
+                return "BALL_IN_REST";
         }
+        return "NO NODE TYPE FOUND";
+    }
 
+    void logBalls(const std::unordered_map<std::string, node::Node>& balls) {
+        for(auto& ball : balls) {
+            DEBUG("[simulate] dynamic ball: " << ball.first << " " << ball.second << std::endl);
+        }
+    }
+
+    std::ostream& operator<<(std::ostream& os, const glm::vec2& vector) {
+        os << "(" << vector.x << ", " << vector.y << ")";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const PhysicalEvent& event) {
+        os << "PhysicalEvent { "
+           << "type=" << readable(event._type) << " "
+           << "targetPosition=" << event._targetPosition
+           << " }";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const std::vector<PhysicalEvent>& events) {
+        os << "[ ";
+        for (auto& event : events) {
+            os << event << " ";
+        }
+        os << "]";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const state::BallState& ball){
+        os << "BallState { "
+           << "position=" << ball._position << " "
+           << "velocity=" << ball._velocity << " "
+           << "acceleration=" << ball._acceleration << " }";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const node::Node& node){
+        auto beforeState = node.before();
+        assert(beforeState);
+        auto afterState = node.after();
+        assert(afterState);
+        os << "Node { "
+           << "type=" << readable(node._type) << " "
+           << "balltype=" << node._ballType << " "
+           << "before= " << *beforeState << " "
+           << "after= " << *afterState
+           << " }";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const std::set<std::string>& set) {
+        os << "Set { ";
+        uint32_t index = 0;
+        for(auto& value : set) {
+            os << value;
+            if (index < set.size() - 1) {
+                os << ", ";
+            }
+            index++;
+        }
+        os << " }";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const std::optional<event::Event>& event) {
+        if (event) {
+            os << "Event { "
+               << "time=" << event->_time << " "
+               << "type=" << readable(event->_type) << " "
+               << "affected=" << event->affected()
+               << " }";
+        } else {
+            os << "Event { " << "none" << " }";
+        }
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const node::Layer& layer) {
+        os << "Layer { "
+           << "time=" << layer._time << " "
+           << "first=" << layer._isFirst << " "
+           << "last=" << layer._isLast << " "
+           << "final=" << layer.final()
+           << " }";
+        return os;
+    }
 #endif
 }
 
