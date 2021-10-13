@@ -79,14 +79,14 @@ public class TableBehaviour : MonoBehaviour
 		
 		AnimationModel[] animations = root.animations;
 		
-		if (Input.GetKey(KeyCode.UpArrow)) {
+		if (Input.GetKeyDown(KeyCode.UpArrow)) {
 			animationIndex = (animationIndex + 1) % animations.Length;
 			if (this.animator != null) {
 				this.animator.delete();
 				this.animator = null;
 			}
 			
-		} else if (Input.GetKey(KeyCode.DownArrow)) {
+		} else if (Input.GetKeyDown(KeyCode.DownArrow)) {
 			animationIndex = (animationIndex - 1) % animations.Length;
 			animationIndex = animationIndex > 0 ? animationIndex : -animationIndex;
 			if (this.animator != null) {
