@@ -150,7 +150,7 @@ void configuration(Configuration config) {
         DEBUG("target [" << std::to_string(i) << "] is located at [" << std::to_string(target.position.x) << ";" << std::to_string(target.position.y) << "] and has radius " << std::to_string(target.radius) << std::endl);
     }
 
-   /* billiard::detection::CameraIntrinsics intrinsics = toIntrinsics(config.camera);
+    billiard::detection::CameraIntrinsics intrinsics = toIntrinsics(config.camera);
     DEBUG("CameraIntrinsics created");
 
     billiard::detection::ArucoMarkers markers = createArucoMarkers(config.markers);
@@ -225,10 +225,7 @@ void configuration(Configuration config) {
 
     searchConfig = std::make_shared<billiard::search::Configuration>(toSearchConfig(config));
 
-    DEBUG("All configuration mapped");*/
-
-    searchConfig = std::make_shared<billiard::search::Configuration>(toSearchConfig(config));
-
+    DEBUG("All configuration mapped");
 }
 
 inline billiard::detection::Table toTable(const Table& table) {
