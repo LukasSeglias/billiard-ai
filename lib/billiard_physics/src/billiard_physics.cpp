@@ -1,6 +1,7 @@
 #include <billiard_physics/billiard_physics.hpp>
 #include <billiard_debug/billiard_debug.hpp>
 #include <ostream>
+#include <cmath>
 
 std::ostream& operator<<(std::ostream& os, const glm::vec2& vector){
     os << "(" << vector.x << ", " << vector.y << ")";
@@ -46,7 +47,7 @@ float billiard::physics::pointToLineSegmentSquaredDistance(const glm::vec2& line
 }
 
 float billiard::physics::pointToHalfLineSquaredDistance(const glm::vec2& linePoint1, const glm::vec2& lineDirection, const glm::vec2& point) {
-    glm::vec2 zero{0, 0};
+    static glm::vec2 zero{0, 0};
     assert(lineDirection != zero);
     glm::vec2 lineDirectionNormalized = glm::normalize(lineDirection);
     glm::vec2 toPoint = point - linePoint1;
@@ -234,7 +235,7 @@ std::optional<float> billiard::physics::timeToCollision(const glm::vec2& acceler
                                                   const glm::vec2& velocity2, const glm::vec2& position2, float diameter,
                                                   float radius) {
 
-    glm::vec2 zero {0, 0};
+    static glm::vec2 zero {0, 0};
     assert(velocity1 != zero);
 
     auto velocity2SquaredLength = glm::dot(velocity2, velocity2);
@@ -272,16 +273,32 @@ std::optional<float> billiard::physics::timeToCollision(const glm::vec2& acceler
     auto deltaAcceleration = (acceleration1 - acceleration2) / 1000.0f;
     auto deltaVelocity = (velocity1 - velocity2) / 1000.0f;
     auto deltaPosition = (position1 - position2) / 1000.0f;
-    double a = 0.25f * glm::dot(deltaAcceleration, deltaAcceleration);
-    double b = glm::dot(deltaAcceleration, deltaVelocity);
-    double c = glm::dot(deltaAcceleration, deltaPosition) + glm::dot(deltaVelocity, deltaVelocity);
-    double d = 2 * (glm::dot(deltaVelocity, deltaPosition));
-    double e = glm::dot(deltaPosition, deltaPosition) - (diameterInMeters * diameterInMeters);
+    float a = floorf(0.25f * glm::dot(deltaAcceleration, deltaAcceleration) * 1000000) / 1000000;
+    float b = floorf(glm::dot(deltaAcceleration, deltaVelocity) * 1000000) / 1000000;
+    float c = floorf((glm::dot(deltaAcceleration, deltaPosition) + glm::dot(deltaVelocity, deltaVelocity)) * 1000000) / 1000000;
+    float d = floorf(2 * (glm::dot(deltaVelocity, deltaPosition)) * 1000000) / 1000000;
+    float e = floorf((glm::dot(deltaPosition, deltaPosition) - (diameterInMeters * diameterInMeters)) * 1000000) / 1000000;
 
     auto solutions = intersection::solveQuarticFormula(a, b, c, d, e);
     auto collisionTimes = intersection::realRoot(solutions);
 
     if (collisionTimes.empty()) {
+        DEBUG("[timeToCollision]: "
+                      << "acceleration1=" << acceleration1 << " "
+                      << "acceleration2=" << acceleration2 << " "
+                      << "velocity1=" << velocity1 << " "
+                      << "velocity2=" << velocity2 << " "
+                      << "position1=" << position1 << " "
+                      << "position2=" << position2 << " "
+                      << "diameter=" << diameter << " "
+                      << "a=" << a << " "
+                      << "b=" << b << " "
+                      << "c=" << c << " "
+                      << "d=" << d << " "
+                      << "e=" << e << " "
+                      << "firstCollision=None"
+                      << std::endl);
+
         return std::nullopt;
     }
     float firstCollision = collisionTimes.at(0);
@@ -444,6 +461,7 @@ std::vector<std::complex<double>> billiard::physics::intersection::solveQuarticF
               << "x1=" << solutions.at(1) << " "
               << "x2=" << solutions.at(2) << " "
               << "x3=" << solutions.at(3) << " "
+              << "discriminant=" << discriminant
               << std::endl);
 
     return solutions;
