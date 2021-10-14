@@ -162,6 +162,7 @@ public class TableBehaviour : MonoBehaviour
 		infoText.SetText("");
 		infoText.gameObject.SetActive(false);
 
+		this.animationIndex = 0;
 		this.root = root;
 		
 		if (this.animator != null) {
@@ -343,7 +344,6 @@ public class TableBehaviour : MonoBehaviour
 		private readonly KeyFrame[] frames;
 		private readonly Dictionary<string, GameObject> ballObjects = new Dictionary<string, GameObject>();
 		private readonly List<GameObject> lines = new List<GameObject>();
-		private readonly double endTime;
 		private readonly StretchingBehaviour heightStretching;
 		private readonly StretchingBehaviour widthStretching;
 		private readonly GameObject queue;
@@ -354,7 +354,10 @@ public class TableBehaviour : MonoBehaviour
 		private int startFrameIndex;
 		private bool animateQueue;
 		private double time;
+		private double endTime;
 		private bool activeByDefinition = true;
+		private double windowStartTime;
+		private int currentAnimationWindow;
 
 		public Animator(RootObject root, KeyFrame[] frames, Dictionary<string, Material> mappedMaterials, Material transparent,
 		    Configuration config, StretchingBehaviour heightStretching, StretchingBehaviour widthStretching,
@@ -379,51 +382,60 @@ public class TableBehaviour : MonoBehaviour
 				
 				ballObjects.Add(ball.id, ballObject);
 			}
-			this.endTime = frames[frames.Length - 1].time;
 			
 			reset();
-			drawLines(mappedMaterials);
 		}
 		
-		public void drawLines(Dictionary<string, Material> mappedMaterials) {
-			float alpha = 1f;
-			float alphaEnd = 0.2f;
-			float alphaStep = (alpha-alphaEnd)/(this.frames.Length/2f);
-			for (int i = 0; i < this.frames.Length - 1; i++) {
+		public void drawLines() {
+			foreach (var line in lines) {
+				line.SetActive(false);
+				Destroy(line);
+			}
+			lines.Clear();
+			
+			int windowCount = -1;
+			for (int i = 0; i < this.frames.Length - 1; i+=2) {
 				var start = this.frames[i];
-				var end = this.frames[i + 1];
-				
-				foreach (var startBall in start.balls) {
-					var endBall = findBall(startBall.id, end);
-					if (endBall != null && startBall.position != endBall.position) {
-						GameObject lineObject = new GameObject(string.Format("Line{0}", startBall.id));
-						LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
-						lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-						lRend.material.color = Color.white;
-						lRend.startWidth = 0.02f;
-						lRend.endWidth = 0.02f;
-						lRend.SetPosition(0, position(convert(startBall.position, -0.01f), heightStretching, widthStretching));
-						lRend.SetPosition(1, position(convert(endBall.position, -0.01f), heightStretching, widthStretching));
-						lRend.sortingOrder = 0;
-						lines.Add(lineObject);
-					}
+				if (start.firstFrame) {
+					windowCount++;
 				}
-				alpha -= alphaStep;
+				
+				if (windowCount == currentAnimationWindow) {
+					var end = this.frames[i + 1];
+				
+					foreach (var startBall in start.balls) {
+						var endBall = findBall(startBall.id, end);
+						if (endBall != null && startBall.position != endBall.position) {
+							GameObject lineObject = new GameObject(string.Format("Line{0}", startBall.id));
+							LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
+							lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
+							lRend.material.color = Color.white;
+							lRend.startWidth = 0.02f;
+							lRend.endWidth = 0.02f;
+							lRend.SetPosition(0, position(convert(startBall.position, -0.01f), heightStretching, widthStretching));
+							lRend.SetPosition(1, position(convert(endBall.position, -0.01f), heightStretching, widthStretching));
+							lRend.sortingOrder = 0;
+							lines.Add(lineObject);
+						}
+					}
+				} else if (windowCount > currentAnimationWindow) {
+					break;
+				}
 			}
 		}
 		
 		public void reset() {
 			this.time = 0;
 			this.startFrameIndex = 0;
+			this.currentAnimationWindow = 0;
+			this.windowStartTime = 0;
 			this.animateQueue = true;
-			
-			foreach (var line in lines) {
-				line.SetActive(true);
-			}
 			
 			KeyFrame start = this.frames[this.startFrameIndex];
 			KeyFrame end = this.frames[this.startFrameIndex + 1];
 			updateBalls(start, end, 0);
+			
+			drawLines();
 		}
 		
 		public void delete() {
@@ -444,28 +456,32 @@ public class TableBehaviour : MonoBehaviour
 			double newTime = this.time + timeDelta;
 			this.time = Math.Min(Math.Max(0, newTime), this.endTime);
 			
-			mayUpdateAnimationWindow(time, this.frames);
-			if (!isFinished()) {
-				KeyFrame start = this.frames[this.startFrameIndex];
-				KeyFrame end = this.frames[this.startFrameIndex + 1];
-				
-				if (start.firstFrame && animateQueue) {
-					queue.SetActive(true);
-					animateQueue = doAnimateQueue(this.time, start);
-					if (!animateQueue) {
-						this.time = 0;
-					}
-				} else {
-					if (this.time >= QUEUE_DISPLAY_TIME) {
+			KeyFrame start = this.frames[this.startFrameIndex];
+			
+			if (animateQueue) {
+				queue.SetActive(true);
+				double queueEndTime = calculateQueueEndTime(start);
+				this.endTime = queueEndTime + this.windowStartTime;
+				animateQueue = doAnimateQueue(this.time - this.windowStartTime, queueEndTime, start);
+				if (!animateQueue) {
+					this.time = this.windowStartTime;
+					this.endTime = frames[frames.Length - 1].time;
+				}
+			} else {
+				mayUpdateAnimationWindow(time, this.frames);
+				if (!isFinished()) {
+					start = this.frames[this.startFrameIndex];
+					KeyFrame end = this.frames[this.startFrameIndex + 1];
+					if (this.time >= (QUEUE_DISPLAY_TIME + this.windowStartTime)) {
 						queue.SetActive(false);
 					}
 					updateBalls(start, end, time);
-				}
-			} else {
-				KeyFrame end = this.frames[this.startFrameIndex + 1];
-				foreach (var ball in end.balls) {
-					var ballObject = ballObjects[ball.id];
-					ballObject.SetActive(ball.visible);
+				} else {
+					KeyFrame end = this.frames[this.startFrameIndex + 1];
+					foreach (var ball in end.balls) {
+						var ballObject = ballObjects[ball.id];
+						ballObject.SetActive(ball.visible);
+					}
 				}
 			}
 		}
@@ -484,7 +500,8 @@ public class TableBehaviour : MonoBehaviour
 		private void updateBalls(KeyFrame start, KeyFrame end, double time) {
 			double duration = end.time - start.time;
 			double timeDeltaInAnimationWindow = time - start.time;
-						
+			
+			var unvisited = ballObjects.Keys.ToList(); 
 			foreach (var startBall in start.balls) {
 				var ballObject = ballObjects[startBall.id];
 				if (startBall.visible) {
@@ -495,10 +512,47 @@ public class TableBehaviour : MonoBehaviour
 				} else {
 					ballObject.SetActive(false);
 				}
-			}	
+				unvisited.Remove(startBall.id);
+			}
+			
+			foreach (var id in unvisited) {
+				var ballObject = ballObjects[id];
+				ballObject.SetActive(false);
+			}
 		}
 		
-		private bool doAnimateQueue(double time, KeyFrame start) {
+		private double calculateQueueEndTime(KeyFrame start) {
+			Ball whiteBall = null;
+			foreach (var ball in start.balls) {
+				if (ball.type == "WHITE") {
+					whiteBall = ball;
+					break;
+				}
+			}
+			
+			if (whiteBall == null) {
+				return 0.0;
+			}
+			
+			var endSpeed = convert(whiteBall.velocity, 0);
+			var direction = Vector3.Normalize(endSpeed);
+			float radius = (ballObjects[whiteBall.id].transform.localScale.x / scale) / 2;
+			
+			var startDirection = direction * (QUEUE_DIST + radius);
+			direction = direction * (QUEUE_DIST);
+			var startPos = convert(whiteBall.position, 0) - startDirection;
+			var endPos = startPos + direction;
+			
+			// endPos = a/2 * t^2 + startPos
+			// endPos = (endSpeed / t)/2 * t^2 + startPos
+			// endPos = (endSpeed / 2*t) * t^2 + startPos
+			// endPos = (endSpeed / 2) * t + startPos
+			// endPos - startPos = (endSpeed / 2) * t
+			// (endPos - startPos)/(endSpeed / 2) = t
+			return Math.Abs((endPos - startPos).magnitude / (endSpeed / 2.0f).magnitude);
+		}
+		
+		private bool doAnimateQueue(double time, double totalTime, KeyFrame start) {
 			Ball whiteBall = null;
 			foreach (var ball in start.balls) {
 				if (ball.type == "WHITE") {
@@ -516,17 +570,9 @@ public class TableBehaviour : MonoBehaviour
 			float radius = (ballObjects[whiteBall.id].transform.localScale.x / scale) / 2;
 			
 			var startDirection = direction * (QUEUE_DIST + radius);
-			direction = direction * (QUEUE_DIST);
 			var startPos = convert(whiteBall.position, 0) - startDirection;
-			var endPos = startPos + direction;
-			// endPos = a/2 * t^2 + startPos
-			// endPos = (endSpeed / t)/2 * t^2 + startPos
-			// endPos = (endSpeed / 2*t) * t^2 + startPos
-			// endPos = (endSpeed / 2) * t + startPos
-			// endPos - startPos = (endSpeed / 2) * t
-			// (endPos - startPos)/(endSpeed / 2) = t
-			var totalTime = Math.Abs((endPos - startPos).magnitude / (endSpeed / 2).magnitude);
-			var a = endSpeed / totalTime;
+			
+			var a = endSpeed / (float)totalTime;
 			time = Math.Min(time, totalTime);
 			var currentPos = a / 2 * (float)(time * time) + startPos;
 			
@@ -547,8 +593,26 @@ public class TableBehaviour : MonoBehaviour
 			KeyFrame currentStartFrame = frames[this.startFrameIndex];
 			if (currentEndFrame.time < time) {
 				this.startFrameIndex += 2;
+				if (frames[this.startFrameIndex].firstFrame) {
+					this.currentAnimationWindow++;
+					this.animateQueue = true;
+					this.windowStartTime = frames[this.startFrameIndex].time;
+					drawLines();
+				}
 			} else if (currentStartFrame.time > time && time >= 0) {
 				this.startFrameIndex -= 2;
+				if (this.startFrameIndex < frames.Length - 1) {
+					if (frames[this.startFrameIndex + 2].firstFrame) {
+						this.currentAnimationWindow--;
+						for (int i = startFrameIndex; i >= 0; i--) {
+							if (frames[i].firstFrame) {
+								this.windowStartTime = frames[i].time;
+								break;
+							}
+						}
+						drawLines();
+					}				
+				}
 			}
 		}
 		

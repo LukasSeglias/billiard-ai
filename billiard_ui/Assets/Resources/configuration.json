@@ -22,7 +22,7 @@
 		{
 			"description": "Top left",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
-			"start": {"x": -50, "y": 471.5},
+			"start": {"x": -40, "y": 471.5},
 			"end": {"x": -890.5, "y": 471.5},
 			"location": 0
 		},
@@ -30,20 +30,20 @@
 			"description": "Top right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"start": {"x": 890.5, "y": 471.5},
-			"end": {"x": 50, "y": 471.5},
+			"end": {"x": 40, "y": 471.5},
 			"location": 0
 		},
 		{
 			"description": "Bottom left",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"start": {"x": -890.5, "y": -471.5},
-			"end": {"x": -50, "y": -471.5},
+			"end": {"x": -40, "y": -471.5},
 			"location": 1
 		},
 		{
 			"description": "Bottom right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
-			"start": {"x": 50, "y": -471.5},
+			"start": {"x": 40, "y": -471.5},
 			"end": {"x": 890.5, "y": -471.5},
 			"location": 1
 		}

@@ -480,9 +480,12 @@ std::shared_ptr<RootObject> map(const std::vector<std::vector<billiard::search::
     int modelIndex = 0;
     for (auto& simulation : simulations) {
         std::vector<KeyFrame> keyFrames;
+        float biasTime = 0.0f;
+
         for (auto& system : simulation) {
 
             for(auto& layer : system._layers) {
+
                 Ball* ballsEnterKeyFrame = new Ball[layer._nodes.size()];
                 Ball* ballsExitKeyFrame = new Ball[layer._nodes.size()];
 
@@ -501,7 +504,7 @@ std::shared_ptr<RootObject> map(const std::vector<std::vector<billiard::search::
 
                 if (!layer._isFirst) {
                     keyFrames.emplace_back(KeyFrame{
-                            layer._time,
+                            layer._time + biasTime,
                             ballsEnterKeyFrame,
                             static_cast<int>(layer._nodes.size()),
                             false
@@ -511,12 +514,13 @@ std::shared_ptr<RootObject> map(const std::vector<std::vector<billiard::search::
                 }
                 if (!layer._isLast) {
                     keyFrames.emplace_back(KeyFrame{
-                            layer._time,
+                            layer._time + biasTime,
                             ballsExitKeyFrame,
                             static_cast<int>(layer._nodes.size()),
                             layer._isFirst
                     });
                 } else {
+                    biasTime += layer._time;
                     delete[] ballsExitKeyFrame;
                 }
             }
