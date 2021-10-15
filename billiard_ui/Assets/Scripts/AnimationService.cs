@@ -184,6 +184,7 @@ public class AnimationService : MonoBehaviour
 	struct Circle_t {
 		public float radius;
 		public Vec2_t position;
+		public PocketType pocketType;
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
@@ -343,7 +344,7 @@ public class AnimationService : MonoBehaviour
 	}
 	
 	private static Circle_t map(Circle from) {
-		return new Circle_t{radius = from.radius, position = map(from.position)};
+		return new Circle_t{radius = from.radius, position = map(from.position), pocketType = from.pocketType};
 	}
 
 	private static ArucoMarkers_t map(ArucoMarkers from) {
