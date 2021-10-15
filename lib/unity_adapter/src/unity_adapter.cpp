@@ -427,11 +427,9 @@ std::shared_ptr<State> map(const billiard::detection::State& state) {
 BallState* map(const std::vector<billiard::detection::Ball>& ballStates) {
     auto* balls = new BallState[ballStates.size()];
 
-    double scale = 0.001; // millimeters to meters
-
     for (int i = 0; i < ballStates.size(); i++) {
         auto& ballState = ballStates[i];
-        const Vec2& position = Vec2{ballState._position[0] * scale, ballState._position[1] * scale};
+        const Vec2& position = Vec2{ballState._position[0], ballState._position[1]};
         balls[i] = BallState{ballState._type.c_str(), ballState._id.c_str(), position, false};
     }
 
