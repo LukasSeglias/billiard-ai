@@ -15,7 +15,7 @@
 Debugger _debugger;
 
 bool WRITE_LOG_FILE = true;
-bool LIVE = false;
+bool LIVE = true;
 std::string IMAGE_PATH = "D:\\Dev\\billiard-ai\\cmake-build-debug\\test\\billiard_detection\\resources\\test_detection\\1_scaled_HD.png";
 
 ///////////////////////////////////////////////////////
@@ -269,33 +269,6 @@ inline void printState(const billiard::detection::State& state) {
     }
 }
 
-std::vector<billiard::search::Pocket> getPockets(double innerTableLength,
-                               double innerTableWidth) {
-    // TODO: Duplicate of billiard_detection::getPockets
-
-    // Translation from rail-coordinate system to model-coordinate system
-    double railToModelX = innerTableLength/2;
-    double railToModelY = innerTableWidth/2;
-
-    float middlePocketRadius = 50.0f;
-    float cornerPocketRadius = 50.0f;
-
-    double pocketTop = innerTableWidth - railToModelY;
-    double pocketBottom = 0.0 - railToModelY;
-    double pocketLeft = 0.0 - railToModelX;
-    double pocketRight = innerTableLength - railToModelX;
-    double pocketMiddle = innerTableLength/2 - railToModelX;
-
-    return { // In model coordinates
-            billiard::search::Pocket {"1", billiard::search::PocketType::CORNER, glm::vec2{pocketLeft  + 25, pocketBottom + 15}, cornerPocketRadius}, // Bottom-left
-            billiard::search::Pocket {"2", billiard::search::PocketType::CORNER, glm::vec2{pocketLeft  + 25, pocketTop    - 15}, cornerPocketRadius}, // Top-left
-            billiard::search::Pocket {"3", billiard::search::PocketType::CENTER, glm::vec2{pocketMiddle,     pocketTop    + 15}, middlePocketRadius}, // Top-middle
-            billiard::search::Pocket {"4", billiard::search::PocketType::CORNER, glm::vec2{pocketRight - 25, pocketTop    - 15}, cornerPocketRadius}, // Top-right
-            billiard::search::Pocket {"5", billiard::search::PocketType::CORNER, glm::vec2{pocketRight - 25, pocketBottom + 15}, cornerPocketRadius}, // Bottom-right
-            billiard::search::Pocket {"6", billiard::search::PocketType::CENTER, glm::vec2{pocketMiddle,     pocketBottom - 15}, middlePocketRadius}, // Bottom-middle
-    };
-}
-
 inline billiard::search::RailLocation map(RailLocation location) {
     switch (location) {
         case RailLocation::TOP:
@@ -310,22 +283,40 @@ inline billiard::search::RailLocation map(RailLocation location) {
     }
 }
 
+inline billiard::search::PocketType map(PocketType pocketType) {
+    switch (pocketType) {
+        case PocketType::CENTER:
+            return billiard::search::PocketType::CENTER;
+        case PocketType::CORNER:
+        default:
+            return billiard::search::PocketType::CORNER;
+    }
+}
+
 inline billiard::search::Configuration toSearchConfig(const Configuration& config) {
     billiard::search::Configuration billiardSearchConfig;
 
     billiardSearchConfig._ball._radius = config.radius;
     billiardSearchConfig._ball._diameterSquared = (config.radius * 2) * (config.radius * 2);
     billiardSearchConfig._ball._diameter = config.radius * 2;
-    billiardSearchConfig._table._pockets = getPockets(config.table.innerTableLength, config.table.innerTableWidth);
     billiardSearchConfig._table.minimalPocketVelocity = config.table.minimalPocketVelocity;
 
     for (int i = 0; i < config.segmentSize; i++) {
-        billiardSearchConfig._table._rails.emplace_back(billiard::search::Rail{
+        billiardSearchConfig._table._rails.emplace_back(billiard::search::Rail {
             std::to_string(i),
             glm::vec2{config.segments[i].start.x, config.segments[i].start.y},
             glm::vec2{config.segments[i].end.x, config.segments[i].end.y},
             billiardSearchConfig._ball._radius,
             map(config.segments[i].location)
+        });
+    }
+
+    for(int i = 0; i < config.targetSize; i++) {
+        billiardSearchConfig._table._pockets.emplace_back(billiard::search::Pocket {
+           std::to_string(i),
+           map(config.targets[i].pocketType),
+           glm::vec2{config.targets[i].position.x, config.targets[i].position.y},
+           config.targets[i].radius
         });
     }
 

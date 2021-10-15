@@ -30,9 +30,15 @@ extern "C" {
         RailLocation location;
     };
 
+    enum PocketType {
+        CORNER,
+        CENTER
+    };
+
     struct EXPORT_UNITY_ADAPTER_LIB Circle {
         float radius;
         Vec2 position;
+        PocketType pocketType;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB ArucoMarkers {

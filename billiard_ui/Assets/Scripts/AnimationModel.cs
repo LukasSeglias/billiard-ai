@@ -72,11 +72,17 @@ public class RailSegment {
 		end = segment.end / value
 	};
 }
+
+public enum PocketType {
+    CORNER,
+	CENTER
+}
 	
 [Serializable]
 public class Circle {
 	public float radius;
 	public Vec2 position;
+	public PocketType pocketType;
 	
 	public static Circle operator /(Circle circle, float value) => new Circle{
 		radius = circle.radius / value,
