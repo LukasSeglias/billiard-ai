@@ -24,6 +24,10 @@ namespace billiard::search {
     #define COST_FLOAT_TO_INT_FACTOR 100000
     // 1.0 => simulation and search cost are both equally weighted. 0.5 => simulation cost is weighted half the search cost.
     #define SIMULATION_COST_FRACTION_OF_SEARCH_COST 1.0
+    // Maximum search depth allowed before cutoff
+    #define MAX_SEARCH_DEPTH 3
+    // Maximum number of ball collisions to be considered in search of a path
+    #define SEARCH_MAX_BALL_COLLISIONS 2
 
     struct SearchNode;
     std::vector<node::System> mapToSolution(const std::shared_ptr<SearchNode>& solution);
@@ -102,7 +106,20 @@ namespace billiard::search {
     std::vector<std::shared_ptr<SearchNode>>
     expand(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state) {
         if (input->_type == SearchNodeType::SEARCH) {
-            return expandSearchNode(input, state);
+
+            if (input->_searchDepth < MAX_SEARCH_DEPTH) {
+                return expandSearchNode(input, state);
+            } else {
+                DEBUG("[expand] Maximum search depth reached for node "
+                      << input->asSearch()->_ballId
+                      << " path: " << logPath(input->currentPath())
+                      << " type=" << readable(input->asSearch()->_action)
+                      << " cost=" << input->_cost
+                      << " searchDepth=" << input->_searchDepth
+                      << std::endl);
+                return {};
+            }
+
         } else {
             return simulate(input, state);
         }
@@ -190,6 +207,7 @@ namespace billiard::search {
                         << " path: " << logPath(input->currentPath())
                         << " type=" << readable(input->asSearch()->_action)
                         << " cost=" << input->_cost
+                        << " searchDepth=" << input->_searchDepth
                         << std::endl);
 
                 auto result = expandSearchNodeByBall(input, state, searchInput, ball);
