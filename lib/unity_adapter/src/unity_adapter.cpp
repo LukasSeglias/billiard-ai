@@ -17,7 +17,7 @@
 Debugger _debugger;
 
 bool WRITE_LOG_FILE = true;
-bool LIVE = true;
+bool LIVE = false;
 bool STATIC_IMAGE = false;
 std::string IMAGE_PATH = "D:\\Dev\\billiard-ai\\cmake-build-debug\\test\\billiard_detection\\resources\\test_detection\\1_scaled_HD.png";
 
