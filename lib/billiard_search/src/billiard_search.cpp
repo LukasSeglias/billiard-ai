@@ -639,6 +639,7 @@ namespace billiard::search {
         double maxDistanceSquared = state->_config._table.diagonalLengthSquared;
         double totalDistanceCost = 0.0;
         double totalAngleCost = 0.0;
+        double totalIndirectionCost = 0.0;
 
         const PhysicalEvent* previousEvent = nullptr;
         for (int eventIndex = 0; eventIndex < events.size(); eventIndex++) {
@@ -694,7 +695,7 @@ namespace billiard::search {
 
             double cosTheta = 0.0;
 
-            std::stringstream debugOutput {};
+            std::stringstream angleDebugOutput {};
 
             if (event._type == PhysicalEventType::POCKET_COLLISION) {
 
@@ -708,8 +709,8 @@ namespace billiard::search {
                 cosTheta = glm::dot(pocketNormal, -targetDirection);
 
 #ifdef BILLIARD_DEBUG
-                debugOutput << "Type=POCKET_COLLISION" << " "
-                            << "pocketNormal=" << pocketNormal << " ";
+                angleDebugOutput << "Type=POCKET_COLLISION" << " "
+                                 << "pocketNormal=" << pocketNormal << " ";
 #endif
 
             } else if (event._type == PhysicalEventType::RAIL_COLLISION) {
@@ -724,8 +725,8 @@ namespace billiard::search {
                 cosTheta = glm::dot(railNormal, -targetDirection);
 
 #ifdef BILLIARD_DEBUG
-                debugOutput << "Type=RAIL_COLLISION" << " "
-                            << "railNormal=" << railNormal << " ";
+                angleDebugOutput << "Type=RAIL_COLLISION" << " "
+                                 << "railNormal=" << railNormal << " ";
 #endif
 
             } else if (event._type == PhysicalEventType::BALL_COLLISION) {
@@ -742,8 +743,8 @@ namespace billiard::search {
                 cosTheta = glm::dot(targetBallTargetDirection, targetDirection);
 
 #ifdef BILLIARD_DEBUG
-                debugOutput << "Type=BALL_COLLISION" << " "
-                            << "targetBallTargetDirection=" << targetBallTargetDirection << " ";
+                angleDebugOutput << "Type=BALL_COLLISION" << " "
+                                 << "targetBallTargetDirection=" << targetBallTargetDirection << " ";
 #endif
             }
 
@@ -796,28 +797,47 @@ namespace billiard::search {
 //            totalAngleCost += angleCost;
             totalAngleCost += weightedAngleCost;
 
+            std::stringstream indirectionDebugOutput {};
+
+            if (event._type == PhysicalEventType::BALL_COLLISION) {
+                double step = 1.0 / ((double) SEARCH_MAX_BALL_COLLISIONS);
+                totalIndirectionCost += step;
+
+#ifdef BILLIARD_DEBUG
+                indirectionDebugOutput << " Ball collision -> indirection +" << std::to_string(step) << " ";
+#endif
+            }
+
             DEBUG(agent << "Event " << std::to_string(eventIndex) << " "
                            << "previousPosition=" << previousPosition << " "
                            << "currentPosition=" << currentPosition << " "
                            << "targetDirection=" << targetDirection << " "
-                           << debugOutput.str()
-                           << "cosTheta=" << std::to_string(cosTheta) << " "
-                           << "angleCost=" << std::to_string(angleCost) << " "
-                           << "weightedAngleCost=" << std::to_string(weightedAngleCost) << " "
-                           << "t=" << glm::to_string(t) << " "
-                           << "points=" << glm::to_string(points) << " "
-                           << "coeff=" << glm::to_string(coeff) << " "
-                           << "result=" << glm::to_string(result) << " "
-                           << "coeff * points=" << glm::to_string(coeffPoints) << " "
                            << std::endl);
+            DEBUG(agent << "Event " << std::to_string(eventIndex) << " "
+                        << angleDebugOutput.str()
+                        << "cosTheta=" << std::to_string(cosTheta) << " "
+                        << "angleCost=" << std::to_string(angleCost) << " "
+                        << "weightedAngleCost=" << std::to_string(weightedAngleCost) << " "
+                        << std::endl);
+            DEBUG(agent << "Event " << std::to_string(eventIndex) << " "
+                        << "t=" << glm::to_string(t) << " "
+                        << "points=" << glm::to_string(points) << " "
+                        << "coeff=" << glm::to_string(coeff) << " "
+                        << "result=" << glm::to_string(result) << " "
+                        << "coeff * points=" << glm::to_string(coeffPoints) << " "
+                        << std::endl);
+            DEBUG(agent << "Event " << std::to_string(eventIndex) << " "
+                        << "Indirection: " << indirectionDebugOutput.str()
+                        << std::endl);
         }
 
-        double totalCost = totalDistanceCost + totalAngleCost;
+        double totalCost = totalDistanceCost + totalAngleCost + totalIndirectionCost;
         uint64_t totalCostInt = totalCost * COST_FLOAT_TO_INT_FACTOR;
 
         DEBUG(agent << "Result: "
                     << "totalDistanceCost=" << std::to_string(totalDistanceCost) << " "
                     << "totalAngleCost=" << std::to_string(totalAngleCost) << " "
+                    << "totalIndirectionCost=" << std::to_string(totalIndirectionCost) << " "
                     << "totalCost=" << std::to_string(totalCost) << " "
                     << "totalCostInt=" << std::to_string(totalCostInt) << " "
                     << std::endl);
