@@ -889,6 +889,7 @@ namespace billiard::search {
                         auto modifiedLayer = state->_config._rules._modifyState(layer);
 
                         std::vector<Ball> newBallPositions;
+                        bool hasTypeToSearch = false;
                         for (auto& node : modifiedLayer._nodes) {
                             auto inRest = node.second.toInRest();
                             if (inRest) {
@@ -896,11 +897,13 @@ namespace billiard::search {
                                         inRest->_ball._position,
                                         parentSearchInput->_state.at(node.first)._type,
                                         node.first});
+                                hasTypeToSearch |= std::count(search._types.begin(), search._types.end(),
+                                                              parentSearchInput->_state.at(node.first)._type) > 0;
                             }
                         }
 
-                        auto enrichedWithPockets = addPocketsAsInitialTargets(State{newBallPositions}, search, state->_config);
-                        if (!enrichedWithPockets.empty()) {
+                        if (hasTypeToSearch) {
+                            auto enrichedWithPockets = addPocketsAsInitialTargets(State{newBallPositions}, search, state->_config);
                             for (auto& output : enrichedWithPockets) {
                                 output->_parent = input;
                                 output->_cost = input->_cost + cost;
