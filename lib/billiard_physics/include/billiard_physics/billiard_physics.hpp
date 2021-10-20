@@ -12,7 +12,7 @@
 namespace billiard::physics {
 
     const float gravitationalAcceleration = 9.8 * 1000; // mm/s^2
-    const float frictionCoefficient = 0.02; // TODO: find a number!
+    const float frictionCoefficient = 0.0142435; // TODO: find a number!
 
     /**
      * Berechnet die quadrierte Distanz eines Punktes zu einem Liniensegment.

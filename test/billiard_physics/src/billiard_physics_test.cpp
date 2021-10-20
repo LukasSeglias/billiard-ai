@@ -4,6 +4,84 @@
 
 void assertComplex(const std::vector<std::complex<double>>& expected, const std::vector<std::complex<double>>& actual);
 
+
+TEST(frictionCoefficient, measurements) {
+
+    double mass = 140.0 / 1000.0; // in kg // TODO: measure
+    double g = 9.81 * 1000.0; // mm/s^2
+
+    struct Measurement {
+        double h;
+        double l;
+        double rolledDistance;
+        Measurement(double h, double l, double rolledDistance): h(h), l(l), rolledDistance(rolledDistance) {}
+    };
+
+    std::vector<Measurement> measurements = {
+            // All lengths in Millimeters!
+            // TODO: measure
+            Measurement { 13, 334.747666161, 941},
+            Measurement { 19, 334.46076003, 1295},
+    };
+
+    double c_R_sum = 0.0;
+
+    for (auto& measurement : measurements) {
+        double h = measurement.h;
+        double l = measurement.l;
+        double rolledDistance = measurement.rolledDistance;
+
+        double alpha = atan(h / l);
+        double F_G = mass * g;
+        double F_N = cos(alpha) * F_G;
+        double F_H = sin(alpha) * F_G;
+        double rampLength = sqrt(l*l + h*h);
+
+        double rampTime = -1;
+        {
+            double a = 0.5 * F_H / mass;
+            double b = 0.0;
+            double c = -rampLength;
+            auto result = billiard::physics::nonNegative(billiard::physics::intersection::solveQuadraticFormula(a, b, c));
+            if (result.empty()) {
+                std::cout << "Unable to find solution to ramp rolling time" << std::endl;
+                return;
+            }
+            rampTime = result[0];
+        }
+        assert(rampTime > 0);
+
+        double velocityAfterRamp = F_H / mass * rampTime;
+        double v0 = velocityAfterRamp;
+
+        double acceleration = (0.5 * (-v0)*(-v0) + v0 * (-v0)) / rolledDistance;
+
+        double c_R = acceleration / g;
+
+        std::cout << "Result: "
+                  << "h=" << h << " "
+                  << "l=" << l << " "
+                  << "rolledDistance=" << rolledDistance << " "
+                  << "mass=" << mass << " "
+                  << "g=" << g << " "
+                  << "alpha=" << alpha << " "
+                  << "F_G=" << F_G << " "
+                  << "F_N=" << F_N << " "
+                  << "F_H=" << F_H << " "
+                  << "rampLength=" << rampLength << " "
+                  << "rampTime=" << rampTime << " "
+                  << "velocityAfterRamp=" << velocityAfterRamp << " "
+                  << "a=" << acceleration << " "
+                  << "c_R=" << c_R << " "
+                  << std::endl;
+
+        c_R_sum += c_R;
+    }
+
+    double c_R_average = c_R_sum / measurements.size();
+    std::cout << "Average c_R=" << c_R_average << std::endl;
+}
+
 TEST(solveQuarticFormula, shouldGetCorrectResult) {
     std::vector<std::complex<double>> expected{
             -1.1753f,
