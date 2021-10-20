@@ -129,6 +129,14 @@ public class TableBehaviour : MonoBehaviour
 			showBallHalos = !showBallHalos;
 		} else if (Input.GetKeyDown(KeyCode.Return)) {
 			AnimationService.captureState();
+		} else if (Input.GetKeyDown(KeyCode.C)) {
+		    Search search = new Search();
+		    // TODO: maybe move to config?
+            search.types = new string[] { "YELLOW", "GREEN", "BROWN", "BLUE", "PINK", "BLACK" };
+
+            infoText.SetText("Searching");
+            infoText.gameObject.SetActive(true);
+            AnimationService.searchSolution(search);
 		}
 		
 		if (statePresenter != null) {

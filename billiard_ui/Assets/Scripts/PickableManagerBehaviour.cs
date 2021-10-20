@@ -33,10 +33,10 @@ public class PickableManagerBehaviour : MonoBehaviour
 						break;
 					case SearchBy.TYPE:
 					default:
-						search.type = ballInfo.type;
+						search.types = new string[] { ballInfo.type };
 						break;
 					}
-						
+
 					infoText.SetText("Searching");
 					infoText.gameObject.SetActive(true);
 					AnimationService.searchSolution(search);	

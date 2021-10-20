@@ -201,9 +201,22 @@ extern "C" {
         bool fromUnity;
     };
 
+    struct EXPORT_UNITY_ADAPTER_LIB Text {
+        Text();
+        Text(const char* text);
+        Text(Text&& other) noexcept;
+        Text(const Text& other) noexcept;
+        Text& operator=(Text&& other) noexcept;
+        Text& operator=(const Text& other) noexcept;
+        ~Text();
+
+        char* text;
+    };
+
     struct EXPORT_UNITY_ADAPTER_LIB Search {
         char* id;
-        char* type;
+        Text* types;
+        int typeSize;
     };
 
     typedef void (__stdcall* AnimationChangedEventCallback)(RootObject);

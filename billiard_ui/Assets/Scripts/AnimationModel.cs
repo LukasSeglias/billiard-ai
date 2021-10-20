@@ -223,7 +223,7 @@ public class Correction {
 public class Search
 {
     public string id = "";
-	public string type = "";
+	public string[] types = new string[0];
 }
 
 [Serializable]
