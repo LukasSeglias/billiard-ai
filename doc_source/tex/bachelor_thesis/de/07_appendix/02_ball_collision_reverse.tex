@@ -72,7 +72,12 @@ mit dem der Einheitsvektor $\hat{d}$ skaliert werden kann:
     \alpha = \frac{\norm{\vec{u}}^2}{\hat{d} \cdot \vec{u}}\\
     \alpha = \frac{\vec{u} \cdot \vec{u}}{\hat{d} \cdot \vec{u}}\\
     \vec{v_1} = \alpha \cdot \hat{d}\\
-    \vec{v_1} = \frac{\vec{u} \cdot \vec{u}}{\hat{d} \cdot \vec{u}} \cdot \hat{d}\\
+    \vec{v_1} = \frac{\vec{u} \cdot \vec{u}}{\hat{d} \cdot \vec{u}} \cdot \hat{d}
 \end{align}
 
 Somit ist die Geschwindigkeit, welche die Kugel A an Position B haben muss bestimmt.
+Der Energieverlust wird über eine Konstante $E_v$ definierte, welche in Prozent angegeben wird.
+Es resultiert eine Verlängerung des berechneten Vektors.
+\begin{align}
+    \vec{v_1} = \frac{\vec{u} \cdot \vec{u}}{\hat{d} \cdot \vec{u}} \cdot (1 + E_v) \cdot \hat{d}
+\end{align}

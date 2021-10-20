@@ -86,7 +86,7 @@ glm::vec2 billiard::physics::elasticCollisionReverse(const glm::vec2& targetVelo
     glm::vec2 originVelocityNormalized = glm::normalize(originVelocity);
     float denom = glm::dot(originVelocityNormalized, targetVelocity);
     assert(denom != 0.0f);
-    return (glm::dot(targetVelocity, targetVelocity) / denom) * originVelocityNormalized;
+    return (glm::dot(targetVelocity, targetVelocity) / denom) * originVelocityNormalized * (1 + energyLossByBall);
 }
 
 std::pair<glm::vec2, glm::vec2> billiard::physics::elasticCollision(const glm::vec2& position1, const glm::vec2& velocity1, const glm::vec2& position2, const glm::vec2& velocity2) {
@@ -96,13 +96,16 @@ std::pair<glm::vec2, glm::vec2> billiard::physics::elasticCollision(const glm::v
     assert(distanceVector != zero);
     glm::vec2 z = glm::normalize(distanceVector);
 
-    glm::vec2 v1z = glm::dot(velocity1, z) * z;
-    glm::vec2 v2z = glm::dot(velocity2, z) * z;
-    glm::vec2 v1t = velocity1 - v1z;
-    glm::vec2 v2t = velocity2 - v2z;
+    auto velocityWithEnergyLoss1 = velocity1 / (1 + energyLossByBall);
+    auto velocityWithEnergyLoss2 = velocity2 / (1 + energyLossByBall);
 
-    glm::vec2 newVelocity1 = v2z + v1t;
-    glm::vec2 newVelocity2 = v1z + v2t;
+    glm::vec2 v1z = glm::dot(velocityWithEnergyLoss1, z) * z;
+    glm::vec2 v2z = glm::dot(velocityWithEnergyLoss2, z) * z;
+    glm::vec2 v1t = velocityWithEnergyLoss1 - v1z;
+    glm::vec2 v2t = velocityWithEnergyLoss2 - v2z;
+
+    glm::vec2 newVelocity1 = (v2z + v1t);
+    glm::vec2 newVelocity2 = (v1z + v2t);
 
     return std::make_pair(newVelocity1, newVelocity2);
 }
@@ -113,7 +116,7 @@ glm::vec2 billiard::physics::railCollision(const glm::vec2& velocity, const glm:
               << "normal=" << normal << " "
               << std::endl);
 
-    return glm::reflect(velocity, normal);
+    return glm::reflect(velocity, normal) / (1 + energyLossByRail);
 }
 
 glm::vec2 billiard::physics::perp(glm::vec2 vector) {
