@@ -396,6 +396,12 @@ void image() {
     if (cameraCapture) {
         auto frames = cameraCapture->read();
         cv::imwrite("screenshot-" + std::to_string(imageNumber++) + ".png", frames.color);
+        if (!frames.depth.empty()) {
+            cv::imwrite("screenshot-" + std::to_string(imageNumber++) + "-depth.png", frames.depth);
+        }
+        if (!frames.colorizedDepth.empty()) {
+            cv::imwrite("screenshot-" + std::to_string(imageNumber++) + "-depth-colorized.png", frames.colorizedDepth);
+        }
     }
 }
 
