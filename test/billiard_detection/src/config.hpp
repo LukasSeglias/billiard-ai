@@ -47,6 +47,46 @@ inline billiard::detection::Table getTable() {
     table.railWorldPointZComponent = 0.0;
     table.arucoHeightAboveInnerTable = 38.1;
     table.worldToRail = cv::Vec3d(79.0, -71.5, 0.0);
+    table.pockets = {
+            billiard::detection::Pocket { -940.5, -471.5, 50 },
+            billiard::detection::Pocket { -940.5,  471.5, 50 },
+            billiard::detection::Pocket {   0,     491.5, 50 },
+            billiard::detection::Pocket { 940.5,   471.5, 50 },
+            billiard::detection::Pocket { 940.5, -471.5, 50 },
+            billiard::detection::Pocket {   0,   -491.5, 50 }
+    };
+    table.railSegments = {
+            billiard::detection::RailSegment{
+                // Left
+                    glm::vec2{-940.5, 421.5},
+                    glm::vec2{-940.5, -421.5}
+                },
+                // Right
+                billiard::detection::RailSegment{
+                    glm::vec2{940.5, -421.5},
+                    glm::vec2{940.5, 421.5}
+                },
+                // Top Left
+                billiard::detection::RailSegment{
+                    glm::vec2{-40, 471.5},
+                    glm::vec2{-890.5, 471.5}
+                },
+                // Top Right
+                billiard::detection::RailSegment{
+                    glm::vec2{890.5, 471.5},
+                    glm::vec2{40, 471.5}
+                },
+                // Bottom Right
+                billiard::detection::RailSegment{
+                    glm::vec2{-890.5, -471.5},
+                    glm::vec2{-40, -471.5}
+                },
+                // Bottom Right
+                billiard::detection::RailSegment{
+                    glm::vec2{40, -471.5},
+                    glm::vec2{890.5, -471.5}
+                }
+    };
     return table;
 }
 
