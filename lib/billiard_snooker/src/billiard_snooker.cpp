@@ -274,6 +274,10 @@ namespace billiard::snooker {
             cv::Mat valueMaskAndedWithTableMask;
             cv::bitwise_and(valueMask, config.innerTableMask, valueMaskAndedWithTableMask);
 
+            // TODO: remove?
+            cv::Mat valueMaskAndedWithRailMask;
+            cv::bitwise_and(valueMask, config.railMask, valueMaskAndedWithRailMask);
+
             cv::Mat closedValueMask;
             cv::morphologyEx(valueMaskAndedWithTableMask, closedValueMask, cv::MORPH_CLOSE, config.morphElementRect3x3,cv::Point(-1, -1), 6);
 
@@ -399,7 +403,7 @@ namespace billiard::snooker {
 
         {
             std::vector<cv::Vec3f> circles = saturationCircles;
-            std::vector<cv::Vec3f> filteredCircles1 = filterCircles(circles, config.innerTableMask, true);
+            std::vector<cv::Vec3f> filteredCircles1 = filterCircles(circles, config.railMask, true);
             std::vector<cv::Vec3f> filteredCircles2 = filterCircles(filteredCircles1, saturatedBallMask, true);
             std::vector<cv::Vec3f> filteredCircles3 = filterCircles(filteredCircles2, blackMask, false);
             for (auto& circle : filteredCircles3) allCircles.push_back(circle);
@@ -447,7 +451,7 @@ namespace billiard::snooker {
 
         {
             std::vector<cv::Vec3f> circles = whitePinkCircles;
-            std::vector<cv::Vec3f> filteredCircles1 = filterCircles(circles, config.innerTableMask, true);
+            std::vector<cv::Vec3f> filteredCircles1 = filterCircles(circles, config.railMask, true);
             std::vector<cv::Vec3f> filteredCircles2 = filterCircles(filteredCircles1, whitePinkMask, true);
 
             // Filter circles by saturated ball mask in order to remove 'duplicate' balls

@@ -591,20 +591,21 @@ namespace billiard::detection {
                 int pocketPixelRadius = pocket.radius * (config.pixelsPerMillimeter + 0.1); // TODO: 0.1 because detection
                 cv::circle(pocketMask, imagePoints[i], pocketPixelRadius, cv::Scalar{255},
                            cv::LineTypes::FILLED);
+                cv::circle(innerTableMask, imagePoints[i], pocketPixelRadius, cv::Scalar{0},
+                           cv::LineTypes::FILLED);
             }
 
 #ifdef BILLIARD_DETECTION_DEBUG_VISUAL
             cv::Mat pocketsOutput = original.clone();
 
-                for (int i = 0; i < pockets.size(); i++) {
-                    auto& pocket = pockets[i];
-                    // TODO: correct conversion between millimeter-radius to pixel-radius
-                    int pocketPixelRadius = pocket.radius * 0.6;
-                    cv::circle(pocketsOutput, imagePoints[i], pocketPixelRadius, cv::Scalar{0, 0, 255}, 1);
-                }
+            for (int i = 0; i < pockets.size(); i++) {
+                auto& pocket = pockets[i];
+                int pocketPixelRadius = pocket.radius * config.pixelsPerMillimeter;
+                cv::circle(pocketsOutput, imagePoints[i], pocketPixelRadius, cv::Scalar{0, 0, 255}, 1);
+            }
 
-                cv::resize(pocketsOutput, pocketsOutput, cv::Size(), config.scale, config.scale);
-                cv::imshow("pockets", pocketsOutput);
+            cv::resize(pocketsOutput, pocketsOutput, cv::Size(), config.scale, config.scale);
+            cv::imshow("pockets", pocketsOutput);
 #endif
         }
 
