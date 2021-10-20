@@ -49,11 +49,12 @@ namespace billiard::search {
     };
 
     struct EXPORT_BILLIARD_SEARCH_LIB Pocket {
-        Pocket(std::string id, PocketType type, glm::vec2 position, float radius);
+        Pocket(std::string id, PocketType type, glm::vec2 position, glm::vec2 normal, float radius);
 
         std::string _id;
         PocketType _type;
         glm::vec2 _position;
+        glm::vec2 _normal;
         float _radius;
         //std::vector<PocketPottingPoint> _pottingPoints;
     };
@@ -290,6 +291,8 @@ namespace billiard::search {
             std::vector<Rail> _rails;
             // Minimale erwünschte Geschwindigkeit einer Kugel zum Zeitpunkt, wenn diese ins Loch rollt.
             float minimalPocketVelocity;
+            // Quadrierte diagonale Länge des Spielfelds
+            float diagonalLengthSquared;
             // TODO: deceleration?
         } _table;
 
@@ -373,6 +376,14 @@ namespace billiard::search {
     struct PhysicalEvent {
         PhysicalEventType _type;
         glm::vec2 _targetPosition;
+        /**
+         * ID
+         * - of other ball in case of BALL_COLLISION
+         * - of rail in case of RAIL_COLLISION
+         * - of pocket in case of POCKET_COLLISION
+         * - is empty in case of BALL_KICK
+         */
+        std::string id;
     };
 
     enum SearchActionType {
@@ -438,7 +449,10 @@ namespace billiard::search {
             static std::atomic<unsigned int> id { 1 };
 
             node->asSimulation()->_simulation._id = id++;
-            node->_parent = std::move(parent);
+            if (parent) {
+                node->_cost = parent->_cost;
+                node->_parent = std::move(parent);
+            }
 
             return node;
         }

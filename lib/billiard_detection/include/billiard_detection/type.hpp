@@ -29,5 +29,10 @@ namespace billiard::detection {
         Pocket(double x, double y, double radius): x(x), y(y), radius(radius) {};
     };
 
+    struct EXPORT_BILLIARD_DETECTION_LIB RailSegment {
+        glm::vec2 start;
+        glm::vec2 end;
+    };
+
     // TODO: Add configuration for aruco markers
 }

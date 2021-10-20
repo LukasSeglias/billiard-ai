@@ -43,6 +43,8 @@ namespace billiard::detection {
         double arucoHeightAboveInnerTable; // in millimeters
         double railWorldPointZComponent; // in millimeters
         cv::Vec3d worldToRail;
+        std::vector<Pocket> pockets;
+        std::vector<RailSegment> railSegments;
     };
 
     struct EXPORT_BILLIARD_DETECTION_LIB CameraIntrinsics {
@@ -99,6 +101,7 @@ namespace billiard::detection {
         // Scaling of input image
         double scale = 1.0;
 
+        double pixelsPerMillimeter; // In X-Direction // TODO: remove?
         int ballRadiusInPixel;
 
         // Binary mask (255=true) to determine possible locations of balls (only on the green inner table)

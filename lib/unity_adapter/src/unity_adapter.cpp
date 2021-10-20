@@ -11,11 +11,14 @@
 #include <billiard_debug/billiard_debug.hpp>
 #include <cstring>
 
+// TODO: find a good number
+#define SOLUTIONS 10
 
 Debugger _debugger;
 
 bool WRITE_LOG_FILE = true;
 bool LIVE = true;
+bool STATIC_IMAGE = false;
 std::string IMAGE_PATH = "D:\\Dev\\billiard-ai\\cmake-build-debug\\test\\billiard_detection\\resources\\test_detection\\1_scaled_HD.png";
 
 ///////////////////////////////////////////////////////
@@ -114,7 +117,7 @@ inline cv::Vec3d toVec3d(const Vec3& vec) {
 
 inline billiard::detection::CameraIntrinsics toIntrinsics(const CameraIntrinsics& camera);
 inline billiard::detection::ArucoMarkers createArucoMarkers(const ArucoMarkers& input);
-inline billiard::detection::Table toTable(const Table& table);
+inline billiard::detection::Table toTable(const Configuration& configuration);
 inline billiard::search::Configuration toSearchConfig(const Configuration& config);
 
 void configuration(Configuration config) {
@@ -164,7 +167,7 @@ void configuration(Configuration config) {
                + " topRight: " + "" + std::to_string(markers.topRight.x) + ", " + std::to_string(markers.topRight.y) + ", " + std::to_string(markers.topRight.z)
               ).c_str());
 
-    billiard::detection::Table table = toTable(config.table);
+    billiard::detection::Table table = toTable(config);
     DEBUG((std::string("Table: ")
                 + " innerTableLength: " + std::to_string(table.innerTableLength)
                 + " innerTableWidth: " + std::to_string(table.innerTableWidth)
@@ -192,24 +195,29 @@ void configuration(Configuration config) {
         while (skippedFrames-- > 0) cameraCapture->read();
         billiard::capture::CameraFrames frames = cameraCapture->read();
         image = frames.color;
-    } else {
+    } else if (STATIC_IMAGE) {
         image = cv::imread(IMAGE_PATH);
         cv::imshow("image", image);
+    } else {
+        // nothing
     }
 
-    detectionConfig = std::make_shared<billiard::detection::DetectionConfig>(billiard::detection::configure(image, table, markers, intrinsics));
-    if (detectionConfig->valid) {
-        DEBUG("[SUCCESS]: Detection configured");
-    } else {
-        DEBUG("[ERROR]: Unable to configure detection");
-        return;
-    }
+    if (LIVE || STATIC_IMAGE) {
 
-    if (billiard::snooker::configure(*detectionConfig)) {
-        DEBUG("[SUCCESS]: Snooker detection configured");
-    } else {
-        DEBUG("[ERROR]: Unable to configure snooker detection");
-        return;
+        detectionConfig = std::make_shared<billiard::detection::DetectionConfig>(billiard::detection::configure(image, table, markers, intrinsics));
+        if (detectionConfig->valid) {
+            DEBUG("[SUCCESS]: Detection configured");
+        } else {
+            DEBUG("[ERROR]: Unable to configure detection");
+            return;
+        }
+
+        if (billiard::snooker::configure(*detectionConfig)) {
+            DEBUG("[SUCCESS]: Snooker detection configured");
+        } else {
+            DEBUG("[ERROR]: Unable to configure snooker detection");
+            return;
+        }
     }
 
     if (LIVE) {
@@ -228,14 +236,35 @@ void configuration(Configuration config) {
     DEBUG("All configuration mapped");
 }
 
-inline billiard::detection::Table toTable(const Table& table) {
+inline billiard::detection::Table toTable(const Configuration& config) {
+    const Table& table = config.table;
+
+    std::vector<billiard::detection::RailSegment> rails {};
+    for (int i = 0; i < config.segmentSize; i++) {
+        rails.emplace_back(billiard::detection::RailSegment {
+                glm::vec2 {config.segments[i].start.x, config.segments[i].start.y},
+                glm::vec2 {config.segments[i].end.x, config.segments[i].end.y},
+        });
+    }
+
+    std::vector<billiard::detection::Pocket> pockets {};
+    for(int i = 0; i < config.targetSize; i++) {
+        pockets.emplace_back(billiard::detection::Pocket {
+                config.targets[i].position.x,
+                config.targets[i].position.y,
+                config.targets[i].radius
+        });
+    }
+
     return billiard::detection::Table {
             table.innerTableLength,
             table.innerTableWidth,
             table.ballDiameter,
             table.arucoHeightAboveInnerTable,
             table.railWorldPointZComponent,
-            toVec3d(table.worldToRail)
+            toVec3d(table.worldToRail),
+            pockets,
+            rails
     };
 }
 
@@ -300,6 +329,8 @@ inline billiard::search::Configuration toSearchConfig(const Configuration& confi
     billiardSearchConfig._ball._diameterSquared = (config.radius * 2) * (config.radius * 2);
     billiardSearchConfig._ball._diameter = config.radius * 2;
     billiardSearchConfig._table.minimalPocketVelocity = config.table.minimalPocketVelocity;
+    billiardSearchConfig._table.diagonalLengthSquared = config.table.innerTableLength * config.table.innerTableLength
+            + config.table.innerTableWidth * config.table.innerTableWidth;
 
     for (int i = 0; i < config.segmentSize; i++) {
         billiardSearchConfig._table._rails.emplace_back(billiard::search::Rail {
@@ -313,9 +344,10 @@ inline billiard::search::Configuration toSearchConfig(const Configuration& confi
 
     for(int i = 0; i < config.targetSize; i++) {
         billiardSearchConfig._table._pockets.emplace_back(billiard::search::Pocket {
-           std::to_string(i),
+           std::string(config.targets[i].id),
            map(config.targets[i].pocketType),
            glm::vec2{config.targets[i].position.x, config.targets[i].position.y},
+           glm::vec2{config.targets[i].normal.x, config.targets[i].normal.y},
            config.targets[i].radius
         });
     }
@@ -393,7 +425,7 @@ void search(Search search) {
     DEBUG("Search started" << std::endl << "---------------------------------------------------------------------------" << std::endl);
 
     auto searchInfo = billiard::search::Search{search.id, std::vector<std::string>{search.type}};
-    _search = billiard::search::search(toSearchState(_currentState), searchInfo, 10, *searchConfig);
+    _search = billiard::search::search(toSearchState(_currentState), searchInfo, SOLUTIONS, *searchConfig);
 }
 
 void debugger(Debugger debugger) {

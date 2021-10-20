@@ -5,10 +5,11 @@
 #include <memory>
 #include <optional>
 #include <iostream>
+#include <glm/gtx/string_cast.hpp>
 
 namespace billiard::search {
 
-    #define PROCESSES 3
+    #define PROCESSES 1
     #define SYNC_PERIOD_MS 100
     #define BREAKS 1
     #define BANK_INDIRECTION 0
@@ -77,7 +78,10 @@ namespace billiard::search {
     std::string readable(const PhysicalEventType& eventType);
     std::string readable(const event::EventType& eventType);
     std::string readable(const node::NodeType& nodeType);
+    std::string readable(const SearchActionType& actionType);
     void logBalls(const std::unordered_map<std::string, node::Node>& balls);
+    std::string logPath(const std::vector<const SearchNode *>& path);
+    std::ostream& operator<<(std::ostream& os, const glm::vec4& vector);
     std::ostream& operator<<(std::ostream& os, const glm::vec2& vector);
     std::ostream& operator<<(std::ostream& os, const PhysicalEvent& event);
     std::ostream& operator<<(std::ostream& os, const std::vector<PhysicalEvent>& events);
@@ -144,7 +148,10 @@ namespace billiard::search {
     std::vector<std::shared_ptr<SearchNode>>
     expandSearchNodeByBank(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state,
                          const std::shared_ptr<SearchNodeSearch>& searchInput, uint8_t depth);
-    uint64_t searchCost(const std::vector<PhysicalEvent>& events);
+    uint64_t searchCost(const std::vector<PhysicalEvent>& events,
+                        const Ball& ball,
+                        const std::shared_ptr<SearchNodeSearch>& parentSearchNode,
+                        const std::shared_ptr<SearchState>& state);
     std::vector<std::shared_ptr<SearchNode>>
     expandSearchNodeByBankBall(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state,
                              const std::shared_ptr<SearchNodeSearch>& searchInput, uint8_t depth,
@@ -175,7 +182,12 @@ namespace billiard::search {
                     && (ball.first == searchInput->_search._id || std::count(searchInput->_search._types.begin(), searchInput->_search._types.end(), ball.second._type))
                 ) || searchInput->_action != SearchActionType::NONE) {
 
-                DEBUG("[expandSearchNodeByBalls] Expand " << ball.first << " child of " << input->asSearch()->_ballId << " type " << input->asSearch()->_action  << std::endl);
+                DEBUG("[expandSearchNodeByBalls] Expand " << ball.first
+                        << " child of " << input->asSearch()->_ballId
+                        << " path: " << logPath(input->currentPath())
+                        << " type=" << readable(input->asSearch()->_action)
+                        << " cost=" << input->_cost
+                        << std::endl);
 
                 auto result = expandSearchNodeByBall(input, state, searchInput, ball);
                 expanded.insert(expanded.end(), result.begin(), result.end());
@@ -200,6 +212,16 @@ namespace billiard::search {
         for (auto& pocket : state->_config._table._pockets) {
             if (pocket._id == id) {
                 return std::make_optional(pocket);
+            }
+        }
+        return std::nullopt;
+    }
+
+    std::optional<Rail> getRailById(const std::shared_ptr<SearchState>& state, const std::string& id) {
+
+        for (auto& rail : state->_config._table._rails) {
+            if (rail._id == id) {
+                return std::make_optional(rail);
             }
         }
         return std::nullopt;
@@ -262,7 +284,7 @@ namespace billiard::search {
 
         std::string& pocketId = parent->_ballId;
         auto pocket = getPocketById(state, pocketId);
-        assert(pocket.has_value());
+        assert(pocket);
 
         // TODO: check if that is possible
 
@@ -273,8 +295,8 @@ namespace billiard::search {
 
         auto result = SearchNode::search(parentNode);
         auto resultSearchNode = result->asSearch();
-        resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::POCKET_COLLISION, pocket->_position });
-        resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::BALL_KICK, ball._position });
+        resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::POCKET_COLLISION, pocket->_position, pocket->_id });
+        resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::BALL_KICK, ball._position, "" });
 
         return result;
     }
@@ -316,8 +338,8 @@ namespace billiard::search {
 
         auto result = SearchNode::search(parentNode);
         auto resultSearchNode = result->asSearch();
-        resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::BALL_COLLISION, targetPosition });
-        resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::BALL_KICK, ball._position });
+        resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::BALL_COLLISION, targetPosition, targetBall._id });
+        resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::BALL_KICK, ball._position, "" });
 
         return result;
     }
@@ -349,10 +371,12 @@ namespace billiard::search {
             auto resultSearchNode = result->asSearch();
             resultSearchNode->_ballId = ball.first;
             resultSearchNode->_unusedBalls.erase(resultSearchNode->_unusedBalls.find(ball.first));
-            result->_cost = input->_cost + searchCost(resultSearchNode->_events);
+            auto parentSearchNode = result->_parent? result->_parent->asSearch() : nullptr;
+            result->_cost = input->_cost + searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
 
             DEBUG("[expandSearchNodeByBall] " << "expanded" << " "
                                               << "ball=" << resultSearchNode->_ballId << " "
+                                              << "cost=" << std::to_string(result->_cost) << " "
                                               << "action=" << resultSearchNode->_action << " "
                                               << "events=" << resultSearchNode->_events << " "
                                               << "parent=" << result->_parent->asSearch()->_ballId << " "
@@ -373,10 +397,13 @@ namespace billiard::search {
 
     glm::vec2
     calculateMinimalVelocity(const std::vector<const SearchNode*>& nodes, const std::shared_ptr<SearchState>& state) {
+        // TODO: @performance: cancel early when minimal velocity is already over maximum if we gain perf from that?
         static glm::vec2 zero{0, 0};
         float minimalVelocityInPocket = state->_config._table.minimalPocketVelocity; // TODO: find a good number
         assert(minimalVelocityInPocket > 0.0f);
-        glm::vec2 minimalForce { 0, 0 };
+        glm::vec2 minimalVelocity { 0, 0 };
+
+        std::string agent = "[calculateMinimalVelocity " + std::to_string(rand()) + "]";
 
         PhysicalEvent* previousEvent = nullptr;
 
@@ -391,7 +418,7 @@ namespace billiard::search {
 
                     if (previousEvent) {
 
-                        DEBUG("[calculateMinimalVelocity] " << "previous: " << *previousEvent << " current: " << event << std::endl);
+                        DEBUG(agent << " " << "previous: " << *previousEvent << " current: " << event << std::endl);
 
                         if (event._type == PhysicalEventType::BALL_COLLISION) {
 
@@ -406,13 +433,13 @@ namespace billiard::search {
                             glm::vec2 toTarget = targetPosition - currentPosition;
                             assert(toTarget != zero);
                             glm::vec2 originVelocity = glm::normalize(toTarget);
-                            minimalForce = billiard::physics::elasticCollisionReverse(minimalForce, originVelocity);
+                            minimalVelocity = billiard::physics::elasticCollisionReverse(minimalVelocity, originVelocity);
 
                             // Roll to collision point
                             float distance = glm::length(toTarget);
-                            minimalForce = billiard::physics::startVelocity(minimalForce, distance);
+                            minimalVelocity = billiard::physics::startVelocity(minimalVelocity, distance);
 
-                            DEBUG("[calculateMinimalVelocity] " << "Ball collision:"
+                            DEBUG(agent << " " << "Ball collision:"
                                                                 << " distance to collision point: " << distance
                                                                 << " from: " << currentPosition
                                                                 << " to: " << targetPosition << std::endl);
@@ -426,9 +453,9 @@ namespace billiard::search {
                             assert(toTarget != zero);
                             float distance = glm::length(toTarget);
                             glm::vec2 finalVelocity = minimalVelocityInPocket * glm::normalize(toTarget);
-                            minimalForce = billiard::physics::startVelocity(finalVelocity, distance);
+                            minimalVelocity = billiard::physics::startVelocity(finalVelocity, distance);
 
-                            DEBUG("[calculateMinimalVelocity] " << "Roll into pocket:"
+                            DEBUG(agent << " " << "Roll into pocket:"
                                     << " distance: " << distance
                                     << " from: " << currentPosition
                                     << " to: " << targetPosition << std::endl);
@@ -440,9 +467,9 @@ namespace billiard::search {
                             glm::vec2& targetPosition = previousEvent->_targetPosition;
                             glm::vec2 toTarget = targetPosition - currentPosition;
                             float distance = glm::length(toTarget);
-                            minimalForce = billiard::physics::startVelocity(minimalForce, distance);
+                            minimalVelocity = billiard::physics::startVelocity(minimalVelocity, distance);
 
-                            DEBUG("[calculateMinimalVelocity] " << "Roll somewhere:"
+                            DEBUG(agent << " " << "Roll somewhere:"
                                 << " distance: " << distance
                                 << " from: " << currentPosition
                                 << " to: " << targetPosition << std::endl);
@@ -454,7 +481,9 @@ namespace billiard::search {
             }
         }
 
-        return minimalForce;
+        DEBUG(agent << " " << "Result: " << minimalVelocity << std::endl);
+
+        return minimalVelocity;
     }
 
     node::Layer toInputLayer(const std::shared_ptr<SearchNode>& input, const glm::vec2 force, float accelerationLength) {
@@ -503,9 +532,12 @@ namespace billiard::search {
         assert(minimalVelocity != zero);
         auto minimalVelocityNormalized = glm::normalize(minimalVelocity);
 
+        DEBUG("[prepareForSimulation] Found path: " << logPath(path) << std::endl);
+
         for (int i = 0; i < FORWARD_SEARCHES; ++i) {
             glm::vec2 increasedVelocity = minimalVelocity + (i * VELOCITY_STEP * minimalVelocityNormalized);
             if (glm::dot(increasedVelocity, increasedVelocity) > MAX_VELOCITY_SQUARED) {
+                DEBUG("[prepareForSimulation] Start velocity " << increasedVelocity << " is too high" << std::endl);
                 break;
             }
 
@@ -560,7 +592,8 @@ namespace billiard::search {
         if (result) {
             auto resultSearchNode = result->asSearch();
             resultSearchNode->_unusedBalls.erase(resultSearchNode->_unusedBalls.find(ball.first));
-            result->_cost = input->_cost + searchCost(resultSearchNode->_events);
+            auto parentSearchNode = result->_parent? result->_parent->asSearch() : nullptr;
+            result->_cost = input->_cost + searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
 
             if (ball.second._type == "WHITE") {
                 auto prepared = prepareForSimulation(result, state);
@@ -573,8 +606,216 @@ namespace billiard::search {
         return expanded;
     }
 
-    uint64_t searchCost(const std::vector<PhysicalEvent>& events) {
-        return 0; // TODO: Write heuristic
+    double weightedDistance(double distanceSquared,
+                            double optimalDistanceSquared,
+                            double optimalDistanceCost,
+                            double maxDistanceSquared) {
+
+        if (distanceSquared < optimalDistanceSquared) {
+            // Line starting at x=0, y=1 going to x=optimalDistanceSquared, y=optimalDistanceCost
+            return (optimalDistanceCost-1)/optimalDistanceSquared * distanceSquared + 1;
+        } else {
+            // Line starting at x=optimalDistanceSquared, y=optimalDistanceCost going to x=maxDistanceSquared, y=1
+            return (1-optimalDistanceCost)/(maxDistanceSquared-optimalDistanceSquared) * distanceSquared;
+        }
+    }
+
+    uint64_t searchCost(const std::vector<PhysicalEvent>& events,
+                        const Ball& ball,
+                        const std::shared_ptr<SearchNodeSearch>& parentSearchNode,
+                        const std::shared_ptr<SearchState>& state) {
+
+        std::string agent = "[searchCost " + std::to_string(rand()) + "] ";
+
+        glm::vec2 zero {0, 0};
+        double maxDistanceSquared = state->_config._table.diagonalLengthSquared;
+        double totalDistanceCost = 0.0;
+        double totalAngleCost = 0.0;
+
+        const PhysicalEvent* previousEvent = nullptr;
+        for (int eventIndex = 0; eventIndex < events.size(); eventIndex++) {
+
+            auto& event = events[eventIndex];
+
+            if (previousEvent) {
+                glm::vec2 way = previousEvent->_targetPosition - event._targetPosition;
+                double distanceCost = glm::dot(way, way) / maxDistanceSquared;
+                double optimalDistanceSquared = 200 * 200;
+                double optimalDistanceCost = 0.1;
+                double weightedDistanceCost = weightedDistanceCost = weightedDistance(glm::dot(way, way), optimalDistanceSquared, optimalDistanceCost, maxDistanceSquared);
+                weightedDistanceCost = distanceCost; // TODO: remove
+
+                double parentWeight = 1.0;
+
+                if (parentSearchNode && !parentSearchNode->_events.empty()) {
+                    auto lastEvent = getLastEvent(parentSearchNode);
+                    auto secondLastEvent = getSecondLastEvent(parentSearchNode);
+                    assert(lastEvent);
+                    assert(secondLastEvent);
+                    glm::vec2 targetBallTargetVector = secondLastEvent->_targetPosition - lastEvent->_targetPosition;
+                    assert(targetBallTargetVector != zero);
+                    float parentDistanceCost = glm::dot(targetBallTargetVector, targetBallTargetVector) / maxDistanceSquared;
+                    parentWeight = parentDistanceCost;
+                }
+
+                DEBUG(agent << "Distance "
+                            << " distanceCost=" << std::to_string(distanceCost) << " "
+                            << " weightedDistanceCost=" << std::to_string(weightedDistanceCost) << " "
+                            << " parentWeight=" << std::to_string(parentWeight) << " "
+                            << " weightedDistanceCost * parentWeight=" << std::to_string(weightedDistanceCost * parentWeight) << " "
+                            << std::endl);
+
+                if (ball._type == "WHITE") {
+                    totalDistanceCost += weightedDistanceCost * parentWeight;
+                } else {
+                    totalDistanceCost += distanceCost;
+                }
+            }
+            previousEvent = &event;
+
+            if (event._type == PhysicalEventType::BALL_KICK) {
+                continue;
+            }
+
+            // There has to be an event before the pocket collision / rail collision / ball collision
+            assert(eventIndex+1 < events.size());
+            const glm::vec2& previousPosition = events[eventIndex+1]._targetPosition;
+            const glm::vec2& currentPosition = event._targetPosition;
+
+            glm::vec2 targetDirection = glm::normalize(currentPosition - previousPosition);
+
+            double cosTheta = 0.0;
+
+            std::stringstream debugOutput {};
+
+            if (event._type == PhysicalEventType::POCKET_COLLISION) {
+
+                auto& pocketId = event.id;
+                auto pocket = getPocketById(state, pocketId);
+                assert(pocket);
+
+                glm::vec2& pocketNormal = pocket->_normal;
+                assert(pocketNormal != zero);
+
+                cosTheta = glm::dot(pocketNormal, -targetDirection);
+
+#ifdef BILLIARD_DEBUG
+                debugOutput << "Type=POCKET_COLLISION" << " "
+                            << "pocketNormal=" << pocketNormal << " ";
+#endif
+
+            } else if (event._type == PhysicalEventType::RAIL_COLLISION) {
+
+                auto& railId = event.id;
+                auto rail = getRailById(state, railId);
+                assert(rail);
+
+                glm::vec2& railNormal = rail->_normal;
+                assert(railNormal != zero);
+
+                cosTheta = glm::dot(railNormal, -targetDirection);
+
+#ifdef BILLIARD_DEBUG
+                debugOutput << "Type=RAIL_COLLISION" << " "
+                            << "railNormal=" << railNormal << " ";
+#endif
+
+            } else if (event._type == PhysicalEventType::BALL_COLLISION) {
+
+                assert(parentSearchNode);
+                auto lastEvent = getLastEvent(parentSearchNode);
+                auto secondLastEvent = getSecondLastEvent(parentSearchNode);
+                assert(lastEvent);
+                assert(secondLastEvent);
+                glm::vec2 targetBallTargetVector = secondLastEvent->_targetPosition - lastEvent->_targetPosition;
+                assert(targetBallTargetVector != zero);
+                glm::vec2 targetBallTargetDirection = glm::normalize(targetBallTargetVector);
+
+                cosTheta = glm::dot(targetBallTargetDirection, targetDirection);
+
+#ifdef BILLIARD_DEBUG
+                debugOutput << "Type=BALL_COLLISION" << " "
+                            << "targetBallTargetDirection=" << targetBallTargetDirection << " ";
+#endif
+            }
+
+            assert(cosTheta >= 0);
+            // cosTheta is 0 for 90 degrees, 1 for 0 degrees -> flip that using a linear function y = -1x + 1
+            double angleCost = -1 * cosTheta + 1;
+            // y = ax^2 + bx + c
+            // P0 = (0, 0)
+            // P1 = (1, 1)
+            // -> c = 0
+            //    1 = a + b
+            //    a = 1 - b
+
+            // y = c(e^(ax) + b)
+            // P0 = (0, 0)
+            // P1 = (1, 1)
+            // P2 = (0.8, 0.2)
+            // ->
+            //    b = -1
+            //    1.2 = ce^(0.8a)
+            //    ln(1.2) = ln(c) + 0.8a
+            //    a = (ln(1.2) - ln(c))/0.8
+            //    1 = c(e^a - 1)
+            //    c = 1/(e^a - 1)
+
+//            double weightedAngleCost = 1.0/(200.0 - 1.0) * (pow(200.0, angleCost) - 1.0);
+//            double weightedAngleCost = 0.0;
+//            if (angleCost < 0.8) {
+//                // Line between (0,0) and (0.75, 0.2): y = (0.2/0.75)x
+//                weightedAngleCost = 0.2/0.75 * angleCost;
+//            } else {
+//                // Line between (0.75, 0.2) and (1,1): y = ((1-0.2)/(1-0.75))x
+//                weightedAngleCost = 0.8/0.25 * angleCost;
+//            }
+
+            glm::vec4 t {angleCost*angleCost*angleCost, angleCost*angleCost, angleCost, 1};
+            glm::mat4x4 coeff { glm::vec4 {-1, 3, -3, 1}, glm::vec4 {3, -6, 3, 0}, glm::vec4 {-3, 3, 0, 0}, glm::vec4 {1, 0, 0, 0} };
+            glm::vec4 x {0, 1, 0.5, 1};
+            glm::vec4 y {0, 0, 1, 1};
+//            glm::vec2 p0 {0, 0};
+//            glm::vec2 p1 {1, 0};
+//            glm::vec2 p2 {0.5, 1};
+//            glm::vec2 p3 {1, 1};
+//            glm::mat4x2 points { p0, p1, p2, p3 };
+            glm::mat2x4 points { x, y };
+            auto coeffPoints = coeff * points;
+            glm::vec2 result = t * coeff * points;
+            double weightedAngleCost = result.y;
+
+//            totalAngleCost += angleCost;
+            totalAngleCost += weightedAngleCost;
+
+            DEBUG(agent << "Event " << std::to_string(eventIndex) << " "
+                           << "previousPosition=" << previousPosition << " "
+                           << "currentPosition=" << currentPosition << " "
+                           << "targetDirection=" << targetDirection << " "
+                           << debugOutput.str()
+                           << "cosTheta=" << std::to_string(cosTheta) << " "
+                           << "angleCost=" << std::to_string(angleCost) << " "
+                           << "weightedAngleCost=" << std::to_string(weightedAngleCost) << " "
+                           << "t=" << glm::to_string(t) << " "
+                           << "points=" << glm::to_string(points) << " "
+                           << "coeff=" << glm::to_string(coeff) << " "
+                           << "result=" << glm::to_string(result) << " "
+                           << "coeff * points=" << glm::to_string(coeffPoints) << " "
+                           << std::endl);
+        }
+
+        double totalCost = totalDistanceCost + totalAngleCost;
+        uint64_t totalCostInt = totalCost * 100000;
+
+        DEBUG(agent << "Result: "
+                    << "totalDistanceCost=" << std::to_string(totalDistanceCost) << " "
+                    << "totalAngleCost=" << std::to_string(totalAngleCost) << " "
+                    << "totalCost=" << std::to_string(totalCost) << " "
+                    << "totalCostInt=" << std::to_string(totalCostInt) << " "
+                    << std::endl);
+
+        // TODO: Improve heuristic
+        return totalCostInt; // TODO: tweak number
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -604,8 +845,16 @@ namespace billiard::search {
             if (event) {
                 DEBUG(agent << "nextEvent: " << event << std::endl);
                 eventCount++;
-                if (eventCount > MAX_EVENTS) {
+                // TODO: uncomment
+//                if (eventCount > MAX_EVENTS) {
+//                    DEBUG(agent << "Too many events. Cancel simulation." << std::endl);
+//                    break;
+//                }
+                if (eventCount == MAX_EVENTS) {
                     DEBUG(agent << "Too many events. Cancel simulation." << std::endl);
+                }
+                if (eventCount > 100) { // TODO: remove this
+                    DEBUG(agent << "REALLY Too many events. Cancel simulation." << std::endl);
                     break;
                 }
                 auto layer = createLayer(*event, system.lastLayer(), state);
@@ -619,7 +868,7 @@ namespace billiard::search {
                 if (layer.final()) {
                     auto searchedTypes = getTypeOf(parentSearchInput->_search,
                                                 parentSearchInput->_state);
-                    if (!state->_config._rules._isValidEndState(searchedTypes, layer)) { // TODO: search._type to vector of string
+                    if (!state->_config._rules._isValidEndState(searchedTypes, layer)) {
                         DEBUG(agent << "End state is not valid" << std::endl);
                         return expanded;
                     }
@@ -632,7 +881,7 @@ namespace billiard::search {
                         }
                     }
 
-                    auto cost = simulationCost(simulationInput->_simulation);
+                    auto cost = input->_cost + simulationCost(simulationInput->_simulation);
 
                     if (simCount < BREAKS) {
                         DEBUG(agent << "Prepare simulated output for next break" << std::endl);
@@ -1131,6 +1380,18 @@ namespace billiard::search {
         return "NO NODE TYPE FOUND";
     }
 
+    std::string readable(const SearchActionType& actionType) {
+        switch (actionType) {
+            case SearchActionType::DIRECT:
+                return "DIRECT";
+            case SearchActionType::RAIL:
+                return "RAIL";
+            case SearchActionType::NONE:
+                return "NONE";
+        }
+        return "NO ACTION TYPE FOUND";
+    }
+
     void logBalls(const std::unordered_map<std::string, node::Node>& balls) {
         for(auto& ball : balls) {
             DEBUG("[simulate] dynamic ball: " << ball.first << " " << ball.second << std::endl);
@@ -1139,6 +1400,11 @@ namespace billiard::search {
 
     std::ostream& operator<<(std::ostream& os, const glm::vec2& vector) {
         os << "(" << vector.x << ", " << vector.y << ")";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const glm::vec4& vector) {
+        os << "(" << vector.x << ", " << vector.y << ", " << vector.z << ", " << vector.w << ")";
         return os;
     }
 
@@ -1216,6 +1482,21 @@ namespace billiard::search {
            << "final=" << layer.final()
            << " }";
         return os;
+    }
+
+    std::string logPath(const std::vector<const SearchNode *>& path) {
+        std::stringstream out {};
+        out << "-> ";
+        for (const SearchNode* node : path) {
+            if (node->_type == SearchNodeType::SEARCH) {
+                auto searchNode = node->asSearch();
+                auto& id = searchNode->_ballId;
+                out << "" << id << " -> ";
+            } else {
+                out << "-> (SIMULATION) -> ";
+            }
+        }
+        return out.str();
     }
 #endif
 }

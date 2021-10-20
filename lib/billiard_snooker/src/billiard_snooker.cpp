@@ -1,4 +1,6 @@
 #include <billiard_snooker/billiard_snooker.hpp>
+#include <billiard_debug/billiard_debug.hpp>
+#include <algorithm>
 
 #ifndef BILLIARD_SNOOKER_DEBUG_OUTPUT
     #ifdef NDEBUG
@@ -614,11 +616,37 @@ namespace billiard::snooker {
     }
 
     bool validEndState(const std::vector<std::string>& expectedTypes, const billiard::search::node::Layer& layer) {
-        for(auto& node : layer._nodes) {
-            if (node.second._ballType == "WHITE" && node.second._type == billiard::search::node::NodeType::BALL_POTTING) {
-                return false;
+        int potted = 0;
+        for (auto& node : layer._nodes) {
+            if (node.second._type == billiard::search::node::NodeType::BALL_POTTING) {
+                // Cue ball should never be potted
+                if (node.second._ballType == "WHITE") {
+                    DEBUG("[validEndState] Invalid end state: cue ball potted." << std::endl);
+                    return false;
+                }
+                // No unexpected type of ball should be potted
+                if (std::find(expectedTypes.begin(), expectedTypes.end(), node.second._ballType) == expectedTypes.end()) {
+                    DEBUG("[validEndState] Invalid end state: ball of type " << node.second._ballType << " potted." << std::endl);
+                    return false;
+                }
+
+                potted++;
             }
         }
-        return true; // TODO: Implement check if potted ball(s) is/are of the expected type
+        // At least one ball of the expected types should be potted
+        if (potted == 0) {
+            DEBUG("[validEndState] Invalid end state: no balls potted." << std::endl);
+            return false;
+        }
+
+        // TODO: Failing to hit any other ball with the cue ball? No such solution should be found.
+        // TODO: First hitting a ball "not-on" with the cue ball?
+        // TODO: It is sometimes erroneously believed that potting two or more balls in one shot is an automatic foul.
+        //  This is only true if one of the potted balls is not "on" (e.g. a red and a colour, or two different colours).
+        //  When the reds are "on", two or more of them may be legally potted in the same shot and are worth one point each;
+        //  however, the player may only nominate and attempt to pot one colour on the next shot.
+        // TODO: Source: https://en.wikipedia.org/wiki/Rules_of_snooker
+        // TODO: nominating colors: https://indoorgamebunker.com/why-do-snooker-players-nominate-a-colour/
+        return true;
     }
 }

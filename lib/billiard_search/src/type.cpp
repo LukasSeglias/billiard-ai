@@ -21,10 +21,11 @@ billiard::search::PocketPottingPoint::PocketPottingPoint(glm::vec2 position) :
     _position(position) {
 }
 
-billiard::search::Pocket::Pocket(std::string id, PocketType type, glm::vec2 position, float radius) :
+billiard::search::Pocket::Pocket(std::string id, PocketType type, glm::vec2 position, glm::vec2 normal, float radius) :
         _id(std::move(id)),
         _type(type),
         _position(position),
+        _normal(normal),
         _radius(radius) {
 }
 

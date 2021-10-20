@@ -36,8 +36,10 @@ extern "C" {
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB Circle {
+        char* id;
         float radius;
         Vec2 position;
+        Vec2 normal;
         PocketType pocketType;
     };
 

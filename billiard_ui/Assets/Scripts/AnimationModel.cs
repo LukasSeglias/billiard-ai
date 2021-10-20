@@ -80,13 +80,18 @@ public enum PocketType {
 	
 [Serializable]
 public class Circle {
+    public string id;
 	public float radius;
 	public Vec2 position;
+	public Vec2 normal;
 	public PocketType pocketType;
 	
 	public static Circle operator /(Circle circle, float value) => new Circle{
+	    id = circle.id,
 		radius = circle.radius / value,
-		position = circle.position / value
+		position = circle.position / value,
+		normal = circle.normal,
+		pocketType = circle.pocketType
 	};
 }
 	

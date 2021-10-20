@@ -8,53 +8,74 @@
 		{
 			"description": "Left",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
-			"start": {"x": -940.5, "y": 421.5},
-			"end": {"x": -940.5, "y": -421.5},
+			"start": {"x": -940.5, "y": 390},
+			"end":   {"x": -940.5, "y": -390},
 			"location": 3
 		},
 		{
 			"description": "Right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
-			"start": {"x": 940.5, "y": -421.5},
-			"end": {"x": 940.5, "y": 421.5},
+			"start": {"x": 940.5, "y": -387.5},
+			"end":   {"x": 940.5, "y": 387.5},
 			"location": 2
 		},
 		{
 			"description": "Top left",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
-			"start": {"x": -40, "y": 471.5},
-			"end": {"x": -890.5, "y": 471.5},
+			"start": {"x": -55, "y": 471.5},
+			"end": {"x": -860, "y": 471.5},
 			"location": 0
 		},
 		{
 			"description": "Top right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
-			"start": {"x": 890.5, "y": 471.5},
-			"end": {"x": 40, "y": 471.5},
+			"start": {"x": 860, "y": 471.5},
+			"end": {"x": 55, "y": 471.5},
 			"location": 0
 		},
 		{
 			"description": "Bottom left",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
-			"start": {"x": -890.5, "y": -471.5},
-			"end": {"x": -40, "y": -471.5},
+			"start": {"x": -862.5, "y": -471.5},
+			"end": {"x": -57.5, "y": -471.5},
 			"location": 1
 		},
 		{
 			"description": "Bottom right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
-			"start": {"x": 40, "y": -471.5},
-			"end": {"x": 890.5, "y": -471.5},
+			"start": {"x": 57.5, "y": -471.5},
+			"end": {"x": 862.5, "y": -471.5},
 			"location": 1
+		},
+		{
+			"description": "small rail on the left of bottom center",
+			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
+			"start": {"x": -57.5, "y": -471.5},
+			"end": {"x": -50, "y": -500},
+			"location": 1
+		},
+		{
+			"description": "small rail on the right of bottom center",
+			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
+			"start": {"x": 50, "y": -500},
+			"end": {"x": 57.5, "y": -471.5},
+			"location": 1
+		},
+		{
+			"description": "small rail on the left of bottom left",
+			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
+			"start": {"x": -940.5, "y": -390},
+			"end": {"x": -948, "y": -420},
+			"location": 3
 		}
 	],
 	"targets": [
-		{ "id": "1", "position": {"x": -939, "y": -467}, "radius": 54, "type": 0 },
-		{ "id": "2", "position": {"x": -939, "y": 467}, "radius": 54, "type": 0 },
-		{ "id": "3", "position": {"x": 0, "y": 490}, "radius": 54, "type": 1 },
-		{ "id": "4", "position": {"x": 939, "y": 467}, "radius": 54, "type": 0 },
-		{ "id": "5", "position": {"x": 939, "y": -467}, "radius": 54, "type": 0 },
-		{ "id": "6", "position": {"x": 0, "y": -490}, "radius": 54, "type": 1 }
+		{ "id": "BOTTOM-LEFT",   "position": {"x": -940.5, "y": -471.5}, "radius": 50, "normal":  { "x":  0.707107, "y":  0.707107 }, "type": 0 },
+		{ "id": "TOP-LEFT",      "position": {"x": -940.5, "y": 471.5},  "radius": 50, "normal":  { "x":  0.707107, "y": -0.707107 }, "type": 0 },
+		{ "id": "TOP-CENTER",    "position": {"x": 0, "y": 491.5},     "radius": 50, "normal":  { "x":  0.0,      "y": -1.0 },      "type": 1 },
+		{ "id": "TOP-RIGHT",     "position": {"x": 940.5, "y": 471.5},   "radius": 50, "normal":  { "x": -0.707107, "y": -0.707107 }, "type": 0 },
+		{ "id": "BOTTOM-RIGHT",  "position": {"x": 940.5, "y": -471.5},  "radius": 50, "normal":  { "x": -0.707107, "y":  0.707107 }, "type": 0 },
+		{ "id": "BOTTOM-CENTER", "position": {"x": 0, "y": -491.5},    "radius": 50, "normal":  { "x":  0.0,      "y":  1.0 },      "type": 1 }
 	],
 	"markers": {
 		"patternSize": 3,
