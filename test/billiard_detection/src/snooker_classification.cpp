@@ -51,7 +51,7 @@ int findLabelIndex(const std::vector<std::string>& labels, const std::string& la
 
 TEST(SnookerClassificationTests, snooker_classify_from_live_or_from_image) {
 
-    bool live = true;
+    bool live = false;
     std::vector<std::string> imagePaths = {
             "./resources/test_detection/1.png",
             "./resources/test_detection/2.png",
@@ -169,9 +169,9 @@ TEST(SnookerClassificationTests, snooker_classify_from_live_or_from_image) {
 
 TEST(SnookerClassificationTests, snooker_classify_visualization) {
 
-    int a = 1; // TODO: remove
-    //    std::string classificationFolder = "./resources/test_classification/";
-    std::string classificationFolder = "./resources/test_classification_with_projector/";
+//    std::string classificationFolder = "./resources/test_classification/with_projector_off/";
+    std::string classificationFolder = "./resources/test_classification/with_projector_on/without_text/";
+//    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_text/";
     std::vector<std::string> labels = {
             "BLACK",
             "BROWN",
@@ -383,9 +383,9 @@ TEST(SnookerClassificationTests, snooker_classify_visualization) {
 
 TEST(SnookerClassificationTests, snooker_classify_single_balls) {
 
-    int a = 2; // TODO: remove
-//    std::string classificationFolder = "./resources/test_classification/";
-    std::string classificationFolder = "./resources/test_classification_with_projector/";
+//    std::string classificationFolder = "./resources/test_classification/with_projector_off/";
+    std::string classificationFolder = "./resources/test_classification/with_projector_on/without_text/";
+//    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_text/";
     std::vector<std::string> labels = {
             "BROWN",
             "PINK",
@@ -402,7 +402,16 @@ TEST(SnookerClassificationTests, snooker_classify_single_balls) {
     // True classes in horizontal, Predicted classes in vertical
     cv::Mat confusionMatrix {numberOfLabels, numberOfLabels, CV_32F, cv::Scalar{0.0}};
 
-    billiard::snooker::SnookerClassificationConfig config {};
+    billiard::detection::Table table = getTable();
+    billiard::detection::ArucoMarkers markers = getMarkers();
+    billiard::detection::CameraIntrinsics intrinsics = getIntrinsics_realsense_hd();
+    cv::Mat frame = cv::imread("./resources/test_detection_with_projector/1.png");
+    std::shared_ptr<billiard::detection::DetectionConfig> detectionConfig = std::make_shared<billiard::detection::DetectionConfig>(billiard::detection::configure(frame, table, markers, intrinsics));
+    billiard::snooker::SnookerClassificationConfig classificationConfig {};
+    if (!billiard::snooker::configure(*detectionConfig)) {
+        std::cout << "Unable to configure" << std::endl;
+        return;
+    }
 
     for (auto& trueLabel : labels) {
 
@@ -416,7 +425,7 @@ TEST(SnookerClassificationTests, snooker_classify_single_balls) {
 
             cv::Mat original = imread(imagePath, cv::IMREAD_COLOR);
 
-            double radius = original.rows / 2 * config.roiRadiusFactor;
+            double radius = original.rows / 2 * classificationConfig.roiRadiusFactor;
 
             const cv::Rect& roi = cv::Rect{
                     (int) ((double) original.cols / 2 - radius),
@@ -506,7 +515,8 @@ TEST(SnookerClassificationTests, snooker_classify_single_balls) {
 
 TEST(SnookerClassificationTests, snooker_write_classification_test_images) {
 
-    bool writeImages = true;
+    bool writeImages = false;
+    std::string outputFolder = "to_be_classified_balls/";
     std::vector<std::string> imagePaths = {
 //            "./resources/test_detection/1.png",
 //            "./resources/test_detection/2.png",
@@ -528,30 +538,53 @@ TEST(SnookerClassificationTests, snooker_write_classification_test_images) {
 //            "./resources/test_detection/18.png",
 //            "./resources/test_detection/19.png",
 //            "./resources/test_detection/20.png",
-            "./resources/test_detection_with_projector/1.png",
-            "./resources/test_detection_with_projector/2.png",
-            "./resources/test_detection_with_projector/3.png",
-            "./resources/test_detection_with_projector/4.png",
-            "./resources/test_detection_with_projector/5.png",
-            "./resources/test_detection_with_projector/6.png",
-            "./resources/test_detection_with_projector/7.png",
-            "./resources/test_detection_with_projector/8.png",
-            "./resources/test_detection_with_projector/9.png",
-            "./resources/test_detection_with_projector/10.png",
-            "./resources/test_detection_with_projector/11.png",
-            "./resources/test_detection_with_projector/12.png",
-            "./resources/test_detection_with_projector/13.png",
-            "./resources/test_detection_with_projector/14.png",
-            "./resources/test_detection_with_projector/15.png",
-            "./resources/test_detection_with_projector/16.png",
-            "./resources/test_detection_with_projector/17.png",
-            "./resources/test_detection_with_projector/18.png",
-            "./resources/test_detection_with_projector/19.png",
-            "./resources/test_detection_with_projector/20.png",
-            "./resources/test_detection_with_projector/21.png",
-            "./resources/test_detection_with_projector/22.png",
-            "./resources/test_detection_with_projector/23.png",
-            "./resources/test_detection_with_projector/24.png",
+//            "./resources/test_detection_with_projector/1.png",
+//            "./resources/test_detection_with_projector/2.png",
+//            "./resources/test_detection_with_projector/3.png",
+//            "./resources/test_detection_with_projector/4.png",
+//            "./resources/test_detection_with_projector/5.png",
+//            "./resources/test_detection_with_projector/6.png",
+//            "./resources/test_detection_with_projector/7.png",
+//            "./resources/test_detection_with_projector/8.png",
+//            "./resources/test_detection_with_projector/9.png",
+//            "./resources/test_detection_with_projector/10.png",
+//            "./resources/test_detection_with_projector/11.png",
+//            "./resources/test_detection_with_projector/12.png",
+//            "./resources/test_detection_with_projector/13.png",
+//            "./resources/test_detection_with_projector/14.png",
+//            "./resources/test_detection_with_projector/15.png",
+//            "./resources/test_detection_with_projector/16.png",
+//            "./resources/test_detection_with_projector/17.png",
+//            "./resources/test_detection_with_projector/18.png",
+//            "./resources/test_detection_with_projector/19.png",
+//            "./resources/test_detection_with_projector/20.png",
+//            "./resources/test_detection_with_projector/21.png",
+//            "./resources/test_detection_with_projector/22.png",
+//            "./resources/test_detection_with_projector/23.png",
+//            "./resources/test_detection_with_projector/24.png",
+            "./resources/test_detection_with_projector_with_live_texts/1.png",
+            "./resources/test_detection_with_projector_with_live_texts/2.png",
+            "./resources/test_detection_with_projector_with_live_texts/3.png",
+            "./resources/test_detection_with_projector_with_live_texts/4.png",
+            "./resources/test_detection_with_projector_with_live_texts/5.png",
+            "./resources/test_detection_with_projector_with_live_texts/6.png",
+            "./resources/test_detection_with_projector_with_live_texts/7.png",
+            "./resources/test_detection_with_projector_with_live_texts/8.png",
+            "./resources/test_detection_with_projector_with_live_texts/9.png",
+            "./resources/test_detection_with_projector_with_live_texts/10.png",
+            "./resources/test_detection_with_projector_with_live_texts/11.png",
+            "./resources/test_detection_with_projector_with_live_texts/12.png",
+            "./resources/test_detection_with_projector_with_live_texts/13.png",
+            "./resources/test_detection_with_projector_with_live_texts/14.png",
+            "./resources/test_detection_with_projector_with_live_texts/15.png",
+            "./resources/test_detection_with_projector_with_live_texts/16.png",
+            "./resources/test_detection_with_projector_with_live_texts/17.png",
+            "./resources/test_detection_with_projector_with_live_texts/18.png",
+            "./resources/test_detection_with_projector_with_live_texts/19.png",
+            "./resources/test_detection_with_projector_with_live_texts/20.png",
+            "./resources/test_detection_with_projector_with_live_texts/21.png",
+            "./resources/test_detection_with_projector_with_live_texts/22.png",
+            "./resources/test_detection_with_projector_with_live_texts/23.png",
     };
 
     cv::Size imageSize = getImageSize();
@@ -610,7 +643,7 @@ TEST(SnookerClassificationTests, snooker_write_classification_test_images) {
             cv::resize(ballImage, ballImageEnlarged, cv::Size(), scale, scale, cv::INTER_CUBIC);
 
             {
-                std::string filename = std::string("to_be_classified_balls/") + std::to_string(i+1) + std::string("_") + std::to_string(ballIndex+1) + std::string(".png");
+                std::string filename = outputFolder + std::to_string(i+1) + std::string("_") + std::to_string(ballIndex+1) + std::string(".png");
                 if (writeImages) cv::imwrite(filename, ballImage);
                 if (!writeImages) cv::imshow(filename, ballImage);
             }
@@ -618,7 +651,7 @@ TEST(SnookerClassificationTests, snooker_write_classification_test_images) {
             ballIndex++;
         }
         {
-            std::string filename = std::string("to_be_classified_balls/") + std::string("Balls_") + std::to_string(i+1) + std::string(".png");
+            std::string filename = outputFolder + std::string("Balls_") + std::to_string(i+1) + std::string(".png");
             if (writeImages) cv::imwrite(filename, detectedBallsImage);
             if (!writeImages) cv::imshow(filename, detectedBallsImage);
         }

@@ -1,16 +1,25 @@
 #include <billiard_detection/billiard_detection.hpp>
 
-#ifndef BILLIARD_DETECTION_DEBUG_OUTPUT
+#ifndef BILLIARD_DETECTION_DEBUG_VISUAL
     #ifdef NDEBUG
-        #undef BILLIARD_DETECTION_DEBUG_OUTPUT
+        #undef BILLIARD_DETECTION_DEBUG_VISUAL
     #endif
     #ifndef NDEBUG
-        #define BILLIARD_DETECTION_DEBUG_OUTPUT 1
+        #define BILLIARD_DETECTION_DEBUG_VISUAL 1
+    #endif
+#endif
+#ifndef BILLIARD_DETECTION_DEBUG_PRINT
+#ifdef NDEBUG
+        #undef BILLIARD_DETECTION_DEBUG_PRINT
+    #endif
+    #ifndef NDEBUG
+        #define BILLIARD_DETECTION_DEBUG_PRINT 1
     #endif
 #endif
 
 // TODO: remove this
-//#undef BILLIARD_DETECTION_DEBUG_OUTPUT
+//#undef BILLIARD_DETECTION_DEBUG_VISUAL
+//#undef BILLIARD_DETECTION_DEBUG_PRINT
 
 billiard::detection::StateTracker::StateTracker(const std::shared_ptr<capture::CameraCapture>& capture,
                                                 const std::shared_ptr<billiard::detection::DetectionConfig>& config,
@@ -172,7 +181,7 @@ namespace billiard::detection {
                 double fy = intrinsics.cameraMatrix.at<double>(1, 1);
                 config.focalLength = fx * intrinsics.sensorSize.x;
 
-#ifdef BILLIARD_DETECTION_DEBUG_OUTPUT
+#ifdef BILLIARD_DETECTION_DEBUG_PRINT
                 std::cout << "cameraInWorldCoordinatesHomogeneous: " << cameraInWorldCoordinatesHomogeneous
                           << std::endl;
                 std::cout << "cameraInWorldCoordinatesMat: " << cameraInWorldCoordinatesMat << std::endl;
@@ -228,7 +237,7 @@ namespace billiard::detection {
 
         cv::Point3d worldPoint(linePoint + (lambda * lineDirection));
 
-#ifdef BILLIARD_DETECTION_DEBUG_OUTPUT
+#ifdef BILLIARD_DETECTION_DEBUG_PRINT
         std::cout << "Line: " << linePoint << " + " << std::to_string(lambda) << " * " << lineDirection << std::endl;
         std::cout << "Plane: (p - " << planePoint << ") * " << planeNormal << " = 0" << std::endl;
 #endif
@@ -262,7 +271,7 @@ namespace billiard::detection {
 
             cv::Point3d worldPoint = linePlaneIntersection(linePoint, lineDirection, plane.point, plane.normal);
 
-#ifdef BILLIARD_DETECTION_DEBUG_OUTPUT
+#ifdef BILLIARD_DETECTION_DEBUG_PRINT
             std::cout << "image: " << imagePoint << " camera: " << imagePointInCameraCoordinatesHomogenous << " world: "
                       << imagePointInWorldCoordinates << std::endl;
 #endif
@@ -418,7 +427,7 @@ namespace billiard::detection {
         return board;
     }
 
-#ifdef BILLIARD_DETECTION_DEBUG_OUTPUT
+#ifdef BILLIARD_DETECTION_DEBUG_PRINT
     void printCoordinates(const std::string& context,
                           const std::vector<cv::Point2d>& imagePoints,
                           const std::vector<cv::Point3d>& worldPoints,
@@ -435,7 +444,9 @@ namespace billiard::detection {
                       << std::endl;
         }
     }
+#endif
 
+#ifdef BILLIARD_DETECTION_DEBUG_VISUAL
     inline void drawRailRectLines(cv::Mat& output, const std::vector<cv::Point2d>& points) {
 
         cv::Scalar color(0, 0, 255);
@@ -444,6 +455,15 @@ namespace billiard::detection {
         cv::line(output, points[1], points[2], color, thickness);
         cv::line(output, points[2], points[3], color, thickness);
         cv::line(output, points[3], points[0], color, thickness);
+    }
+
+    inline void drawLines(cv::Mat& output, const std::vector<cv::Point2d>& lines) {
+
+        cv::Scalar color(0, 0, 255);
+        int thickness = 1;
+        for (int i = 1; i < lines.size(); i+= 2) {
+            cv::line(output, lines[i-1], lines[i], color, thickness);
+        }
     }
 
     void drawHoughResult(cv::Mat& image, std::vector<cv::Vec3f>& circles) {
@@ -485,8 +505,11 @@ namespace billiard::detection {
 
         std::vector<cv::Point2d> railRect = getRailRect(table.innerTableLength, table.innerTableWidth);
         std::vector<Pocket> pockets = getPockets(table.innerTableLength, table.innerTableWidth);
+//        std::vector<Pocket> pockets = table.pockets; // TODO: remove this or line above
 
         // Build inner table mask
+        cv::Mat railMask(cv::Size(original.cols, original.rows), CV_8UC1, cv::Scalar(0));
+        cv::Mat pocketMask(cv::Size(original.cols, original.rows), CV_8UC1, cv::Scalar(0));
         cv::Mat innerTableMask(cv::Size(original.cols, original.rows), CV_8UC1, cv::Scalar(0));
 
         // Rails
@@ -495,12 +518,14 @@ namespace billiard::detection {
             std::vector<cv::Point3d> worldPoints = modelPointsToWorldPoints(config.worldToModel, modelPoints,
                                                                             table.railWorldPointZComponent);
             std::vector<cv::Point2d> imagePoints = worldPointsToImagePoints(config.cameraToWorld, worldPoints);
-            cv::fillConvexPoly(innerTableMask, toIntPoints(imagePoints), cv::Scalar(255));
+            cv::fillConvexPoly(railMask, toIntPoints(imagePoints), cv::Scalar(255));
+            railMask.copyTo(innerTableMask);
 
-#ifdef BILLIARD_DETECTION_DEBUG_OUTPUT
+#ifdef BILLIARD_DETECTION_DEBUG_PRINT
             std::cout << "------------------ RAIL-RECT ------------------" << std::endl;
             printCoordinates("Rail-Rect", imagePoints, worldPoints, modelPoints);
-
+#endif
+#ifdef BILLIARD_DETECTION_DEBUG_VISUAL
             cv::Mat railOutput = original.clone();
             drawRailRectLines(railOutput, imagePoints);
             cv::resize(railOutput, railOutput, cv::Size(), config.scale, config.scale);
@@ -517,7 +542,7 @@ namespace billiard::detection {
             double tableWidth = table.innerTableWidth;
             double pixelsPerMillimeterY = resolutionY / tableWidth;
 
-#ifdef BILLIARD_DETECTION_DEBUG_OUTPUT
+#ifdef BILLIARD_DETECTION_DEBUG_PRINT
             std::cout << " resolutionX: " << resolutionX
                       << " tableLength: " << tableLength
                       << " resolutionY: " << resolutionY
@@ -527,8 +552,28 @@ namespace billiard::detection {
 #endif
 
             double pixelsPerMillimeter = pixelsPerMillimeterX; // Take X because that's the longer axis
+            config.pixelsPerMillimeter = pixelsPerMillimeter;
             config.ballRadiusInPixel = ceil((table.ballDiameter / 2.0) * pixelsPerMillimeter);
         }
+
+#ifdef BILLIARD_DETECTION_DEBUG_VISUAL
+        // Rail segments
+        {
+            std::vector<cv::Point2d> modelPoints {};
+            for (auto& rail : table.railSegments) {
+                modelPoints.emplace_back(rail.start.x, rail.start.y);
+                modelPoints.emplace_back(rail.end.x, rail.end.y);
+            }
+            std::vector<cv::Point3d> worldPoints = modelPointsToWorldPoints(config.worldToModel, modelPoints,
+                                                                            table.railWorldPointZComponent);
+            std::vector<cv::Point2d> imagePoints = worldPointsToImagePoints(config.cameraToWorld, worldPoints);
+
+            cv::Mat railSegmentOutput = original.clone();
+            drawLines(railSegmentOutput, imagePoints);
+            cv::resize(railSegmentOutput, railSegmentOutput, cv::Size(), config.scale, config.scale);
+            cv::imshow("rail segments", railSegmentOutput);
+        }
+#endif
 
         // Pockets
         {
@@ -543,13 +588,12 @@ namespace billiard::detection {
 
             for (int i = 0; i < pockets.size(); i++) {
                 auto& pocket = pockets[i];
-                // TODO: correct conversion between millimeter-radius to pixel-radius
-                int pocketPixelRadius = pocket.radius * 0.6;
-                cv::circle(innerTableMask, imagePoints[i], pocketPixelRadius, cv::Scalar{0},
+                int pocketPixelRadius = pocket.radius * (config.pixelsPerMillimeter + 0.1); // TODO: 0.1 because detection
+                cv::circle(pocketMask, imagePoints[i], pocketPixelRadius, cv::Scalar{255},
                            cv::LineTypes::FILLED);
             }
 
-#ifdef BILLIARD_DETECTION_DEBUG_OUTPUT
+#ifdef BILLIARD_DETECTION_DEBUG_VISUAL
             cv::Mat pocketsOutput = original.clone();
 
                 for (int i = 0; i < pockets.size(); i++) {
@@ -566,9 +610,23 @@ namespace billiard::detection {
 
         cv::resize(innerTableMask, innerTableMask, cv::Size(), config.scale, config.scale);
         config.innerTableMask = innerTableMask;
+        cv::resize(railMask, railMask, cv::Size(), config.scale, config.scale);
+        config.railMask = railMask;
 
-#ifdef BILLIARD_DETECTION_DEBUG_OUTPUT
+#ifdef BILLIARD_DETECTION_DEBUG_VISUAL
+        cv::imshow("Rail mask", railMask);
+        cv::imshow("Pocket mask", pocketMask);
         cv::imshow("Inner table mask", innerTableMask);
+
+        cv::Mat inputMaskedByInnerTableMask;
+        cv::bitwise_and(original, original, inputMaskedByInnerTableMask, innerTableMask);
+        cv::imshow("Input masked by inner table mask", inputMaskedByInnerTableMask);
+
+        cv::Mat invInnerTableMask;
+        cv::bitwise_not(innerTableMask, invInnerTableMask);
+        cv::Mat innerMaskedDelta;
+        cv::bitwise_and(original, original, innerMaskedDelta, invInnerTableMask);
+        cv::imshow("Input delta masked by inverse inner table mask", innerMaskedDelta);
 #endif
         config.valid = true;
         return config;
@@ -584,7 +642,7 @@ namespace billiard::detection {
         std::vector<cv::Point3d> worldPoints = billiard::detection::imagePointsToWorldPoints(config.cameraToWorld, config.ballPlane, imagePoints);
         std::vector<cv::Point2d> modelPoints = billiard::detection::worldPointsToModelPoints(config.worldToModel, worldPoints);
 
-#ifdef BILLIARD_DETECTION_DEBUG_OUTPUT
+#ifdef BILLIARD_DETECTION_DEBUG_PRINT
         std::cout << "------------------ CIRCLES ------------------" << std::endl;
         printCoordinates("Circles", imagePoints, worldPoints, modelPoints);
 #endif

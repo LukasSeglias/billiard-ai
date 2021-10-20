@@ -31,7 +31,7 @@ namespace billiard::snooker {
         int maxRadius;
 
         // HSV Filters for different balls
-        cv::Point2d saturationFilter {100, 255};
+        cv::Point2d saturationFilter {150, 255};
         cv::Point2d blackValueFilter{0, 80};
         cv::Point2d whitePinkValueFilter{200, 255};
 
@@ -41,6 +41,10 @@ namespace billiard::snooker {
         // Binary mask (255=true) to determine possible locations of balls (only on the green inner table)
         // Scaled by DetectionConfig::scale
         cv::Mat innerTableMask;
+
+        // Binary mask (255=true) masking everything in the image that is inside the rectangle defined by the rails of the table.
+        // Scaled by DetectionConfig::scale
+        cv::Mat railMask;
     };
 
     struct EXPORT_BILLIARD_SNOOKER_LIB SnookerClassificationConfig {
@@ -52,6 +56,27 @@ namespace billiard::snooker {
         double roiRadius = 0.0;
 
         cv::Size blurSize {5, 5};
+
+        cv::Point2d yellowHue {10, 35};
+        cv::Point2d yellowSaturation {170, 255};
+        cv::Point2d yellowValue {245, 255};
+
+        cv::Point2d whiteHue {10, 40};
+        cv::Point2d whiteSaturation {0, 80};
+        cv::Point2d whiteValue {245, 255};
+
+        cv::Point2d blackValue {0, 70};
+        cv::Point2d blueHue {95, 110};
+        cv::Point2d greenHue {80, 94};
+
+        cv::Point2d redHue1 {0, 10};
+        cv::Point2d redHue2 {170, 180};
+
+        cv::Point2d brownValue {150, 255};
+        cv::Point2d brownSaturation {175, 240};
+
+        cv::Point2d pinkSaturation {0, 180};
+        cv::Point2d pinkValue {245, 255};
     };
 
     EXPORT_BILLIARD_SNOOKER_LIB bool configure(const billiard::detection::DetectionConfig& detectionConfig);

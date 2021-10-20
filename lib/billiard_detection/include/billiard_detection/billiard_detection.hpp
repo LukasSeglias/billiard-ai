@@ -108,6 +108,10 @@ namespace billiard::detection {
         // Scaled by DetectionConfig::scale
         cv::Mat innerTableMask;
 
+        // Binary mask (255=true) masking everything in the image that is inside the rectangle defined by the rails of the table.
+        // Scaled by DetectionConfig::scale
+        cv::Mat railMask;
+
         // Plane where all the ball centers are located in the real world (aruco marker frame of reference)
         Plane ballPlane;
 

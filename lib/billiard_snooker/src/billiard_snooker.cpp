@@ -2,14 +2,24 @@
 #include <billiard_debug/billiard_debug.hpp>
 #include <algorithm>
 
-#ifndef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifndef BILLIARD_SNOOKER_DEBUG_PRINT
     #ifdef NDEBUG
-        #undef BILLIARD_SNOOKER_DEBUG_OUTPUT
+        #undef BILLIARD_SNOOKER_DEBUG_PRINT
     #endif
     #ifndef NDEBUG
-        #define BILLIARD_SNOOKER_DEBUG_OUTPUT 1
+        #define BILLIARD_SNOOKER_DEBUG_PRINT 1
     #endif
 #endif
+
+#ifndef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
+    #ifdef NDEBUG
+        #undef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
+    #endif
+    #ifndef NDEBUG
+        #define BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL 1
+    #endif
+#endif
+
 #ifndef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
     #ifdef NDEBUG
         #undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
@@ -20,13 +30,13 @@
 #endif
 
 // TODO: remove this
-//#undef BILLIARD_SNOOKER_DEBUG_OUTPUT
+//#undef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
 #undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
 
 namespace billiard::snooker {
 
     SnookerDetectionConfig config;
-    SnookerClassificationConfig classificationConfig;
+    SnookerClassificationConfig classificationConfig {};
 
     bool configure(const billiard::detection::DetectionConfig& detectionConfig) {
 
@@ -41,11 +51,12 @@ namespace billiard::snooker {
         config.maxRadius = radiusInPixel + errorRadiusHigh;
         config.houghMinDistance = config.minRadius * 2;
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DEBUG_PRINT
         std::cout << "radius in pixels: " << std::to_string(radiusInPixel) << " min radius: " << std::to_string(config.minRadius) << " max radius: " << std::to_string(config.maxRadius) << " error radius range: " << std::to_string(errorRadiusLow) << ", " << std::to_string(errorRadiusHigh) << std::endl;
 #endif
         config.morphElementRect3x3 = getStructuringElement(cv::MORPH_RECT, cv::Size(3,3), cv::Point(1, 1));
         config.innerTableMask = detectionConfig.innerTableMask;
+        config.railMask = detectionConfig.railMask;
 
         config.valid = true;
 
@@ -110,6 +121,69 @@ namespace billiard::snooker {
         }
     }
 
+    cv::Mat drawDetectedBallsGrid(const cv::Mat& input, const billiard::detection::State& pixelState, int tileSize, int tilesPerLine) {
+
+        cv::Scalar backgroundColor {255, 255, 255};
+        int padding = 10;
+        int totalTiles = pixelState._balls.size();
+        int numberOfTileLines = totalTiles / tilesPerLine + 1;
+        int imageWidth = tileSize * tilesPerLine + padding * (tilesPerLine + 1);
+        int imageHeight = numberOfTileLines * tileSize + padding * (numberOfTileLines + 1);
+
+        std::cout
+                << "Ball tiles: " << " "
+                << "totalTiles=" << totalTiles << " "
+                << "tileSize=" << tileSize << " "
+                << "tilesPerLine=" << tilesPerLine << " "
+                << "numberOfTileLines=" << numberOfTileLines << " "
+                << "imageWidth=" << imageWidth << " "
+                << "imageHeight=" << imageHeight << " "
+                << std::endl;
+
+        float ballRadiusInPixels = 30;
+
+        cv::Mat result {imageHeight, imageWidth, CV_8UC3, backgroundColor};
+
+        int tileIndex = 0;
+        for (auto& ball : pixelState._balls) {
+
+            auto& position = ball._position;
+            cv::Rect roi {
+                    (int) (position.x - ballRadiusInPixels),
+                    (int) (position.y - ballRadiusInPixels),
+                    (int) ballRadiusInPixels * 2,
+                    (int) ballRadiusInPixels * 2
+            };
+            if (roi.x >= 0 && roi.y >= 0 && roi.width <= input.cols && roi.height <= input.rows) {
+
+                cv::Mat ballImage = input(roi);
+                cv::Mat ballImageScaled;
+                cv::resize(ballImage, ballImageScaled, cv::Size {tileSize, tileSize});
+
+                int colIndex = tileIndex % tilesPerLine;
+                int rowIndex = tileIndex / tilesPerLine;
+                int x = colIndex * tileSize + padding * (colIndex + 1);
+                int y = rowIndex * tileSize + padding * (rowIndex + 1);
+                cv::Rect resultRoi {cv::Point(x, y), cv::Size {ballImageScaled.cols, ballImageScaled.rows}};
+                cv::Mat dst = result(resultRoi);
+                ballImageScaled.copyTo(dst);
+
+                std::cout
+                        << "    Ball tile: " << " "
+                        << "colIndex=" << colIndex << " "
+                        << "rowIndex=" << rowIndex << " "
+                        << "x=" << x << " "
+                        << "y=" << y << " "
+                        << std::endl;
+
+            } else {
+                std::cout << "unable to cut out ball image since roi is not inside image" << std::endl; // TODO: handle this?
+            }
+            tileIndex++;
+        }
+        return result;
+    };
+
     billiard::detection::State detect(const billiard::detection::State& previousState, const cv::Mat& original) {
 
         cv::Mat input;
@@ -126,7 +200,7 @@ namespace billiard::snooker {
         cv::Mat hue, saturation, value;
         hsvFromBgr(blurred, hue, saturation, value);
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         cv::imshow("input", input);
         cv::imshow("blurred", blurred);
         cv::imshow("hue", hue);
@@ -138,17 +212,21 @@ namespace billiard::snooker {
         cv::Mat saturationMask;
         cv::inRange(saturation, config.saturationFilter.x, config.saturationFilter.y, saturationMask);
 
+        cv::Mat saturationMaskAndedWithRailMask;
+        cv::bitwise_and(config.railMask, saturationMask, saturationMaskAndedWithRailMask);
+
         cv::Mat openedSaturationMask;
-        cv::morphologyEx(saturationMask, openedSaturationMask, cv::MORPH_OPEN, config.morphElementRect3x3, cv::Point(-1, -1),
+        cv::morphologyEx(saturationMaskAndedWithRailMask, openedSaturationMask, cv::MORPH_OPEN, config.morphElementRect3x3, cv::Point(-1, -1),
                          1);
 
         cv::Mat closedSaturationMask;
-        cv::morphologyEx(openedSaturationMask, closedSaturationMask, cv::MORPH_CLOSE, config.morphElementRect3x3,cv::Point(-1, -1), 2);
+        cv::morphologyEx(openedSaturationMask, closedSaturationMask, cv::MORPH_CLOSE, config.morphElementRect3x3,cv::Point(-1, -1), 4);
 
         cv::Mat saturatedBallMask = closedSaturationMask;
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         cv::imshow("saturationMask", saturationMask);
+        cv::imshow("saturationMaskAndedWithRailMask", saturationMaskAndedWithRailMask);
         cv::imshow("openedSaturationMask", openedSaturationMask);
         cv::imshow("closedSaturationMask", closedSaturationMask);
         cv::imshow("saturatedBallMask", saturatedBallMask);
@@ -157,7 +235,7 @@ namespace billiard::snooker {
         cv::Mat saturationMaskedGrayscale;
         cv::bitwise_and(grayscaleInput, grayscaleInput, saturationMaskedGrayscale, saturatedBallMask);
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         cv::Mat saturationMaskedInput;
         cv::bitwise_and(input, input, saturationMaskedInput, saturatedBallMask);
 
@@ -180,7 +258,7 @@ namespace billiard::snooker {
                      config.minRadius, config.maxRadius
         );
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         cv::Mat edges;
         cv::Canny(saturationMaskedGrayscale, edges, config.houghCannyHigherThreshold / 2, config.houghCannyHigherThreshold);
 
@@ -197,16 +275,17 @@ namespace billiard::snooker {
             cv::bitwise_and(valueMask, config.innerTableMask, valueMaskAndedWithTableMask);
 
             cv::Mat closedValueMask;
-            cv::morphologyEx(valueMaskAndedWithTableMask, closedValueMask, cv::MORPH_CLOSE, config.morphElementRect3x3,cv::Point(-1, -1), 4);
+            cv::morphologyEx(valueMaskAndedWithTableMask, closedValueMask, cv::MORPH_CLOSE, config.morphElementRect3x3,cv::Point(-1, -1), 6);
 
             cv::Mat openedValueMask;
             cv::morphologyEx(closedValueMask, openedValueMask, cv::MORPH_OPEN, config.morphElementRect3x3, cv::Point(-1, -1),3);
 
             blackMask = openedValueMask;
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
             cv::imshow("black - valueMask", valueMask);
             cv::imshow("black - valueMask anded with innerTableMask", valueMaskAndedWithTableMask);
+            cv::imshow("black - valueMask anded with railMask", valueMaskAndedWithRailMask);
             cv::imshow("black - closedValueMask", closedValueMask);
             cv::imshow("black - openedValueMask", openedValueMask);
             cv::imshow("black - mask", blackMask);
@@ -217,7 +296,7 @@ namespace billiard::snooker {
         cv::Mat blackMaskedGrayscale;
         cv::bitwise_and(grayscaleInput, grayscaleInput, blackMaskedGrayscale, blackMask);
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         {
             cv::Mat blackMaskedInput;
             cv::bitwise_and(input, input, blackMaskedInput, blackMask);
@@ -241,7 +320,7 @@ namespace billiard::snooker {
                      config.minRadius, config.maxRadius
         );
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         {
             cv::Mat edges;
             cv::Canny(blackMaskedGrayscale, edges, config.houghCannyHigherThreshold / 2, config.houghCannyHigherThreshold);
@@ -256,16 +335,20 @@ namespace billiard::snooker {
             cv::Mat valueMask;
             cv::inRange(value, config.whitePinkValueFilter.x, config.whitePinkValueFilter.y, valueMask);
 
+            cv::Mat valueMaskAndedWithRailMask;
+            cv::bitwise_and(config.railMask, valueMask, valueMaskAndedWithRailMask);
+
             cv::Mat openedMask;
-            cv::morphologyEx(valueMask, openedMask, cv::MORPH_OPEN, config.morphElementRect3x3, cv::Point(-1, -1), 1);
+            cv::morphologyEx(valueMaskAndedWithRailMask, openedMask, cv::MORPH_OPEN, config.morphElementRect3x3, cv::Point(-1, -1), 3);
 
             cv::Mat closedMask;
             cv::morphologyEx(openedMask, closedMask, cv::MORPH_CLOSE, config.morphElementRect3x3, cv::Point(-1, -1), 1);
 
             whitePinkMask = closedMask;
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
             cv::imshow("white&pink - valueMask", valueMask);
+            cv::imshow("white&pink - valueMask anded with railMask", valueMaskAndedWithRailMask);
             cv::imshow("white&pink - openedMask", openedMask);
             cv::imshow("white&pink - closedMask", closedMask);
             cv::imshow("white&pink - mask", whitePinkMask);
@@ -278,7 +361,7 @@ namespace billiard::snooker {
         cv::Mat closedWhitePinkMaskedGrayscale;
         cv::morphologyEx(whitePinkMaskedGrayscale, closedWhitePinkMaskedGrayscale, cv::MORPH_CLOSE, config.morphElementRect3x3, cv::Point(-1, -1), 2);
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         {
             cv::Mat whitePinkMaskedInput;
             cv::bitwise_and(input, input, whitePinkMaskedInput, whitePinkMask);
@@ -304,10 +387,10 @@ namespace billiard::snooker {
                      config.minRadius, config.maxRadius
         );
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         {
             cv::Mat edges;
-            cv::Canny(whitePinkMaskedGrayscale, edges, config.houghCannyHigherThreshold / 2, config.houghCannyHigherThreshold);
+            cv::Canny(closedWhitePinkMaskedGrayscale, edges, config.houghCannyHigherThreshold / 2, config.houghCannyHigherThreshold);
             cv::imshow("white&pink - maskedInput grayscale edges", edges);
         };
 #endif
@@ -321,7 +404,7 @@ namespace billiard::snooker {
             std::vector<cv::Vec3f> filteredCircles3 = filterCircles(filteredCircles2, blackMask, false);
             for (auto& circle : filteredCircles3) allCircles.push_back(circle);
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
             {
                 cv::Mat houghOnMaskedInput = input.clone();
                 cv::Mat houghOnMaskedInputAfterCircleFilter1 = input.clone();
@@ -347,7 +430,7 @@ namespace billiard::snooker {
             std::vector<cv::Vec3f> filteredCircles2 = filterCircles(filteredCircles1, blackMask, true);
             for (auto& circle : filteredCircles2) allCircles.push_back(circle);
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
             cv::Mat houghOnMaskedInput = input.clone();
             cv::Mat houghOnMaskedInputAfterCircleFilter1 = input.clone();
             cv::Mat houghOnMaskedInputAfterCircleFilter2 = input.clone();
@@ -372,7 +455,7 @@ namespace billiard::snooker {
 
             for (auto& circle : filteredCircles3) allCircles.push_back(circle);
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
             cv::Mat houghOnMaskedInput = input.clone();
             cv::Mat houghOnMaskedInputAfterCircleFilter1 = input.clone();
             cv::Mat houghOnMaskedInputAfterCircleFilter2 = input.clone();
@@ -390,11 +473,10 @@ namespace billiard::snooker {
 #endif
         }
 
-#ifdef BILLIARD_SNOOKER_DEBUG_OUTPUT
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         cv::Mat hough = input.clone();
         drawHoughResult(hough, allCircles);
         cv::imshow("hough", hough);
-        cv::waitKey(1);
 #endif
 
         std::vector<cv::Point2d> imagePoints = circleCenters(allCircles);
@@ -408,6 +490,12 @@ namespace billiard::snooker {
             ball._position = glm::vec2 {point.x, point.y};
             state._balls.push_back(ball);
         }
+
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
+        cv::Mat detectedBalls = drawDetectedBallsGrid(hough, state, 128, 8);
+        cv::imshow("detected balls", detectedBalls);
+        cv::waitKey(1);
+#endif
 
         return state;
     }
@@ -516,63 +604,58 @@ namespace billiard::snooker {
 
         std::string label = "UNKNOWN";
 
-        const auto between = [](int value, int min, int max)  {
-            return value >= min && value <= max;
+//        const auto between = [](int value, int min, int max)  {
+//            return value >= min && value <= max;
+//        };
+
+        const auto between = [](int value, cv::Point2d minMax)  {
+            return value >= minMax.x && value <= minMax.y;
         };
 
         cv::Vec2f redPinkSeparatorLine = cv::Point2f { 1.0, 1.0 }; // Separate by (saturation, value)
 
-        if (between(maxHue, 10, 35) && between(maxSaturation, 230, 255) && between(maxValue, 245, 255)) {
+        if (between(maxHue, classificationConfig.yellowHue) && between(maxSaturation, classificationConfig.yellowSaturation) && between(maxValue, classificationConfig.yellowValue)) {
             label = "YELLOW";
         }
-        else if (between(maxHue, 10, 40) && between(maxSaturation, 0, 80) && between(maxValue, 245, 255)) {
+        else if (between(maxHue, classificationConfig.whiteHue) && between(maxSaturation, classificationConfig.whiteSaturation) && between(maxValue, classificationConfig.whiteValue)) {
             label = "WHITE";
         }
-        else if (between(maxValue, 0, 60)) {
+        else if (between(maxValue, classificationConfig.blackValue)) {
             label = "BLACK";
         }
-        else if (between(maxHue, 100, 120)) {
+        else if (between(maxHue, classificationConfig.blueHue)) {
             label = "BLUE";
         }
-        else if (between(maxHue, 80, 99)) {
+        else if (between(maxHue, classificationConfig.greenHue)) {
             label = "GREEN";
         }
-        else if(between(maxHue, 0, 10) || between(maxHue, 170, 180)) {
+        else if(between(maxHue, classificationConfig.redHue1) || between(maxHue, classificationConfig.redHue2)) {
             // BROWN or RED or PINK
 
-            if (between(maxHue, 0, 10) && between(maxSaturation, 200, 240) && between(maxValue, 150, 255)) {
+            cv::Point2i brownHue {0, 10};
+            if (between(maxHue, brownHue) && between(maxSaturation, classificationConfig.brownSaturation) && between(maxValue, classificationConfig.brownValue)) {
                 label = "BROWN";
             }
-            else {
-                cv::Vec2f point { (float) maxSaturation / 255, (float) maxValue / 255 }; // Separate by (saturation, value)
-
-                float perpProduct = redPinkSeparatorLine[0] * point[1] - redPinkSeparatorLine[1] * point[0];
-                std::cout << "redPinkSeparatorLine: " << redPinkSeparatorLine <<  " point: " << point << " perp product: " << perpProduct << std::endl;
-                if (perpProduct <= 0) {
-                    label = "RED";
-                } else {
-                    label = "PINK";
-                }
+            else if (between(maxSaturation, classificationConfig.pinkSaturation) && between(maxValue, classificationConfig.pinkValue)) {
+                label = "PINK";
             }
+            else {
+                label = "RED";
+            }
+//            else {
+//                cv::Vec2f point { (float) maxSaturation / 255, (float) maxValue / 255 }; // Separate by (saturation, value)
+//
+//                float perpProduct = redPinkSeparatorLine[0] * point[1] - redPinkSeparatorLine[1] * point[0];
+//#ifdef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
+//                std::cout << "redPinkSeparatorLine: " << redPinkSeparatorLine <<  " point: " << point << " perp product: " << perpProduct << std::endl;
+//#endif
+//                if (perpProduct <= 0) {
+//                    label = "RED";
+//                } else {
+//                    label = "PINK";
+//                }
+//            }
         }
-//        else if (between(maxHue, 0, 10) && between(maxSaturation, 230, 255) && between(maxValue, 150, 255)) {
-//            label = "RED";
-//        }
-        else if (between(maxHue, 0, 10) && between(maxSaturation, 200, 255) && between(maxValue, 150, 255)) {
-            label = "BROWN";
-        }
-//        else if (between(maxHue, 0, 10) && between(maxSaturation, 60, 255) && between(maxValue, 230, 255)) {
-//            label = "PINK";
-//        }
-//        else if (between(maxHue, 170, 180) && between(maxSaturation, 60, 255) && between(maxValue, 230, 255)) {
-//            label = "PINK";
-//        }
-//        else if (between(maxHue, 0, 5)) {
-//            label = "RED";
-//        }
-//        else if (between(maxHue, 170, 180)) {
-//            label = "RED";
-//        }
 
         ball._type = label;
 
