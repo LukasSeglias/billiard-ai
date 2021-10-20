@@ -32,6 +32,7 @@ namespace billiard::snooker {
 
         // HSV Filters for different balls
         cv::Point2d saturationFilter {150, 255};
+        cv::Point2d saturatedBallsValueFilter {60, 255};
         cv::Point2d blackValueFilter{0, 80};
         cv::Point2d whitePinkValueFilter{200, 255};
 

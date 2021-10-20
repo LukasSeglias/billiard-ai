@@ -31,7 +31,7 @@
 
 // TODO: remove this
 //#undef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
-#undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
+//#undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
 
 namespace billiard::snooker {
 
@@ -207,30 +207,40 @@ namespace billiard::snooker {
         cv::imshow("saturation", saturation);
         cv::imshow("value", value);
 #endif
-
         // Saturated balls mask
-        cv::Mat saturationMask;
-        cv::inRange(saturation, config.saturationFilter.x, config.saturationFilter.y, saturationMask);
+        cv::Mat saturatedBallMask;
+        {
+            cv::Mat saturationMask;
+            cv::inRange(saturation, config.saturationFilter.x, config.saturationFilter.y, saturationMask);
 
-        cv::Mat saturationMaskAndedWithRailMask;
-        cv::bitwise_and(config.railMask, saturationMask, saturationMaskAndedWithRailMask);
+            cv::Mat valueMask;
+            cv::inRange(value, config.saturatedBallsValueFilter.x, config.saturatedBallsValueFilter.y, valueMask);
 
-        cv::Mat openedSaturationMask;
-        cv::morphologyEx(saturationMaskAndedWithRailMask, openedSaturationMask, cv::MORPH_OPEN, config.morphElementRect3x3, cv::Point(-1, -1),
-                         1);
+            cv::Mat saturationMaskAndedWithValueMask;
+            cv::bitwise_and(valueMask, saturationMask, saturationMaskAndedWithValueMask);
 
-        cv::Mat closedSaturationMask;
-        cv::morphologyEx(openedSaturationMask, closedSaturationMask, cv::MORPH_CLOSE, config.morphElementRect3x3,cv::Point(-1, -1), 4);
+            cv::Mat saturationMaskAndedWithRailMask;
+            cv::bitwise_and(config.railMask, saturationMaskAndedWithValueMask, saturationMaskAndedWithRailMask);
 
-        cv::Mat saturatedBallMask = closedSaturationMask;
+            cv::Mat openedSaturationMask;
+            cv::morphologyEx(saturationMaskAndedWithRailMask, openedSaturationMask, cv::MORPH_OPEN, config.morphElementRect3x3, cv::Point(-1, -1),
+                             1);
+
+            cv::Mat closedSaturationMask;
+            cv::morphologyEx(openedSaturationMask, closedSaturationMask, cv::MORPH_CLOSE, config.morphElementRect3x3,cv::Point(-1, -1), 4);
+
+            saturatedBallMask = closedSaturationMask;
 
 #ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
-        cv::imshow("saturationMask", saturationMask);
-        cv::imshow("saturationMaskAndedWithRailMask", saturationMaskAndedWithRailMask);
-        cv::imshow("openedSaturationMask", openedSaturationMask);
-        cv::imshow("closedSaturationMask", closedSaturationMask);
-        cv::imshow("saturatedBallMask", saturatedBallMask);
+            cv::imshow("saturationMask", saturationMask);
+            cv::imshow("saturated balls valueMask", valueMask);
+            cv::imshow("saturationMask AND valueMask", saturationMaskAndedWithValueMask);
+            cv::imshow("saturationMask AND railMask", saturationMaskAndedWithRailMask);
+            cv::imshow("openedSaturationMask", openedSaturationMask);
+            cv::imshow("closedSaturationMask", closedSaturationMask);
+            cv::imshow("saturatedBallMask", saturatedBallMask);
 #endif
+        }
 
         cv::Mat saturationMaskedGrayscale;
         cv::bitwise_and(grayscaleInput, grayscaleInput, saturationMaskedGrayscale, saturatedBallMask);
@@ -271,15 +281,15 @@ namespace billiard::snooker {
             cv::Mat valueMask;
             cv::inRange(value, config.blackValueFilter.x, config.blackValueFilter.y, valueMask);
 
+            // TODO: remove?
             cv::Mat valueMaskAndedWithTableMask;
             cv::bitwise_and(valueMask, config.innerTableMask, valueMaskAndedWithTableMask);
 
-            // TODO: remove?
             cv::Mat valueMaskAndedWithRailMask;
             cv::bitwise_and(valueMask, config.railMask, valueMaskAndedWithRailMask);
 
             cv::Mat closedValueMask;
-            cv::morphologyEx(valueMaskAndedWithTableMask, closedValueMask, cv::MORPH_CLOSE, config.morphElementRect3x3,cv::Point(-1, -1), 6);
+            cv::morphologyEx(valueMaskAndedWithRailMask, closedValueMask, cv::MORPH_CLOSE, config.morphElementRect3x3,cv::Point(-1, -1), 6);
 
             cv::Mat openedValueMask;
             cv::morphologyEx(closedValueMask, openedValueMask, cv::MORPH_OPEN, config.morphElementRect3x3, cv::Point(-1, -1),3);

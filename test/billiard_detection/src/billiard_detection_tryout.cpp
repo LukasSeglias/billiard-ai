@@ -14,62 +14,62 @@ TEST(BallDetectionTests, snooker_with_projector) {
     int a = 0; // TODO: remove
     bool live = false;
     std::vector<std::string> imagePaths = {
-//            "./resources/test_detection_with_projector/1.png",
-//            "./resources/test_detection_with_projector/2.png",
-//            // DONE: TODO 3: green: hole in saturation-mask
-//            "./resources/test_detection_with_projector/3.png",
-//            "./resources/test_detection_with_projector/4.png",
-//            "./resources/test_detection_with_projector/5.png",
-//            "./resources/test_detection_with_projector/6.png",
-//            // DONE: TODO 7: black: because of pocket-mask?
-//            // TODO 7: red: why?
-//            "./resources/test_detection_with_projector/7.png",
-//            // DONE: TODO 8: brown: killed by filter 2 (saturation-mask)?
-//            // DONE: TODO 8: green: killed by filter 2 (saturation-mask)?
-//            // DONE: TODO 8: black: killed by filter 2 (hole in mask)?
-//            "./resources/test_detection_with_projector/8.png",
-//            "./resources/test_detection_with_projector/9.png",
-//            "./resources/test_detection_with_projector/10.png",
-//            "./resources/test_detection_with_projector/11.png",
-//            "./resources/test_detection_with_projector/12.png",
-//            "./resources/test_detection_with_projector/13.png",
-//            "./resources/test_detection_with_projector/14.png",
-//            "./resources/test_detection_with_projector/15.png",
-//            "./resources/test_detection_with_projector/16.png",
-//            "./resources/test_detection_with_projector/17.png",
-//            "./resources/test_detection_with_projector/18.png",
-//            "./resources/test_detection_with_projector/19.png",
-//            "./resources/test_detection_with_projector/20.png",
-//            "./resources/test_detection_with_projector/21.png",
-//            "./resources/test_detection_with_projector/22.png",
-//            "./resources/test_detection_with_projector/23.png",
-//            // TODO 24: statt zwei roten wird eine "grosse" erkannt
-//            "./resources/test_detection_with_projector/24.png",
-            "./resources/test_detection_with_projector_with_live_texts/1.png",
-            "./resources/test_detection_with_projector_with_live_texts/2.png",
-            // TODO 3: red ball in top-left corner is detected poorly
-            "./resources/test_detection_with_projector_with_live_texts/3.png",
-            "./resources/test_detection_with_projector_with_live_texts/4.png",
-            "./resources/test_detection_with_projector_with_live_texts/5.png",
-            "./resources/test_detection_with_projector_with_live_texts/6.png",
-            "./resources/test_detection_with_projector_with_live_texts/7.png",
-            "./resources/test_detection_with_projector_with_live_texts/8.png",
-            "./resources/test_detection_with_projector_with_live_texts/9.png",
-            "./resources/test_detection_with_projector_with_live_texts/10.png",
-            "./resources/test_detection_with_projector_with_live_texts/11.png",
-            // TODO 12: extra black circle near blue ball in top-right corner
-            "./resources/test_detection_with_projector_with_live_texts/12.png",
-            "./resources/test_detection_with_projector_with_live_texts/13.png",
-            "./resources/test_detection_with_projector_with_live_texts/14.png",
-            "./resources/test_detection_with_projector_with_live_texts/15.png",
-            "./resources/test_detection_with_projector_with_live_texts/16.png",
-            "./resources/test_detection_with_projector_with_live_texts/17.png",
-            "./resources/test_detection_with_projector_with_live_texts/18.png",
-            "./resources/test_detection_with_projector_with_live_texts/19.png",
-            "./resources/test_detection_with_projector_with_live_texts/20.png",
-            "./resources/test_detection_with_projector_with_live_texts/21.png",
-            "./resources/test_detection_with_projector_with_live_texts/22.png",
-            "./resources/test_detection_with_projector_with_live_texts/23.png",
+            "./resources/test_detection_with_projector/1.png",
+            "./resources/test_detection_with_projector/2.png",
+            // DONE: TODO 3: green: hole in saturation-mask
+            "./resources/test_detection_with_projector/3.png",
+            "./resources/test_detection_with_projector/4.png",
+            "./resources/test_detection_with_projector/5.png",
+            "./resources/test_detection_with_projector/6.png",
+            // DONE: TODO 7: black: because of pocket-mask?
+            // DONE: TODO 7: red: why?
+            "./resources/test_detection_with_projector/7.png",
+            // DONE: TODO 8: brown: killed by filter 2 (saturation-mask)?
+            // DONE: TODO 8: green: killed by filter 2 (saturation-mask)?
+            // DONE: TODO 8: black: killed by filter 2 (hole in mask)?
+            "./resources/test_detection_with_projector/8.png",
+            "./resources/test_detection_with_projector/9.png",
+            "./resources/test_detection_with_projector/10.png",
+            "./resources/test_detection_with_projector/11.png",
+            "./resources/test_detection_with_projector/12.png",
+            "./resources/test_detection_with_projector/13.png",
+            "./resources/test_detection_with_projector/14.png",
+            "./resources/test_detection_with_projector/15.png",
+            "./resources/test_detection_with_projector/16.png",
+            "./resources/test_detection_with_projector/17.png",
+            "./resources/test_detection_with_projector/18.png",
+            "./resources/test_detection_with_projector/19.png",
+            "./resources/test_detection_with_projector/20.png",
+            "./resources/test_detection_with_projector/21.png",
+            "./resources/test_detection_with_projector/22.png",
+            "./resources/test_detection_with_projector/23.png",
+            // TODO 24: statt zwei roten wird eine "grosse" erkannt
+            "./resources/test_detection_with_projector/24.png",
+//            "./resources/test_detection_with_projector_with_live_texts/1.png",
+//            "./resources/test_detection_with_projector_with_live_texts/2.png",
+//            // TODO 3: red ball in top-left corner is detected poorly
+//            "./resources/test_detection_with_projector_with_live_texts/3.png",
+//            "./resources/test_detection_with_projector_with_live_texts/4.png",
+//            "./resources/test_detection_with_projector_with_live_texts/5.png",
+//            "./resources/test_detection_with_projector_with_live_texts/6.png",
+//            "./resources/test_detection_with_projector_with_live_texts/7.png",
+//            "./resources/test_detection_with_projector_with_live_texts/8.png",
+//            "./resources/test_detection_with_projector_with_live_texts/9.png",
+//            "./resources/test_detection_with_projector_with_live_texts/10.png",
+//            "./resources/test_detection_with_projector_with_live_texts/11.png",
+//            // TODO 12: extra black circle near blue ball in top-right corner
+//            "./resources/test_detection_with_projector_with_live_texts/12.png",
+//            "./resources/test_detection_with_projector_with_live_texts/13.png",
+//            "./resources/test_detection_with_projector_with_live_texts/14.png",
+//            "./resources/test_detection_with_projector_with_live_texts/15.png",
+//            "./resources/test_detection_with_projector_with_live_texts/16.png",
+//            "./resources/test_detection_with_projector_with_live_texts/17.png",
+//            "./resources/test_detection_with_projector_with_live_texts/18.png",
+//            "./resources/test_detection_with_projector_with_live_texts/19.png",
+//            "./resources/test_detection_with_projector_with_live_texts/20.png",
+//            "./resources/test_detection_with_projector_with_live_texts/21.png",
+//            "./resources/test_detection_with_projector_with_live_texts/22.png",
+//            "./resources/test_detection_with_projector_with_live_texts/23.png",
     };
 
     std::vector<int> expectedBallCounts = {
