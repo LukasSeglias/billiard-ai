@@ -17,7 +17,7 @@
 Debugger _debugger;
 
 bool WRITE_LOG_FILE = true;
-bool LIVE = true;
+bool LIVE = false;
 bool STATIC_IMAGE = false;
 std::string IMAGE_PATH = "D:\\Dev\\billiard-ai\\cmake-build-debug\\test\\billiard_detection\\resources\\test_detection\\1_scaled_HD.png";
 
@@ -356,6 +356,7 @@ inline billiard::search::Configuration toSearchConfig(const Configuration& confi
     billiardSearchConfig._rules._nextSearch = billiard::snooker::nextSearch;
     billiardSearchConfig._rules._modifyState = billiard::snooker::stateAfterBreak;
     billiardSearchConfig._rules._isValidEndState = billiard::snooker::validEndState;
+    billiardSearchConfig._rules._scoreForPottedBall = billiard::snooker::scoreForPottedBall;
 
     return billiardSearchConfig;
 }
@@ -428,9 +429,20 @@ void search(Search search) {
         DEBUG("[COMMAND]: search failed -> call capture first" << std::endl);
         return;
     }
-    DEBUG("Search started" << std::endl << "---------------------------------------------------------------------------" << std::endl);
 
-    auto searchInfo = billiard::search::Search{search.id, std::vector<std::string>{search.type}};
+    std::stringstream typesString {};
+
+    std::vector<std::string> types;
+    for (int i = 0; i < search.typeSize; i++) {
+        auto& type = search.types[i];
+        types.emplace_back(type.text);
+        typesString << type.text << " ";
+    }
+
+    DEBUG("Search started, id=" << search.id << " types=[" << typesString.str() << "]"
+          << std::endl << "---------------------------------------------------------------------------" << std::endl);
+
+    auto searchInfo = billiard::search::Search{search.id, types};
     _search = billiard::search::search(toSearchState(_currentState), searchInfo, SOLUTIONS, *searchConfig);
 }
 

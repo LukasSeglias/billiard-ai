@@ -87,6 +87,8 @@ namespace billiard::snooker {
                                               const cv::Mat& image);
     EXPORT_BILLIARD_SNOOKER_LIB void classify(billiard::detection::Ball& ball, const cv::Mat& image);
 
+    EXPORT_BILLIARD_SNOOKER_LIB double scoreForPottedBall(const std::string& ballType);
+
     EXPORT_BILLIARD_SNOOKER_LIB billiard::search::Search nextSearch(const billiard::search::Search& previousSearch,
                                                                     const std::vector<std::string>& previousTypes); // TODO: Naming
 

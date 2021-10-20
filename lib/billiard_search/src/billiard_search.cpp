@@ -21,6 +21,13 @@ namespace billiard::search {
     #define MAX_VELOCITY_SQUARED 10000.0f * 10000.0f
     #define MAX_EVENTS 30
     #define VELOCITY_STEP (MAX_VELOCITY_TO_ADD / FORWARD_SEARCHES)
+    #define COST_FLOAT_TO_INT_FACTOR 100000
+    // 1.0 => simulation and search cost are both equally weighted. 0.5 => simulation cost is weighted half the search cost.
+    #define SIMULATION_COST_FRACTION_OF_SEARCH_COST 1.0
+    // Maximum search depth allowed before cutoff
+    #define MAX_SEARCH_DEPTH 3
+    // Maximum number of ball collisions to be considered in search of a path
+    #define SEARCH_MAX_BALL_COLLISIONS 2
 
     struct SearchNode;
     std::vector<node::System> mapToSolution(const std::shared_ptr<SearchNode>& solution);
@@ -99,7 +106,20 @@ namespace billiard::search {
     std::vector<std::shared_ptr<SearchNode>>
     expand(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state) {
         if (input->_type == SearchNodeType::SEARCH) {
-            return expandSearchNode(input, state);
+
+            if (input->_searchDepth < MAX_SEARCH_DEPTH) {
+                return expandSearchNode(input, state);
+            } else {
+                DEBUG("[expand] Maximum search depth reached for node "
+                      << input->asSearch()->_ballId
+                      << " path: " << logPath(input->currentPath())
+                      << " type=" << readable(input->asSearch()->_action)
+                      << " cost=" << input->_cost
+                      << " searchDepth=" << input->_searchDepth
+                      << std::endl);
+                return {};
+            }
+
         } else {
             return simulate(input, state);
         }
@@ -187,6 +207,7 @@ namespace billiard::search {
                         << " path: " << logPath(input->currentPath())
                         << " type=" << readable(input->asSearch()->_action)
                         << " cost=" << input->_cost
+                        << " searchDepth=" << input->_searchDepth
                         << std::endl);
 
                 auto result = expandSearchNodeByBall(input, state, searchInput, ball);
@@ -372,11 +393,14 @@ namespace billiard::search {
             resultSearchNode->_ballId = ball.first;
             resultSearchNode->_unusedBalls.erase(resultSearchNode->_unusedBalls.find(ball.first));
             auto parentSearchNode = result->_parent? result->_parent->asSearch() : nullptr;
-            result->_cost = input->_cost + searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
+            uint64_t searchStepCost = searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
+            result->_cost = input->_cost + searchStepCost;
+            result->_searchCost = input->_searchCost + searchStepCost;
 
             DEBUG("[expandSearchNodeByBall] " << "expanded" << " "
                                               << "ball=" << resultSearchNode->_ballId << " "
                                               << "cost=" << std::to_string(result->_cost) << " "
+                                              << "searchCost=" << std::to_string(result->_searchCost) << " "
                                               << "action=" << resultSearchNode->_action << " "
                                               << "events=" << resultSearchNode->_events << " "
                                               << "parent=" << result->_parent->asSearch()->_ballId << " "
@@ -593,7 +617,9 @@ namespace billiard::search {
             auto resultSearchNode = result->asSearch();
             resultSearchNode->_unusedBalls.erase(resultSearchNode->_unusedBalls.find(ball.first));
             auto parentSearchNode = result->_parent? result->_parent->asSearch() : nullptr;
-            result->_cost = input->_cost + searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
+            uint64_t searchStepCost = searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
+            result->_cost = input->_cost + searchStepCost;
+            result->_searchCost = input->_searchCost + searchStepCost;
 
             if (ball.second._type == "WHITE") {
                 auto prepared = prepareForSimulation(result, state);
@@ -631,6 +657,7 @@ namespace billiard::search {
         double maxDistanceSquared = state->_config._table.diagonalLengthSquared;
         double totalDistanceCost = 0.0;
         double totalAngleCost = 0.0;
+        double totalIndirectionCost = 0.0;
 
         const PhysicalEvent* previousEvent = nullptr;
         for (int eventIndex = 0; eventIndex < events.size(); eventIndex++) {
@@ -686,7 +713,7 @@ namespace billiard::search {
 
             double cosTheta = 0.0;
 
-            std::stringstream debugOutput {};
+            std::stringstream angleDebugOutput {};
 
             if (event._type == PhysicalEventType::POCKET_COLLISION) {
 
@@ -700,8 +727,8 @@ namespace billiard::search {
                 cosTheta = glm::dot(pocketNormal, -targetDirection);
 
 #ifdef BILLIARD_DEBUG
-                debugOutput << "Type=POCKET_COLLISION" << " "
-                            << "pocketNormal=" << pocketNormal << " ";
+                angleDebugOutput << "Type=POCKET_COLLISION" << " "
+                                 << "pocketNormal=" << pocketNormal << " ";
 #endif
 
             } else if (event._type == PhysicalEventType::RAIL_COLLISION) {
@@ -716,8 +743,8 @@ namespace billiard::search {
                 cosTheta = glm::dot(railNormal, -targetDirection);
 
 #ifdef BILLIARD_DEBUG
-                debugOutput << "Type=RAIL_COLLISION" << " "
-                            << "railNormal=" << railNormal << " ";
+                angleDebugOutput << "Type=RAIL_COLLISION" << " "
+                                 << "railNormal=" << railNormal << " ";
 #endif
 
             } else if (event._type == PhysicalEventType::BALL_COLLISION) {
@@ -734,8 +761,8 @@ namespace billiard::search {
                 cosTheta = glm::dot(targetBallTargetDirection, targetDirection);
 
 #ifdef BILLIARD_DEBUG
-                debugOutput << "Type=BALL_COLLISION" << " "
-                            << "targetBallTargetDirection=" << targetBallTargetDirection << " ";
+                angleDebugOutput << "Type=BALL_COLLISION" << " "
+                                 << "targetBallTargetDirection=" << targetBallTargetDirection << " ";
 #endif
             }
 
@@ -788,28 +815,47 @@ namespace billiard::search {
 //            totalAngleCost += angleCost;
             totalAngleCost += weightedAngleCost;
 
+            std::stringstream indirectionDebugOutput {};
+
+            if (event._type == PhysicalEventType::BALL_COLLISION) {
+                double step = 1.0 / ((double) SEARCH_MAX_BALL_COLLISIONS);
+                totalIndirectionCost += step;
+
+#ifdef BILLIARD_DEBUG
+                indirectionDebugOutput << " Ball collision -> indirection +" << std::to_string(step) << " ";
+#endif
+            }
+
             DEBUG(agent << "Event " << std::to_string(eventIndex) << " "
                            << "previousPosition=" << previousPosition << " "
                            << "currentPosition=" << currentPosition << " "
                            << "targetDirection=" << targetDirection << " "
-                           << debugOutput.str()
-                           << "cosTheta=" << std::to_string(cosTheta) << " "
-                           << "angleCost=" << std::to_string(angleCost) << " "
-                           << "weightedAngleCost=" << std::to_string(weightedAngleCost) << " "
-                           << "t=" << glm::to_string(t) << " "
-                           << "points=" << glm::to_string(points) << " "
-                           << "coeff=" << glm::to_string(coeff) << " "
-                           << "result=" << glm::to_string(result) << " "
-                           << "coeff * points=" << glm::to_string(coeffPoints) << " "
                            << std::endl);
+            DEBUG(agent << "Event " << std::to_string(eventIndex) << " "
+                        << angleDebugOutput.str()
+                        << "cosTheta=" << std::to_string(cosTheta) << " "
+                        << "angleCost=" << std::to_string(angleCost) << " "
+                        << "weightedAngleCost=" << std::to_string(weightedAngleCost) << " "
+                        << std::endl);
+            DEBUG(agent << "Event " << std::to_string(eventIndex) << " "
+                        << "t=" << glm::to_string(t) << " "
+                        << "points=" << glm::to_string(points) << " "
+                        << "coeff=" << glm::to_string(coeff) << " "
+                        << "result=" << glm::to_string(result) << " "
+                        << "coeff * points=" << glm::to_string(coeffPoints) << " "
+                        << std::endl);
+            DEBUG(agent << "Event " << std::to_string(eventIndex) << " "
+                        << "Indirection: " << indirectionDebugOutput.str()
+                        << std::endl);
         }
 
-        double totalCost = totalDistanceCost + totalAngleCost;
-        uint64_t totalCostInt = totalCost * 100000;
+        double totalCost = totalDistanceCost + totalAngleCost + totalIndirectionCost;
+        uint64_t totalCostInt = totalCost * COST_FLOAT_TO_INT_FACTOR;
 
         DEBUG(agent << "Result: "
                     << "totalDistanceCost=" << std::to_string(totalDistanceCost) << " "
                     << "totalAngleCost=" << std::to_string(totalAngleCost) << " "
+                    << "totalIndirectionCost=" << std::to_string(totalIndirectionCost) << " "
                     << "totalCost=" << std::to_string(totalCost) << " "
                     << "totalCostInt=" << std::to_string(totalCostInt) << " "
                     << std::endl);
@@ -825,7 +871,7 @@ namespace billiard::search {
     std::optional<event::Event> nextEvent(const node::System& system, const std::shared_ptr<SearchState>& state);
     node::Layer createLayer(const event::Event& event, const node::Layer& previousLayer, const std::shared_ptr<SearchState>& state);
     std::vector<std::string> getTypeOf(const Search& search, const std::unordered_map<std::string, Ball>& state);
-    uint64_t simulationCost(const node::System& system);
+    uint64_t simulationCost(const node::System& system, uint64_t searchCost, const std::shared_ptr<SearchState>& state);
 
     std::vector<std::shared_ptr<SearchNode>>
     simulate(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state) {
@@ -881,7 +927,7 @@ namespace billiard::search {
                         }
                     }
 
-                    auto cost = input->_cost + simulationCost(simulationInput->_simulation);
+                    auto cost = input->_cost + simulationCost(simulationInput->_simulation, input->_searchCost, state);
 
                     if (simCount < BREAKS) {
                         DEBUG(agent << "Prepare simulated output for next break" << std::endl);
@@ -906,7 +952,8 @@ namespace billiard::search {
                             auto enrichedWithPockets = addPocketsAsInitialTargets(State{newBallPositions}, search, state->_config);
                             for (auto& output : enrichedWithPockets) {
                                 output->_parent = input;
-                                output->_cost = input->_cost + cost;
+                                output->_cost = cost;
+                                output->_searchCost = 0;
                             }
                             expanded.insert(expanded.end(), enrichedWithPockets.begin(), enrichedWithPockets.end());
                         } else {
@@ -931,8 +978,46 @@ namespace billiard::search {
         return expanded;
     }
 
-    uint64_t simulationCost(const node::System& system) {
-        return 0; // TODO: Write heuristic
+    uint64_t simulationCost(const node::System& system, uint64_t searchCost, const std::shared_ptr<SearchState>& state) {
+
+        // TODO: document
+
+        std::string agent = "[simulationCost " + std::to_string(system._id) + "] ";
+
+        double totalScore = 0.0;
+        for (auto& node : system.lastLayer()._nodes) {
+            if (node.second._type == billiard::search::node::NodeType::BALL_POTTING) {
+                auto& ballType = node.second._ballType;
+                double score = state->_config._rules._scoreForPottedBall(ballType);
+                DEBUG(agent << "Potted "
+                            << node.first << " "
+                            << "(" << ballType << ")" << " "
+                            << "scoring: " << std::to_string(score) << " "
+                            << std::endl);
+                totalScore += score;
+            }
+        }
+
+        double totalCost = 1.0 - std::min(totalScore, 1.0);
+        uint64_t totalCostInt = totalCost * COST_FLOAT_TO_INT_FACTOR; // TODO: remove?
+
+        double simulationCostCap = SIMULATION_COST_FRACTION_OF_SEARCH_COST * (double) searchCost;
+        uint64_t weightedTotalCostInt = totalCost * simulationCostCap;
+
+        DEBUG(agent << "Result: "
+                    << "totalScore=" << std::to_string(totalScore) << " "
+                    << "totalCost=" << std::to_string(totalCost) << " "
+                    << "totalCostInt=" << std::to_string(totalCostInt) << " "
+                    << "searchCost=" << std::to_string(searchCost) << " "
+                    << std::endl);
+        DEBUG(agent << "Result: "
+                    << "simulationWeight=" << std::to_string(SIMULATION_COST_FRACTION_OF_SEARCH_COST) << " "
+                    << "simulationCostCap=" << std::to_string(simulationCostCap) << " "
+                    << "weightedTotalCostInt=" << std::to_string(weightedTotalCostInt) << " "
+                    << std::endl);
+
+        // TODO: Improve heuristic
+        return weightedTotalCostInt;
     }
 
     std::optional<event::Event> nextBallInRest(const std::pair<std::string, node::Node>& ball);

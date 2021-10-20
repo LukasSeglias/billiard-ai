@@ -310,11 +310,27 @@ public class AnimationService : MonoBehaviour
 		public Vec2_t position;
 		[MarshalAs(UnmanagedType.I1)] public bool fromUnity = true;
 	}
-	
+
+	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    class Text_t {
+        public string text;
+    }
+
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
 	class Search_t {
 		public string id;
-		public string type;
+		public IntPtr types;
+        public int typeSize;
+
+        public Search_t(string id, Text_t[] types) {
+            this.id = id;
+            this.types = allocate(types);
+            this.typeSize = types.Length;
+        }
+
+        ~Search_t() {
+            Marshal.FreeHGlobal(types);
+        }
 	}
 	
 	////////////////////////////////////////////////////////////////////
@@ -446,7 +462,13 @@ public class AnimationService : MonoBehaviour
 	}
 	
 	private static Search_t map(Search search) {
-		return new Search_t{id = search.id, type = search.type};
+	    Text_t[] types = new Text_t[search.types.Length];
+	    for (int i = 0; i < search.types.Length; i++) {
+	        types[i] = new Text_t { text = search.types[i] };
+	    }
+
+	    Search_t result = new Search_t(search.id, types);
+		return result;
 	}
 	
 	private static Vec2 map(Vec2_t from) {

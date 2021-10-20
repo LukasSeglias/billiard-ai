@@ -693,6 +693,29 @@ namespace billiard::snooker {
 
     }
 
+#define MAX_POINTS 7.0
+    std::unordered_map<std::string, int> pointsPerColor({
+                                                                {"RED", 1},
+                                                                {"YELLOW", 2},
+                                                                {"GREEN", 3},
+                                                                {"BROWN", 4},
+                                                                {"BLUE", 5},
+                                                                {"PINK", 6},
+                                                                {"BLACK", 7}
+                                                        });
+
+    int pointsForPottedBall(const std::string& ballType) {
+        if (pointsPerColor.count(ballType)) {
+            return pointsPerColor.at(ballType);
+        }
+        return 0;
+    }
+
+    double scoreForPottedBall(const std::string& ballType) {
+        // Number between 0 and 1
+        return ((double) pointsForPottedBall(ballType)) / MAX_POINTS;
+    }
+
     billiard::search::Search nextSearch(const billiard::search::Search& previousSearch,
                                         const std::vector<std::string>& previousTypes) {
         return previousSearch; // TODO: Switch between search types -> From RED to color and vice versa

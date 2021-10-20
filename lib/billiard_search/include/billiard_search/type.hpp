@@ -302,6 +302,7 @@ namespace billiard::search {
             std::function<node::Layer (const node::Layer&)> _modifyState = [](const node::Layer& layer) {return layer;};
             std::function<bool(const std::vector<std::string>&, const node::Layer&)> _isValidEndState = [](
                     const std::vector<std::string>& expectedTypes, const node::Layer& layer) { return true; };
+            std::function<double(const std::string&)> _scoreForPottedBall = [](const std::string& ballType) { return 0.0; };
         } _rules;
     };
 
@@ -399,7 +400,7 @@ namespace billiard::search {
 
     struct SearchNodeSearch {
         SearchActionType _action;
-        std::string _ballId; // None if pocket?
+        std::string _ballId; // => Pocket-ID if action = SearchActionType::NONE
         std::vector<PhysicalEvent> _events;
         std::unordered_map<std::string, Ball> _unusedBalls;
         billiard::search::Search _search;
@@ -418,6 +419,8 @@ namespace billiard::search {
                 _type(type),
                 _body(std::move(body)),
                 _cost(0),
+                _searchCost(0),
+                _searchDepth(0),
                 _isSolution(false) {
         }
 
@@ -436,6 +439,12 @@ namespace billiard::search {
                 search->_state = parentSearch->_state;
                 search->_search = parentSearch->_search;
                 search->_unusedBalls = parentSearch->_unusedBalls;
+
+                if (parent->_type == SearchNodeType::SEARCH) {
+                    node->_searchDepth = parent->_searchDepth + 1;
+                } else {
+                    node->_searchDepth = 0;
+                }
             }
 
             node->_parent = std::move(parent);
@@ -451,6 +460,8 @@ namespace billiard::search {
             node->asSimulation()->_simulation._id = id++;
             if (parent) {
                 node->_cost = parent->_cost;
+                node->_searchCost = parent->_searchCost;
+                node->_searchDepth = 0;
                 node->_parent = std::move(parent);
             }
 
@@ -525,6 +536,8 @@ namespace billiard::search {
 
         // Interface
         uint64_t _cost;
+        uint64_t _searchCost;
+        uint16_t _searchDepth;
         bool _isSolution;
     };
 }
