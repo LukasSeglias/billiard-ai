@@ -302,6 +302,7 @@ namespace billiard::search {
             std::function<node::Layer (const node::Layer&)> _modifyState = [](const node::Layer& layer) {return layer;};
             std::function<bool(const std::vector<std::string>&, const node::Layer&)> _isValidEndState = [](
                     const std::vector<std::string>& expectedTypes, const node::Layer& layer) { return true; };
+            std::function<double(const std::string&)> _scoreForPottedBall = [](const std::string& ballType) { return 0.0; };
         } _rules;
     };
 
@@ -418,6 +419,7 @@ namespace billiard::search {
                 _type(type),
                 _body(std::move(body)),
                 _cost(0),
+                _searchCost(0),
                 _isSolution(false) {
         }
 
@@ -451,6 +453,7 @@ namespace billiard::search {
             node->asSimulation()->_simulation._id = id++;
             if (parent) {
                 node->_cost = parent->_cost;
+                node->_searchCost = parent->_searchCost;
                 node->_parent = std::move(parent);
             }
 
@@ -525,6 +528,7 @@ namespace billiard::search {
 
         // Interface
         uint64_t _cost;
+        uint64_t _searchCost;
         bool _isSolution;
     };
 }

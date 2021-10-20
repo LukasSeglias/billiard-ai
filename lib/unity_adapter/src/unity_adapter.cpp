@@ -356,6 +356,7 @@ inline billiard::search::Configuration toSearchConfig(const Configuration& confi
     billiardSearchConfig._rules._nextSearch = billiard::snooker::nextSearch;
     billiardSearchConfig._rules._modifyState = billiard::snooker::stateAfterBreak;
     billiardSearchConfig._rules._isValidEndState = billiard::snooker::validEndState;
+    billiardSearchConfig._rules._scoreForPottedBall = billiard::snooker::scoreForPottedBall;
 
     return billiardSearchConfig;
 }

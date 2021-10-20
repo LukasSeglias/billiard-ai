@@ -21,6 +21,9 @@ namespace billiard::search {
     #define MAX_VELOCITY_SQUARED 10000.0f * 10000.0f
     #define MAX_EVENTS 30
     #define VELOCITY_STEP (MAX_VELOCITY_TO_ADD / FORWARD_SEARCHES)
+    #define COST_FLOAT_TO_INT_FACTOR 100000
+    // 1.0 => simulation and search cost are both equally weighted. 0.5 => simulation cost is weighted half the search cost.
+    #define SIMULATION_COST_FRACTION_OF_SEARCH_COST 1.0
 
     struct SearchNode;
     std::vector<node::System> mapToSolution(const std::shared_ptr<SearchNode>& solution);
@@ -372,11 +375,14 @@ namespace billiard::search {
             resultSearchNode->_ballId = ball.first;
             resultSearchNode->_unusedBalls.erase(resultSearchNode->_unusedBalls.find(ball.first));
             auto parentSearchNode = result->_parent? result->_parent->asSearch() : nullptr;
-            result->_cost = input->_cost + searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
+            uint64_t searchStepCost = searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
+            result->_cost = input->_cost + searchStepCost;
+            result->_searchCost = input->_searchCost + searchStepCost;
 
             DEBUG("[expandSearchNodeByBall] " << "expanded" << " "
                                               << "ball=" << resultSearchNode->_ballId << " "
                                               << "cost=" << std::to_string(result->_cost) << " "
+                                              << "searchCost=" << std::to_string(result->_searchCost) << " "
                                               << "action=" << resultSearchNode->_action << " "
                                               << "events=" << resultSearchNode->_events << " "
                                               << "parent=" << result->_parent->asSearch()->_ballId << " "
@@ -593,7 +599,9 @@ namespace billiard::search {
             auto resultSearchNode = result->asSearch();
             resultSearchNode->_unusedBalls.erase(resultSearchNode->_unusedBalls.find(ball.first));
             auto parentSearchNode = result->_parent? result->_parent->asSearch() : nullptr;
-            result->_cost = input->_cost + searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
+            uint64_t searchStepCost = searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
+            result->_cost = input->_cost + searchStepCost;
+            result->_searchCost = input->_searchCost + searchStepCost;
 
             if (ball.second._type == "WHITE") {
                 auto prepared = prepareForSimulation(result, state);
@@ -805,7 +813,7 @@ namespace billiard::search {
         }
 
         double totalCost = totalDistanceCost + totalAngleCost;
-        uint64_t totalCostInt = totalCost * 100000;
+        uint64_t totalCostInt = totalCost * COST_FLOAT_TO_INT_FACTOR;
 
         DEBUG(agent << "Result: "
                     << "totalDistanceCost=" << std::to_string(totalDistanceCost) << " "
@@ -825,7 +833,7 @@ namespace billiard::search {
     std::optional<event::Event> nextEvent(const node::System& system, const std::shared_ptr<SearchState>& state);
     node::Layer createLayer(const event::Event& event, const node::Layer& previousLayer, const std::shared_ptr<SearchState>& state);
     std::vector<std::string> getTypeOf(const Search& search, const std::unordered_map<std::string, Ball>& state);
-    uint64_t simulationCost(const node::System& system);
+    uint64_t simulationCost(const node::System& system, uint64_t searchCost, const std::shared_ptr<SearchState>& state);
 
     std::vector<std::shared_ptr<SearchNode>>
     simulate(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state) {
@@ -881,7 +889,7 @@ namespace billiard::search {
                         }
                     }
 
-                    auto cost = input->_cost + simulationCost(simulationInput->_simulation);
+                    auto cost = input->_cost + simulationCost(simulationInput->_simulation, input->_searchCost, state);
 
                     if (simCount < BREAKS) {
                         DEBUG(agent << "Prepare simulated output for next break" << std::endl);
@@ -903,7 +911,8 @@ namespace billiard::search {
                         if (!enrichedWithPockets.empty()) {
                             for (auto& output : enrichedWithPockets) {
                                 output->_parent = input;
-                                output->_cost = input->_cost + cost;
+                                output->_cost = cost;
+                                output->_searchCost = 0;
                             }
                             expanded.insert(expanded.end(), enrichedWithPockets.begin(), enrichedWithPockets.end());
                         } else {
@@ -928,8 +937,46 @@ namespace billiard::search {
         return expanded;
     }
 
-    uint64_t simulationCost(const node::System& system) {
-        return 0; // TODO: Write heuristic
+    uint64_t simulationCost(const node::System& system, uint64_t searchCost, const std::shared_ptr<SearchState>& state) {
+
+        // TODO: document
+
+        std::string agent = "[simulationCost " + std::to_string(system._id) + "] ";
+
+        double totalScore = 0.0;
+        for (auto& node : system.lastLayer()._nodes) {
+            if (node.second._type == billiard::search::node::NodeType::BALL_POTTING) {
+                auto& ballType = node.second._ballType;
+                double score = state->_config._rules._scoreForPottedBall(ballType);
+                DEBUG(agent << "Potted "
+                            << node.first << " "
+                            << "(" << ballType << ")" << " "
+                            << "scoring: " << std::to_string(score) << " "
+                            << std::endl);
+                totalScore += score;
+            }
+        }
+
+        double totalCost = 1.0 - std::min(totalScore, 1.0);
+        uint64_t totalCostInt = totalCost * COST_FLOAT_TO_INT_FACTOR; // TODO: remove?
+
+        double simulationCostCap = SIMULATION_COST_FRACTION_OF_SEARCH_COST * (double) searchCost;
+        uint64_t weightedTotalCostInt = totalCost * simulationCostCap;
+
+        DEBUG(agent << "Result: "
+                    << "totalScore=" << std::to_string(totalScore) << " "
+                    << "totalCost=" << std::to_string(totalCost) << " "
+                    << "totalCostInt=" << std::to_string(totalCostInt) << " "
+                    << "searchCost=" << std::to_string(searchCost) << " "
+                    << std::endl);
+        DEBUG(agent << "Result: "
+                    << "simulationWeight=" << std::to_string(SIMULATION_COST_FRACTION_OF_SEARCH_COST) << " "
+                    << "simulationCostCap=" << std::to_string(simulationCostCap) << " "
+                    << "weightedTotalCostInt=" << std::to_string(weightedTotalCostInt) << " "
+                    << std::endl);
+
+        // TODO: Improve heuristic
+        return weightedTotalCostInt;
     }
 
     std::optional<event::Event> nextBallInRest(const std::pair<std::string, node::Node>& ball);
