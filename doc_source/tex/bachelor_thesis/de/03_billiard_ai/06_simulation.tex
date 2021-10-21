@@ -190,15 +190,15 @@ Betrachte dazu eine der Gleichungen mit zugehörigem $\lambda$:
 Dritter Schritt - Zeitpunkt der Kollision bestimmen:\\
 Dies kann über die folgenden Gleichungen gelöst werden:
 \begin{align}
-    t_1 = \frac{-v_x + \sqrt{v_x^2 - 2 \cdot a_x \cdot \Delta s_x}}{a_x}\\
-    t_2 = \frac{-v_x - \sqrt{v_x^2 - 2 \cdot a_x \cdot \Delta s_x}}{a_x}
+    \Delta t_1 = \frac{-v + \sqrt{v^2 + 2 \cdot a \cdot \Delta s}}{a}\\
+    \Delta t_2 = \frac{-v - \sqrt{v^2 + 2 \cdot a \cdot \Delta s}}{a}
 \end{align}
 Bevor die Lösung zu $t_1$ und $t_2$ berechnet wird, muss jedoch der Radikand auf folgende Eigenschaft geprüft werden:
 \begin{align}
-    0 \leq v_x^2 - 2 \cdot a_x \cdot \Delta s_x
+    0 \leq v^2 + 2 \cdot a \cdot \Delta s
 \end{align}
 Nur in diesem Fall gibt es eine Lösung und somit an dieser Position eine Kollision. Ansonsten hat die Kugel vorher schon
-ihre Gesamtenergie verloren und steht still. Damit ist der Zeitpunkt der Kollision berechnet.
+ihre Gesamtenergie verloren und steht still. Es wird das minimum der beiden Zeiten $\Delta t_1$ und $\Delta t_2$ verwendet.
 
 \subsubsection{Ereignis - Totaler Energieverlust}
 Dieses Ereignis trifft ein, sobald eine Kugel stillsteht. Der Zeitpunkt wird über die Formel \ref{eq:ereignis:out_of_energy:00}

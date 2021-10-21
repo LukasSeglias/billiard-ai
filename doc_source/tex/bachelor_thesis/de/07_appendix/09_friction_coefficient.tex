@@ -1,4 +1,17 @@
-\section{Bestimmung Reibungskoeffizient}
+\section{Bestimmung Reibungskoeffizient}\label{anhang:herleitung:reibungskoeffizient}
+Um den Reibungskoeffizienten $c_R$ zu bestimmen, wird ein Versuchsaufbau in Form einer Rampe benötigt, wobei eine
+theoretische Reibung auf einer perfekt glatten Oberfläche der Rampe von $0$ angenommen wird.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{../common/07_appendix/resources/00_reibungskoeffizient_rampe.png}
+    \end{center}
+    \caption{Modell zur Berechnung der Startgeschwindigkeit auf dem Tisch}
+    \label{fig:modell_berechnung_startgeschwindigkeit}
+\end{figure}
+
+In Abbildung \ref{fig:modell_berechnung_startgeschwindigkeit} werden die wirkenden Kräfte und ihr Einfluss veranschaulicht.
+Es gelten die nachfolgenden Beziehungen.
 
 \begin{align}
     g = 9.81 \frac{m}{s^2}\\
@@ -11,6 +24,7 @@
 
 Während die Kugel die Rampe herunterrollt, wird die Formel der gleichmässig beschleunigten Bewegung verwendet.
 Die Kugel wird auf der Rampe platziert und losgelassen. Das bedeutet, dass sie keine Initialgeschwindigkeit hat.
+Relevant ist am Ende die zurückgelegte Strecke wie auch die benötigte Zeit.
 \begin{align}
     s(t) = s = \frac{1}{2} \cdot a \cdot t^2 + v_0 \cdot t + s_0\\
     v_0 = 0\\
@@ -43,6 +57,16 @@ TODO: Kollision mit Tisch?
 
 Ab diesem Zeitpunkt wird angenommen, dass die Kugel auf dem Tisch rollt und nur noch von der Rollreibung zwischen Kugel und Tisch abgebremst wird.
 Es muss die von der Kugel bis zum Stillstand zurückgelegte Strecke $s$ gemessen werden.
+Weiterhin gelten die Beziehungen in Abbildung \ref{fig:modell_reibungskoeffizient}.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{../common/07_appendix/resources/01_reibungskoeffizient_tisch.png}
+    \end{center}
+    \caption{Modell zur Berechnung des Reibungskoeffizienten}
+    \label{fig:modell_reibungskoeffizient}
+\end{figure}
+
 Anschliessend kann die Beschleunigung berechnet werden:
 \begin{align}
     s(t) = s = \frac{1}{2} \cdot a \cdot t^2 + v_0 \cdot t + s_0\\
