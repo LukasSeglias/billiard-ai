@@ -57,11 +57,10 @@ Energie der Kugeln zeigt jeweils in Richtung von $s_t$.
 \end{figure}
 
 Die initialen Geschwindigkeiten $\vec{v^i_1}$ und $\vec{v^i_2}$ werden aufgrund eines natürlichen Energieverlusts um eine
-Konstante $E_v$, welche in Prozent angegeben wird, reduziert. Da sich der Prozentsatz auf den minimalen Energiewert aus
-Kapitel \ref{EnergieuebergabeBeiKollision} bezieht, geschieht eine Umwandlung zu diesem Wert durch Division.
+Konstante $E_v$, welche in Prozent angegeben wird, reduziert.
 \begin{align}
-    \vec{v_1} = \vec{v^i_1} \cdot \frac{1}{1 + E_v}\\
-    \vec{v_2} = \vec{v^i_2} \cdot \frac{1}{1 + E_v}\\
+    \vec{v_1} = \vec{v^i_1} \cdot (1 - E_v)\\
+    \vec{v_2} = \vec{v^i_2} \cdot (1 - E_v)\\
 \end{align}
 Um nun die neuen Geschwindigkeiten $\vec{u_1}$ und $\vec{u_2}$ zu berechnen, müssen die initialen Geschwindigkeiten
 $\vec{v_1}$ sowie $\vec{v_2}$ auf die Komponenten in Richtung von $s_z$ und $s_t$ aufgeteilt werden.
