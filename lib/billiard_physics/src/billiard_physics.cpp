@@ -235,8 +235,7 @@ glm::vec2 billiard::physics::position(const glm::vec2& acceleration, const glm::
 
 std::optional<float> billiard::physics::timeToCollision(const glm::vec2& acceleration1, const glm::vec2& velocity1,
                                                   const glm::vec2& position1, const glm::vec2& acceleration2,
-                                                  const glm::vec2& velocity2, const glm::vec2& position2, float diameter,
-                                                  float radius) {
+                                                  const glm::vec2& velocity2, const glm::vec2& position2, float diameter) {
 
     static glm::vec2 zero {0, 0};
     assert(velocity1 != zero);
@@ -244,7 +243,6 @@ std::optional<float> billiard::physics::timeToCollision(const glm::vec2& acceler
     auto velocity2SquaredLength = glm::dot(velocity2, velocity2);
     if (velocity2SquaredLength > 0) {
         // Both balls are moving
-        // TODO: document
 
         auto velocityIntersection = intersection::halfLineIntersectsHalfLine(position1, velocity1, position2, velocity2);
         if (!velocityIntersection) {
@@ -253,14 +251,19 @@ std::optional<float> billiard::physics::timeToCollision(const glm::vec2& acceler
             glm::vec2 velocity1Normalised = glm::normalize(velocity1);
             glm::vec2 velocity2Normalised = glm::normalize(velocity2);
             glm::vec2 offset = from1To2 - velocity1Normalised * glm::dot(from1To2, velocity1Normalised);
-            glm::vec2 backwardOffset1 = velocity1Normalised * -radius;
-            glm::vec2 backwardOffset2 = velocity2Normalised * -radius;
+            glm::vec2 backwardOffset1 = velocity1Normalised * -diameter;
+            glm::vec2 backwardOffset2 = velocity2Normalised * -diameter;
 
             auto shiftedIntersection = intersection::halfLineIntersectsHalfLine(position1 + offset + backwardOffset1,
                                                                                 velocity1, position2 + backwardOffset2,
                                                                                 velocity2);
             if (!shiftedIntersection) {
-                return std::nullopt;
+
+                auto velocityDistance = glm::dot(velocity1Normalised, velocity2Normalised);
+                auto offsetSquareLength = glm::dot(offset, offset);
+                if (velocityDistance != 1 && offsetSquareLength > diameter * diameter) {
+                    return std::nullopt;
+                }
             }
         }
     } else {

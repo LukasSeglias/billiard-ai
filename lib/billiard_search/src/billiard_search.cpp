@@ -1024,7 +1024,7 @@ namespace billiard::search {
     std::optional<event::Event>
     nextBallCollision(const std::pair<std::string, node::Node>& ball,
                       const std::unordered_map<std::string, node::Node>& balls,
-                      float diameter, float radius);
+                      float diameter);
     std::optional<event::Event>
     nextRailCollision(const std::pair<std::string, node::Node>& ball, const std::vector<Rail>& rails,
         const std::unordered_map<std::string, std::string>& lastRailCollisions);
@@ -1043,11 +1043,9 @@ namespace billiard::search {
             // läuft Kugel nächstens aus?
             nextEvent = min(nextBallInRest(ball), nextEvent);
             // Kollision mit statischer Kugelr
-            nextEvent = min(nextBallCollision(ball, layer.staticBalls(), state->_config._ball._diameter,
-                                              state->_config._ball._radius), nextEvent);
+            nextEvent = min(nextBallCollision(ball, layer.staticBalls(), state->_config._ball._diameter), nextEvent);
             // Kollision mit anderer dynamischer Kugel
-            nextEvent = min(nextBallCollision(ball, layer.dynamicBalls(), state->_config._ball._diameter,
-                                              state->_config._ball._radius), nextEvent);
+            nextEvent = min(nextBallCollision(ball, layer.dynamicBalls(), state->_config._ball._diameter), nextEvent);
             // Kollision mit Bande
             nextEvent = min(nextRailCollision(ball, state->_config._table._rails, system._lastRailCollisions),
                             nextEvent);
@@ -1074,7 +1072,7 @@ namespace billiard::search {
     std::optional<event::Event>
     nextBallCollision(const std::pair<std::string, node::Node>& ball,
                       const std::unordered_map<std::string, node::Node>& balls,
-                      const float diameter, const float radius) {
+                      const float diameter) {
         std::optional<event::Event> nextEvent = std::nullopt;
 
         auto state = ball.second.after();
@@ -1086,7 +1084,7 @@ namespace billiard::search {
                         auto collisionTime = billiard::physics::timeToCollision(
                                 state->_acceleration, state->_velocity, state->_position,
                                 otherState->_acceleration, otherState->_velocity, otherState->_position,
-                                diameter, radius
+                                diameter
                                 );
 
                         if (collisionTime) {

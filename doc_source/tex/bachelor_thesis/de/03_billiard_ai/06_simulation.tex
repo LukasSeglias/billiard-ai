@@ -161,7 +161,79 @@ Erste ist.
 \end{align}
 
 Das Lösen dieses Gleichungssystems erfordert viel Rechenzeit, was die Frage nach Performanceverbesserungen aufwirft.
-TODO: Precondition Checks
+Diese werden durch Vorbedingungen erzielt, welche welche geprüft werden. Es findet zu Beginn eine Fallunterscheidung
+statt. Wenn die zweite Kugel statisch ist, so wird geprüft, ob die Distanz $d$ zwischen der Position $P_2$ der zweiten Kugel
+$K_2$ und der halben Geraden $g$ definiert durch die Position $P_1$ der ersten Kugel $K_1$ wie auch deren Geschwindigkeitsvektor
+$\vec{v}$ kleiner oder gleich dem Kugeldurchmesser ist. Nur in diesem Fall kann es eine Kollision geben.
+Sämtliche Angaben beziehen sich auf die Grafik \ref{fig:kugelkollision_vorbedingung_statisch}.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/24_vorbedingung_kugelkollision_statisch.png}
+    \end{center}
+    \caption{Vorbedingung einer Prüfung auf Kollision zwischen Kugeln bei statischer Beteiligung}
+    \label{fig:kugelkollision_vorbedingung_statisch}
+\end{figure}
+
+Sobald beide Kugeln dynamisch sind, wird es ein wenig komplizierter. Da beide in Bewegung sind, reicht eine einfache
+Prüfung auf die Distanz nicht mehr. Es muss also ein Schnittpunkttest der beiden halben Geraden, definiert durch die
+beiden Geschwindigkeitsvektoren, durchgeführt werden. Hierbei ist der Durchmesser der Kugel mitzubeachten, was drei
+Spezialfälle eröffnet.
+Abbildung \ref{fig:kugelkollision_vorbedingung_dynamisch} zeigt das Vorgehen zur Behandlung des ersten Falls.
+Würde nur ein Schnittpunkttest der beiden halben Geraden durchgeführt, so ergäbe diese Situation keine Lösung.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/25_vorbedingung_kugelkollision_dynamisch.png}
+    \end{center}
+    \caption{Vorbedingung einer Prüfung auf Kollision zwischen dynamischen Kugeln}
+    \label{fig:kugelkollision_vorbedingung_dynamisch}
+\end{figure}
+
+Daher wird der Vektor $\vec{p}$ zwischen den Positionen $P_1$ und $P_2$ gebildet (grün).
+\begin{align}
+    \vec{p} = P_2 - P_1
+\end{align}
+Der erhaltene Vektor wird auf den Geschwindigkeitsvektor $\vec{v_1}$ projiziert (grün gestrichelt).
+\begin{align}
+    \vec{p'} = (\vec{p} \cdot \hat{v_1}) \cdot \vec{v_1}
+\end{align}
+Danach wird der Zwischenvektor $\vec{d}$ gebildet (blau).
+\begin{align}
+    \vec{d} = \vec{p} - \vec{p'}
+\end{align}
+
+Die Kugel $K_1$ wird um diesen Vektor verschoben, es resultiert $P^{'}_1$.
+\begin{align}
+    P^{'}_1 = P_1 + \vec{d}
+\end{align}
+Von dieser Position aus kann nun ein Schnittpunkttest zwischen den beiden
+halben Geraden, durch die Geschwindigkeitsvektoren definiert, durchgeführt werden.
+
+Ein weiterer Spezialfall tritt auf, wenn sich die Kugeln parallel fortbewegen. Da dies ein sehr seltener Fall ist und
+wohl kaum auftreten wird, wird die Berechnung zugelassen, wenn der Vektor $\vec{d}$ kleiner oder gleich gross
+wie der Durchmesser ist. Die Situation wird in Abbildung \ref{fig:kugelkollision_vorbedingung_dynamisch_parallel} erläutert, die Berechnungen für den Vektor $\vec{d}$
+sind äquivalent zum Spezialfall 1.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/26_vorbedingung_kugelkollision_dynamisch_parallel.png}
+    \end{center}
+    \caption{Vorbedingung einer Prüfung auf Kollision zwischen dynamischen parallel velaufenden Kugeln}
+    \label{fig:kugelkollision_vorbedingung_dynamisch_parallel}
+\end{figure}
+
+Der letzte Spezialfall befasst sich mit der Tatsache, dass ein Schnittpunkttest, so wie er unter Berücksichtigung der
+obigen Fälle durchgeführt wird, kein Ergebnis findet, wenn der Schnittpunkt hinter einer der Geraden liegt.
+Diese Situation kann in Abbildung \ref{fig:kugelkollision_vorbedingung_dynamisch_hintereinander} entnommen werden.
+Es ist ersichtlich, dass der Geschwindigkeitsvektor $\vec{v_1}$ einen grösseren Betrag aufweist als der
+Geschwindigkeitsvektor $\vec{v_2}$. Um diesem Umstand Rechnung zu tragen, wird die Startposition der Geraden um den
+Durchmesser nach hinten verschoben.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/27_vorbedingung_kugelkollision_dynamisch_hintereinander.png}
+    \end{center}
+    \caption{Vorbedingung einer Prüfung auf Kollision zwischen dynamischen hintereinander velaufenden Kugeln}
+    \label{fig:kugelkollision_vorbedingung_dynamisch_hintereinander}
+\end{figure}
 
 \subsubsection{Ereignis - Engergie-Transfer über Bandenkollision}
 Dieses Event beschreibt die Kollision mit der Bande. Es soll der Zeitpunkt $t$ der Kollision mit der Bande festgestellt werden.

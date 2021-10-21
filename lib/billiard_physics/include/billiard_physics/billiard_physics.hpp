@@ -172,8 +172,7 @@ namespace billiard::physics {
      */
     EXPORT_BILLIARD_PHYSICS_LIB std::optional<float> timeToCollision(const glm::vec2& acceleration1, const glm::vec2& velocity1,
                                                 const glm::vec2& position1, const glm::vec2& acceleration2,
-                                                const glm::vec2& velocity2, const glm::vec2& position2, float diameter,
-                                                float radius);
+                                                const glm::vec2& velocity2, const glm::vec2& position2, float diameter);
 
     /**
      * Berechnet die Dauer, bis eine Kugel in ein Loch rollt.
