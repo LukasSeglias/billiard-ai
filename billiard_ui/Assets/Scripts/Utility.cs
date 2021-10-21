@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Utility
 {
+	public static readonly float LINE_WIDTH = 0.02f;
 	
     public static void applyConfig(ref Configuration config, ref StretchingBehaviour heightStretching, ref StretchingBehaviour widthStretching, ref GameObject table) {		
 		heightStretching.Factor = config.correctionHeight.factor;
@@ -36,8 +37,8 @@ public class Utility
 		}
 		circleRenderer = currentSelected.AddComponent<LineRenderer>();
 		circleRenderer.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-		circleRenderer.startWidth = 0.02f;
-		circleRenderer.endWidth = 0.02f;
+		circleRenderer.startWidth = LINE_WIDTH;
+		circleRenderer.endWidth = LINE_WIDTH;
 		circleRenderer.useWorldSpace = false;
 		return circleRenderer;
 	}
@@ -54,7 +55,7 @@ public class Utility
             y = Mathf.Cos (Mathf.Deg2Rad * angle) * radius;
             x = Mathf.Sin (Mathf.Deg2Rad * angle) * radius;
 
-            circleRenderer.SetPosition(i, new Vector3(x, y, 0));
+            circleRenderer.SetPosition(i, new Vector3(x, y, -0.01f));
 
             angle += angleStep;
         }

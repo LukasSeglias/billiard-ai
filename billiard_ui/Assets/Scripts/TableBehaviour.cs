@@ -212,6 +212,8 @@ public class TableBehaviour : MonoBehaviour
 		int index = 0;
 		foreach(var target in config.targets) {
 			GameObject lineObject = new GameObject(string.Format("Target{0}", index++));
+			List<GameObject> lineObjectList = new List<GameObject>();
+			lineObjectList.Add(lineObject);
 			LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
 			lRend.enabled = false;
 			lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
@@ -356,7 +358,6 @@ public class TableBehaviour : MonoBehaviour
 		private readonly StretchingBehaviour widthStretching;
 		private readonly GameObject queue;
 		private readonly float scale;
-		private readonly Material transparent;
 		private readonly Dictionary<string, Material> mappedMaterials;
 		
 		private int startFrameIndex;
@@ -375,11 +376,10 @@ public class TableBehaviour : MonoBehaviour
 			this.widthStretching = widthStretching;
 			this.queue = queue;
 			this.scale = scale;
-			this.transparent = transparent;
 			this.mappedMaterials = mappedMaterials;
 			foreach (var ball in frames[0].balls) {
 				var ballObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-				ballObject.GetComponent<MeshRenderer>().material = mappedMaterials[ball.type];
+				ballObject.GetComponent<MeshRenderer>().material = transparent;
 				BallObjectInformation ballInfo = ballObject.AddComponent<BallObjectInformation>();
 				ballInfo.id = ball.id;
 				ballInfo.type = ball.type;
@@ -388,6 +388,13 @@ public class TableBehaviour : MonoBehaviour
 				float radius = config.radius;
 				ballObject.transform.localScale = new Vector3((float) radius, (float) radius, (float) radius) * 2 * scale;
 				
+				List<GameObject> objectList = new List<GameObject>();
+				objectList.Add(ballObject);
+				Utility.drawCircle(objectList, (radius * scale) / (radius * scale * 2) - Utility.LINE_WIDTH * 2, 50);
+				
+				var circleRenderer = ballObject.GetComponent<LineRenderer>();
+				circleRenderer.material = mappedMaterials[ball.type];
+				circleRenderer.useWorldSpace = false;
 				ballObjects.Add(ball.id, ballObject);
 			}
 			
@@ -422,7 +429,6 @@ public class TableBehaviour : MonoBehaviour
 							lRend.endWidth = 0.02f;
 							lRend.SetPosition(0, position(convert(startBall.position, -0.01f), heightStretching, widthStretching));
 							lRend.SetPosition(1, position(convert(endBall.position, -0.01f), heightStretching, widthStretching));
-							lRend.sortingOrder = 0;
 							lines.Add(lineObject);
 						}
 					}
