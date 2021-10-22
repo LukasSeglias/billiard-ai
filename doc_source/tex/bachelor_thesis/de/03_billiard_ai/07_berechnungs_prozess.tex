@@ -33,7 +33,8 @@ Dieser nimmt noch zu berechnende Daten entgegen. Im Fall von Billard sind dies d
 Jeder Root-Node repräsentiert ein Loch. Der Prozessmanager gibt in dem Fall eine Datenstruktur zurück, welche es erlaubt,
 in Zukunft auf die Anfrage zu antworten. In dieser Antwort werden die Resultate geliefert.
 Der Hauptprozess prüft regelmässig, ob die Bearbeitung der gestellten Aufgaben beendet werden soll.
-Dies ist der Fall, wenn entweder genügend Lösungen gefunden wurden oder die maximal zur Verfügung stehende Zeit abgelaufen ist.
+Dies ist der Fall, wenn entweder genügend Lösungen gefunden wurden, die maximal zur Verfügung stehende Zeit abgelaufen ist
+oder keine noch zu expandierenden Nodes mehr vorhanden sind.
 Sollte die Berechnung nicht abgebrochen werden, dann werden die offenen Anfragen der Berechnungsprozesse beantwortet.
 Der Prozessmanager verteilt alle ihm gemeldeten noch zu bearbeitenden Daten an die einzelnen Berechnungsprozesse.
 

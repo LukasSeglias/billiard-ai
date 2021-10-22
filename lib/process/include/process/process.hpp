@@ -5,6 +5,7 @@
 #include <queue>
 #include <vector>
 #include <chrono>
+#include <unordered_set>
 
 namespace process {
 
@@ -53,6 +54,8 @@ namespace process {
             _startedNew(false),
             _isRunning(false),
             _maxDuration(10000),
+            _expandParameter(nullptr),
+            _notWorking(),
             _workers(buildProcesses(processes, _syncPeriod, expand, this)),
             _worker(std::thread(ProcessManager::work, this)) {
 
@@ -100,13 +103,14 @@ namespace process {
         uint64_t _syncPeriod;
         map_solution_function<Data, Solution> _mapSolution;
         std::promise<std::vector<Solution>> _result;
-        std::vector<std::promise<RequestData<Data, Parameter>>> _dataRequests;
+        std::unordered_map<uint8_t, std::promise<RequestData<Data, Parameter>>> _dataRequests;
         uint64_t _startTime;
         uint16_t _minimalSolutions;
         std::atomic_bool _startedNew;
         std::atomic_bool _isRunning;
         uint64_t _maxDuration;
         std::shared_ptr<Parameter> _expandParameter;
+        std::unordered_set<uint8_t> _notWorking;
         std::vector<std::shared_ptr<Process<Data, Parameter, Solution>>> _workers;
         std::thread _worker;
 
@@ -167,8 +171,9 @@ namespace process {
                 currentRequest = 0;
                 while(iterator != manager->_dataRequests.end()) {
                     if (!forRequests.at(currentRequest).empty()) {
-                        iterator->set_value(RequestData<Data, Parameter>{forRequests.at(currentRequest),
+                        iterator->second.set_value(RequestData<Data, Parameter>{forRequests.at(currentRequest),
                                                                          manager->_expandParameter});
+                        manager->_notWorking.erase(iterator->first);
                         iterator = manager->_dataRequests.erase(iterator);
                     } else {
                         iterator++;
@@ -181,8 +186,13 @@ namespace process {
         static void mayCompleteResult(ProcessManager<Data, Parameter, Solution>* const manager) {
             uint64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(
                     std::chrono::system_clock::now().time_since_epoch()).count();
-            bool finished = manager->_isRunning && (manager->_solutions.size() >= manager->_minimalSolutions ||
-                            (currentTime - manager->_startTime >= manager->_maxDuration));
+
+            bool finished = manager->_isRunning && (
+                    manager->_solutions.size() >= manager->_minimalSolutions ||
+                    (currentTime - manager->_startTime >= manager->_maxDuration) ||
+                    isNoWorkerWorkingAndNoWorkLeftToDo(manager)
+            );
+
             if (finished) {
                 std::vector<Solution> result;
                 while(!manager->_solutions.empty()) {
@@ -194,11 +204,19 @@ namespace process {
             }
         }
 
+        static bool isNoWorkerWorkingAndNoWorkLeftToDo(const ProcessManager<Data, Parameter, Solution>* const manager) {
+            return manager->_workers.size() == manager->_notWorking.size() && manager->_inProgress.empty();
+        }
+
         void pushData(const Process<Data, Parameter, Solution>* const process, const std::vector<Data>& inProgress,
                       const std::vector<Data>& solutions) {
             _lock.lock();
 
             if (!process->_clearFlag) {
+                if (inProgress.empty() && !process->dataRequestValid()) {
+                    _notWorking.insert(process->_id);
+                }
+
                 for(auto& data : inProgress) {
                     _inProgress.push(data);
                 }
@@ -210,12 +228,12 @@ namespace process {
         }
 
         std::future<RequestData<Data, Parameter>>
-        requestData() {
+        requestData(uint8_t processId) {
             std::promise<RequestData<Data, Parameter>> promise;
             auto future = promise.get_future();
 
             _lock.lock();
-            _dataRequests.emplace_back(std::move(promise));
+            _dataRequests[processId] = std::move(promise);
             _lock.unlock();
 
             return future;
@@ -242,6 +260,7 @@ namespace process {
                 _inProgress(),
                 _solutions(),
                 _syncPeriod(syncPeriod),
+                _id(id),
                 _expand(expand),
                 _processManager(processManager),
                 _dataRequest(),
@@ -268,6 +287,7 @@ namespace process {
         priority_queue<Data> _inProgress;
         priority_queue<Data> _solutions;
         uint64_t _syncPeriod;
+        uint8_t _id;
         expand_function<Data, Parameter> _expand;
         ProcessManager<Data, Parameter, Solution>* const _processManager;
         std::future<RequestData<Data, Parameter>> _dataRequest;
@@ -300,7 +320,7 @@ namespace process {
 
         static void mayAskForData(Process<Data, Parameter, Solution>* const process) {
             if (!process->_dataRequest.valid()) {
-                process->_dataRequest = process->_processManager->requestData();
+                process->_dataRequest = process->_processManager->requestData(process->_id);
             }
         }
 
@@ -313,15 +333,12 @@ namespace process {
                 auto synchronizeInProgress = getForSynchronization(process->_inProgress, 0.6);
                 auto synchronizeSolutions = getForSynchronization(process->_solutions, 1);
 
-                if (!synchronizeInProgress.empty() || !synchronizeSolutions.empty()) {
-                    process->_processManager->pushData(process, synchronizeInProgress, synchronizeSolutions);
-                }
+                process->_processManager->pushData(process, synchronizeInProgress, synchronizeSolutions);
             }
         }
 
         static void mayAppendDataFromRequest(Process<Data, Parameter, Solution>* const process) {
-            if (process->_dataRequest.valid() &&
-                process->_dataRequest.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            if (process->dataRequestValid()) {
                 auto result = process->_dataRequest.get();
                 for (auto& data : result._data) {
                     process->_inProgress.push(data);
@@ -358,6 +375,11 @@ namespace process {
                 queue.pop();
             }
             return dataForSynchronization;
+        }
+
+        bool dataRequestValid() const {
+            return _dataRequest.valid() &&
+                   _dataRequest.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
         }
     };
 }

@@ -4,6 +4,8 @@
 #include <iostream>
 #include <random>
 
+#define EXPANDS 10
+
 struct Data {
     uint8_t _level;
     std::shared_ptr<Data> _parent;
@@ -24,7 +26,7 @@ std::vector<std::shared_ptr<Data>> expand(const std::shared_ptr<Data>& input, co
 uint64_t mapToSolution(const std::shared_ptr<Data>& data);
 std::vector<uint64_t> sortAscending(const std::vector<uint64_t>& data);
 
-TEST(ProcessManager, TerminateWhileComputing) {
+TEST(ProcessManager, SHOULD_terminate_IF_manager_deleted) {
     process::ProcessManager<std::shared_ptr<Data>, Config, uint64_t> processManager{2, 5, expand, mapToSolution};
 
     Data data{0, nullptr, 0, 0,false};
@@ -36,7 +38,7 @@ TEST(ProcessManager, TerminateWhileComputing) {
     });
 }
 
-TEST(ProcessManager, IgnoreFirstRunAndStartSecond) {
+TEST(ProcessManager, SHOULD_ignore_previous_tasks_IF_new_task_started) {
     std::this_thread::sleep_for(std::chrono::seconds(5));
     process::ProcessManager<std::shared_ptr<Data>, Config, uint64_t> processManager{6, 1, expand, mapToSolution};
 
@@ -65,7 +67,36 @@ TEST(ProcessManager, IgnoreFirstRunAndStartSecond) {
     }
 }
 
-TEST(ProcessManager, TestSequence) {
+TEST(ProcessManager, SHOULD_terminate_earlier_IF_it_has_nothing_to_work) {
+    process::ProcessManager<std::shared_ptr<Data>, Config, uint64_t> processManager{6, 1, expand, mapToSolution};
+
+    Data data{4, nullptr, 0, 0,false};
+
+    uint64_t tick = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch()).count();
+    auto result = processManager.process(std::vector<std::shared_ptr<Data>>{
+            std::make_shared<Data>(data),
+            std::make_shared<Data>(data)
+    });
+
+    result.wait();
+    uint64_t tack = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch()).count();
+    uint64_t time = tack - tick;
+    std::cout << "Time: " << time << std::endl;
+    auto solutions = result.get();
+    auto sortedAscending = sortAscending(solutions);
+
+    ASSERT_LT(time, 10000);
+    ASSERT_EQ(2 * EXPANDS, solutions.size());
+    for (int j = 0; j < solutions.size(); j++) {
+        auto solution = solutions.at(j);
+        auto expected = sortedAscending.at(j);
+        ASSERT_EQ(expected, solution);
+    }
+}
+
+TEST(ProcessManager, SHOULD_fulfill_all_tasks) {
     process::ProcessManager<std::shared_ptr<Data>, Config, uint64_t> processManager{6, 40, expand, mapToSolution};
     std::cout << "Wait a few seconds before start\n" << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -138,7 +169,7 @@ std::random_device r;
 // Choose a random mean between 1 and 6
 std::default_random_engine e1(r());
 std::uniform_int_distribution<int> uniform_dist(1, 10);
-std::uniform_int_distribution<int> calculation_time(30, 40);
+std::uniform_int_distribution<int> calculation_time(10, 15);
 std::uniform_int_distribution<int> boolean(0, 1);
 
 std::shared_ptr<Data> expandOne(const std::shared_ptr<Data>& input) {
@@ -158,7 +189,7 @@ std::shared_ptr<Data> expandOne(const std::shared_ptr<Data>& input) {
 std::vector<std::shared_ptr<Data>> expand(const std::shared_ptr<Data>& input, const std::shared_ptr<Config>& config) {
     std::vector<std::shared_ptr<Data>> expanded;
 
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < EXPANDS; i++) {
         expanded.push_back(expandOne(input));
     }
 
