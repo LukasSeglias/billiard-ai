@@ -980,8 +980,6 @@ namespace billiard::search {
 
     uint64_t simulationCost(const node::System& system, uint64_t searchCost, const std::shared_ptr<SearchState>& state) {
 
-        // TODO: document
-
         std::string agent = "[simulationCost " + std::to_string(system._id) + "] ";
 
         double totalScore = 0.0;

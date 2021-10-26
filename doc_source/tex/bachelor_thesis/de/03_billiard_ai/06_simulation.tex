@@ -159,7 +159,7 @@ Erste ist.
 \begin{align}
     t = \min{(t_1, t_2, t_3, t_4)}
 \end{align}
-
+\newpage
 Das Lösen dieses Gleichungssystems erfordert viel Rechenzeit, was die Frage nach Performanceverbesserungen aufwirft.
 Diese werden durch Vorbedingungen erzielt, welche welche geprüft werden. Es findet zu Beginn eine Fallunterscheidung
 statt. Wenn die zweite Kugel statisch ist, so wird geprüft, ob die Distanz $d$ zwischen der Position $P_2$ der zweiten Kugel
@@ -309,4 +309,31 @@ der Reibungsverlust ist zu gross, als dass sie den Zielkreis erreichen könnte.
     t_1 = \frac{-\norm{\vec{v}} + \sqrt{\norm{\vec{v}}^2 + 2 \cdot \norm{\vec{a}} \norm{\vec{d(l)}}}}{\norm{\vec{a}}}\\
     t_2 = \frac{-\norm{\vec{v}} - \sqrt{\norm{\vec{v}}^2 + 2 \cdot \norm{\vec{a}} \norm{\vec{d(l)}}}}{\norm{\vec{a}}}\\
     t = \min{(t_1, t_2)}
+\end{align}
+
+\subsubsection{Bewertungsfunktion}
+Wie auch die Suche nach einem guten Lösungskandidaten muss das Endresultat der Simulation bewertet werden.
+In dem Fall geht es um die Bestimmung der Belohnung eines Stosses oder umgekehrt die Bestrafung in Form von Kosten
+für eine geringe Ausbeute. In einem ersten Schritt wird die Belohnung berechnet.
+Diese richtet sich an der Anzahl und dem Typen der eingelochten Kugeln. Es gibt die Schwarze (7), Pinke (6), Blaue (5),
+Braune (4), Grüne (3), Gelbe (2) und Rote (1) Kugel. Die Punkte sind jeweils hinter dem Typen aufgeführt.
+In einem Stoss wird eine maximal mögliche Punktzahl von $7$ definiert. Sollten mehr Punkte erzielt werden, wird dies im
+Weiteren keinen Einfluss mehr haben, dazu später mehr. Dieser Score $S$ wird durch eine Normierung der erzielten Punkte $p$ anhand der
+maximal möglichen Punkte $p_{max}$ verkleinert. Zumeist wird er zwischen $0$ und $1$ liegen, er kann aber auch grösser werden.
+\begin{align}
+    S = \frac{p}{p_{max}}
+\end{align}
+
+Anschliessend wird der Score auf eine Bestrafung/Kosten umgerechnet. Hierbei wird ignoriert, dass mehr Punkte wie die maximal
+möglichen erzielt wurden. Dies geschieht, in dem das Minimum von $1$ und dem Score $S$ genommen wird.
+\begin{align}
+    K = 1 - \min{(S, 1)}
+\end{align}
+
+Dieser so erhaltene Wert ist noch nicht aussagekräftig genug. Er soll in Relation zu der Schwierigkeit des Stosses, also
+den Suchkosten, angegeben werden können. Die Belohnung soll zum Beispiel nur $50 \%$ Gewicht haben. Um dies zu erreichen,
+werden die definitiven Kosten über eine solche Normierung erreicht, wobei $K$ die nicht normierten Kosten zwischen $0$ und
+$1$, $g$ die Gewichtung in Prozent gegenüber der Schwierigkeit und $K_{s}$ die Suchkosten sind.
+\begin{align}
+    K_{norm} = K \cdot g \cdot K_{s}
 \end{align}
