@@ -30,6 +30,9 @@ public class Vec2 {
 	
 	public static Vec2 operator /(Vec2 vec, float value) => new Vec2{x = vec.x / value, y = vec.y / value};
 	public static Vec2 operator *(Vec2 vec, double value) => new Vec2{x = vec.x * value, y = vec.y * value};
+	public static Vec2 operator *(double value, Vec2 vec) => new Vec2{x = vec.x * value, y = vec.y * value};
+	public static Vec2 operator -(Vec2 v1, Vec2 v2) => new Vec2{ x = v1.x - v2.x, y = v1.y - v2.y };
+    public static Vec2 operator +(Vec2 v1, Vec2 v2) => new Vec2{ x = v1.x + v2.x, y = v1.y + v2.y };
 
 	public double length() {
 	    return Math.Sqrt(x*x + y*y);
