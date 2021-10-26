@@ -330,7 +330,7 @@ public class TableBehaviour : MonoBehaviour
 			ballObject.transform.position = position(convert(ball.position, -0.01f), heightStretching, widthStretching);
 			float radius = config.radius;
 			ballObject.transform.localScale = new Vector3((float) radius, (float) radius, (float) radius) * 2 * scale;
-			updateLocationText(ball.type, ballObject);
+			updateLocationText(ball.id, ball.type, ballObject);
 		}
 		
 		private void append() {
@@ -366,11 +366,11 @@ public class TableBehaviour : MonoBehaviour
 			}
 		}
 		
-		private void updateLocationText(string type, GameObject ball) {
+		private void updateLocationText(string id, string type, GameObject ball) {
 			var textObject = ball.transform.Find("Text").gameObject;
 			var pos = new Vec2{x = ball.transform.position.x, y = ball.transform.position.y};
 			var invPos = invPosition(pos, heightStretching, widthStretching);
-			textObject.GetComponent<TMPro.TextMeshPro>().SetText(string.Format("[{0:F4}; {1:F4}]\n{2}", invPos.x, invPos.y, type));
+			textObject.GetComponent<TMPro.TextMeshPro>().SetText(string.Format("[{0:F4}; {1:F4}]\n{2}", invPos.x, invPos.y, id));
 		}
 	}
 	
