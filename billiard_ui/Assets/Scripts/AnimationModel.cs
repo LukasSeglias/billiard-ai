@@ -29,6 +29,17 @@ public class Vec2 {
 	public double y;
 	
 	public static Vec2 operator /(Vec2 vec, float value) => new Vec2{x = vec.x / value, y = vec.y / value};
+	public static Vec2 operator *(Vec2 vec, double value) => new Vec2{x = vec.x * value, y = vec.y * value};
+
+	public double length() {
+	    return Math.Sqrt(x*x + y*y);
+	}
+	public Vec2 normalized() {
+	    return this * (1.0 / length());
+	}
+	public Vec2 perp() {
+	    return new Vec2 { x = -y, y = x };
+	}
 }
 
 [Serializable]
@@ -71,6 +82,11 @@ public class RailSegment {
 		start = segment.start / value,
 		end = segment.end / value
 	};
+
+	public Vec2 normal() {
+	    Vec2 delta = (end - start).normalized();
+        return delta.perp();
+	}
 }
 
 public enum PocketType {

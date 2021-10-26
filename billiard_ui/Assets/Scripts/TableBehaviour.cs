@@ -35,6 +35,7 @@ public class TableBehaviour : MonoBehaviour
 	private Configuration config;
     private int animationIndex = 0;
 	private List<GameObject> railSegments;
+	private List<GameObject> railSegmentNormals;
 	private List<GameObject> targets;
 	private bool isLive = true;
 	private bool isDebug = false;
@@ -66,6 +67,7 @@ public class TableBehaviour : MonoBehaviour
 		infoText.gameObject.SetActive(false);
 
 		railSegments = drawRailSegments(ref config, ref HeightStretching, ref WidthStretching);
+		railSegmentNormals = drawRailSegmentNormals(ref config, ref HeightStretching, ref WidthStretching);
 		targets = drawTargets(ref config, ref HeightStretching, ref WidthStretching);
     }
 	
@@ -155,6 +157,9 @@ public class TableBehaviour : MonoBehaviour
 		foreach(var segment in railSegments) {
 			segment.GetComponent<LineRenderer>().enabled = enabled;
 		}
+// 		foreach(var segmentNormal in railSegmentNormals) {
+//             segmentNormal.GetComponent<LineRenderer>().enabled = enabled;
+//         }
 		foreach(var target in targets) {
 			target.GetComponent<LineRenderer>().enabled = enabled;
 		}
@@ -206,6 +211,29 @@ public class TableBehaviour : MonoBehaviour
 		}
 		return railSegments;
 	}
+
+	private List<GameObject> drawRailSegmentNormals(ref Configuration config, ref StretchingBehaviour heightStretching, ref StretchingBehaviour widthStretching) {
+        List<GameObject> railSegmentNormals = new List<GameObject>();
+        int index = 0;
+        foreach(var segment in config.segments) {
+            GameObject lineObject = new GameObject(string.Format("RailSegmentNormal{0}", index++));
+            LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
+            lRend.enabled = false;
+            lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
+            lRend.startColor = Color.red;
+            lRend.endColor = Color.blue;
+            lRend.startWidth = 0.02f;
+            lRend.endWidth = 0.02f;
+            Vec2 normal = segment.normal();
+            Vec2 startPoint = segment.start + (0.5f * (segment.end - segment.start));
+            Vec2 endPoint = startPoint + 0.1 * normal;
+            lRend.SetPosition(0, position(convert(startPoint, -0.01f), heightStretching, widthStretching));
+            lRend.SetPosition(1, position(convert(endPoint, -0.01f), heightStretching, widthStretching));
+            lRend.sortingOrder = 0;
+            railSegmentNormals.Add(lineObject);
+        }
+        return railSegmentNormals;
+    }
 	
 	private List<GameObject> drawTargets(ref Configuration config, ref StretchingBehaviour heightStretching, ref StretchingBehaviour widthStretching) {
 		List<GameObject> targets = new List<GameObject>();
