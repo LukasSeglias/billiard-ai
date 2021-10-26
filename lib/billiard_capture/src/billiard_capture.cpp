@@ -223,7 +223,7 @@ namespace billiard::capture {
         rs2::frameset data = camera->pipe.wait_for_frames();
 
 //        rs2::depth_frame depthFrame = data.get_depth_frame();
-//        cv::Mat depth = toMat(depthFrame, CV_8UC1);
+//        cv::Mat depth = toMat(depthFrame, CV_16UC1);
         cv::Mat depth;
 
         cv::Mat colorizedDepth;
