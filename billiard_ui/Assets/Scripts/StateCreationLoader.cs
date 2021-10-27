@@ -10,7 +10,7 @@ public class StateCreationLoader : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		
+
         if (Enabled && Input.GetKeyDown(KeyCode.S)) {
 			SceneManager.UnloadSceneAsync("MainScene");
 			SceneManager.LoadScene("StateCreationScene", LoadSceneMode.Additive);

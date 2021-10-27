@@ -20,16 +20,19 @@ public class TableBehaviour : MonoBehaviour
 	public GameObject Background;
 	public List<GameObjectMap> Materials;
 	public Material transparent;
+	public Material dotMaterial;
 	public TextMeshPro infoText;
 	public StretchingBehaviour HeightStretching;
 	public StretchingBehaviour WidthStretching;
 	public float Scale = 1.0f;
 	public GameObject Queue;
-	
+	public GameObject dotsParentGameObject;
+
 	private RootObject root = new RootObject();
 	private RootState state = new RootState();
 	private Animator animator;
 	private StatePresenter statePresenter;
+	private BallDottedPaths dottedPaths;
 	private Dictionary<string, Material> mappedMaterials = new Dictionary<string, Material>();
 	private bool isPlaying = true;
 	private Configuration config;
@@ -69,6 +72,8 @@ public class TableBehaviour : MonoBehaviour
 		railSegments = drawRailSegments(ref config, ref HeightStretching, ref WidthStretching);
 		railSegmentNormals = drawRailSegmentNormals(ref config, ref HeightStretching, ref WidthStretching);
 		targets = drawTargets(ref config, ref HeightStretching, ref WidthStretching);
+
+		dottedPaths = new BallDottedPaths(HeightStretching, WidthStretching, Scale, dotMaterial, dotsParentGameObject);
     }
 	
 	void OnDestroy() {
@@ -190,6 +195,7 @@ public class TableBehaviour : MonoBehaviour
 		}
 		
 		statePresenter.update(state);
+		dottedPaths.stateChanged(state);
 	}
 	
 	private List<GameObject> drawRailSegments(ref Configuration config, ref StretchingBehaviour heightStretching, ref StretchingBehaviour widthStretching) {
@@ -675,4 +681,53 @@ public class TableBehaviour : MonoBehaviour
 				heightStretching, widthStretching);			
 		}
 	}
+
+	private class BallDottedPaths {
+
+    	private float ttl = 2.0f;    // in seconds
+    	private float radius = 5.0f / 1000.0f; // in meters
+    	private bool showDots = false;
+    	private float scale = 0.05f;
+    	private Material material;
+    	private GameObject parentGameObject;
+
+    	private StretchingBehaviour heightStretching;
+        private StretchingBehaviour widthStretching;
+
+        public BallDottedPaths(StretchingBehaviour heightStretching,
+                               StretchingBehaviour widthStretching,
+                               float scale,
+                               Material material,
+                               GameObject parentGameObject) {
+            this.heightStretching = heightStretching;
+            this.widthStretching = widthStretching;
+            this.scale = scale;
+            this.material = material;
+            this.parentGameObject = parentGameObject;
+        }
+
+        public void stateChanged(RootState state) {
+
+            if (!showDots) {
+                return;
+            }
+
+            foreach (BallState ball in state.balls) {
+                GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                sphere.GetComponent<MeshRenderer>().material = material;
+                sphere.transform.parent     = parentGameObject.transform;
+                sphere.transform.position   = position(convert(ball.position, -0.01f), heightStretching, widthStretching);
+                sphere.transform.localScale = new Vector3((float) radius, (float) radius, (float) radius) * 2 * scale;
+                Destroy(sphere, ttl);
+            }
+        }
+
+        private static Vector3 convert(Vec2 vector, float z) {
+            return new Vector3((float)vector.x, (float)vector.y, z);
+        }
+
+        private static Vector3 position(Vector3 pos, StretchingBehaviour heightStretching, StretchingBehaviour widthStretching) {
+            return new Vector3(widthStretching.forward(pos.x), heightStretching.forward(pos.y), pos.z);
+        }
+    }
 }
