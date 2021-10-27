@@ -10,6 +10,7 @@ public class TableVisuals : MonoBehaviour
 {
 	public GameObject Table;
 	public bool show = false;
+	private Color lineColor = Color.white;
 
 	private List<GameObject> railSegments;
 	private List<GameObject> railSegmentNormals;
@@ -63,8 +64,8 @@ public class TableVisuals : MonoBehaviour
 			LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
 			lRend.enabled = false;
 			lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-			lRend.startColor = Color.white;
-			lRend.endColor = Color.white;
+			lRend.startColor = lineColor;
+			lRend.endColor = lineColor;
 			lRend.startWidth = 0.02f;
 			lRend.endWidth = 0.02f;
 			lRend.SetPosition(0, StretchingUtility.get().position(convert(segment.start, -0.01f)));
@@ -108,8 +109,8 @@ public class TableVisuals : MonoBehaviour
 			LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
 			lRend.enabled = false;
 			lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-			lRend.startColor = Color.white;
-			lRend.endColor = Color.white;
+			lRend.startColor = lineColor;
+			lRend.endColor = lineColor;
 			lRend.startWidth = 0.02f;
 			lRend.endWidth = 0.02f;
 			lRend.sortingOrder = 0;
