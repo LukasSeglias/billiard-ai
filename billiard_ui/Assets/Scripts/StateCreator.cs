@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
+using System.Globalization;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 
@@ -12,6 +15,7 @@ public class StateCreator : MonoBehaviour
 	public List<GameObjectMap> Materials;
 	public TextMeshPro typeText;
 	public float TextVisibilityTime = 3f;
+	public InputField stateInputField;
 
 	private int currentCreationIndex = 0;
 	private float visibleTime = 0;
@@ -29,6 +33,7 @@ public class StateCreator : MonoBehaviour
 		radius = config.radius;
 
 		typeText.SetText(Materials[currentCreationIndex].key);
+		stateInputField.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -77,8 +82,23 @@ public class StateCreator : MonoBehaviour
 					Destroy(gameObject);
 				}
 			}
+		} else if (Input.GetKeyDown(KeyCode.T)) {
+
+		    stateInputField.gameObject.SetActive(true);
+
 		} else if (Input.GetKeyDown(KeyCode.Return)) {
-			AnimationService.setState(ballObjects);
+
+		    List<BallState> balls = new List<BallState>();
+
+		    if (stateInputField.text.Length > 0) {
+		        balls = parseState(stateInputField.text);
+		        stateInputField.text = "";
+		        stateInputField.gameObject.SetActive(false);
+		    } else {
+		        balls = mapToBallStates(ballObjects);
+		    }
+
+			AnimationService.setState(balls);
 			foreach (var ball in ballObjects) {
 				Destroy(ball);
 			}
@@ -86,5 +106,62 @@ public class StateCreator : MonoBehaviour
 			SceneManager.UnloadSceneAsync("StateCreationScene");
 			SceneManager.LoadScene("MainScene", LoadSceneMode.Additive);
 		}
+    }
+
+    /**
+     * Example:
+     * WHITE1, WHITE, -564.147, 9.06096
+     * RED2, RED, -47.218, -100.06
+     * RED4, RED, 2.93182, 398.78
+     * RED5, RED, -865.047, -388.453
+     * RED6, RED, -629.728, 87.0048
+     * RED7, RED, 851.622, 398.78
+     */
+    private static List<BallState> parseState(string text) {
+
+        List<BallState> balls = new List<BallState>();
+
+        using (StringReader sr = new StringReader(text)) {
+            string line;
+            while ((line = sr.ReadLine()) != null) {
+
+                string[] parts = line.Split(',');
+                if (parts.Length != 4) {
+                    return new List<BallState>();
+                }
+
+                string id = parts[0].Trim();
+                string type = parts[1].Trim();
+                double x = double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
+                double y = double.Parse(parts[3].Trim(), CultureInfo.InvariantCulture);
+                balls.Add(new BallState {
+                    id = id,
+                    type = type,
+                    position = new Vec2 { x = x, y = y }
+                });
+            }
+        }
+
+        return balls;
+    }
+
+    private static List<BallState> mapToBallStates(List<GameObject> balls) {
+        List<BallState> ballStates = new List<BallState>();
+
+        foreach (GameObject ball in balls) {
+            var info = ball.GetComponent<BallObjectInformation>();
+
+            Vec2 position = 1000.0 * StretchingUtility.get().invPosition(new Vec2 {
+                x = ball.transform.position.x,
+                y = ball.transform.position.y
+            });
+            BallState ballState = new BallState {
+                type = info.type,
+                id = info.id,
+                position = new Vec2 { x = position.x, y = position.y }
+            };
+            ballStates.Add(ballState);
+        }
+        return ballStates;
     }
 }

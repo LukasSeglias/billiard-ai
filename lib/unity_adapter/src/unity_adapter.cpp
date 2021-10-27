@@ -409,6 +409,7 @@ void image() {
 billiard::search::State toSearchState(const std::shared_ptr<State>& state) {
     std::vector<billiard::search::Ball> balls;
 
+    DEBUG("State:" << std::endl);
     for (int i = 0; i < state->ballSize; i++) {
         auto& ball = state->balls[i];
         balls.emplace_back(billiard::search::Ball{
@@ -418,7 +419,7 @@ billiard::search::State toSearchState(const std::shared_ptr<State>& state) {
 
         });
 
-        DEBUG("Ball [" << ball.id << "]  --> [" << ball.position.x << ", " << ball.position.y << "]" << std::endl);
+        DEBUG("" << ball.id << ", " << ball.type << ", " << ball.position.x << ", " << ball.position.y << "" << std::endl);
     }
 
     return billiard::search::State{ balls };
