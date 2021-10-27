@@ -1,19 +1,22 @@
 \chapter{Ziele}
-Ins Billard-Spiel einzusteigen ist nicht ganz einfach. Zu Beginn lässt es sich schlecht abschätzen,
-welchen Weg eine Kugel nehmen wird, wenn man sie anschlägt und den optimalen Stoss über mehrere Züge hinaus zu planen,
-erst recht. Denn bei fortgeschrittenen Spielen ist es oft wichtig, dass die weisse Kugel optimal für den nächsten Stoss
-platziert wird.
+Es wird ein Billardassistent entwickelt, welcher aufgrund des aktuellen Spielstands einen Stoss berechnet, der einerseits
+einfach durchzuführen ist und andererseits eine optimale Ausgangslage für den nächsten Stoss bieten soll. Es gab bereits
+einige Vorarbeiten\cite{project2:ziele}, wie aus dem Kapitel \ref{kap:vorarbeiten} zu entnehmen ist.
 
-Es soll ein System entstehen, das dem Spieler den optimalen Stoss vorschlägt basierend auf Kriterien und
-optional einer festgelegten Tiefe des Spielstands. Dazu soll eine Kamera den Spielstand auf dem Billiartisch erkennen, verarbeiten und
-dem Spieler Hilfestellungen mittels eines Projektors anzeigen.
+Die Ziele für diese Arbeit sind nun die Klassifikation der Kugeln,
+die Entwicklung einer effizienten gerichteten Suche nach einem Stoss, die darauffolgende,
+möglichst realitätsnahe Simulation sowie einige Verbesserungen bei der Darstellung.
 
-Diese Arbeit setzt auf bereits geleisteter Tätigkeit aus \glqq Projekt 2\grqq{} auf\cite{project2:ziele}. Die
-Tätigkeiten werden nachfolgend beschrieben.
-\begin{description}
-    \item[Vorschlag eines optimalen Stosses] Es wird ein Stoss vorgeschlagen, welcher anhand der gewählten Kugel
-    möglichst optimal ist. Dieser Stoss kann direkt (einfach) oder indirekt (erweitert) sein.
-\end{description}
+Es werden zwei verschiedene Spielmodi angestrebt. Beim ersten Modus kann der Spieler eine Kugel oder einen Kugeltypen (Farbe)
+wählen, nach dem gesucht wird. Daraufhin werden ihm alle gefundenen Resultate in geordneter Reihenfolge nach Schwierigkeit
+dargestellt. Die Suche kann über mehrere Stösse gehen und dabei werden auch die Regeln des Spiels beachtet. Dies ist wichtig,
+um die optimale Platzierung der weissen Kugel zu eruieren. Nach einem Stoss kann der Spieler wiederum eine Wahl treffen.
+Der zweite Modus ist der sogenannte \glqq Infinity-Mode\grqq. Die Idee dahinter ist die vereinfachte Einführung des Spielers.
+So soll das System bei stabilem Zustand automatisch eine Suche nach allen Kugeln starten und das beste Ergebnis
+anzeigen. Sobald der Spieler den Stoss durchgeführt hat, wird das System wiederum automatisch eine Suche starten.
+Dadurch kann ein Spieler optimal lernen, welche Stösse einfach sind und wo eine Kugel mit welcher Geschwindigkeit
+getroffen werden muss, um das gewünschte Ergebnis zu erzielen. Die Regeln spielen in diesem Fall eine untergeordnete
+Rolle und werden daher ignoriert.
 
 Es ist weiterhin anzumerken, dass es in erster Linie um Snooker-Billard geht. Dies hat mehrere Gründe. Einerseits soll
 in dieser Arbeit nicht die Klassifikation der Kugeln im Zentrum stehen, sondern die Suche nach einem optimalen Stoss.
