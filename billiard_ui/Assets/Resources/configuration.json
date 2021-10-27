@@ -15,8 +15,8 @@
 		{
 			"description": "Right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
-			"start": {"x": 940.5, "y": -387.5},
-			"end":   {"x": 940.5, "y": 387.5},
+			"start": {"x": 940.5, "y": -390},
+			"end":   {"x": 940.5, "y": 390},
 			"location": 2
 		},
 		{
@@ -119,8 +119,8 @@
 			"description": "small rail on the right of top right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"wolfram_alpha": "https://www.wolframalpha.com/input/?i=rotate+%7B0%2C+40%7D+by+-40+degrees",
-			"start": {"x": 940.5, "y": 387.5},
-			"end": {"x": 966.212, "y": 418.142},
+			"start": {"x": 940.5, "y": 390},
+			"end": {"x": 966.212, "y": 420.642},
 			"location": 3
 		},
 		{
@@ -135,8 +135,8 @@
 			"description": "small rail on the right of bottom right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"wolfram_alpha": "https://www.wolframalpha.com/input/?i=rotate+%7B0%2C+-40%7D+by+40+degrees",
-			"start": {"x": 971.142, "y": -413.212},
-			"end": {"x": 940.5, "y": -387.5},
+			"start": {"x": 966.212, "y": -420.642},
+			"end": {"x": 940.5, "y": -390},
 			"location": 3
 		}
 	],
