@@ -68,19 +68,11 @@ public class Ball
 	public bool visible;
 }
 
-public enum RailLocation {
-    TOP,
-    BOTTOM,
-    LEFT,
-    RIGHT
-}
-
 [Serializable]
 public class RailSegment {
 	public Vec2 start;
 	public Vec2 end;
-	public RailLocation location;
-	
+
 	public static RailSegment operator /(RailSegment segment, float value) => new RailSegment{
 		start = segment.start / value,
 		end = segment.end / value
@@ -193,6 +185,7 @@ public class Configuration {
 	public Plane ballPlane;
 	public WorldToModel worldToModel;
 	public Table table;
+	public int solutions;
 	public Correction correctionWidth;
 	public Correction correctionHeight;
 
@@ -220,6 +213,7 @@ public class Configuration {
             worldToRail = new Vec3 { x = config.table.worldToRail.x, y = config.table.worldToRail.y, z = config.table.worldToRail.z },
             minimalPocketVelocity = config.table.minimalPocketVelocity
         },
+        solutions = config.solutions,
         camera = new CameraIntrinsics {fx = config.camera.fx, fy = config.camera.fy,
                            cx = config.camera.cx, cy = config.camera.cy,
                            skew = config.camera.skew,

@@ -30,30 +30,17 @@ billiard::search::Pocket::Pocket(std::string id, PocketType type, glm::vec2 posi
 }
 
 billiard::search::Rail::Rail(std::string id, const glm::vec2& start, const glm::vec2& end,
-                             float ballRadius,
-                             const RailLocation& location) :
+                             float ballRadius) :
         _id(std::move(id)),
         _start(start),
         _end(end),
-        _location(location),
-        _shiftedStart(shift(start, ballRadius, location)),
-        _shiftedEnd(shift(end, ballRadius, location)),
-        _normal(glm::normalize(billiard::physics::perp(end - start))){
+        _normal(glm::normalize(billiard::physics::perp(end - start))),
+        _shiftedStart(shift(start, ballRadius, _normal)),
+        _shiftedEnd(shift(end, ballRadius, _normal)) {
 }
 
-glm::vec2 billiard::search::Rail::shift(glm::vec2 position, float ballRadius, const RailLocation& location) {
-    switch(location) {
-        case RailLocation::TOP:
-            return glm::vec2{position.x, position.y - ballRadius};
-        case RailLocation::BOTTOM:
-            return glm::vec2{position.x, position.y + ballRadius};
-        case RailLocation::LEFT:
-            return glm::vec2{position.x + ballRadius, position.y};
-        case RailLocation::RIGHT:
-            return glm::vec2{position.x - ballRadius, position.y};
-    }
-
-    return glm::vec2{0.0, 0.0};
+glm::vec2 billiard::search::Rail::shift(glm::vec2 position, float ballRadius, const glm::vec2& normal) {
+    return position + normal * ballRadius;
 }
 
 billiard::search::event::BallCollision::BallCollision(std::string ball1, std::string ball2) :

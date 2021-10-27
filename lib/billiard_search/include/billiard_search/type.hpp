@@ -59,26 +59,18 @@ namespace billiard::search {
         //std::vector<PocketPottingPoint> _pottingPoints;
     };
 
-    enum RailLocation {
-        TOP,
-        BOTTOM,
-        RIGHT,
-        LEFT
-    };
-
     struct EXPORT_BILLIARD_SEARCH_LIB Rail {
-        Rail(std::string id, const glm::vec2& start, const glm::vec2& end, float ballRadius, const RailLocation& location);
+        Rail(std::string id, const glm::vec2& start, const glm::vec2& end, float ballRadius);
 
         std::string _id;
         glm::vec2 _start;
         glm::vec2 _end;
-        RailLocation _location;
+        glm::vec2 _normal;
         glm::vec2 _shiftedStart; // Bandenstart um den Radius der Kugel zum Zentrum verschoben
         glm::vec2 _shiftedEnd; // Bandenende um den Radius der Kugel zum Zentrum verschoben
-        glm::vec2 _normal;
 
     private:
-        glm::vec2 shift(glm::vec2 position, float ballRadius, const RailLocation& railType);
+        glm::vec2 shift(glm::vec2 position, float ballRadius, const glm::vec2& normal);
     };
 
     namespace event {

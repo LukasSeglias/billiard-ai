@@ -11,11 +11,9 @@
 #include <billiard_debug/billiard_debug.hpp>
 #include <cstring>
 
-// TODO: find a good number
-#define SOLUTIONS 10
-
 Debugger _debugger;
 
+int solutions = 10;
 bool WRITE_LOG_FILE = true;
 bool LIVE = false;
 bool STATIC_IMAGE = false;
@@ -121,6 +119,8 @@ inline billiard::detection::Table toTable(const Configuration& configuration);
 inline billiard::search::Configuration toSearchConfig(const Configuration& config);
 
 void configuration(Configuration config) {
+    solutions = config.solutions;
+
     // TODO: Map configuration and pass it to the library, delete all debugger outputs
     DEBUG("radius: " << std::to_string(config.radius) << " "
     << "width: " << std::to_string(config.width) << " "
@@ -298,20 +298,6 @@ inline void printState(const billiard::detection::State& state) {
     }
 }
 
-inline billiard::search::RailLocation map(RailLocation location) {
-    switch (location) {
-        case RailLocation::TOP:
-            return billiard::search::RailLocation::TOP;
-        case RailLocation::BOTTOM:
-            return billiard::search::RailLocation::BOTTOM;
-        case RailLocation::LEFT:
-            return billiard::search::RailLocation::LEFT;
-        case RailLocation::RIGHT:
-        default:
-            return billiard::search::RailLocation::RIGHT;
-    }
-}
-
 inline billiard::search::PocketType map(PocketType pocketType) {
     switch (pocketType) {
         case PocketType::CENTER:
@@ -337,8 +323,7 @@ inline billiard::search::Configuration toSearchConfig(const Configuration& confi
             std::to_string(i),
             glm::vec2{config.segments[i].start.x, config.segments[i].start.y},
             glm::vec2{config.segments[i].end.x, config.segments[i].end.y},
-            billiardSearchConfig._ball._radius,
-            map(config.segments[i].location)
+            billiardSearchConfig._ball._radius
         });
     }
 
@@ -444,7 +429,7 @@ void search(Search search) {
           << std::endl << "---------------------------------------------------------------------------" << std::endl);
 
     auto searchInfo = billiard::search::Search{search.id, types};
-    _search = billiard::search::search(toSearchState(_currentState), searchInfo, SOLUTIONS, *searchConfig);
+    _search = billiard::search::search(toSearchState(_currentState), searchInfo, solutions, *searchConfig);
 }
 
 void debugger(Debugger debugger) {

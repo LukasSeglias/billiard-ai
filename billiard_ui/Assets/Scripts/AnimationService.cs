@@ -177,7 +177,6 @@ public class AnimationService : MonoBehaviour
 	struct RailSegment_t {
 		public Vec2_t start;
 		public Vec2_t end;
-		public RailLocation location;
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
@@ -252,7 +251,9 @@ public class AnimationService : MonoBehaviour
 	[StructLayout(LayoutKind.Sequential)]
 	class Configuration_t {
 		public Configuration_t(float radius, float width, float height,
-		RailSegment_t[] segments, Circle_t[] targets, ArucoMarkers_t markers, CameraIntrinsics_t camera, Plane_t ballPlane, WorldToModel_t worldToModel, Table_t table) {
+                               RailSegment_t[] segments, Circle_t[] targets, ArucoMarkers_t markers,
+                               CameraIntrinsics_t camera, Plane_t ballPlane, WorldToModel_t worldToModel,
+                               Table_t table, int solutions) {
 			this.radius = radius;
 			this.width = width;
 			this.height = height;
@@ -265,6 +266,7 @@ public class AnimationService : MonoBehaviour
 			this.ballPlane = ballPlane;
 			this.worldToModel = worldToModel;
 			this.table = table;
+			this.solutions = solutions;
 		}
 		
 		~Configuration_t() {
@@ -284,6 +286,7 @@ public class AnimationService : MonoBehaviour
 		public Plane_t ballPlane;
 		public WorldToModel_t worldToModel;
 		public Table_t table;
+		public int solutions;
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
@@ -338,7 +341,10 @@ public class AnimationService : MonoBehaviour
 	////////////////////////////////////////////////////////////////////
 	
 	private static Configuration_t map(Configuration from) {
-		return new Configuration_t(from.radius, from.width, from.height, map(from.segments), map(from.targets), map(from.markers), map(from.camera), map(from.ballPlane), map(from.worldToModel), map(from.table));
+		return new Configuration_t(from.radius, from.width, from.height, map(from.segments), map(from.targets),
+                                   map(from.markers), map(from.camera), map(from.ballPlane),
+                                   map(from.worldToModel), map(from.table), from.solutions
+                                  );
 	}
 	
 	private static RailSegment_t[] map(RailSegment[] from) {
@@ -350,7 +356,7 @@ public class AnimationService : MonoBehaviour
 	}
 	
 	private static RailSegment_t map(RailSegment from) {
-		return new RailSegment_t{start = map(from.start), end = map(from.end), location = from.location};
+		return new RailSegment_t{start = map(from.start), end = map(from.end)};
 	}
 	
 	private static Circle_t[] map(Circle[] from) {

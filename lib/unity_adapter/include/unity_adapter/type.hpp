@@ -17,17 +17,9 @@ extern "C" {
         double z;
     };
 
-    enum RailLocation {
-        TOP,
-        BOTTOM,
-        RIGHT,
-        LEFT
-    };
-
     struct EXPORT_UNITY_ADAPTER_LIB RailSegment {
         Vec2 start;
         Vec2 end;
-        RailLocation location;
     };
 
     enum PocketType {
@@ -114,6 +106,7 @@ extern "C" {
         Plane ballPlane;
         WorldToModel worldToModel;
         Table table;
+        int solutions;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB  Ball {
