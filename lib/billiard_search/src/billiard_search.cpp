@@ -162,7 +162,7 @@ namespace billiard::search {
     expandSearchNodeByBall(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state,
                          const std::shared_ptr<SearchNodeSearch>& searchInput, const std::pair<std::string, Ball>& ball);
     std::vector<std::shared_ptr<SearchNode>>
-    prepareForSimulation(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state);
+    prepareForSimulation(const std::shared_ptr<SearchNode>& input, const std::string& cueBallId, const std::shared_ptr<SearchState>& state);
     std::vector<std::shared_ptr<SearchNode>>
     expandSearchNodeByBanks(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state);
     std::vector<std::shared_ptr<SearchNode>>
@@ -314,6 +314,8 @@ namespace billiard::search {
             return nullptr;
         }
 
+        // TODO: check if collides with rail on the way
+
         auto result = SearchNode::search(parentNode);
         auto resultSearchNode = result->asSearch();
         resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::POCKET_COLLISION, pocket->_position, pocket->_id });
@@ -407,7 +409,7 @@ namespace billiard::search {
                                               << std::endl);
 
             if (ball.second._type == "WHITE") {
-                auto prepared = prepareForSimulation(result, state); // TODO: Comment if search test
+                auto prepared = prepareForSimulation(result, ball.first, state); // TODO: Comment if search test
                 expanded.insert(expanded.end(), prepared.begin(), prepared.end());
                 /*result->_isSolution = true;
                 expanded.push_back(result);*/
@@ -510,13 +512,13 @@ namespace billiard::search {
         return minimalVelocity;
     }
 
-    node::Layer toInputLayer(const std::shared_ptr<SearchNode>& input, const glm::vec2 force, float accelerationLength) {
+    node::Layer toInputLayer(const std::shared_ptr<SearchNode>& input, const std::string& cueBallId, const glm::vec2 force, float accelerationLength) {
         std::unordered_map<std::string, node::Node> nodes;
 
         auto asSearch = input->asSearch();
 
         for(auto& ball : asSearch->_state) {
-            if (ball.second._type == "WHITE") {
+            if (ball.first == cueBallId) {
                 node::BallMovingNode initialEnergyNode{
                         state::BallState{
                                 ball.second._position,
@@ -547,7 +549,7 @@ namespace billiard::search {
     }
 
     std::vector<std::shared_ptr<SearchNode>>
-    prepareForSimulation(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state) {
+    prepareForSimulation(const std::shared_ptr<SearchNode>& input, const std::string& cueBallId, const std::shared_ptr<SearchState>& state) {
         std::vector<std::shared_ptr<SearchNode>> expanded;
 
         static glm::vec2 zero{0, 0};
@@ -565,7 +567,7 @@ namespace billiard::search {
                 break;
             }
 
-            auto layer = toInputLayer(input, increasedVelocity, state->_ball._accelerationLength);
+            auto layer = toInputLayer(input, cueBallId, increasedVelocity, state->_ball._accelerationLength);
 
             auto output = SearchNode::simulation(input);
             auto simulationSearchNode = output->asSimulation();
@@ -622,7 +624,7 @@ namespace billiard::search {
             result->_searchCost = input->_searchCost + searchStepCost;
 
             if (ball.second._type == "WHITE") {
-                auto prepared = prepareForSimulation(result, state);
+                auto prepared = prepareForSimulation(result, ball.first, state);
                 expanded.insert(expanded.end(), prepared.begin(), prepared.end());
             } else {
                 expanded.push_back(result);
@@ -667,10 +669,6 @@ namespace billiard::search {
             if (previousEvent) {
                 glm::vec2 way = previousEvent->_targetPosition - event._targetPosition;
                 double distanceCost = glm::dot(way, way) / maxDistanceSquared;
-                double optimalDistanceSquared = 200 * 200;
-                double optimalDistanceCost = 0.1;
-                double weightedDistanceCost = weightedDistanceCost = weightedDistance(glm::dot(way, way), optimalDistanceSquared, optimalDistanceCost, maxDistanceSquared);
-                weightedDistanceCost = distanceCost; // TODO: remove
 
                 double parentWeight = 1.0;
 
@@ -687,13 +685,12 @@ namespace billiard::search {
 
                 DEBUG(agent << "Distance "
                             << " distanceCost=" << std::to_string(distanceCost) << " "
-                            << " weightedDistanceCost=" << std::to_string(weightedDistanceCost) << " "
                             << " parentWeight=" << std::to_string(parentWeight) << " "
-                            << " weightedDistanceCost * parentWeight=" << std::to_string(weightedDistanceCost * parentWeight) << " "
+                            << " distanceCost * parentWeight=" << std::to_string(distanceCost * parentWeight) << " "
                             << std::endl);
 
                 if (ball._type == "WHITE") {
-                    totalDistanceCost += weightedDistanceCost * parentWeight;
+                    totalDistanceCost += distanceCost * parentWeight;
                 } else {
                     totalDistanceCost += distanceCost;
                 }

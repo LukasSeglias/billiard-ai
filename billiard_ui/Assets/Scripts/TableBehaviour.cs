@@ -437,14 +437,7 @@ public class TableBehaviour : MonoBehaviour
 		}
 		
 		private double calculateQueueEndTime(KeyFrame start) {
-			Ball whiteBall = null;
-			foreach (var ball in start.balls) {
-				if (ball.type == "WHITE") {
-					whiteBall = ball;
-					break;
-				}
-			}
-			
+			Ball whiteBall = findCueBall(start.balls);
 			if (whiteBall == null) {
 				return 0.0;
 			}
@@ -469,18 +462,11 @@ public class TableBehaviour : MonoBehaviour
 		}
 		
 		private bool doAnimateQueue(double time, double totalTime, KeyFrame start) {
-			Ball whiteBall = null;
-			foreach (var ball in start.balls) {
-				if (ball.type == "WHITE") {
-					whiteBall = ball;
-					break;
-				}
-			}
-			
+			Ball whiteBall = findCueBall(start.balls);
 			if (whiteBall == null) {
 				return false;
 			}
-			
+
 			var endSpeed = convert(whiteBall.velocity, 0);
 			var direction = Vector3.Normalize(endSpeed);
 			float scale = StretchingUtility.get().scale;
@@ -488,7 +474,7 @@ public class TableBehaviour : MonoBehaviour
 			
 			var startDirection = direction * (QUEUE_DIST + radius);
 			var startPos = convert(whiteBall.position, 0) - startDirection;
-			
+
 			var a = endSpeed / (float)totalTime;
 			time = Math.Min(time, totalTime);
 			var currentPos = a / 2 * (float)(time * time) + startPos;
@@ -503,6 +489,15 @@ public class TableBehaviour : MonoBehaviour
 			bool isFinished = time == totalTime;
 			
 			return !isFinished;
+		}
+
+		private Ball findCueBall(Ball[] balls) {
+		    foreach (var ball in balls) {
+                if (ball.type == "WHITE" && (ball.velocity.x != 0.0 || ball.velocity.y != 0.0)) {
+                    return ball;
+                }
+            }
+            return null;
 		}
 		
 		private void mayUpdateAnimationWindow(double time, KeyFrame[] frames) {
