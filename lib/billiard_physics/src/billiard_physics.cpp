@@ -131,6 +131,11 @@ std::optional<float> billiard::physics::timeToCollisionWithRail(const glm::vec2&
                                                                 const glm::vec2& shiftedRailPoint1,
                                                                 const glm::vec2& shiftedRailPoint2) {
 
+    static glm::vec2 zero {0, 0};
+    if (ballVelocity == zero) {
+        return std::nullopt;
+    }
+
     auto shiftedSegmentIntersection = billiard::physics::intersection::halfLineIntersectsLineSegment(ballPosition, ballVelocity, shiftedRailPoint1, shiftedRailPoint2);
     float lambda = 0.0f;
     if (shiftedSegmentIntersection) {
@@ -200,8 +205,9 @@ std::optional<float> billiard::physics::timeToCollisionWithRail(const glm::vec2&
 }
 
 float billiard::physics::timeToStop(const glm::vec2& acceleration, const glm::vec2& velocity) {
-    float timeX = (-velocity.x / acceleration.x);
-    float timeY = (-velocity.y / acceleration.y);
+
+    float timeX = acceleration.x == 0.0f ? 0.0f : (-velocity.x / acceleration.x);
+    float timeY = acceleration.y == 0.0f ? 0.0f : (-velocity.y / acceleration.y);
 
     DEBUG("[timeToStop]: "
               << "acceleration=" << acceleration << " "
@@ -238,7 +244,9 @@ std::optional<float> billiard::physics::timeToCollision(const glm::vec2& acceler
                                                   const glm::vec2& velocity2, const glm::vec2& position2, float diameter) {
 
     static glm::vec2 zero {0, 0};
-    assert(velocity1 != zero);
+    if (velocity1 == zero) {
+        return std::nullopt;
+    }
 
     auto velocity2SquaredLength = glm::dot(velocity2, velocity2);
     if (velocity2SquaredLength > 0) {
@@ -336,8 +344,10 @@ std::optional<float> billiard::physics::timeToTarget(const glm::vec2& targetPosi
                                   const glm::vec2& acceleration,
                                   float radius) {
 
-    glm::vec2 zero{0, 0};
-    assert(velocity != zero);
+    static glm::vec2 zero{0, 0};
+    if (velocity == zero) {
+        return std::nullopt;
+    }
 
     auto velocityFactor = intersection::lineIntersectsCircle(targetPosition, radius, position, normalizedVelocity);
 
@@ -417,6 +427,11 @@ struct complex_order
 std::vector<std::complex<double>> billiard::physics::intersection::solveQuarticFormula(double a, double b,
                                                                         double c, double d,
                                                                         double e) {
+
+    if (a == 0.0) {
+        return {};
+    }
+
     double discriminant = (256*a*a*a*e*e*e) - (192*a*a*b*d*e*e) - (128*a*a*c*c*e*e) + (144*a*a*c*d*d*e)
             -(27*a*a*d*d*d*d) + (144*a*b*b*c*e*e) - (6*a*b*b*d*d*e) - (80*a*b*c*c*d*e) + (18*a*b*c*d*d*d)
             +(16*a*c*c*c*c*e) -(4*a*c*c*c*d*d) - (27*b*b*b*b*e*e) + (18*b*b*b*c*d*e)
