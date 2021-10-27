@@ -252,7 +252,7 @@ public class TableBehaviour : MonoBehaviour
 			textObject.GetComponent<TMPro.TextMeshPro>().SetText(string.Format("[{0:F4}; {1:F4}]\n{2}", invPos.x, invPos.y, id));
 		}
 	}
-	
+
 	private class Animator {
 		
 		private static readonly float QUEUE_DIST = 0.1f; // 10 cm
@@ -263,20 +263,22 @@ public class TableBehaviour : MonoBehaviour
 		private readonly List<GameObject> lines = new List<GameObject>();
 		private readonly GameObject queue;
 		private readonly Dictionary<string, Material> mappedMaterials;
+		private readonly Material transparent;
 		
 		private int startFrameIndex;
 		private bool animateQueue;
 		private double time;
 		private double endTime;
-		private bool activeByDefinition = true;
 		private double windowStartTime;
 		private int currentAnimationWindow;
+		private BallMaterial material = BallMaterial.CIRCLE;
 
 		public Animator(RootObject root, KeyFrame[] frames, Dictionary<string, Material> mappedMaterials, Material transparent,
 		    Configuration config, GameObject queue) {
 			this.frames = frames;
 			this.queue = queue;
 			this.mappedMaterials = mappedMaterials;
+			this.transparent = transparent;
 			float scale = StretchingUtility.get().scale;
 			foreach (var ball in frames[0].balls) {
 				var ballObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -301,6 +303,12 @@ public class TableBehaviour : MonoBehaviour
 			
 			reset();
 		}
+
+		private enum BallMaterial {
+            CIRCLE,
+            FILLED,
+            INVISIBLE
+        }
 		
 		public void drawLines() {
 			foreach (var line in lines) {
@@ -402,9 +410,31 @@ public class TableBehaviour : MonoBehaviour
 		}
 		
 		public void toggleBalls() {
-			activeByDefinition = !activeByDefinition;
+			switch(material) {
+			    case BallMaterial.CIRCLE:
+                    material = BallMaterial.FILLED;
+                    break;
+			    case BallMaterial.FILLED:
+			        material = BallMaterial.INVISIBLE;
+                    break;
+			    case BallMaterial.INVISIBLE:
+			        material = BallMaterial.CIRCLE;
+                    break;
+			}
 			foreach (var ballObject in ballObjects.Values) {
-				ballObject.SetActive(activeByDefinition);
+				switch(material) {
+                    case BallMaterial.CIRCLE:
+                        ballObject.SetActive(true);
+                        ballObject.GetComponent<MeshRenderer>().material = transparent;
+                        break;
+                    case BallMaterial.FILLED:
+                        ballObject.SetActive(true);
+                        ballObject.GetComponent<MeshRenderer>().material = mappedMaterials[ballObject.GetComponent<BallObjectInformation>().type];
+                        break;
+                    case BallMaterial.INVISIBLE:
+                        ballObject.SetActive(false);
+                        break;
+                }
 			}
 		}
 		
