@@ -54,8 +54,8 @@ public class AnimationService : MonoBehaviour
 		configuration(map(config));
 	}
 	
-	public static void setState(List<GameObject> balls, StretchingBehaviour heightBehaviour, StretchingBehaviour widthBehaviour) {
-		BallState_t[] ballStates = map(balls, heightBehaviour, widthBehaviour);
+	public static void setState(List<GameObject> balls) {
+		BallState_t[] ballStates = map(balls);
 		BilliardState_t billiardState = new BilliardState_t(ballStates);
 		billiardState.ballSize = ballStates.Length;
 		state(billiardState);
@@ -487,19 +487,21 @@ public class AnimationService : MonoBehaviour
         return new Vec3_t {x = from.x, y = from.y, z = from.z};
     }
 	
-	private static BallState_t[] map(List<GameObject> balls, StretchingBehaviour heightBehaviour, StretchingBehaviour widthBehaviour) {
+	private static BallState_t[] map(List<GameObject> balls) {
 		BallState_t[] ballStates = new BallState_t[balls.Count];
 		
 		for (int i = 0; i < balls.Count; i++) {
 			var ball = balls[i];
 			var info = ball.GetComponent<BallObjectInformation>();
+
+			Vec2 position = 1000.0 * StretchingUtility.get().invPosition(new Vec2 {
+                x = ball.transform.position.x,
+                y = ball.transform.position.y
+			});
 			BallState_t ballState = new BallState_t {
 				type = info.type,
 				id = info.id,
-				position = new Vec2_t {
-					x = widthBehaviour.inverse(ball.transform.position.x) * 1000,
-					y = heightBehaviour.inverse(ball.transform.position.y) * 1000
-				}
+				position = new Vec2_t { x = position.x, y = position.y }
 			};
 			ballStates[i] = ballState;
 		}

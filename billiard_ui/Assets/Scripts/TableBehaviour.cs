@@ -16,15 +16,12 @@ public struct GameObjectMap
 public class TableBehaviour : MonoBehaviour
 {
 	public float FastFactor = 2f;
-	public GameObject Table;
 	public GameObject Background;
 	public List<GameObjectMap> Materials;
 	public Material transparent;
 	public Material dotMaterial;
 	public TextMeshPro infoText;
-	public StretchingBehaviour HeightStretching;
-	public StretchingBehaviour WidthStretching;
-	public float Scale = 1.0f;
+	public TableVisuals visuals;
 	public GameObject Queue;
 	public GameObject dotsParentGameObject;
 
@@ -37,9 +34,6 @@ public class TableBehaviour : MonoBehaviour
 	private bool isPlaying = true;
 	private Configuration config;
     private int animationIndex = 0;
-	private List<GameObject> railSegments;
-	private List<GameObject> railSegmentNormals;
-	private List<GameObject> targets;
 	private bool isLive = true;
 	private bool isDebug = false;
 	private bool showBallHalos = true;
@@ -63,17 +57,10 @@ public class TableBehaviour : MonoBehaviour
 		AnimationService.captureState(isLive);
 		
 		config = ConfigurationLoader.load();
-		Utility.applyConfig(ref config, ref HeightStretching, ref WidthStretching, ref Table);
-		Scale = config.scale;
-		
-		Table.GetComponent<Renderer>().enabled = false;
+
 		infoText.gameObject.SetActive(false);
 
-		railSegments = drawRailSegments(ref config, ref HeightStretching, ref WidthStretching);
-		railSegmentNormals = drawRailSegmentNormals(ref config, ref HeightStretching, ref WidthStretching);
-		targets = drawTargets(ref config, ref HeightStretching, ref WidthStretching);
-
-		dottedPaths = new BallDottedPaths(HeightStretching, WidthStretching, Scale, dotMaterial, dotsParentGameObject);
+		dottedPaths = new BallDottedPaths(dotMaterial, dotsParentGameObject);
     }
 	
 	void OnDestroy() {
@@ -103,8 +90,7 @@ public class TableBehaviour : MonoBehaviour
 		}
 		
 		if (animator == null && animations.Length > 0) {
-			animator = new Animator(root, animations[animationIndex].keyFrames, mappedMaterials, transparent, config,
-			    HeightStretching, WidthStretching, Scale, Queue);
+			animator = new Animator(root, animations[animationIndex].keyFrames, mappedMaterials, transparent, config, Queue);
 		}
 		
 		if (Input.GetKeyDown(KeyCode.Space)) {
@@ -126,7 +112,7 @@ public class TableBehaviour : MonoBehaviour
 				animator.toggleBalls();
 			}
 		} else if (Input.GetKeyDown(KeyCode.T)) {
-			toggleConfigProperties();
+			visuals.toggleTableAndRailsAndTargets();
 		} else if (Input.GetKeyDown(KeyCode.D)) {
 			this.isDebug = !isDebug;
 		} else if (Input.GetKeyDown(KeyCode.L)) {
@@ -156,21 +142,7 @@ public class TableBehaviour : MonoBehaviour
 		}
     }
 	
-	private void toggleConfigProperties() {
-		bool enabled = !Table.GetComponent<Renderer>().enabled;
-		Table.GetComponent<Renderer>().enabled = enabled;
-		foreach(var segment in railSegments) {
-			segment.GetComponent<LineRenderer>().enabled = enabled;
-		}
-// 		foreach(var segmentNormal in railSegmentNormals) {
-//             segmentNormal.GetComponent<LineRenderer>().enabled = enabled;
-//         }
-		foreach(var target in targets) {
-			target.GetComponent<LineRenderer>().enabled = enabled;
-		}
-	}
-	
-	private void animate(double deltaTime) {		
+	private void animate(double deltaTime) {
 		if (animator != null) {
 			animator.update(deltaTime);
 		}
@@ -191,122 +163,23 @@ public class TableBehaviour : MonoBehaviour
 	
 	private void stateChanged(RootState state) {
 		if (this.statePresenter == null) {
-			statePresenter = new StatePresenter(transparent, Scale, config, HeightStretching, WidthStretching);
+			statePresenter = new StatePresenter(transparent, config);
 		}
 		
 		statePresenter.update(state);
 		dottedPaths.stateChanged(state);
 	}
-	
-	private List<GameObject> drawRailSegments(ref Configuration config, ref StretchingBehaviour heightStretching, ref StretchingBehaviour widthStretching) {
-		List<GameObject> railSegments = new List<GameObject>();
-		int index = 0;
-		foreach(var segment in config.segments) {
-			GameObject lineObject = new GameObject(string.Format("RailSegment{0}", index++));
-			LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
-			lRend.enabled = false;
-			lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-			lRend.startColor = Color.white;
-			lRend.endColor = Color.white;
-			lRend.startWidth = 0.02f;
-			lRend.endWidth = 0.02f;
-			lRend.SetPosition(0, position(convert(segment.start, -0.01f), heightStretching, widthStretching));
-			lRend.SetPosition(1, position(convert(segment.end, -0.01f), heightStretching, widthStretching));
-			lRend.sortingOrder = 0;
-			railSegments.Add(lineObject);
-		}
-		return railSegments;
-	}
 
-	private List<GameObject> drawRailSegmentNormals(ref Configuration config, ref StretchingBehaviour heightStretching, ref StretchingBehaviour widthStretching) {
-        List<GameObject> railSegmentNormals = new List<GameObject>();
-        int index = 0;
-        foreach(var segment in config.segments) {
-            GameObject lineObject = new GameObject(string.Format("RailSegmentNormal{0}", index++));
-            LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
-            lRend.enabled = false;
-            lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-            lRend.startColor = Color.red;
-            lRend.endColor = Color.blue;
-            lRend.startWidth = 0.02f;
-            lRend.endWidth = 0.02f;
-            Vec2 normal = segment.normal();
-            Vec2 startPoint = segment.start + (0.5f * (segment.end - segment.start));
-            Vec2 endPoint = startPoint + 0.1 * normal;
-            lRend.SetPosition(0, position(convert(startPoint, -0.01f), heightStretching, widthStretching));
-            lRend.SetPosition(1, position(convert(endPoint, -0.01f), heightStretching, widthStretching));
-            lRend.sortingOrder = 0;
-            railSegmentNormals.Add(lineObject);
-        }
-        return railSegmentNormals;
-    }
-	
-	private List<GameObject> drawTargets(ref Configuration config, ref StretchingBehaviour heightStretching, ref StretchingBehaviour widthStretching) {
-		List<GameObject> targets = new List<GameObject>();
-		int index = 0;
-		foreach(var target in config.targets) {
-			GameObject lineObject = new GameObject(string.Format("Target{0}", index++));
-			List<GameObject> lineObjectList = new List<GameObject>();
-			lineObjectList.Add(lineObject);
-			LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
-			lRend.enabled = false;
-			lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-			lRend.startColor = Color.white;
-			lRend.endColor = Color.white;
-			lRend.startWidth = 0.02f;
-			lRend.endWidth = 0.02f;
-			lRend.sortingOrder = 0;
-			CreatePoints(lRend, 50, config.scale, target, ref heightStretching, ref widthStretching);
-			railSegments.Add(lineObject);
-		}
-		return targets;
-	}
-	
-	private void CreatePoints (LineRenderer circleRenderer, int segments, float scale, Circle circle, ref StretchingBehaviour heightStretching, ref StretchingBehaviour widthStretching) {
-        float x;
-        float y;
-
-        float angle = 0f;
-		float angleStep = 360f / segments;
-		circleRenderer.positionCount = segments + 2;
-
-        for (int i = 0; i < (segments + 2); i++)
-        {
-			var movedPos = position(convert(circle.position, -0.01f), heightStretching, widthStretching);
-            y = Mathf.Cos (Mathf.Deg2Rad * angle) * (circle.radius * scale) + movedPos.y;
-            x = Mathf.Sin (Mathf.Deg2Rad * angle) * (circle.radius * scale) + movedPos.x;
-
-            circleRenderer.SetPosition(i, new Vector3(x, y, -0.01f));
-
-            angle += angleStep;
-        }
-    }
-	
 	private static Vector3 convert(Vec2 vector, float z) {
 		return new Vector3((float)vector.x, (float)vector.y, z);
 	}
 	
-	private static Vector3 position(Vector3 pos, StretchingBehaviour heightStretching, StretchingBehaviour widthStretching) {
-		return new Vector3(widthStretching.forward(pos.x), heightStretching.forward(pos.y), pos.z);
-	}
-	
-	private static Vec2 invPosition(Vec2 pos, StretchingBehaviour heightStretching, StretchingBehaviour widthStretching) {
-		return new Vec2{x = widthStretching.inverse((float) pos.x), y = heightStretching.inverse((float) pos.y)};
-	}
-	
 	private class StatePresenter {
 		private readonly List<GameObject> ballObjects = new List<GameObject>();
-		private readonly StretchingBehaviour heightStretching;
-		private readonly StretchingBehaviour widthStretching;
-		private readonly float scale;
 		private readonly Configuration config;
 		private readonly Material transparent;
 		
-		public StatePresenter(Material transparent,
-			float scale, Configuration config, StretchingBehaviour heightStretching, StretchingBehaviour widthStretching) {
-			this.heightStretching = heightStretching;
-			this.widthStretching = widthStretching;
-			this.scale = scale;
+		public StatePresenter(Material transparent, Configuration config) {
 			this.config = config;
 			this.transparent = transparent;
 		}
@@ -333,9 +206,9 @@ public class TableBehaviour : MonoBehaviour
 			ballInfo.id = ball.id;
 			ballInfo.type = ball.type;
 			ballInfo.selectable = true;
-			ballObject.transform.position = position(convert(ball.position, -0.01f), heightStretching, widthStretching);
+			ballObject.transform.position = StretchingUtility.get().position(convert(ball.position, -0.01f));
 			float radius = config.radius;
-			ballObject.transform.localScale = new Vector3((float) radius, (float) radius, (float) radius) * 2 * scale;
+			ballObject.transform.localScale = new Vector3((float) radius, (float) radius, (float) radius) * 2 * StretchingUtility.get().scale;
 			updateLocationText(ball.id, ball.type, ballObject);
 		}
 		
@@ -375,7 +248,7 @@ public class TableBehaviour : MonoBehaviour
 		private void updateLocationText(string id, string type, GameObject ball) {
 			var textObject = ball.transform.Find("Text").gameObject;
 			var pos = new Vec2{x = ball.transform.position.x, y = ball.transform.position.y};
-			var invPos = invPosition(pos, heightStretching, widthStretching);
+			var invPos = StretchingUtility.get().invPosition(pos);
 			textObject.GetComponent<TMPro.TextMeshPro>().SetText(string.Format("[{0:F4}; {1:F4}]\n{2}", invPos.x, invPos.y, id));
 		}
 	}
@@ -388,10 +261,7 @@ public class TableBehaviour : MonoBehaviour
 		private readonly KeyFrame[] frames;
 		private readonly Dictionary<string, GameObject> ballObjects = new Dictionary<string, GameObject>();
 		private readonly List<GameObject> lines = new List<GameObject>();
-		private readonly StretchingBehaviour heightStretching;
-		private readonly StretchingBehaviour widthStretching;
 		private readonly GameObject queue;
-		private readonly float scale;
 		private readonly Dictionary<string, Material> mappedMaterials;
 		
 		private int startFrameIndex;
@@ -403,14 +273,11 @@ public class TableBehaviour : MonoBehaviour
 		private int currentAnimationWindow;
 
 		public Animator(RootObject root, KeyFrame[] frames, Dictionary<string, Material> mappedMaterials, Material transparent,
-		    Configuration config, StretchingBehaviour heightStretching, StretchingBehaviour widthStretching,
-		    float scale, GameObject queue) {
+		    Configuration config, GameObject queue) {
 			this.frames = frames;
-			this.heightStretching = heightStretching;
-			this.widthStretching = widthStretching;
 			this.queue = queue;
-			this.scale = scale;
 			this.mappedMaterials = mappedMaterials;
+			float scale = StretchingUtility.get().scale;
 			foreach (var ball in frames[0].balls) {
 				var ballObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 				ballObject.GetComponent<MeshRenderer>().material = transparent;
@@ -418,7 +285,7 @@ public class TableBehaviour : MonoBehaviour
 				ballInfo.id = ball.id;
 				ballInfo.type = ball.type;
 				ballInfo.selectable = false;
-				ballObject.transform.position = position(convert(ball.position, 0), heightStretching, widthStretching);
+				ballObject.transform.position = StretchingUtility.get().position(convert(ball.position, 0));
 				float radius = config.radius;
 				ballObject.transform.localScale = new Vector3((float) radius, (float) radius, (float) radius) * 2 * scale;
 				
@@ -461,8 +328,8 @@ public class TableBehaviour : MonoBehaviour
 							lRend.material.color = Color.white;
 							lRend.startWidth = 0.02f;
 							lRend.endWidth = 0.02f;
-							lRend.SetPosition(0, position(convert(startBall.position, -0.01f), heightStretching, widthStretching));
-							lRend.SetPosition(1, position(convert(endBall.position, -0.01f), heightStretching, widthStretching));
+							lRend.SetPosition(0, StretchingUtility.get().position(convert(startBall.position, -0.01f)));
+							lRend.SetPosition(1, StretchingUtility.get().position(convert(endBall.position, -0.01f)));
 							lines.Add(lineObject);
 						}
 					}
@@ -584,6 +451,7 @@ public class TableBehaviour : MonoBehaviour
 			
 			var endSpeed = convert(whiteBall.velocity, 0);
 			var direction = Vector3.Normalize(endSpeed);
+			float scale = StretchingUtility.get().scale;
 			float radius = (ballObjects[whiteBall.id].transform.localScale.x / scale) / 2;
 			
 			var startDirection = direction * (QUEUE_DIST + radius);
@@ -615,6 +483,7 @@ public class TableBehaviour : MonoBehaviour
 			
 			var endSpeed = convert(whiteBall.velocity, 0);
 			var direction = Vector3.Normalize(endSpeed);
+			float scale = StretchingUtility.get().scale;
 			float radius = (ballObjects[whiteBall.id].transform.localScale.x / scale) / 2;
 			
 			var startDirection = direction * (QUEUE_DIST + radius);
@@ -629,7 +498,7 @@ public class TableBehaviour : MonoBehaviour
 			
 			float lengthToMove = queue.transform.localScale.y;
 			var toMove = Vector3.Normalize(endSpeed) * lengthToMove;
-			queue.transform.position = position(currentPos, heightStretching, widthStretching) - toMove;
+			queue.transform.position = StretchingUtility.get().position(currentPos) - toMove;
 			
 			bool isFinished = time == totalTime;
 			
@@ -677,8 +546,7 @@ public class TableBehaviour : MonoBehaviour
 			Vector3 startVelocity = convert(start.velocity,0.0f);
 			Vector3 endVelocity = convert(end.velocity,0.0f);
 			Vector3 a = duration == 0.0f ? new Vector3(0.0f, 0.0f, 0.0f) : (endVelocity - startVelocity) * (float)(1/duration);
-			gameObject.transform.position = position(0.5f * a * (float)(timeDelta * timeDelta) + startVelocity * (float)timeDelta + convert(start.position, 0),
-				heightStretching, widthStretching);			
+			gameObject.transform.position = StretchingUtility.get().position(0.5f * a * (float)(timeDelta * timeDelta) + startVelocity * (float)timeDelta + convert(start.position, 0));
 		}
 	}
 
@@ -687,21 +555,11 @@ public class TableBehaviour : MonoBehaviour
     	private float ttl = 2.0f;    // in seconds
     	private float radius = 5.0f / 1000.0f; // in meters
     	private bool showDots = false;
-    	private float scale = 0.05f;
     	private Material material;
     	private GameObject parentGameObject;
 
-    	private StretchingBehaviour heightStretching;
-        private StretchingBehaviour widthStretching;
-
-        public BallDottedPaths(StretchingBehaviour heightStretching,
-                               StretchingBehaviour widthStretching,
-                               float scale,
-                               Material material,
+        public BallDottedPaths(Material material,
                                GameObject parentGameObject) {
-            this.heightStretching = heightStretching;
-            this.widthStretching = widthStretching;
-            this.scale = scale;
             this.material = material;
             this.parentGameObject = parentGameObject;
         }
@@ -716,18 +574,14 @@ public class TableBehaviour : MonoBehaviour
                 GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 sphere.GetComponent<MeshRenderer>().material = material;
                 sphere.transform.parent     = parentGameObject.transform;
-                sphere.transform.position   = position(convert(ball.position, -0.01f), heightStretching, widthStretching);
-                sphere.transform.localScale = new Vector3((float) radius, (float) radius, (float) radius) * 2 * scale;
+                sphere.transform.position   = StretchingUtility.get().position(convert(ball.position, -0.01f));
+                sphere.transform.localScale = new Vector3(radius, radius, radius) * 2 * StretchingUtility.get().scale;
                 Destroy(sphere, ttl);
             }
         }
 
         private static Vector3 convert(Vec2 vector, float z) {
             return new Vector3((float)vector.x, (float)vector.y, z);
-        }
-
-        private static Vector3 position(Vector3 pos, StretchingBehaviour heightStretching, StretchingBehaviour widthStretching) {
-            return new Vector3(widthStretching.forward(pos.x), heightStretching.forward(pos.y), pos.z);
         }
     }
 }
