@@ -6,6 +6,8 @@
 #include <vector>
 #include <chrono>
 #include <unordered_set>
+#include <billiard_debug/billiard_debug.hpp>
+#include <string>
 
 namespace process {
 
@@ -187,20 +189,37 @@ namespace process {
             uint64_t currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(
                     std::chrono::system_clock::now().time_since_epoch()).count();
 
-            bool finished = manager->_isRunning && (
-                    manager->_solutions.size() >= manager->_minimalSolutions ||
-                    (currentTime - manager->_startTime >= manager->_maxDuration) ||
-                    isNoWorkerWorkingAndNoWorkLeftToDo(manager)
-            );
+            if (manager->_isRunning) {
+                bool enoughSolutions = manager->_solutions.size() >= manager->_minimalSolutions;
+                bool noTimeLeft = (currentTime - manager->_startTime >= manager->_maxDuration);
+                bool noWork = isNoWorkerWorkingAndNoWorkLeftToDo(manager);
 
-            if (finished) {
-                std::vector<Solution> result;
-                while(!manager->_solutions.empty()) {
-                    result.push_back(manager->_mapSolution(manager->_solutions.top()));
-                    manager->_solutions.pop();
+                bool finished = enoughSolutions || noTimeLeft || noWork;
+
+                if (finished) {
+
+                    std::string agent = "[mayCompleteResult] ";
+                    std::string debugOutput;
+
+                    if (enoughSolutions) {
+                        debugOutput += "enough solutions found: " + std::to_string(manager->_solutions.size()) + " ";
+                    }
+                    if (noTimeLeft) {
+                        debugOutput += "no time left ";
+                    }
+                    if (noWork) {
+                        debugOutput += "no work left ";
+                    }
+                    DEBUG(agent << debugOutput << std::endl);
+
+                    std::vector<Solution> result;
+                    while(!manager->_solutions.empty()) {
+                        result.push_back(manager->_mapSolution(manager->_solutions.top()));
+                        manager->_solutions.pop();
+                    }
+                    manager->clear();
+                    manager->_result.set_value(result);
                 }
-                manager->clear();
-                manager->_result.set_value(result);
             }
         }
 
