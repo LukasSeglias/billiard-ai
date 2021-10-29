@@ -104,8 +104,23 @@ std::pair<glm::vec2, glm::vec2> billiard::physics::elasticCollision(const glm::v
     glm::vec2 v1t = velocityWithEnergyLoss1 - v1z;
     glm::vec2 v2t = velocityWithEnergyLoss2 - v2z;
 
-    glm::vec2 newVelocity1 = (v2z + v1t);
-    glm::vec2 newVelocity2 = (v1z + v2t);
+    auto normalizedV1 = normalize(velocity1);
+    auto topspinVelocity1 = topspinConstant * normalizedV1;
+
+    auto v1tn = v1t + topspinVelocity1;
+    v1tn = glm::dot(v1tn, v1tn) < glm::dot(velocityWithEnergyLoss1, velocityWithEnergyLoss1) ?
+           v1tn :
+           glm::length(velocityWithEnergyLoss1) * normalize(v1tn);
+
+    auto normalizedV2 = normalize(velocity2);
+    auto topspinVelocity2 = topspinConstant * normalizedV2;
+    auto v2tn = v2t + topspinVelocity2;
+    v2tn = glm::dot(v2tn, v2tn) < glm::dot(velocityWithEnergyLoss2, velocityWithEnergyLoss2) ?
+           v2tn :
+           glm::length(velocityWithEnergyLoss2) * normalize(v2tn);
+
+    glm::vec2 newVelocity1 = (v2z + v1tn);
+    glm::vec2 newVelocity2 = (v1z + v2tn);
 
     return std::make_pair(newVelocity1, newVelocity2);
 }

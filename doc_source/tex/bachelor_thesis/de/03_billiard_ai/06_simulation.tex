@@ -90,8 +90,45 @@ Das Resultat lautet wie folgt:
     \vec{u_1} = \vec{v_{2,z}} + \vec{v_{1,t}}\\
     \vec{u_2} = \vec{v_{1,z}} + \vec{v_{2,t}}
 \end{align}
-Somit können bei gegebener Kollision zweier Kugeln die Geschwindigkeiten nach der Kollision bestimmt werden.
 
+Da eine Kugel auch einen Topspin aufweist und kaum Reibung mit der kollidierenden Kugel hat, hat dieser Topspin im
+Falle einer Kugelkollision einen Einfluss auf den weiteren Verlauf der vorher dynamischen Kugeln.
+Dieser Einfluss scheint konstant, also nicht abhängig von der eingehenden Geschwindigkeit zu sein und fällt demnach
+vorallem bei kleinen Geschwindigkeiten ins Gewicht. In Abbildung \ref{fig:einfluss_topspin} wird der Einfluss des
+Topspins bei grossen wie auch kleinen Geschwindigkeiten erläutert. Der Einfluss des Topspins wird berücksichtigt,
+indem bei den vorher dynamischen Kugeln ein Vektor mit konstantem
+Betrag in der einkommenden Geschwindigkeitsrichtung auf den durch die elastische Kollision berechneten Vektor
+$\vec{v_{k,t}}$ aufaddiert wird. Demnach gilt für den neuen Vektor $\vec{v_{k,t,n}}$ der Kugeln, wobei $A$ für die konstante Geschwindigket und
+$\hat{v_k}$ für den normierten Vektor $\vec{v_k}$ der Kugel $k$ steht.
+\begin{align}
+    \vec{v_{1,t,n}} = \vec{v_{1,t}} + A \cdot \hat{v_1}\\
+    \vec{v_{2,t,n}} = \vec{v_{2,t}} + A \cdot \hat{v_2}\\
+\end{align}
+
+Dieser Vektor $\vec{v_{k,t,n}}$ wird nun anstelle von $\vec{v_{k,t}}$ verwendet, wobei die maximal Energie des Vektors
+auf die Eingangsenergie beschränkt wird.
+\begin{align}
+    \vec{u_1} = \vec{v_{2,z}} + \min{(\vec{v_{1,t,n}}, \norm{\vec{v_1}} \cdot \hat{{v_{1,t,n}}})}\\
+    \vec{u_2} = \vec{v_{1,z}} + \min{(\vec{v_{2,t,n}}, \norm{\vec{v_2}} \cdot \hat{v_{2,t,n}})}
+\end{align}
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.8\textwidth}
+        \includegraphics[width=1\textwidth]{../common/03_billiard_ai/resources/33_topspin_kleine_geschwindigkeit.png}
+        \caption{Topspin-Einfluss bei kleiner Geschwindigkeit}
+        \label{fig:topspin_kleine_geschwindigkeit}
+    \end{subfigure}\\
+    \begin{subfigure}[b]{0.8\textwidth}
+        \includegraphics[width=1\textwidth]{../common/03_billiard_ai/resources/34_topspin_grosse_geschwindigkeit.png}
+        \caption{Topspin-Einfluss bei grosser Geschwindigkeit}
+        \label{fig:topspin_grosse_geschwindigkeit}
+    \end{subfigure}
+    \caption{(a) Eine einkommende Geschwindigkeit $\vec{v}$ wird auf die Komponenten $\vec{z}$ und $\vec{t}$ aufgeteilt. Ohne Berücksichtigung des Topspins wird die Position der weissen Kugel bei $P$ berechnet, die effektive Position ist bei $E$. (b) Bei grösserer Geschwindigkeit ist die Abweichung zwischen $P$ und $E$ kleiner.}
+    \label{fig:einfluss_topspin}
+\end{figure}
+
+\newpage
 \subsubsection{Bandenreflektion}
 Sofern eine Kugel an eine Bande stösst, so wird diese abgelenkt. In dem hier beschriebenen Modell wird der Drall\cite{wiki.spin:1},
 welcher die Bahn einer Kugel nach Kollision mit der Bande ablenken würde, ignoriert.
@@ -159,7 +196,7 @@ Erste ist.
 \begin{align}
     t = \min{(t_1, t_2, t_3, t_4)}
 \end{align}
-\newpage
+
 Das Lösen dieses Gleichungssystems erfordert viel Rechenzeit, was die Frage nach Performanceverbesserungen aufwirft.
 Diese werden durch Vorbedingungen erzielt, welche welche geprüft werden. Es findet zu Beginn eine Fallunterscheidung
 statt. Wenn die zweite Kugel statisch ist, so wird geprüft, ob die Distanz $d$ zwischen der Position $P_2$ der zweiten Kugel
