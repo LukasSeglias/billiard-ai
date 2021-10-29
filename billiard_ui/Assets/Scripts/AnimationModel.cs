@@ -33,7 +33,9 @@ public class Vec2 {
 	public static Vec2 operator *(double value, Vec2 vec) => new Vec2{x = vec.x * value, y = vec.y * value};
 	public static Vec2 operator -(Vec2 v1, Vec2 v2) => new Vec2{ x = v1.x - v2.x, y = v1.y - v2.y };
     public static Vec2 operator +(Vec2 v1, Vec2 v2) => new Vec2{ x = v1.x + v2.x, y = v1.y + v2.y };
-
+	public static double dot(Vec2 v1, Vec2 v2) {
+	    return v1.x * v2.x + v1.y * v2.y;
+	}
 	public double length() {
 	    return Math.Sqrt(x*x + y*y);
 	}
@@ -188,6 +190,8 @@ public class Configuration {
 	public int solutions;
 	public Correction correctionWidth;
 	public Correction correctionHeight;
+	public string[] infinityModeSearchTypes;
+	public string[] coloredSearchTypes;
 
 	public static Configuration operator /(Configuration config, float value) => new Configuration{
 		radius = config.radius / value,
@@ -222,7 +226,9 @@ public class Configuration {
                            sx = config.camera.sx, sy = config.camera.sy
         },
 		correctionWidth = new Correction{factor = config.correctionWidth.factor, translation = config.correctionWidth.translation},
-		correctionHeight = new Correction{factor = config.correctionHeight.factor, translation = config.correctionHeight.translation}
+		correctionHeight = new Correction{factor = config.correctionHeight.factor, translation = config.correctionHeight.translation},
+		infinityModeSearchTypes = config.infinityModeSearchTypes,
+		coloredSearchTypes = config.coloredSearchTypes
 	};
 }
 
