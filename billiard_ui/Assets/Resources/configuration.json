@@ -4,7 +4,6 @@
 	"width": 1881,
 	"height": 943,
 	"scale": 3.550,
-	"segmentSize": 6,
 	"segments": [
 		{
 			"description": "Left",
@@ -177,5 +176,7 @@
 	"correctionHeight": {
 		"factor": 3.550,
 		"translation": -0.035
-	}
+	},
+	"infinityModeSearchTypes": [ "RED", "YELLOW", "GREEN", "BROWN", "BLUE", "PINK", "BLACK" ],
+	"coloredSearchTypes": [ "YELLOW", "GREEN", "BROWN", "BLUE", "PINK", "BLACK" ]
 }

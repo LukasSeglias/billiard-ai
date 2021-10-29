@@ -21,9 +21,11 @@ public class TableBehaviour : MonoBehaviour
 	public Material transparent;
 	public Material dotMaterial;
 	public TextMeshPro infoText;
+	public TextMeshPro stabilizationStatusInfoText;
 	public TableVisuals visuals;
 	public GameObject Queue;
 	public GameObject dotsParentGameObject;
+	public StabilizationController stabilizationController;
 
 	private RootObject root = new RootObject();
 	private RootState state = new RootState();
@@ -37,7 +39,7 @@ public class TableBehaviour : MonoBehaviour
 	private bool isLive = true;
 	private bool isDebug = false;
 	private bool showBallHalos = true;
-	
+
 	// Start is called before the first frame update
     void Start()
     {
@@ -55,7 +57,9 @@ public class TableBehaviour : MonoBehaviour
 		AnimationService.OnAnimationReceived += animationChanged;
 		AnimationService.OnStateReceived += stateChanged;
 		AnimationService.captureState(isLive);
-		
+
+		stabilizationController.OnStateStabilizationChange += stabilizationChanged;
+
 		config = ConfigurationLoader.load();
 
 		infoText.gameObject.SetActive(false);
@@ -75,18 +79,12 @@ public class TableBehaviour : MonoBehaviour
 		
 		if (Input.GetKeyDown(KeyCode.UpArrow)) {
 			animationIndex = (animationIndex + 1) % animations.Length;
-			if (this.animator != null) {
-				this.animator.delete();
-				this.animator = null;
-			}
+			recreateAnimator();
 			
 		} else if (Input.GetKeyDown(KeyCode.DownArrow)) {
 			animationIndex = (animationIndex - 1) % animations.Length;
 			animationIndex = animationIndex > 0 ? animationIndex : -animationIndex;
-			if (this.animator != null) {
-				this.animator.delete();
-				this.animator = null;
-			}
+			recreateAnimator();
 		}
 		
 		if (animator == null && animations.Length > 0) {
@@ -120,16 +118,15 @@ public class TableBehaviour : MonoBehaviour
 			AnimationService.captureState(isLive);
 		} else if (Input.GetKeyDown(KeyCode.H)) {
 			showBallHalos = !showBallHalos;
-		} else if (Input.GetKeyDown(KeyCode.Return)) {
+		} else if (Input.GetKeyDown(KeyCode.M)) {
+            stabilizationController.track = !stabilizationController.track;
+        } else if (Input.GetKeyDown(KeyCode.Return)) {
 			AnimationService.captureState();
 		} else if (Input.GetKeyDown(KeyCode.C)) {
 		    Search search = new Search();
-		    // TODO: maybe move to config?
-            search.types = new string[] { "YELLOW", "GREEN", "BROWN", "BLUE", "PINK", "BLACK" };
-
-            infoText.SetText("Searching");
-            infoText.gameObject.SetActive(true);
-            AnimationService.searchSolution(search);
+            search.types = config.coloredSearchTypes;
+            Debug.Log("[TableBehaviour] Search with colored balls: " + string.Join(", ", search.types));
+            searchSolution(search);
 		}
 		
 		if (statePresenter != null) {
@@ -141,7 +138,13 @@ public class TableBehaviour : MonoBehaviour
 			animate(Time.deltaTime);
 		}
     }
-	
+
+	private void searchSolution(Search search) {
+        infoText.SetText("Searching");
+        infoText.gameObject.SetActive(true);
+        AnimationService.searchSolution(search);
+    }
+
 	private void animate(double deltaTime) {
 		if (animator != null) {
 			animator.update(deltaTime);
@@ -155,10 +158,7 @@ public class TableBehaviour : MonoBehaviour
 		this.animationIndex = 0;
 		this.root = root;
 		
-		if (this.animator != null) {
-			this.animator.delete();
-			this.animator = null;
-		}
+		recreateAnimator();
 	}
 	
 	private void stateChanged(RootState state) {
@@ -170,10 +170,39 @@ public class TableBehaviour : MonoBehaviour
 		dottedPaths.stateChanged(state);
 	}
 
+	private void recreateAnimator() {
+        if (this.animator != null) {
+            this.animator.delete();
+            this.animator = null;
+        }
+    }
+
+	private void stabilizationChanged(StabilizationChange change) {
+
+        if (change.current == StabilizationStatus.STABLE) {
+            // -> STABLE
+
+             this.root = new RootObject();
+             recreateAnimator();
+
+             Search search = new Search();
+             search.types = config.infinityModeSearchTypes;
+
+             Debug.Log("[Infinity-mode] STABLE: Search for solution: " + string.Join(", ", search.types));
+             searchSolution(search);
+
+        } else {
+
+            Debug.Log("[Infinity-mode] " + change.previous + " -> " + change.current + ": Do nothing");
+        }
+
+        stabilizationStatusInfoText.SetText("" + change.current);
+    }
+
 	private static Vector3 convert(Vec2 vector, float z) {
 		return new Vector3((float)vector.x, (float)vector.y, z);
 	}
-	
+
 	private class StatePresenter {
 		private readonly List<GameObject> ballObjects = new List<GameObject>();
 		private readonly Configuration config;
@@ -264,7 +293,7 @@ public class TableBehaviour : MonoBehaviour
 		private readonly GameObject queue;
 		private readonly Dictionary<string, Material> mappedMaterials;
 		private readonly Material transparent;
-		
+
 		private int startFrameIndex;
 		private bool animateQueue;
 		private double time;
@@ -309,7 +338,7 @@ public class TableBehaviour : MonoBehaviour
             FILLED,
             INVISIBLE
         }
-		
+
 		public void drawLines() {
 			foreach (var line in lines) {
 				line.SetActive(false);
@@ -529,7 +558,7 @@ public class TableBehaviour : MonoBehaviour
             }
             return null;
 		}
-		
+
 		private void mayUpdateAnimationWindow(double time, KeyFrame[] frames) {
 			KeyFrame currentEndFrame = frames[this.startFrameIndex + 1];
 			KeyFrame currentStartFrame = frames[this.startFrameIndex];
