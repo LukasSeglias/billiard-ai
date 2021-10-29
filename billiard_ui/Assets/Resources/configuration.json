@@ -3,7 +3,7 @@
 	"radius": 26.15,
 	"width": 1881,
 	"height": 943,
-	"scale": 3.525,
+	"scale": 3.550,
 	"segmentSize": 6,
 	"segments": [
 		{
@@ -171,11 +171,11 @@
 		"sy": 0.0014
 	},
 	"correctionWidth": {
-		"factor": 3.551,
-		"translation": -0.120
+		"factor": 3.550,
+		"translation": -0.085
 	},
 	"correctionHeight": {
-		"factor": 3.515,
-		"translation": -0.025
+		"factor": 3.550,
+		"translation": -0.035
 	}
 }
