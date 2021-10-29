@@ -1,4 +1,5 @@
 #include <billiard_detection/billiard_detection.hpp>
+#include <billiard_debug/billiard_debug.hpp>
 
 #ifndef BILLIARD_DETECTION_DEBUG_VISUAL
     #ifdef NDEBUG
@@ -653,8 +654,8 @@ namespace billiard::detection {
             auto& inputBall = input._balls[i];
             auto& point = modelPoints[i];
             Ball ball;
+            ball._id = inputBall._id;
             ball._type = inputBall._type;
-            ball._id = std::to_string(i);
             ball._position = glm::vec2 {point.x, point.y};
             state._balls.push_back(ball);
         }
