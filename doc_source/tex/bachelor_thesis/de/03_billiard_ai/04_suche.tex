@@ -57,7 +57,7 @@ indirekt über eine Bande an die zuvor gewählte rote Kugel gespielt wird.
     \label{fig:backwardsearch_3}
 \end{figure}
 
-Algorithmus \ref{alg:backward_search} verdeutlicht den ablauf der \glqq Expand-Funktion\grqq. Zuerst wird eine
+Algorithmus \ref{alg:backward_search} verdeutlicht den Ablauf der \glqq Expand-Funktion\grqq. Zuerst wird eine
 leere Liste namens \glqq nodes\grqq{} angelegt. Diese wird danach mit Nodes gefüllt, welche entweder durch einen Stoss
 über eine weitere Kugel oder indirekt über die Bande zustande kommen. Die Nodes bilden das Ergebnis der Funktion.
 
@@ -75,6 +75,50 @@ leere Liste namens \glqq nodes\grqq{} angelegt. Diese wird danach mit Nodes gef�
     \label{alg:backward_search}
 \end{algorithm}
 
+\subsubsection{Expansion einer Kugel}
+Bei einer Expansion einer Kugel wird der nächste Zielpunkt berechnet. Das Prinzip wird in Abbildung \ref{fig:kugelexpansion}
+veranschaulicht. Es gibt einen bereits bekannten Zielpunkt $T$, wo die Kugel hingespielt werden muss.
+Weiterhin ist die aktuelle Position $S$ der Kugel bekannt. Dazwischen kann der Vektor $\vec{d}$ gebildet werden.
+\begin{align}
+    \vec{d} = S - T
+\end{align}
+Um die Kugel zum gewünschten Ziel zu befördern, wird der neue Zielpunkt $Z$ mithilfe des Vektors $d$ und dem bekannten
+Kugelradius $r$ berechnet.
+\begin{align}
+    Z = S + 2 \cdot r \cdot \hat{d}
+\end{align}
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/35_suchkandidat_kugel_expand.png}
+    \end{center}
+    \caption{Kugelexpansion}
+    \label{fig:kugelexpansion}
+\end{figure}
+
+Eine Kugel kann nur expandiert werden, wenn keine weitere Kugel oder Bande im Weg ist. Dies wird über die Berechnung
+des Distanzvektors zwischen dem Vektor $\vec{d}$ und der zu prüfenden Kugel erzielt. Dasselbe Prinzip wird
+in Kapitel \ref{kap:kugelkollision:performanceverbesserung} beim Fall einer dynamisch-statischen Kugelkollision erläutert.
+Bei der Prüfung auf eine mögliche Bandenkollision zwischen der aktuellen Position und dem Zielpunkt muss der Durchmesser
+der Kugel mitberücksichtigt werden. Eine mögliche Situation wird in Abbildung \ref{fig:kugelexpansion_bandenkollision} dargestellt.
+Dazu die Bande $R$ in Normalenrichtung verschoben, wobei die Normale in Richtung des Koordinatenursprungs zeigt. Es resultiert
+die virtuelle Bande $R_V$. Da die Bande durch zwei Punkte (Start und Ende) definiert ist, kann eine Gerade beschrieben werden.
+Dies gilt ebenso für die Kugel $K_1$. Deren Geradengleichung lautet:
+\begin{align}
+    K_1(\lambda) = S - \lambda \cdot \hat{d}
+\end{align}
+Ein Schnittpunkttest zwischen diesen Geraden sollte kein Ergebnis liefern, ansonsten wird vor dem Erreichen des Zielpunkts
+$T$ eine Kollision mit der Bande stattfinden, wie es in diesem Szenario der Fall ist.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/36_suchkandidat_kugel_expand_banden_kollision.png}
+    \end{center}
+    \caption{Kugelexpansion - Bandenkollision}
+    \label{fig:kugelexpansion_bandenkollision}
+\end{figure}
+
+\newpage
 \subsubsection{Bewertungsfunktion}
 Um die Suche zu vereinfachen und in eine spezfische Richtung zu lenken, wo die besten Resultate zu erwarten sind, ist
 es unerlässlich eine Bewertung des Stosses durchzuführen. Die Heuristik wurde so definiert, dass sie sich auf den
@@ -147,7 +191,7 @@ $1$ erreichen.
 
 \begin{figure}[h!]
     \begin{center}
-        \includegraphics[width=0.6\linewidth]{../common/03_billiard_ai/resources/30_suchbaum_gewichtung_winkelkosten.png}
+        \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/30_suchbaum_gewichtung_winkelkosten.png}
     \end{center}
     \caption{Gewichtung der Winkelkosten}
     \label{fig:suche_knoten_gewichtung_winkelkosten}
