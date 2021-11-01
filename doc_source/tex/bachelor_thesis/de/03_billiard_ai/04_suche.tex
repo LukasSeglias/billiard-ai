@@ -115,12 +115,11 @@ der zweiten Kugel definiert.
 Um die beiden Grössen vergleichen zu können, müssen sie in dieselbe Grössenordnung gebracht werden. Aus diesem Grund
 werden sie durch die maximal möglichen Werte normiert\cite{qucosa:ein_billardroboter:1}. Für die Distanz ist dies die
 Diagonale über den Tisch, für den Winkel wird ein maximal möglicher Wert von $90^\circ$ gewählt, dies ist bereits bei
-der Suche berücksichtigt. Daher kann der Winkel nur noch umgerechnet werden. Die resultierende $0$ beim Cosinus bei $90^\circ$
-wird auf $1$ gemappt, die $1$ bei $0^\circ$ auf $1$. Nun gilt die Annahme, dass je kürzer der Weg und je kleiner der Winkel,
+der Suche berücksichtigt. Es gilt die Annahme, dass je kürzer der Weg und je kleiner der Winkel,
 desto einfacher der Stoss.
 \begin{align}
     d_{krit} = \frac{d_i}{d_{max}}\\
-    \alpha^{'}_{krit} = \cos{\alpha} * -1 + 1
+    \alpha_{krit} = \frac{\alpha}{\alpha_{max}}
 \end{align}
 Aktuell fliesst der Winkel $\alpha_{krit}$ zu stark in die Bewertung ein. Daher wird dieser durch eine kubische
 Bézier-Kurve\cite{wiki.bezier:1} gewichtet. Die Parameter lauten wie folgt.
@@ -137,11 +136,12 @@ Bézier-Kurve\cite{wiki.bezier:1} gewichtet. Die Parameter lauten wie folgt.
             -3 &  3 &  0 & 0\\
              1 &  0 &  0 & 0
         \end{pmatrix}\\
-    \alpha_{krit} = f(t = \alpha^{'}_{krit})[1] = T \cdot M \cdot P
+    \alpha^G_{krit} = f(t = \alpha_{krit}) = T \cdot M \cdot P
 \end{align}
-Nach dieser Gewichtung wird die y-Komponente als $\alpha_{krit}$ verwendet. Die Kurve ist in Abbildung \ref{fig:suche_knoten_gewichtung_winkelkosten}
+Nach dieser Gewichtung resultiert ein Punkt im zweidimensionalen Raum, wovon die y-Komponente als $\alpha^G_{krit, y}$ verwendet wird.
+Die Kurve ist in Abbildung \ref{fig:suche_knoten_gewichtung_winkelkosten}
 visualisiert. Es wird deutlich, dass kleinere Winkel einen eher geringen Einfluss auf die Kosten haben.
-Ab einem Winkel von $50^\circ$, welche auf der Grafik \ref{fig:suche_knoten_gewichtung_winkelkosten} als Punkt $D_1$ markiert ist,
+Ab einem Winkel von $50^\circ$, welcher auf der Grafik \ref{fig:suche_knoten_gewichtung_winkelkosten} als Punkt $D_1$ markiert ist,
 beginnt die Kurve bis etwa $80^\circ$ stark zu steigen. Ab dort flacht sie wiederum ab, bis die Kosten von $90^\circ$ schliesslich den Wert
 $1$ erreichen.
 
@@ -162,7 +162,7 @@ Konstante dividiert. Dadurch werden die Kosten erhöht, je grösser der Indirekt
 
 Die endgültigen Kosten werden über die Addition aller Kriterien gebildet.
 \begin{align}
-    K = d_{krit} + \alpha_{krit} + K_{I,krit}
+    K = d_{krit} + \alpha^G_{krit, y} + K_{I,krit}
 \end{align}
 
-TODO: Spezialkosten (Einlochen) erfassen
+%TODO: Spezialkosten (Einlochen) erfassen

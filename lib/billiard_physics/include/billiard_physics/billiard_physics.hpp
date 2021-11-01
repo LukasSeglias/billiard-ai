@@ -17,6 +17,8 @@ namespace billiard::physics {
     const float energyLossFactorBall = 1 - energyLossByBall;
     const float energyAdditionFactorBall = 1 / energyLossFactorBall;
     const float topspinConstant = 100.0f; // TODO: Find a number
+    const float topspinRest = 0.2f; // TODO: Find a number
+    const bool isTopspinConstant = false;
     const float energyLossByRail = 0.02f; // https://www.researchgate.net/publication/245388279_A_theoretical_analysis_of_billiard_ball_dynamics_under_cushion_impacts
     const float energyLossFactorRail = 1 - energyLossByRail;
     const float energyAdditionFactorRail = 1 / energyLossFactorRail;

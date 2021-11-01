@@ -96,9 +96,9 @@
 % Command draws lines in BFHGray above and below the included picture, too
 \newcommand*{\@titlepicture}{}%
 \newcommand{\titlepicture}[1]{\gdef\@titlepicture{%
-  \bfhbar{150mm}\\[-0.6mm]%
-  \includegraphics[width=15cm,height=10cm]{#1}\\[-2.5mm]%
-  \bfhbar{150mm}%
+  \bfhbar{1\linewidth}\\[-0.6mm]%
+  \includegraphics[width=1\linewidth]{#1}\\[-2.5mm]%
+  \bfhbar{1\linewidth}%
 }}%
 
 %%%%%%%%%%%%%%%%%%%

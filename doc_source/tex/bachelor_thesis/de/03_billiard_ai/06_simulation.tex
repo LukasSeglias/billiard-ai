@@ -56,8 +56,9 @@ Energie der Kugeln zeigt jeweils in Richtung von $s_t$.
     \label{fig:Elastischer Stoss zweier Kugeln}
 \end{figure}
 
-Die initialen Geschwindigkeiten $\vec{v^i_1}$ und $\vec{v^i_2}$ werden aufgrund eines natürlichen Energieverlusts um eine
-Konstante $E_v$, welche in Prozent angegeben wird, reduziert.
+Die initialen Geschwindigkeiten $\vec{v^i_1}$ und $\vec{v^i_2}$ werden aufgrund eines Energieverlusts um eine
+Konstante $E_v$, welche in Prozent angegeben wird, reduziert. Dies ist notwendig, da in der Realität durch Reibung
+die Energie nicht vollständig weitergegeben wird.
 \begin{align}
     \vec{v_1} = \vec{v^i_1} \cdot (1 - E_v)\\
     \vec{v_2} = \vec{v^i_2} \cdot (1 - E_v)\\
@@ -91,21 +92,26 @@ Das Resultat lautet wie folgt:
     \vec{u_2} = \vec{v_{1,z}} + \vec{v_{2,t}}
 \end{align}
 
+\paragraph{Behandlung Topspin} \hfill \\
 Da eine Kugel auch einen Topspin aufweist und kaum Reibung mit der kollidierenden Kugel hat, hat dieser Topspin im
 Falle einer Kugelkollision einen Einfluss auf den weiteren Verlauf der vorher dynamischen Kugeln.
-Dieser Einfluss scheint konstant, also nicht abhängig von der eingehenden Geschwindigkeit zu sein und fällt demnach
-vorallem bei kleinen Geschwindigkeiten ins Gewicht. In Abbildung \ref{fig:einfluss_topspin} wird der Einfluss des
-Topspins bei grossen wie auch kleinen Geschwindigkeiten erläutert. Der Einfluss des Topspins wird berücksichtigt,
+Dieser Einfluss scheint konstant oder zumindest in kleinem Masse variabel, also praktisch unabhängig von der eingehenden Geschwindigkeit zu sein
+und fällt demnach vorallem bei kleinen Geschwindigkeiten ins Gewicht. Es werden zwei Ansätze erläutert.
+Die erste Variante behandelt den Topspin als ablenkende Kraft in eingehender Richtung mit konstantem Betrag.
+Die zweite Variante berücksichtigt zusätzlich die Variabilität des Topspins. In Abbildung \ref{fig:einfluss_topspin} wird der Einfluss des
+Topspins bei grossen wie auch kleinen Geschwindigkeiten erläutert.
+
+Bei Variante eins wird der Einfluss des Topspins berücksichtigt,
 indem bei den vorher dynamischen Kugeln ein Vektor mit konstantem
 Betrag in der einkommenden Geschwindigkeitsrichtung auf den durch die elastische Kollision berechneten Vektor
 $\vec{v_{k,t}}$ aufaddiert wird. Demnach gilt für den neuen Vektor $\vec{v_{k,t,n}}$ der Kugeln, wobei $A$ für die konstante Geschwindigket und
 $\hat{v_k}$ für den normierten Vektor $\vec{v_k}$ der Kugel $k$ steht.
 \begin{align}
     \vec{v_{1,t,n}} = \vec{v_{1,t}} + A \cdot \hat{v_1}\\
-    \vec{v_{2,t,n}} = \vec{v_{2,t}} + A \cdot \hat{v_2}\\
+    \vec{v_{2,t,n}} = \vec{v_{2,t}} + A \cdot \hat{v_2}
 \end{align}
 
-Dieser Vektor $\vec{v_{k,t,n}}$ wird nun anstelle von $\vec{v_{k,t}}$ verwendet, wobei die maximal Energie des Vektors
+Dieser Vektor $\vec{v_{k,t,n}}$ wird nun anstelle von $\vec{v_{k,t}}$ verwendet, wobei die maximale Energie des Vektors
 auf die Eingangsenergie beschränkt wird.
 \begin{align}
     \vec{u_1} = \vec{v_{2,z}} + \min{(\vec{v_{1,t,n}}, \norm{\vec{v_1}} \cdot \hat{{v_{1,t,n}}})}\\
@@ -128,6 +134,16 @@ auf die Eingangsenergie beschränkt wird.
     \label{fig:einfluss_topspin}
 \end{figure}
 
+Variante zwei verfolgt einen ähnlichen Ansatz, jedoch wird bei der Berechnung von $\vec{v_{k,t,n}}$ anstelle des normierten
+der initiale Geschwindigkeitsvektor verwendet, welcher mit einem Prozentsatz skaliert wird. Dadurch wird die Variabilität
+berücksichtigt. Es gilt, dass $A$ zwischen $0$ und $1$ liegt.
+\begin{align}
+    \vec{v_{1,t,n}} = \vec{v_{1,t}} + A \cdot \vec{v_1}\\
+    \vec{v_{2,t,n}} = \vec{v_{2,t}} + A \cdot \vec{v_2}
+\end{align}
+
+Die Berechnung von $\vec{u_1}$ sowie $\vec{u_2}$ geschieht auf dieselbe Art und Weise wie bei Variante eins.
+
 \newpage
 \subsubsection{Bandenreflektion}
 Sofern eine Kugel an eine Bande stösst, so wird diese abgelenkt. In dem hier beschriebenen Modell wird der Drall\cite{wiki.spin:1},
@@ -140,7 +156,7 @@ und $R$ der ausgehende Weg der Kugel und $N$ der Normalenvektor der Bande sind:
 \end{align}
 
 Da bei einer Bandenkollision Energie verloren geht, wird dieses Verhalten mit der Konstanten $E_v$ modelliert.
-Diese gibt den Verlust in Prozent an, bezogen auf den minimal berechneten Wert.
+Diese gibt den Verlust in Prozent an.
 \begin{align}
     R = (I - 2 \cdot N \cdot (I \cdot N)) \cdot \frac{1}{1 + E_v}
 \end{align}
@@ -198,7 +214,7 @@ Erste ist.
 \end{align}
 
 Das Lösen dieses Gleichungssystems erfordert viel Rechenzeit, was die Frage nach Performanceverbesserungen aufwirft.
-Diese werden durch Vorbedingungen erzielt, welche welche geprüft werden. Es findet zu Beginn eine Fallunterscheidung
+Diese werden durch Vorbedingungen erzielt, welche geprüft werden. Es findet zu Beginn eine Fallunterscheidung
 statt. Wenn die zweite Kugel statisch ist, so wird geprüft, ob die Distanz $d$ zwischen der Position $P_2$ der zweiten Kugel
 $K_2$ und der halben Geraden $g$ definiert durch die Position $P_1$ der ersten Kugel $K_1$ wie auch deren Geschwindigkeitsvektor
 $\vec{v}$ kleiner oder gleich dem Kugeldurchmesser ist. Nur in diesem Fall kann es eine Kollision geben.
@@ -212,12 +228,9 @@ Sämtliche Angaben beziehen sich auf die Grafik \ref{fig:kugelkollision_vorbedin
     \label{fig:kugelkollision_vorbedingung_statisch}
 \end{figure}
 
-Sobald beide Kugeln dynamisch sind, wird es ein wenig komplizierter. Da beide in Bewegung sind, reicht eine einfache
-Prüfung auf die Distanz nicht mehr. Es muss also ein Schnittpunkttest der beiden halben Geraden, definiert durch die
-beiden Geschwindigkeitsvektoren, durchgeführt werden. Hierbei ist der Durchmesser der Kugel mitzubeachten, was drei
-Spezialfälle eröffnet.
-Abbildung \ref{fig:kugelkollision_vorbedingung_dynamisch} zeigt das Vorgehen zur Behandlung des ersten Falls.
-Würde nur ein Schnittpunkttest der beiden halben Geraden durchgeführt, so ergäbe diese Situation keine Lösung.
+Sobald beide Kugeln dynamisch sind reicht eine einfache Prüfung auf die Distanz nicht mehr. Es muss ein Schnittpunkttest der beiden halben Geraden, definiert durch die
+beiden Geschwindigkeitsvektoren, durchgeführt werden. Hierbei ist der Durchmesser der Kugel mitzubeachten, dies
+wird in Abbildung \ref{fig:kugelkollision_vorbedingung_dynamisch} dargestellt.
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/25_vorbedingung_kugelkollision_dynamisch.png}
@@ -232,7 +245,7 @@ Daher wird der Vektor $\vec{p}$ zwischen den Positionen $P_1$ und $P_2$ gebildet
 \end{align}
 Der erhaltene Vektor wird auf den Geschwindigkeitsvektor $\vec{v_1}$ projiziert (grün gestrichelt).
 \begin{align}
-    \vec{p'} = (\vec{p} \cdot \hat{v_1}) \cdot \vec{v_1}
+    \vec{p'} = (\vec{p} \cdot \hat{v_1}) \cdot \hat{v_1}
 \end{align}
 Danach wird der Zwischenvektor $\vec{d}$ gebildet (blau).
 \begin{align}
@@ -246,10 +259,11 @@ Die Kugel $K_1$ wird um diesen Vektor verschoben, es resultiert $P^{'}_1$.
 Von dieser Position aus kann nun ein Schnittpunkttest zwischen den beiden
 halben Geraden, durch die Geschwindigkeitsvektoren definiert, durchgeführt werden.
 
-Ein weiterer Spezialfall tritt auf, wenn sich die Kugeln parallel fortbewegen. Da dies ein sehr seltener Fall ist und
+Zudem gibt es zwei Spezialfälle zu beachten. Der erste beschreibt die Handhabung bei paralleler Fortbewegung
+der Kugeln. Da dies ein sehr seltener Fall ist und
 wohl kaum auftreten wird, wird die Berechnung zugelassen, wenn der Vektor $\vec{d}$ kleiner oder gleich gross
 wie der Durchmesser ist. Die Situation wird in Abbildung \ref{fig:kugelkollision_vorbedingung_dynamisch_parallel} erläutert, die Berechnungen für den Vektor $\vec{d}$
-sind äquivalent zum Spezialfall 1.
+sind äquivalent zu den vorhergehenden Berechnungen.
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/26_vorbedingung_kugelkollision_dynamisch_parallel.png}
