@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
 #include <billiard_capture/billiard_capture.hpp>
-#include <librealsense2/rs.hpp>
-#include <librealsense2/hpp/rs_internal.hpp>
 #include <iostream>
 
 TEST(ImageCapture, open_read_close) {
@@ -50,5 +48,36 @@ TEST(CameraCapture, open_read_close) {
             cv::imshow("Color", frames.color);
         }
         capture.close();
+    }
+}
+
+TEST(CameraCapture, record_video) {
+
+    // TODO: currently have to copy
+    //       D:\Dev\billiard-ai\cmake-build-release\ext\opencv\opencv\x64\vc16\bin\opencv_videoio_ffmpeg452_64.dll
+    //       into the directory where this test runs, since this dll is not copied
+
+    billiard::capture::CameraCapture capture {};
+
+    if (capture.open()) {
+
+        while (true) {
+            billiard::capture::CameraFrames frames = capture.read();
+
+            if (!frames.depth.empty()) {
+                cv::imshow("Depth", frames.colorizedDepth);
+            }
+            if (!frames.color.empty()) {
+                cv::imshow("Color", frames.color);
+            }
+
+            char key = (char) cv::waitKey(1);
+            if (key == 'q' || key == 27 /* ESC */) {
+                break;
+            }
+            if (key == 'r') {
+                capture.toggleRecording();
+            }
+        }
     }
 }

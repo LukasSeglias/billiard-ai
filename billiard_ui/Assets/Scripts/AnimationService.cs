@@ -64,6 +64,10 @@ public class AnimationService : MonoBehaviour
 	public static void imageCapture() {
 	    image();
 	}
+
+	public static void videoCapture() {
+        video();
+    }
 	
 	public static void captureState(bool captureState) {
 		isLive = captureState;
@@ -109,6 +113,9 @@ public class AnimationService : MonoBehaviour
 
 	[DllImport("unity_adapter", CallingConvention = CallingConvention.Cdecl)]
     private static extern void image();
+
+    [DllImport("unity_adapter", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void video();
 	
 	[DllImport("unity_adapter", CallingConvention = CallingConvention.Cdecl)]
 	private static extern void search(Search_t search);

@@ -358,7 +358,7 @@ void capture() {
 
             _currentState = map(state);
         }
-    } else {
+    } else if (STATIC_IMAGE) {
 
         if (detectionConfig) {
 
@@ -374,6 +374,13 @@ void capture() {
 
     if (_currentState) {
         _stateChangedEventQueue->push(_currentState);
+    }
+}
+
+void video() {
+    if (cameraCapture) {
+        DEBUG("Toggle recording" << std::endl);
+        cameraCapture->toggleRecording();
     }
 }
 

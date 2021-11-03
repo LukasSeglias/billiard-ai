@@ -122,7 +122,9 @@ public class TableBehaviour : MonoBehaviour
             stabilizationController.track = !stabilizationController.track;
         } else if (Input.GetKeyDown(KeyCode.Return)) {
 			AnimationService.captureState();
-		} else if (Input.GetKeyDown(KeyCode.C)) {
+		} else if (Input.GetKeyDown(KeyCode.R)) {
+            AnimationService.videoCapture();
+        } else if (Input.GetKeyDown(KeyCode.C)) {
 		    Search search = new Search();
             search.types = config.coloredSearchTypes;
             Debug.Log("[TableBehaviour] Search with colored balls: " + string.Join(", ", search.types));
@@ -608,7 +610,7 @@ public class TableBehaviour : MonoBehaviour
 
     	private float ttl = 2.0f;    // in seconds
     	private float radius = 5.0f / 1000.0f; // in meters
-    	private bool showDots = false;
+    	private bool showDots = true;
     	private Material material;
     	private GameObject parentGameObject;
 

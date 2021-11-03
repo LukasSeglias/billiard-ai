@@ -3,6 +3,8 @@
 #include <opencv2/opencv.hpp>
 #include <utility>
 #include "macro_definition.hpp"
+#include <atomic>
+#include <thread>
 
 namespace billiard::capture {
 
@@ -30,9 +32,11 @@ namespace billiard::capture {
         cv::Mat depth;
         cv::Mat colorizedDepth;
         CameraFrames(const cv::Mat& color, const cv::Mat& depth, const cv::Mat& colorizedDepth): color(color), depth(depth), colorizedDepth(colorizedDepth) {}
+        CameraFrames() = default;
         CameraFrames(const CameraFrames& other) = default;
         CameraFrames(CameraFrames&& other) = default;
         ~CameraFrames() = default;
+        CameraFrames& operator=(const CameraFrames& other) = default;
     };
 
     class Camera;
@@ -44,10 +48,19 @@ namespace billiard::capture {
         CameraCapture(CameraCapture&& other) = delete;
         bool open();
         void close();
-        [[nodiscard]] CameraFrames read() const;
+        void toggleRecording();
+        CameraFrames read();
         ~CameraCapture();
     private:
         Camera* camera;
+        int videoNumber = 1;
+        std::atomic_bool recording = false;
+        std::thread worker;
+        billiard::capture::CameraFrames latestRecordedFrames;
+        std::mutex latestRecordedFramesLock;
+
+        static void record(CameraCapture* capture);
+        CameraFrames readFrames();
     };
 
 }
