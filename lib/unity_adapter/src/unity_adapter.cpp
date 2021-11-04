@@ -446,6 +446,23 @@ void debugger(Debugger debugger) {
 void state(State state) {
     _currentState = std::make_shared<State>(state);
     _stateChangedEventQueue->clear();
+
+    static Vec2 zero{0, 0};
+    if (state.velocity != zero) {
+        auto simulation = billiard::search::simulate(
+                toSearchState(_currentState),
+                glm::vec2{state.velocity.x, state.velocity.y},
+                *searchConfig);
+
+        std::vector<std::vector<billiard::search::node::System>> simulations;
+        if (simulation) {
+            simulations.emplace_back(std::vector<billiard::search::node::System>{*simulation});
+        }
+
+        auto result = map(simulations);
+        DEBUG("State set and simulation done: " << *result << std::endl);
+        _animationChangedEventQueue->push(result);
+    }
 }
 
 ///////////////////////////////////////////////////////
@@ -455,7 +472,7 @@ void state(State state) {
 BallState* map(const std::vector<billiard::detection::Ball>& ballStates);
 
 std::shared_ptr<State> map(const billiard::detection::State& state) {
-    return std::make_shared<State>(map(state._balls), static_cast<int>(state._balls.size()), false);
+    return std::make_shared<State>(map(state._balls), static_cast<int>(state._balls.size()), Vec2{0, 0}, false);
 }
 
 BallState* map(const std::vector<billiard::detection::Ball>& ballStates) {

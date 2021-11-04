@@ -1,5 +1,9 @@
 #include <unity_adapter/type.hpp>
 
+bool Vec2::operator!=(const Vec2& other) const {
+    return x != other.x || y != other.y;
+}
+
 Ball::Ball() : type(), id(), position(), velocity(), visible() {}
 
 Ball::Ball(const char* type, const char* id, Vec2 position, Vec2 velocity, bool visible) :
@@ -270,18 +274,21 @@ BallState::~BallState() {
 State::State() :
     balls(nullptr),
     ballSize(0),
+    velocity({0, 0}),
     fromUnity(false) {
 }
 
-State::State(BallState* balls, int ballSize, bool fromUnity) :
+State::State(BallState* balls, int ballSize, Vec2 velocity, bool fromUnity) :
     balls(balls),
     ballSize(ballSize),
+    velocity(velocity),
     fromUnity(fromUnity) {
 }
 
 State::State(State&& other) noexcept :
     balls(other.balls),
     ballSize(other.ballSize),
+    velocity(other.velocity),
     fromUnity(other.fromUnity) {
     other.balls = nullptr;
     other.ballSize = 0;
@@ -290,6 +297,7 @@ State::State(State&& other) noexcept :
 State::State(const State& other) noexcept :
     balls(new BallState[other.ballSize]),
     ballSize(other.ballSize),
+    velocity(other.velocity),
     fromUnity(other.fromUnity) {
     for(int i = 0; i < ballSize; i++) {
         this->balls[i] = BallState{other.balls[i]};
@@ -299,6 +307,7 @@ State::State(const State& other) noexcept :
 State& State::operator=(State&& other) noexcept {
     balls = other.balls;
     ballSize = other.ballSize;
+    velocity = other.velocity;
     fromUnity = other.fromUnity;
     other.balls = nullptr;
     other.ballSize = 0;
@@ -312,6 +321,7 @@ State& State::operator=(const State& other) noexcept {
     }
 
     ballSize = other.ballSize;
+    velocity = other.velocity;
     fromUnity = other.fromUnity;
     this->balls = new BallState[ballSize];
     for(int i = 0; i < ballSize; i++) {

@@ -89,16 +89,19 @@ public class StateCreator : MonoBehaviour
 		} else if (Input.GetKeyDown(KeyCode.Return)) {
 
 		    List<BallState> balls = new List<BallState>();
+		    Vec2 velocity = new Vec2{x = 0, y = 0};
 
 		    if (stateInputField.text.Length > 0) {
-		        balls = parseState(stateInputField.text);
+		        var parsedState = parseState(stateInputField.text);
+		        balls = parsedState.Item1;
+		        velocity = parsedState.Item2;
 		        stateInputField.text = "";
 		        stateInputField.gameObject.SetActive(false);
 		    } else {
 		        balls = mapToBallStates(ballObjects);
 		    }
 
-			AnimationService.setState(balls);
+			AnimationService.setState(balls, velocity);
 			foreach (var ball in ballObjects) {
 				Destroy(ball);
 			}
@@ -116,33 +119,41 @@ public class StateCreator : MonoBehaviour
      * RED5, RED, -865.047, -388.453
      * RED6, RED, -629.728, 87.0048
      * RED7, RED, 851.622, 398.78
+     * V, 130.33, 234.33
      */
-    private static List<BallState> parseState(string text) {
+    private static (List<BallState>, Vec2) parseState(string text) {
 
         List<BallState> balls = new List<BallState>();
+        Vec2 velocity = null;
 
         using (StringReader sr = new StringReader(text)) {
             string line;
             while ((line = sr.ReadLine()) != null) {
 
                 string[] parts = line.Split(',');
-                if (parts.Length != 4) {
-                    return new List<BallState>();
-                }
+                if (parts.Length == 3 && parts[0].Trim().Equals("V", StringComparison.OrdinalIgnoreCase)) {
+                    double x = double.Parse(parts[1].Trim(), CultureInfo.InvariantCulture);
+                    double y = double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
+                    velocity = new Vec2{x = x, y = y};
+                } else {
+                    if (parts.Length != 4) {
+                        return (new List<BallState>(), null);
+                    }
 
-                string id = parts[0].Trim();
-                string type = parts[1].Trim();
-                double x = double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
-                double y = double.Parse(parts[3].Trim(), CultureInfo.InvariantCulture);
-                balls.Add(new BallState {
-                    id = id,
-                    type = type,
-                    position = new Vec2 { x = x, y = y }
-                });
+                    string id = parts[0].Trim();
+                    string type = parts[1].Trim();
+                    double x = double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
+                    double y = double.Parse(parts[3].Trim(), CultureInfo.InvariantCulture);
+                    balls.Add(new BallState {
+                        id = id,
+                        type = type,
+                        position = new Vec2 { x = x, y = y }
+                    });
+                }
             }
         }
 
-        return balls;
+        return (balls, velocity);
     }
 
     private static List<BallState> mapToBallStates(List<GameObject> balls) {

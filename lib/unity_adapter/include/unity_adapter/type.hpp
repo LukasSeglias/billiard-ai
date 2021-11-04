@@ -9,6 +9,8 @@ extern "C" {
     struct EXPORT_UNITY_ADAPTER_LIB Vec2 {
         double x;
         double y;
+
+        bool operator!=(const Vec2& other) const;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB Vec3 {
@@ -182,7 +184,7 @@ extern "C" {
 
     struct EXPORT_UNITY_ADAPTER_LIB State {
         State();
-        State(BallState* balls, int ballSize, bool fromUnity = true);
+        State(BallState* balls, int ballSize, Vec2 velocity, bool fromUnity = true);
         State(State&& other) noexcept;
         State(const State& other) noexcept;
         State& operator=(State&& other) noexcept;
@@ -191,6 +193,7 @@ extern "C" {
 
         BallState* balls;
         int ballSize;
+        Vec2 velocity;
         bool fromUnity;
     };
 

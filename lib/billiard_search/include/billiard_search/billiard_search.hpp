@@ -13,6 +13,9 @@ namespace billiard::search {
     searchOnly(const billiard::search::State& state, const billiard::search::Search& search,
                uint16_t solutions, const Configuration& config);
 
+    std::optional<node::System> EXPORT_BILLIARD_SEARCH_LIB
+    simulate(const State& state, const glm::vec2& velocity, const Configuration& config);
+
     glm::vec2 EXPORT_BILLIARD_SEARCH_LIB
     calculateMinimalVelocity(const std::vector<const SearchNode*>& nodes, const std::shared_ptr<SearchState>& state);
 }
