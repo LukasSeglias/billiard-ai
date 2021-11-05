@@ -1,0 +1,55 @@
+\section{Herleitung Ereignis - Rollen}\label{anhang:herleitung:event:rollen}
+Wird die Kugel zentral getroffen, so gleitet sie eine bestimmte Distanz und beginnt erst später zu rollen\cite{rollzeitpunkt}.
+Es gelten die nachfolgenden Gleichungen, wobei $m$ für die Masse und $r$ den Radius der Kugel, $J$ für das
+Trägheitsmoment, $F$ für die Gleitreibungskraft und $\mu$ für den Gleitreibungskoeffizienten steht.
+\begin{align}
+    F = m \cdot g \cdot \mu\\
+    -F = m \cdot \frac{\delta^2 X}{\delta t^2}\\
+    J = \frac{2}{5} \cdot m \cdot r^2
+\end{align}
+Die Rollbedingung ist gegeben durch:
+\begin{align}
+    X = \phi \cdot r\label{eq:rollbedingung}
+\end{align}
+Die Winkelbeschleunigung ist gegeben durch:
+\begin{align}
+    F \cdot r = J \cdot \frac{\delta^2 \phi}{\delta t^2}
+\end{align}
+Aus der Winkelbeschleunigung folgt für die erste Ableitung nach der Zeit die Gleichung \ref{eq:winkelbeschleunigung_zeit}
+\begin{align}
+    F \cdot r \cdot t = J \cdot \frac{\delta \phi}{\delta t}\\
+    \frac{\delta \phi}{\delta t} = \frac{F \cdot r \cdot t}{J}\label{eq:winkelbeschleunigung_zeit}
+\end{align}
+Die Rollbedingung gilt nur, wenn die Kugel von Beginn an rollt, ansonsten ist eine konstante Strecke beinhaltet,
+auf welcher die Kugel nur gleitet\cite{rollzeitpunkt}. Um den Zeitpunkt zu bestimmen, an dem die Kugel zu rollen
+beginnt, verwendet man die erste Ableitung nach der Zeit (siehe Gleichungen \ref{eq:rollbedingung} und \ref{eq:winkelbeschleunigung_zeit}).
+\begin{align}
+    \frac{\delta X}{\delta t} = r \cdot \frac{\delta \phi}{\delta t} = \frac{F \cdot r^2 \cdot t}{J}\label{eq:ableitung_winkelbeschleunigung_zeit}
+\end{align}
+Um nach $t$ bestimmen zu können, kann die gleichmässig beschleunigte Bewegung verwendet werden. Diese ergibt dieselbe
+Strecke.
+\begin{align}
+    v = \frac{\delta X}{\delta t} = a \cdot t + v_0
+\end{align}
+Demnach gilt die Gleichung \ref{eq:ableitung_gleichmaessig_beschl_bewegung}.
+\begin{align}
+    \frac{\delta X}{\delta t} = \frac{-F}{m} \cdot t + v_0\label{eq:ableitung_gleichmaessig_beschl_bewegung}
+\end{align}
+Die Gleichungen \ref{eq:ableitung_winkelbeschleunigung_zeit} und \ref{eq:ableitung_gleichmaessig_beschl_bewegung} werden gleichgesetzt und nach $t$ gelöst.
+\begin{align}
+    \frac{F \cdot r^2 \cdot t}{J} = \frac{-F}{m} \cdot t + v_0\\
+    \frac{F \cdot r^2}{J} = -\frac{F}{m} + \frac{v_0}{t}\\
+    \frac{F \cdot r^2}{J} + \frac{F}{m} = \frac{v_0}{t}\\
+    t \cdot (\frac{F \cdot r^2}{J} + \frac{F}{m}) = v_0\\
+    t = \frac{v_0}{\frac{F \cdot r^2}{J} + \frac{F}{m}}\\
+    t = \frac{v_0}{\frac{m \cdot g \cdot \mu \cdot r^2}{\frac{2}{5} \cdot m \cdot r^2} + \frac{m \cdot g \cdot \mu}{m}}
+    t = \frac{v_0}{5 \cdot \frac{g \cdot \mu}{2} + g \cdot \mu}\\
+    t = \frac{v_0}{\frac{5}{2} g \cdot \mu + g \cdot \mu}\\
+    t = \frac{v_0}{g \cdot \mu \cdot (\frac{5}{2} + 1)}\\
+    t = \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu}
+\end{align}
+
+Demnach kann der Zeitpunkt über die Formel \ref{eq:rollzeitpunkt} bestimmt werden.
+\begin{align}
+    t = \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu}\label{eq:rollzeitpunkt}
+\end{align}
