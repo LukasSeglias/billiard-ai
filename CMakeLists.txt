@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18.2)
+cmake_minimum_required(VERSION 3.21.4)
 project(billiard_ai_main)
 
 set(CMAKE_CXX_STANDARD 17)

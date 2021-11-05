@@ -29,4 +29,11 @@ foreach(OpenCV_LIB ${OpenCV_LIBS})
             )
 endforeach()
 
+if(DEFINED BILLIARD_OPENCV_FFMPEG_FILEPATH)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E echo "Copy ${BILLIARD_OPENCV_FFMPEG_FILEPATH} to $<TARGET_FILE_DIR:${PROJECT_NAME}>"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BILLIARD_OPENCV_FFMPEG_FILEPATH} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            )
+endif()
+
 target_link_libraries(${PROJECT_NAME} PRIVATE billiard_search billiard_detection billiard_snooker billiard_capture billiard_debug)

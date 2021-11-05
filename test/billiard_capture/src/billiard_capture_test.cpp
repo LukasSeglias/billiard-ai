@@ -53,10 +53,6 @@ TEST(CameraCapture, open_read_close) {
 
 TEST(CameraCapture, record_video) {
 
-    // TODO: currently have to copy
-    //       D:\Dev\billiard-ai\cmake-build-release\ext\opencv\opencv\x64\vc16\bin\opencv_videoio_ffmpeg452_64.dll
-    //       into the directory where this test runs, since this dll is not copied
-
     billiard::capture::CameraCapture capture {};
 
     if (capture.open()) {
