@@ -75,7 +75,7 @@ billiard::search::searchOnly(const billiard::search::State& state, const billiar
                                   std::make_shared<SearchState>(SearchState{config}));
 }
 
-std::optional<billiard::search::node::System> EXPORT_BILLIARD_SEARCH_LIB
+std::optional<billiard::search::node::System>
 billiard::search::simulate(const State& state, const glm::vec2& velocity, const Configuration& config) {
 
     std::unordered_map<std::string, Ball> ballState;
