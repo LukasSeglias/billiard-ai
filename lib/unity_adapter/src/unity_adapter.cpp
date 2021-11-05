@@ -337,7 +337,6 @@ inline billiard::search::Configuration toSearchConfig(const Configuration& confi
         });
     }
 
-    billiardSearchConfig._table._center = glm::vec2{0, 0};
     billiardSearchConfig._rules._nextSearch = billiard::snooker::nextSearch;
     billiardSearchConfig._rules._modifyState = billiard::snooker::stateAfterBreak;
     billiardSearchConfig._rules._isValidEndState = billiard::snooker::validEndState;

@@ -274,7 +274,6 @@ namespace billiard::search {
         } _ball;
 
         struct {
-            glm::vec2 _center = glm::vec2{0, 0};
             // Pockets
             // o--o--o
             // |     |
