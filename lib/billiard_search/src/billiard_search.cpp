@@ -39,7 +39,8 @@ namespace billiard::search {
     expandSearchNode(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& config);
     std::vector<std::shared_ptr<SearchNode>>
     addPocketsAsInitialTargets(const State& state, const Search& search, const Configuration& config);
-    node::Layer toInputLayer(const std::shared_ptr<SearchNode>& input, const std::string& cueBallId, const glm::vec2 force, float accelerationLength);
+    node::Layer toInputLayer(const std::shared_ptr<SearchNode>& input, const std::string& cueBallId, const glm::vec2 force, float accelerationLength,
+                             float slideAccelerationLength);
 }
 
 std::future<std::vector<std::vector<billiard::search::node::System>>> EXPORT_BILLIARD_SEARCH_LIB
@@ -53,6 +54,7 @@ billiard::search::search(const billiard::search::State& state, const billiard::s
 
     auto searchState = std::make_shared<SearchState>(SearchState{config});
     searchState->_ball._accelerationLength = billiard::physics::accelerationLength();
+    searchState->_ball._slideAccelerationLength = billiard::physics::slideAccelerationLength();
 
     return processManager.process(addPocketsAsInitialTargets(state, search, config), solutions,searchState);
 }
@@ -70,6 +72,7 @@ billiard::search::searchOnly(const billiard::search::State& state, const billiar
 
     auto searchState = std::make_shared<SearchState>(SearchState{config});
     searchState->_ball._accelerationLength = billiard::physics::accelerationLength();
+    searchState->_ball._slideAccelerationLength = billiard::physics::slideAccelerationLength();
 
     return processManager.process(addPocketsAsInitialTargets(state, search, config), solutions,
                                   std::make_shared<SearchState>(SearchState{config}));
@@ -92,13 +95,15 @@ billiard::search::simulate(const State& state, const glm::vec2& velocity, const 
     auto stateNodeSearch = stateNode->asSearch();
     stateNodeSearch->_state = ballState;
 
-    auto layer = toInputLayer(stateNode, cueBallId, velocity, billiard::physics::accelerationLength());
+    auto layer = toInputLayer(stateNode, cueBallId, velocity, billiard::physics::accelerationLength(),
+                              billiard::physics::slideAccelerationLength());
     auto simulationNode = SearchNode::simulation(stateNode);
     auto simulationSearchNode = simulationNode->asSimulation();
     simulationSearchNode->_simulation.append(layer);
 
     auto searchState = std::make_shared<SearchState>(SearchState{config});
     searchState->_ball._accelerationLength = billiard::physics::accelerationLength();
+    searchState->_ball._slideAccelerationLength = billiard::physics::slideAccelerationLength();
 
     auto simulations = simulate(simulationNode, searchState, false);
 
@@ -546,32 +551,33 @@ namespace billiard::search {
         return minimalVelocity;
     }
 
-    node::Layer toInputLayer(const std::shared_ptr<SearchNode>& input, const std::string& cueBallId, const glm::vec2 force, float accelerationLength) {
+    node::Layer toInputLayer(const std::shared_ptr<SearchNode>& input, const std::string& cueBallId, const glm::vec2 force,
+                             float accelerationLength, float slideAccelerationLength) {
         std::unordered_map<std::string, node::Node> nodes;
 
         auto asSearch = input->asSearch();
 
         for(auto& ball : asSearch->_state) {
             if (ball.first == cueBallId) {
-                node::BallMovingNode initialEnergyNode{
-                        state::BallState{
-                                ball.second._position,
-                                glm::vec2{0, 0},
-                                accelerationLength
-                        },
+                node::BallShotNode initialEnergyNode{
                         state::BallState{
                                 ball.second._position,
                                 force,
-                                accelerationLength}
+                                accelerationLength,
+                                slideAccelerationLength,
+                                false
+                                }
                 };
-                node::Node result{node::NodeType::BALL_MOVING, ball.second._type, node::NodeVariant(initialEnergyNode)};
+                node::Node result{node::NodeType::BALL_SHOT, ball.second._type, node::NodeVariant(initialEnergyNode)};
                 nodes.insert({ball.first, result});
             } else {
                 node::BallInRestNode inRestNode{
                         state::BallState{
                                 ball.second._position,
                                 glm::vec2{0, 0},
-                                accelerationLength
+                                accelerationLength,
+                                slideAccelerationLength,
+                                false
                         }
                 };
                 node::Node result{node::NodeType::BALL_IN_REST, ball.second._type, node::NodeVariant(inRestNode)};
@@ -601,7 +607,8 @@ namespace billiard::search {
                 break;
             }
 
-            auto layer = toInputLayer(input, cueBallId, increasedVelocity, state->_ball._accelerationLength);
+            auto layer = toInputLayer(input, cueBallId, increasedVelocity, state->_ball._accelerationLength,
+                                      state->_ball._slideAccelerationLength);
 
             auto output = SearchNode::simulation(input);
             auto simulationSearchNode = output->asSimulation();
@@ -1050,6 +1057,8 @@ namespace billiard::search {
     }
 
     std::optional<event::Event> nextBallInRest(const std::pair<std::string, node::Node>& ball);
+    std::optional<event::Event> nextRolling(const std::pair<std::string, node::Node>& ball,
+                                            const std::unordered_map<std::string, float>& nextRollingEvents);
     std::optional<event::Event>
     nextBallCollision(const std::pair<std::string, node::Node>& ball,
                       const std::unordered_map<std::string, node::Node>& balls,
@@ -1071,6 +1080,8 @@ namespace billiard::search {
 
             // läuft Kugel nächstens aus?
             nextEvent = min(nextBallInRest(ball), nextEvent);
+            // Beginnt die Kugel zu rollen?
+            nextEvent = min(nextRolling(ball, system._nextRolling), nextEvent); // TODO: Dokumentieren in Pseudocode
             // Kollision mit statischer Kugelr
             nextEvent = min(nextBallCollision(ball, layer.staticBalls(), state->_config._ball._diameter), nextEvent);
             // Kollision mit anderer dynamischer Kugel
@@ -1085,13 +1096,26 @@ namespace billiard::search {
         return nextEvent ? std::make_optional<event::Event>(*nextEvent) : std::nullopt;
     }
 
+    std::optional<event::Event> nextRolling(const std::pair<std::string, node::Node>& ball,
+                                            const std::unordered_map<std::string, float>& nextRollingEvents) {
+        if (nextRollingEvents.find(ball.first) != nextRollingEvents.end()) {
+            event::Event event {
+                event::EventType::BALL_ROLLING,
+                nextRollingEvents.find(ball.first)->second,
+                event::EventVariant{event::BallRolling{ball.first}}};
+            DEBUG("[nextBallRolling]: " << event << std::endl);
+            return event;
+        }
+        return std::nullopt;
+    }
+
     std::optional<event::Event> nextBallInRest(const std::pair<std::string, node::Node>& ball) {
         auto state = ball.second.after();
         if (state) {
             event::Event event {
-                event::EventType::BALL_IN_REST,
-                billiard::physics::timeToStop(state->_acceleration, state->_velocity),
-                event::EventVariant{event::BallInRest{ball.first}}};
+                    event::EventType::BALL_IN_REST,
+                    billiard::physics::timeToStop(state->_acceleration, state->_velocity),
+                    event::EventVariant{event::BallInRest{ball.first}}};
             DEBUG("[nextBallInRest]: " << event << std::endl);
             return event;
         }
@@ -1225,13 +1249,17 @@ namespace billiard::search {
         state::BallState newState1 {
                 position,
                 velocityAtPotting,
-                state->_ball._accelerationLength
+                state->_ball._accelerationLength,
+                state->_ball._slideAccelerationLength,
+                previousState._isRolling
         };
 
         state::BallState newState2 {
                 position,
                 glm::vec2{0, 0},
-                state->_ball._accelerationLength
+                state->_ball._accelerationLength,
+                state->_ball._slideAccelerationLength,
+                false
         };
         node::BallPottingNode pottingNode {newState1, newState2, event};
         return node::Node{node::NodeType::BALL_POTTING, previousNode._ballType, node::NodeVariant(pottingNode)};
@@ -1262,13 +1290,17 @@ namespace billiard::search {
         state::BallState newState1 {
                 position,
                 velocityBeforeCollision,
-                state->_ball._accelerationLength
+                state->_ball._accelerationLength,
+                state->_ball._slideAccelerationLength,
+                previousNode.before()->_isRolling
         };
 
         state::BallState newState2 {
                 position,
                 velocityAfterCollision,
-                state->_ball._accelerationLength
+                state->_ball._accelerationLength,
+                state->_ball._slideAccelerationLength,
+                true
         };
         node::BallRailCollisionNode collisionNode {newState1, newState2, event};
         return node::Node{node::NodeType::BALL_RAIL_COLLISION, previousNode._ballType, node::NodeVariant(collisionNode)};
@@ -1286,10 +1318,42 @@ namespace billiard::search {
         state::BallState newState {
                 position,
                 glm::vec2{0, 0},
-                state->_ball._accelerationLength
+                state->_ball._accelerationLength,
+                state->_ball._slideAccelerationLength,
+                false
         };
         node::BallInRestNode inRestNode {newState};
         return node::Node{node::NodeType::BALL_IN_REST, previousNode._ballType, node::NodeVariant(inRestNode)};
+    }
+
+    node::Node createRollingNode(const event::BallRolling& event,
+                                float time,
+                                const node::Node& previousNode,
+                                const std::shared_ptr<SearchState>& state) {
+        auto previousState = *previousNode.after();
+        auto position = billiard::physics::position(previousState._acceleration,
+                                                    previousState._velocity,
+                                                    time,
+                                                    previousState._position);
+        auto velocity = billiard::physics::accelerate(previousState._acceleration, previousState._velocity, time);
+
+        state::BallState beforeState {
+                position,
+                velocity,
+                state->_ball._accelerationLength,
+                state->_ball._slideAccelerationLength,
+                false
+        };
+
+        state::BallState afterState {
+                position,
+                velocity,
+                state->_ball._accelerationLength,
+                state->_ball._slideAccelerationLength,
+                true
+        };
+        node::BallMovingNode rollingNode {beforeState, afterState};
+        return node::Node{node::NodeType::BALL_MOVING, previousNode._ballType, node::NodeVariant(rollingNode)};
     }
 
     node::Node createBallCollisionNode(const event::BallCollision& event,
@@ -1297,16 +1361,21 @@ namespace billiard::search {
                                        const glm::vec2& velocityBefore,
                                        const glm::vec2& velocityAfter,
                                        const std::string& ballType,
+                                       const state::BallState& previousState,
                                        const std::shared_ptr<SearchState>& state) {
         state::BallState newState1 {
                 position,
                 velocityBefore,
-                state->_ball._accelerationLength
+                state->_ball._accelerationLength,
+                state->_ball._slideAccelerationLength,
+                previousState._isRolling
         };
         state::BallState newState2 {
                 position,
                 velocityAfter,
-                state->_ball._accelerationLength
+                state->_ball._accelerationLength,
+                state->_ball._slideAccelerationLength,
+                previousState._isRolling
         };
         node::BallCollisionNode collisionNode {newState1, newState2, event};
         return node::Node{node::NodeType::BALL_COLLISION, ballType, node::NodeVariant(collisionNode)};
@@ -1339,13 +1408,17 @@ namespace billiard::search {
         auto collisions = billiard::physics::elasticCollision(positionBeforeCollision1,
                                                               velocityBeforeCollision1,
                                                               positionBeforeCollision2,
-                                                              velocityBeforeCollision2);
+                                                              velocityBeforeCollision2,
+                                                              previousState1->_isRolling,
+                                                              previousState2->_isRolling);
 
         return std::unordered_map<std::string, node::Node> {
                 {event._ball1, createBallCollisionNode(event, positionBeforeCollision1, velocityBeforeCollision1,
-                                                       collisions.first, previousNode1._ballType, state)},
+                                                       collisions.first, previousNode1._ballType, *previousState1,
+                                                       state)},
                 {event._ball2, createBallCollisionNode(event, positionBeforeCollision2, velocityBeforeCollision2,
-                                                       collisions.second, previousNode2._ballType, state)},
+                                                       collisions.second, previousNode2._ballType, *previousState2,
+                                                       state)},
         };
     }
 
@@ -1387,6 +1460,15 @@ namespace billiard::search {
             };
         }
 
+        auto asRolling = event.toRolling();
+        if (asRolling) {
+            auto& previousNode = previousNodes.at(asRolling->_ball);
+
+            return std::unordered_map<std::string, node::Node>{
+                    {asRolling->_ball, createRollingNode(*asRolling, event._time, previousNode, state)}
+            };
+        }
+
         return std::unordered_map<std::string, node::Node>{};
     }
 
@@ -1410,7 +1492,9 @@ namespace billiard::search {
                     state::BallState newState {
                             position,
                             velocity,
-                            state->_ball._accelerationLength
+                            state->_ball._accelerationLength,
+                            state->_ball._slideAccelerationLength,
+                            ballState->_isRolling
                     };
                     node::BallMovingNode deltaNode {newState, newState};
                     node::Node result{node::NodeType::BALL_MOVING, previousNode.second._ballType, node::NodeVariant(deltaNode)};
@@ -1466,6 +1550,8 @@ namespace billiard::search {
         switch (eventType) {
             case event::EventType::BALL_COLLISION:
                 return "BALL_COLLISION";
+            case event::EventType::BALL_ROLLING:
+                return "BALL_ROLLING";
             case event::EventType::BALL_RAIL_COLLISION:
                 return "BALL_RAIL_COLLISION";
             case event::EventType::BALL_POTTING:
@@ -1544,7 +1630,9 @@ namespace billiard::search {
         os << "BallState { "
            << "position=" << ball._position << " "
            << "velocity=" << ball._velocity << " "
-           << "acceleration=" << ball._acceleration << " }";
+           << "acceleration=" << ball._acceleration << " "
+           << "isRolling=" << (ball._isRolling ? "true" : "false") <<
+           " }";
         return os;
     }
 

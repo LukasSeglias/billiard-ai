@@ -62,6 +62,10 @@ billiard::search::event::BallInRest::BallInRest(std::string ball) :
     _ball(std::move(ball)) {
 }
 
+billiard::search::event::BallRolling::BallRolling(std::string ball) :
+        _ball(std::move(ball)) {
+}
+
 billiard::search::event::Event::Event(EventType type, float time, EventVariant body) :
                                _type(type),
                                _time(time),
@@ -96,6 +100,13 @@ std::optional<billiard::search::event::BallInRest> billiard::search::event::Even
     return std::nullopt;
 }
 
+std::optional<billiard::search::event::BallRolling> billiard::search::event::Event::toRolling() const {
+    if (_type == EventType::BALL_ROLLING) {
+        return std::get<BallRolling>(_body);
+    }
+    return std::nullopt;
+}
+
 std::set<std::string> billiard::search::event::Event::affected() const {
     auto asPotting = toPotting();
     if (asPotting) {
@@ -117,15 +128,22 @@ std::set<std::string> billiard::search::event::Event::affected() const {
         return std::set<std::string>{asInRest->_ball};
     }
 
+    auto asInRolling = toRolling();
+    if (asInRolling) {
+        return std::set<std::string>{asInRolling->_ball};
+    }
+
     return std::set<std::string>{};
 }
 
 billiard::search::state::BallState::BallState(const glm::vec2& position, const glm::vec2& velocity,
-                                              float accelerationLength) :
+                                              float accelerationLength, float slideAccelerationLength, bool isRolling) :
     _position(position),
     _velocity(velocity),
     _velocityNormed(billiard::physics::normalize(velocity)),
-    _acceleration(billiard::physics::accelerationByNormed(_velocityNormed, accelerationLength)){
+    _acceleration(billiard::physics::accelerationByNormed(_velocityNormed,
+                                                          isRolling ? accelerationLength : slideAccelerationLength)),
+    _isRolling(isRolling) {
 }
 
 billiard::search::node::BallMovingNode::BallMovingNode(const state::BallState& before, const state::BallState& after) :
@@ -216,7 +234,6 @@ std::optional<billiard::search::node::BallMovingNode> billiard::search::node::No
     }
     return std::nullopt;
 }
-
 
 std::optional<billiard::search::state::BallState> billiard::search::node::Node::before() const {
     auto inRest = toInRest();
@@ -311,6 +328,7 @@ std::unordered_map<std::string, billiard::search::node::Node> billiard::search::
 std::unordered_map<std::string, billiard::search::node::Node>
 billiard::search::node::Layer::getDynamic(const std::unordered_map<std::string, Node>& nodes) {
     static const std::vector<billiard::search::node::NodeType> dynamicTypes{
+            billiard::search::node::NodeType::BALL_SHOT,
             billiard::search::node::NodeType::BALL_MOVING,
             billiard::search::node::NodeType::BALL_COLLISION,
             billiard::search::node::NodeType::BALL_RAIL_COLLISION
@@ -368,21 +386,57 @@ bool billiard::search::node::System::final() const {
 
 void billiard::search::node::System::append(Layer layer) {
     layer._isLast = true;
+    float deltaTime;
     if (_layers.empty()) {
         layer._isFirst = true;
+        deltaTime = layer._time;
     } else {
         _layers.at(_layers.size() - 1)._isLast = false;
+        deltaTime = layer._time - _layers.at(_layers.size() - 1)._time;
     }
 
     for(auto& node : layer._nodes) { // TODO: effizienter implementieren
+        if (_nextRolling.find(node.first) != _nextRolling.end()) {
+            auto nextRollingEvent = _nextRolling.find(node.first)->second - deltaTime;
+            _nextRolling.erase(node.first);
+            _nextRolling.insert({node.first, std::max(0.0f, nextRollingEvent)});
+        }
+
         if (node.second._type == NodeType::BALL_COLLISION) {
             _lastRailCollisions.erase(node.first);
+
+            // TODO: Dokumentieren
+            // Wenn Kugel nicht rollt, dann gleitet sie bei einer Kollision.
+            auto after = node.second.after();
+            static glm::vec2 zero {0, 0};
+            if (!after->_isRolling && after->_velocity != zero) {
+                _nextRolling.erase(node.first);
+                _nextRolling.insert({node.first, billiard::physics::timeToRolling(after->_velocity)});
+            } else {
+                _nextRolling.erase(node.first);
+            }
+        } else if (node.second._type == NodeType::BALL_SHOT) {
+            auto after = node.second.after();
+            _nextRolling.erase(node.first);
+            _nextRolling.insert({node.first, billiard::physics::timeToRolling(after->_velocity)});
+        } else if (node.second._type == NodeType::BALL_IN_REST) {
+            _nextRolling.erase(node.first);
+        } else if (node.second._type == NodeType::BALL_POTTING) {
+            _nextRolling.erase(node.first);
+        } else if (node.second._type == NodeType::BALL_MOVING) {
+            auto after = node.second.after();
+            if (after->_isRolling) {
+                _nextRolling.erase(node.first);
+            }
         }
 
         auto asRailCollision = node.second.toBallRailCollision();
         if (asRailCollision) {
             _lastRailCollisions.erase(node.first);
             _lastRailCollisions.insert({node.first, asRailCollision->_cause._rail});
+            // TODO: Dokumentieren
+            // Bei einer Bandenkollision rollt die Kugel aufgrund der Eigenschaft der Bandenhöhe weiter
+            _nextRolling.erase(node.first);
         }
     }
 

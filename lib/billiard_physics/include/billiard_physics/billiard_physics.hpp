@@ -13,6 +13,7 @@ namespace billiard::physics {
 
     const float gravitationalAcceleration = 9.8 * 1000; // mm/s^2
     const float frictionCoefficient = 0.0142435; // TODO: may improve number!
+    const float slideFrictionCoefficient = 0.142435; // TODO: find a good number!
     const float energyLossByBall = 0.30; // TODO: Document and find a number!
     const float energyLossFactorBall = 1 - energyLossByBall;
     const float energyAdditionFactorBall = 1 / energyLossFactorBall;
@@ -73,9 +74,16 @@ namespace billiard::physics {
      * @param velocity1 Geschwindigkeit der Kugel A zum Zeitpunkt der Kollision.
      * @param position2 Position der Kugel B zum Zeitpunkt der Kollision.
      * @param velocity2 Geschwindigkeit der Kugel B zum Zeitpunkt der Kollision.
+     * @param isRolling1 Gibt an, ob die Kugel A am rollen ist.
+     * @param isRolling2 Gibt an, ob die Kugel B am rollen ist.
      * @return Die Geschwindigkeitsvektoren beider Kugeln nach dem elastischen Stoss.
      */
-    EXPORT_BILLIARD_PHYSICS_LIB std::pair<glm::vec2, glm::vec2> elasticCollision(const glm::vec2& position1, const glm::vec2& velocity1, const glm::vec2& position2, const glm::vec2& velocity2);
+    EXPORT_BILLIARD_PHYSICS_LIB std::pair<glm::vec2, glm::vec2> elasticCollision(const glm::vec2& position1,
+                                                                                 const glm::vec2& velocity1,
+                                                                                 const glm::vec2& position2,
+                                                                                 const glm::vec2& velocity2,
+                                                                                 bool isRolling1,
+                                                                                 bool isRolling2);
 
     /**
      * Kugel kollidiert mit Bande und wird dort reflektiert
@@ -112,10 +120,15 @@ namespace billiard::physics {
             const glm::vec2& shiftedRailPoint1,
             const glm::vec2& shiftedRailPoint2);
 
-     /** Berechnet den Betrag der Bremsbeschleunigung.
+     /** Berechnet den Betrag der Bremsbeschleunigung beim Rollen.
      * @return Den Betrag der Bremsbeschleunigung
      */
     EXPORT_BILLIARD_PHYSICS_LIB float accelerationLength();
+
+    /** Berechnet den Betrag der Bremsbeschleunigung beim Gleiten.
+     * @return Den Betrag der Bremsbeschleunigung
+     */
+    EXPORT_BILLIARD_PHYSICS_LIB float slideAccelerationLength();
 
     /**
      * Gibt für eine bekannte Geschwindigkeit und Bremsbeschleunigungsbetrag die Bremsbeschleunigung in
@@ -161,6 +174,13 @@ namespace billiard::physics {
      * @return Die Zeit, an der das Objekt stillsteht.
      */
     EXPORT_BILLIARD_PHYSICS_LIB float timeToStop(const glm::vec2& acceleration, const glm::vec2& velocity);
+
+    /**
+     * Berechnet den Zeitpunkt, wo ein Objekt zu rollen beginnt.
+     * @param velocity Die Geschwindigkeit des Objekts.
+     * @return Die Zeit, an der das Objekt zu rollen beginnt.
+     */
+    EXPORT_BILLIARD_PHYSICS_LIB float timeToRolling(const glm::vec2& velocity);
 
     /**
      * Berechnet die Dauer, bis zwei Kugel miteinander kollidieren.

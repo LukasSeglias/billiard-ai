@@ -120,7 +120,9 @@ glm::vec2 billiard::physics::variableTopspin(const glm::vec2& velocity, const gl
 std::pair<glm::vec2, glm::vec2> billiard::physics::elasticCollision(const glm::vec2& position1,
                                                                     const glm::vec2& velocity1,
                                                                     const glm::vec2& position2,
-                                                                    const glm::vec2& velocity2) {
+                                                                    const glm::vec2& velocity2,
+                                                                    bool isRolling1,
+                                                                    bool isRolling2) {
 
     glm::vec2 distanceVector = position2 - position1;
     glm::vec2 zero{0, 0};
@@ -138,11 +140,11 @@ std::pair<glm::vec2, glm::vec2> billiard::physics::elasticCollision(const glm::v
     glm::vec2 v1tn;
     glm::vec2 v2tn;
     if (isTopspinConstant) {
-        v1tn = constantTopspin(velocityWithEnergyLoss1, v1t);
-        v2tn = constantTopspin(velocityWithEnergyLoss2, v2t);
+        v1tn = isRolling1 ? constantTopspin(velocityWithEnergyLoss1, v1t) : v1t;
+        v2tn = isRolling2 ? constantTopspin(velocityWithEnergyLoss2, v2t) : v2t;
     } else {
-        v1tn = variableTopspin(velocityWithEnergyLoss1, v1t);
-        v2tn = variableTopspin(velocityWithEnergyLoss2, v2t);
+        v1tn = isRolling1 ? variableTopspin(velocityWithEnergyLoss1, v1t) : v1t;
+        v2tn = isRolling2 ? variableTopspin(velocityWithEnergyLoss2, v2t) : v2t;
     }
 
     glm::vec2 newVelocity1 = (v2z + v1tn);
@@ -260,8 +262,16 @@ float billiard::physics::timeToStop(const glm::vec2& acceleration, const glm::ve
     return std::max(timeX, timeY);
 }
 
+float billiard::physics::timeToRolling(const glm::vec2& velocity) {
+    return glm::length(velocity) / ((3.5f) * gravitationalAcceleration * slideFrictionCoefficient);
+}
+
 float billiard::physics::accelerationLength() {
     return -gravitationalAcceleration * frictionCoefficient;
+}
+
+float billiard::physics::slideAccelerationLength() {
+    return -gravitationalAcceleration * slideFrictionCoefficient;
 }
 
 glm::vec2 billiard::physics::acceleration(const glm::vec2& velocity, const float accelerationLength) {

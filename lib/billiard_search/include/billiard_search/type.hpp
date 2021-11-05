@@ -79,7 +79,8 @@ namespace billiard::search {
             BALL_COLLISION,
             BALL_RAIL_COLLISION,
             BALL_POTTING,
-            BALL_IN_REST // TODO: besserer name
+            BALL_IN_REST, // TODO: besserer name
+            BALL_ROLLING
         };
 
         struct EXPORT_BILLIARD_SEARCH_LIB BallCollision {
@@ -109,7 +110,13 @@ namespace billiard::search {
             std::string _ball;
         };
 
-        using EventVariant = std::variant<BallCollision, BallRailCollision, BallPotting, BallInRest>;
+        struct EXPORT_BILLIARD_SEARCH_LIB BallRolling {
+            explicit BallRolling(std::string ball);
+
+            std::string _ball;
+        };
+
+        using EventVariant = std::variant<BallCollision, BallRailCollision, BallPotting, BallInRest, BallRolling>;
 
         struct EXPORT_BILLIARD_SEARCH_LIB Event {
             Event(EventType type, float time, EventVariant body);
@@ -122,6 +129,7 @@ namespace billiard::search {
             [[nodiscard]] std::optional<BallRailCollision> toRailCollision() const;
             [[nodiscard]] std::optional<BallCollision> toBallCollision() const;
             [[nodiscard]] std::optional<BallInRest> toInRest() const;
+            [[nodiscard]] std::optional<BallRolling> toRolling() const;
             [[nodiscard]] std::set<std::string> affected() const;
         };
     }
@@ -129,12 +137,14 @@ namespace billiard::search {
     namespace state {
 
         struct EXPORT_BILLIARD_SEARCH_LIB BallState {
-            BallState(const glm::vec2& position, const glm::vec2& velocity, float accelerationLength);
+            BallState(const glm::vec2& position, const glm::vec2& velocity, float accelerationLength,
+                      float slideAccelerationLength, bool isRolling = false);
 
             glm::vec2 _position;
             glm::vec2 _velocity;
             glm::vec2 _velocityNormed;
             glm::vec2 _acceleration;
+            bool _isRolling;
         };
     }
 
@@ -261,6 +271,7 @@ namespace billiard::search {
 
             std::vector<Layer> _layers;
             std::unordered_map<std::string, std::string> _lastRailCollisions;
+            std::unordered_map<std::string, float> _nextRolling;
             unsigned int _id;
         };
     }
@@ -303,6 +314,7 @@ namespace billiard::search {
 
         struct {
             float _accelerationLength = 0.0;
+            float _slideAccelerationLength = 0.0;
         } _ball;
     };
 

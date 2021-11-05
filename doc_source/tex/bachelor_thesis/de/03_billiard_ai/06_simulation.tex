@@ -170,7 +170,6 @@ Liniensegment $AB$ geprüft, ob dieser kleiner als der Kugeldurchmesser ist. Sof
 der Position $C$ im Weg und es würde eine Kollision stattfinden, sofern die Ausgangskugel die Strecke $AB$ rollt.
 Dies wird für jede Kugel geprüft.
 
-
 \subsubsection{Ereignis - Energie-Transfer über Kugelkollision}
 Dieses Ereignis beschreibt die Kollision mit einer anderen Kugel zum Zeitpunkt $t$.
 Bekannt sind dabei die Beschleunigung $\vec{a}$\footnote{Die Beschleunigung $\vec{a}$ ist durch die Herleitung in Kapitel \ref{anhang:herleitung:beschleunigung}
@@ -361,6 +360,16 @@ der Reibungsverlust ist zu gross, als dass sie den Zielkreis erreichen könnte.
     t_1 = \frac{-\norm{\vec{v}} + \sqrt{\norm{\vec{v}}^2 + 2 \cdot \norm{\vec{a}} \norm{\vec{d(l)}}}}{\norm{\vec{a}}}\\
     t_2 = \frac{-\norm{\vec{v}} - \sqrt{\norm{\vec{v}}^2 + 2 \cdot \norm{\vec{a}} \norm{\vec{d(l)}}}}{\norm{\vec{a}}}\\
     t = \min{(t_1, t_2)}
+\end{align}
+
+\subsubsection{Ereignis - Rollen}
+Wenn eine Kugel zentral angestossen wird, dann gleitet sie einen Moment ohne zu rollen. Die Eigenschaft des
+Rollens wird ebenso als Ereignis geführt. Der Zeitpunkt, wann dieses Ereignis eintritt, kann über die
+Formel\footnote{Die Herleitung erfolgt in Kapitel \ref{anhang:herleitung:event:rollen}} \ref{eq:rollzeitpunkt_2} berechnet
+werden, wobei $\mu$ für den Gleitreibungskoeffizienten steht.
+
+\begin{align}
+    t = \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu}\label{eq:rollzeitpunkt_2}
 \end{align}
 
 \subsubsection{Bewertungsfunktion}
