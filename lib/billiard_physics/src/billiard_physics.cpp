@@ -75,8 +75,16 @@ glm::vec2 billiard::physics::startVelocity(const glm::vec2& targetVelocity, floa
     assert(targetVelocity != zero);
     glm::vec2 normalized = glm::normalize(targetVelocity);
     float squaredLength = glm::dot(targetVelocity, targetVelocity);
-    float length = sqrtf(squaredLength + 2 * gravitationalAcceleration * frictionCoefficient * distance);
-    return length * normalized;
+
+    auto velocity = sqrtf((49.0f * slideFrictionCoefficient * (squaredLength + 2 * gravitationalAcceleration * frictionCoefficient * distance)) /
+                                  ((49.0f * slideFrictionCoefficient) + 24.0f * (frictionCoefficient - slideFrictionCoefficient)));
+
+    DEBUG("[startVelocity]" << " "
+            << "distance: " << distance << " "
+            << "start velocity: " << velocity
+            << std::endl
+    );
+    return velocity * normalized;
 }
 
 glm::vec2 billiard::physics::elasticCollisionTargetPosition(const glm::vec2& targetBallPosition, const glm::vec2& targetDirection, const float ballRadius) {

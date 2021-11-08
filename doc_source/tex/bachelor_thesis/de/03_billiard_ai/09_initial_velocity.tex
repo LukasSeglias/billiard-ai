@@ -18,7 +18,7 @@ wobei die Kugel eine gewisse minimale Endgeschwindigkeit haben soll, damit sie t
 
 Es kann die nachfolgende Formel angewendet werden\footnote{Die Herleitung findet sich im Anhang \ref{anhang:herleitung:StartgeschwAnhandEndgeschwMitReibung}}:
 \begin{align}
-    \vec{v_1} = \sqrt{\norm{\vec{v_2}}^2 + 2 \cdot g \cdot c_R \cdot \Delta s} \cdot \frac{\vec{v_2}}{\norm{\vec{v_2}}}
+    \vec{v_1} = \sqrt{\frac{49 \cdot \mu_g \cdot (\norm{\vec{v_2}}^2 + 2 \cdot g \cdot \mu_r \cdot \Delta s)}{49 \cdot \mu_g + 24 \cdot (\mu_r - \mu_g)}} \cdot \frac{\vec{v_2}}{\norm{\vec{v_2}}}
 \end{align}
 
 Sei $S$ die Startposition der Kugel, $E$ die Endposition der Kugel und $V$ der gewünschte Betrag der Endgeschwindigkeit,
