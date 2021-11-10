@@ -1081,7 +1081,7 @@ namespace billiard::search {
             // läuft Kugel nächstens aus?
             nextEvent = min(nextBallInRest(ball), nextEvent);
             // Beginnt die Kugel zu rollen?
-            nextEvent = min(nextRolling(ball, system._nextRolling), nextEvent); // TODO: Dokumentieren in Pseudocode
+            nextEvent = min(nextRolling(ball, system._nextRolling), nextEvent);
             // Kollision mit statischer Kugelr
             nextEvent = min(nextBallCollision(ball, layer.staticBalls(), state->_config._ball._diameter), nextEvent);
             // Kollision mit anderer dynamischer Kugel

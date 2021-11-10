@@ -169,7 +169,8 @@ den entsprechenden Node und zuletzt für die anderen variablen Objekte entweder 
             nextEvent $\longleftarrow$ min(nextEvent, outOfEnergy(object))\\
             nextEvent $\longleftarrow$ min(nextEvent, collision(object, layer.dynamicObjects()))\\
             nextEvent $\longleftarrow$ min(nextEvent, collision(object, layer.staticObjects()))\\
-            nextEvent $\longleftarrow$ min(nextEvent, collision(object, constantObjects))
+            nextEvent $\longleftarrow$ min(nextEvent, collision(object, constantObjects))\\
+            // ... more events to check (eq. rolling)
         }
         \KwRet nextEvent
     }
@@ -178,11 +179,11 @@ den entsprechenden Node und zuletzt für die anderen variablen Objekte entweder 
         nextLayer $\longleftarrow$ layer()
         \For{node in layer.objects()}{
             \If{node.first == event.me or node.first == event.partner}{
-                nextLayer $\longleftarrow$ append(nodeForEvent(node, event))
+                nextLayer $\longleftarrow$ append(nodeForEvent(node, event), nextLayer)
             }
             \Else{
                 \If{node.second.hasEnergy()}{
-                    nextLayer $\longleftarrow$ append(cuttingNode(node, event.timestamp))
+                    nextLayer $\longleftarrow$ append(cuttingNode(node, event.timestamp), nextLayer)
                 }\Else{
                     nextLayer $\longleftarrow$ append(node, nextLayer)
                 }
