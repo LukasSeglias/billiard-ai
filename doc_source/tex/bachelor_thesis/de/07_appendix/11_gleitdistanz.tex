@@ -22,8 +22,9 @@ für $t$ eingesetzt, resultiert die folgende Gleichung.
     s = \frac{24}{98} \cdot \frac{v_0^2}{g \cdot \mu}\\
     s = \frac{12}{49} \cdot \frac{v_0^2}{g \cdot \mu}
 \end{align}
-Da es sich bei der Geschwindigkeit $v_0$ um einen Vektor $\vec{v_0}$ handelt, kann die Position
-über die nachfolgende Formel bestimmt werden, wobei $p_0$ für die vorherige Position steht.
+Um die neue Position $p$ der Kugel nach zurückgelegter Strecke $s$ zu bestimmen, muss der Richtungsvektor $\hat{v_0}$
+des Geschwindigkeitsvektors $\vec{v_0}$ bekannt sein. Sei $p_0$ die vorherige Position der Kugel, dann gilt:
 \begin{align}
-    \vec{p} = \vec{p_0} + \frac{12}{49} \cdot \frac{\vec{v_0^2}}{g \cdot \mu}
+    \hat{v_0} = \frac{\vec{v_0}}{\norm{\vec{v_0}}}\\
+    \vec{p} = \vec{p_0} + \hat{v_0} \cdot (\frac{12}{49} \cdot \frac{v_0^2}{g \cdot \mu})
 \end{align}

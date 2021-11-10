@@ -3,37 +3,58 @@ Wird die Kugel zentral getroffen, so gleitet sie eine bestimmte Distanz und begi
 Es gelten die nachfolgenden Gleichungen, wobei $m$ für die Masse und $r$ den Radius der Kugel, $J$ für das
 Trägheitsmoment, $F$ für die Gleitreibungskraft und $\mu$ für den Gleitreibungskoeffizienten steht.
 \begin{align}
+    F_G = F_N = m \cdot g\\
+    F = F_N \cdot \mu\\
     F = m \cdot g \cdot \mu\\
-    -F = m \cdot \frac{\delta^2 X}{\delta t^2}\\
+    F = m \cdot a\\
     J = \frac{2}{5} \cdot m \cdot r^2
 \end{align}
-Die Rollbedingung ist gegeben durch:
+Bei gegebenem Trägheitsmoment $J$, Radius $r$, Gleitreibungskraft $F$, und Winkelbeschleunigung $\alpha$ gilt für den Drehmoment $M$ \cite{wiki.drehmoment:1}:
+\begin{align}
+    M = F \cdot r\\
+    M = J \cdot \alpha
+\end{align}
+Die Rollbedingung\cite{wiki.rollen:1} bei Radius $r$, zurückgelegtem Weg $X$ und Winkel $\phi$ ist gegeben durch:
 \begin{align}
     X = \phi \cdot r\label{eq:rollbedingung}
 \end{align}
+Die Winkelbeschleunigung $\alpha$ ist wie folgt definiert\cite{wiki.winkelbeschleunigung:1}, wobei $\omega$ die Winkelgeschwindigkeit ist:
+\begin{align}
+    \omega = \frac{\delta \phi}{\delta t}\\
+    \alpha = \frac{\delta \omega}{\delta t} = \frac{\delta^2 \phi}{\delta t^2}
+\end{align}
 Die Winkelbeschleunigung ist gegeben durch:
 \begin{align}
+    M = F \cdot r\\
+    M = J \cdot \alpha\\
+    F \cdot r = J \cdot \alpha\\
     F \cdot r = J \cdot \frac{\delta^2 \phi}{\delta t^2}
 \end{align}
 Aus der Winkelbeschleunigung folgt für die erste Ableitung nach der Zeit die Gleichung \ref{eq:winkelbeschleunigung_zeit}
 \begin{align}
+    F \cdot r \cdot t = J \cdot \frac{\delta^2 \phi}{\delta t^2} \cdot t\\
     F \cdot r \cdot t = J \cdot \frac{\delta \phi}{\delta t}\\
-    \frac{\delta \phi}{\delta t} = \frac{F \cdot r \cdot t}{J}\label{eq:winkelbeschleunigung_zeit}
+    \frac{\delta \phi}{\delta t} = \omega = \frac{F \cdot r \cdot t}{J}\label{eq:winkelbeschleunigung_zeit}
 \end{align}
 Die Rollbedingung gilt nur, wenn die Kugel von Beginn an rollt, ansonsten ist eine konstante Strecke beinhaltet,
 auf welcher die Kugel nur gleitet\cite{rollzeitpunkt}. Um den Zeitpunkt zu bestimmen, an dem die Kugel zu rollen
-beginnt, verwendet man die erste Ableitung nach der Zeit (siehe Gleichungen \ref{eq:rollbedingung} und \ref{eq:winkelbeschleunigung_zeit}).
+beginnt, wird die erste Ableitung nach der Zeit verwendet (siehe Gleichungen \ref{eq:rollbedingung} und \ref{eq:winkelbeschleunigung_zeit}).
 \begin{align}
-    \frac{\delta X}{\delta t} = r \cdot \frac{\delta \phi}{\delta t} = \frac{F \cdot r^2 \cdot t}{J}\label{eq:ableitung_winkelbeschleunigung_zeit}
+    X = \phi \cdot r\\
+    v = \frac{\delta X}{\delta t} = \frac{\delta \phi}{\delta t} \dot r\\
+    v = \frac{\delta X}{\delta t} = \frac{\delta \phi}{\delta t} \dot r = \frac{F \cdot r^2 \cdot t}{J}\label{eq:ableitung_winkelbeschleunigung_zeit}
 \end{align}
-Um $t$ bestimmen zu können, kann die gleichmässig beschleunigte Bewegung verwendet werden. Diese ergibt dieselbe
-Strecke.
+Um $t$ zu bestimmen, können die Gesetze der gleichmässig beschleunigten Bewegung verwendet werden. Diese ergibt dieselbe Geschwindigkeit.
 \begin{align}
-    v = \frac{\delta X}{\delta t} = a \cdot t + v_0
+    v = \frac{\delta X}{\delta t} = a \cdot t + v_0\\
+    F = m \cdot a\\
+    a = \frac{F}{m}\\
+    v = \frac{\delta X}{\delta t} = \frac{F}{m} \cdot t + v_0
 \end{align}
-Demnach gilt die Gleichung \ref{eq:ableitung_gleichmaessig_beschl_bewegung}.
+Da die Beschleunigung $a$ entgegen der Rollrichtung der Kugel wirkt, wird diese noch negativ gemacht:
 \begin{align}
-    \frac{\delta X}{\delta t} = \frac{-F}{m} \cdot t + v_0\label{eq:ableitung_gleichmaessig_beschl_bewegung}
+    a = \frac{-F}{m}\\
+    v = \frac{\delta X}{\delta t} = \frac{-F}{m} \cdot t + v_0\label{eq:ableitung_gleichmaessig_beschl_bewegung}
 \end{align}
 Die Gleichungen \ref{eq:ableitung_winkelbeschleunigung_zeit} und \ref{eq:ableitung_gleichmaessig_beschl_bewegung} werden gleichgesetzt und nach $t$ gelöst.
 \begin{align}
