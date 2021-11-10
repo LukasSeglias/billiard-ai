@@ -33,6 +33,47 @@
 //#undef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
 //#undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
 
+// TODO: remove this
+#define BILLIARD_SNOOKER_TIMING 1
+
+#ifndef BILLIARD_SNOOKER_TIMING
+    #ifdef NDEBUG
+        #undef BILLIARD_SNOOKER_TIMING
+    #endif
+    #ifndef NDEBUG
+        #define BILLIARD_SNOOKER_TIMING 1
+    #endif
+#endif
+
+#ifdef BILLIARD_SNOOKER_TIMING
+    std::chrono::time_point<std::chrono::high_resolution_clock> start;
+
+    void startTimer() {
+        start = std::chrono::high_resolution_clock::now();
+    }
+
+    void stopTimer(const std::string& agent) {
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> ms_double = end - start;
+        double totalTimeMs = ms_double.count();
+        std::cout << agent << " took: " << totalTimeMs << "ms" << std::endl;
+    }
+
+    #define tick()               \
+        do {                     \
+            startTimer();        \
+        } while(0);
+
+    #define tock(agent)          \
+        do {                     \
+            stopTimer(agent);    \
+        } while(0);
+#endif
+#ifndef BILLIARD_SNOOKER_TIMING
+    #define tick() do {} while(0);
+    #define tock(agent) do {} while(0);
+#endif
+
 namespace billiard::snooker {
 
     SnookerDetectionConfig config;
@@ -186,6 +227,8 @@ namespace billiard::snooker {
 
     billiard::detection::State detect(const billiard::detection::State& previousState, const cv::Mat& original) {
 
+        tick();
+
         cv::Mat input;
         cv::resize(original, input, cv::Size(), config.scale, config.scale);
 
@@ -207,6 +250,10 @@ namespace billiard::snooker {
         cv::imshow("saturation", saturation);
         cv::imshow("value", value);
 #endif
+
+        tock("Input processing");
+        tick();
+
         // Saturated balls mask
         cv::Mat saturatedBallMask;
         {
@@ -259,21 +306,8 @@ namespace billiard::snooker {
         cv::imshow("saturationMask - masked delta", maskedDelta);
 #endif
 
-        // Hough on saturation masked input
-        std::vector<cv::Vec3f> saturationCircles;
-        HoughCircles(saturationMaskedGrayscale, saturationCircles, cv::HOUGH_GRADIENT, 1,
-                     config.houghMinDistance, // minimal distance between centers
-                     config.houghCannyHigherThreshold, // higher threshold of the two passed to the Canny edge detector (lower threshold is twice smaller)
-                     config.houghAccumulatorThreshold, // accumulator threshold for the circle centers (if the value is smaller, the more "circles" are detected)
-                     config.minRadius, config.maxRadius
-        );
-
-#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
-        cv::Mat edges;
-        cv::Canny(saturationMaskedGrayscale, edges, config.houghCannyHigherThreshold / 2, config.houghCannyHigherThreshold);
-
-        cv::imshow("saturationMask - maskedInput grayscale edges", edges);
-#endif
+        tock("Building saturation mask");
+        tick();
 
         // Black ball mask
         cv::Mat blackMask;
@@ -325,23 +359,8 @@ namespace billiard::snooker {
         };
 #endif
 
-        // Hough on black masked input
-        std::vector<cv::Vec3f> blackCircles;
-        HoughCircles(blackMaskedGrayscale, blackCircles, cv::HOUGH_GRADIENT, 1,
-                     config.houghMinDistance, // minimal distance between centers
-                     config.houghCannyHigherThreshold, // higher threshold of the two passed to the Canny edge detector (lower threshold is twice smaller)
-                     config.houghAccumulatorThreshold, // accumulator threshold for the circle centers (if the value is smaller, the more "circles" are detected)
-                     config.minRadius, config.maxRadius
-        );
-
-#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
-        {
-            cv::Mat edges;
-            cv::Canny(blackMaskedGrayscale, edges, config.houghCannyHigherThreshold / 2, config.houghCannyHigherThreshold);
-
-            cv::imshow("black - maskedInput grayscale edges", edges);
-        };
-#endif
+        tock("Building black mask");
+        tick();
 
         // White & Pink Mask
         cv::Mat whitePinkMask;
@@ -392,14 +411,54 @@ namespace billiard::snooker {
         };
 #endif
 
-        // Hough on white&pink masked input
-        std::vector<cv::Vec3f> whitePinkCircles;
-        HoughCircles(closedWhitePinkMaskedGrayscale, whitePinkCircles, cv::HOUGH_GRADIENT, 1,
+        tock("Building white&pink mask");
+        tick();
+
+        // Hough on saturation masked input
+        std::vector<cv::Vec3f> saturationCircles;
+        HoughCircles(saturationMaskedGrayscale, saturationCircles, config.houghMethod, 1,
                      config.houghMinDistance, // minimal distance between centers
                      config.houghCannyHigherThreshold, // higher threshold of the two passed to the Canny edge detector (lower threshold is twice smaller)
                      config.houghAccumulatorThreshold, // accumulator threshold for the circle centers (if the value is smaller, the more "circles" are detected)
                      config.minRadius, config.maxRadius
         );
+
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
+        cv::Mat edges;
+        cv::Canny(saturationMaskedGrayscale, edges, config.houghCannyHigherThreshold / 2, config.houghCannyHigherThreshold);
+
+        cv::imshow("saturationMask - maskedInput grayscale edges", edges);
+#endif
+
+        // Hough on black masked input
+        std::vector<cv::Vec3f> blackCircles;
+        HoughCircles(blackMaskedGrayscale, blackCircles, config.houghMethod, 1,
+                     config.houghMinDistance, // minimal distance between centers
+                     config.houghCannyHigherThreshold, // higher threshold of the two passed to the Canny edge detector (lower threshold is twice smaller)
+                     config.houghAccumulatorThreshold, // accumulator threshold for the circle centers (if the value is smaller, the more "circles" are detected)
+                     config.minRadius, config.maxRadius
+        );
+
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
+        {
+            cv::Mat edges;
+            cv::Canny(blackMaskedGrayscale, edges, config.houghCannyHigherThreshold / 2, config.houghCannyHigherThreshold);
+
+            cv::imshow("black - maskedInput grayscale edges", edges);
+        };
+#endif
+
+        // Hough on white&pink masked input
+        std::vector<cv::Vec3f> whitePinkCircles;
+        HoughCircles(closedWhitePinkMaskedGrayscale, whitePinkCircles, config.houghMethod, 1,
+                     config.houghMinDistance, // minimal distance between centers
+                     config.houghCannyHigherThreshold, // higher threshold of the two passed to the Canny edge detector (lower threshold is twice smaller)
+                     config.houghAccumulatorThreshold, // accumulator threshold for the circle centers (if the value is smaller, the more "circles" are detected)
+                     config.minRadius, config.maxRadius
+        );
+
+        tock("hough");
+        tick();
 
 #ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         {
@@ -493,6 +552,9 @@ namespace billiard::snooker {
         cv::imshow("hough", hough);
 #endif
 
+        tock("filtering circles");
+        tick();
+
         std::vector<cv::Point2d> imagePoints = circleCenters(allCircles);
 
         billiard::detection::State state;
@@ -510,6 +572,8 @@ namespace billiard::snooker {
         cv::imshow("detected balls", detectedBalls);
         cv::waitKey(1);
 #endif
+
+        tock("preparing state");
 
         return state;
     }

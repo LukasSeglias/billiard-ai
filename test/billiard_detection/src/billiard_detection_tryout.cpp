@@ -380,40 +380,42 @@ TEST(BallDetectionTests, snooker_performance) {
 
     std::shared_ptr<billiard::detection::DetectionConfig> detectionConfig;
 
-    double totalTimeMs = 0.0;
-    int totalRuns = 0;
-
-    for(int i = 0; i < NUMBER_OF_ROUNDS; i++) {
-        for(auto& imagePath : imagePaths) {
-            cv::Mat frame = imread(imagePath, cv::IMREAD_COLOR);
-            cv::resize(frame, frame, imageSize);
-
-            detectionConfig = std::make_shared<billiard::detection::DetectionConfig>(billiard::detection::configure(frame, table, markers, intrinsics));
-            if (!detectionConfig->valid) {
-                std::cout << "Unable to configure detection" << std::endl;
-                return;
-            }
-
-            if (!billiard::snooker::configure(*detectionConfig)) {
-                std::cout << "Unable to configure snooker detection" << std::endl;
-                return;
-            }
-
-            auto t1 = std::chrono::high_resolution_clock::now();
-            billiard::detection::State pixelState = billiard::snooker::detect(billiard::detection::State(), frame);
-            billiard::detection::State state = billiard::detection::pixelToModelCoordinates(*detectionConfig, pixelState);
-            auto t2 = std::chrono::high_resolution_clock::now();
-
-            std::chrono::duration<double, std::milli> ms_double = t2 - t1;
-//            std::cout << "Took " << ms_double.count() << "ms" << std::endl;
-
-            totalTimeMs += ms_double.count();
-            totalRuns++;
-        }
+    std::vector<cv::Mat> images {};
+    for(auto& imagePath : imagePaths) {
+        cv::Mat frame = imread(imagePath, cv::IMREAD_COLOR);
+        cv::resize(frame, frame, imageSize);
+        images.push_back(frame);
     }
 
+    cv::Mat configFrame = images[0]; // Use first image for configuring detection
+
+    detectionConfig = std::make_shared<billiard::detection::DetectionConfig>(billiard::detection::configure(configFrame, table, markers, intrinsics));
+    if (!detectionConfig->valid) {
+        std::cout << "Unable to configure detection" << std::endl;
+        return;
+    }
+
+    if (!billiard::snooker::configure(*detectionConfig)) {
+        std::cout << "Unable to configure snooker detection" << std::endl;
+        return;
+    }
+
+    auto t1 = std::chrono::high_resolution_clock::now();
+    for(int i = 0; i < NUMBER_OF_ROUNDS; i++) {
+        for(auto& frame : images) {
+
+            billiard::detection::State pixelState = billiard::snooker::detect(billiard::detection::State(), frame);
+            billiard::detection::State state = billiard::detection::pixelToModelCoordinates(*detectionConfig, pixelState);
+        }
+    }
+    auto t2 = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double, std::milli> ms_double = t2 - t1;
+    double totalTimeMs = ms_double.count();
+    int totalRuns = NUMBER_OF_ROUNDS * images.size();
+
     std::cout << "--------------------------------------" << std::endl;
-    std::cout << "Average time: " << (totalTimeMs/totalRuns) << "ms" << std::endl;
+    std::cout << "Average time: " << (totalTimeMs/(double)totalRuns) << "ms" << std::endl;
 }
 
 TEST(BallDetectionTests, snooker_write_detected_images) {
