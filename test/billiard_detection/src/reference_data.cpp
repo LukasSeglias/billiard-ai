@@ -186,9 +186,12 @@ TEST(BallDetectionTests, record_reference_data) {
             std::cout << "\"balls\": [" << std::endl;
             for (int i = 0; i < state._balls.size(); i++) {
                 auto& ball = state._balls[i];
+                auto& pixelBall = pixelState._balls[i];
                 cv::Point2d modelPoint = cv::Point2d(ball._position.x, ball._position.y);
+                cv::Point2d pixelPoint = cv::Point2d(pixelBall._position.x, pixelBall._position.y);
                 std::cout << "{ " << std::endl;
-                std::cout << R"("x": )" << modelPoint.x << ", " << R"("y": )" << modelPoint.y << "" << std::endl;
+                std::cout << R"("x": )" << modelPoint.x << ", " << R"("y": )" << modelPoint.y << "," << std::endl;
+                std::cout << R"("pixelX": )" << pixelPoint.x << ", " << R"("pixelY": )" << pixelPoint.y << "" << std::endl;
                 if (i < state._balls.size() - 1) {
                     std::cout << " }," << std::endl;
                 } else {
