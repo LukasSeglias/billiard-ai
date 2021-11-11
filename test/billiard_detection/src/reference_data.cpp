@@ -16,71 +16,45 @@ int selectedBallIndex = -1;
 TEST(BallDetectionTests, record_reference_data) {
 
     std::vector<std::string> imagePaths = {
-//            "./resources/test_detection/with_projector_on/without_halo/1.png",
-//            "./resources/test_detection/with_projector_on/without_halo/2.png",
-//            "./resources/test_detection/with_projector_on/without_halo/3.png",
-//            "./resources/test_detection/with_projector_on/without_halo/4.png",
-//            "./resources/test_detection/with_projector_on/without_halo/5.png",
-//            "./resources/test_detection/with_projector_on/without_halo/6.png",
-//            "./resources/test_detection/with_projector_on/without_halo/7.png",
-//            "./resources/test_detection/with_projector_on/without_halo/8.png",
-//            "./resources/test_detection/with_projector_on/without_halo/9.png",
-//            "./resources/test_detection/with_projector_on/without_halo/10.png",
-//            "./resources/test_detection/with_projector_on/without_halo/11.png",
-//            "./resources/test_detection/with_projector_on/without_halo/12.png",
-//            "./resources/test_detection/with_projector_on/without_halo/13.png",
-//            "./resources/test_detection/with_projector_on/without_halo/14.png",
-//            "./resources/test_detection/with_projector_on/without_halo/15.png",
-//            "./resources/test_detection/with_projector_on/without_halo/16.png",
-//            "./resources/test_detection/with_projector_on/without_halo/17.png",
-//            "./resources/test_detection/with_projector_on/without_halo/18.png",
-//            "./resources/test_detection/with_projector_on/without_halo/19.png",
-//            "./resources/test_detection/with_projector_on/without_halo/20.png",
-//            "./resources/test_detection/with_projector_on/without_halo/21.png",
-//            "./resources/test_detection/with_projector_on/without_halo/22.png",
-//            "./resources/test_detection/with_projector_on/without_halo/23.png",
-//            // TODO 24: statt zwei roten wird eine "grosse" erkannt
-//            "./resources/test_detection/with_projector_on/without_halo/24.png",
-            "./resources/test_detection/with_projector_on/with_halo/1.png",
+            "./resources/test_detection/with_projector_on/without_halo/1.png",
+            "./resources/test_detection/with_projector_on/without_halo/2.png",
+            "./resources/test_detection/with_projector_on/without_halo/3.png",
+            "./resources/test_detection/with_projector_on/without_halo/4.png",
+            "./resources/test_detection/with_projector_on/without_halo/5.png",
+            "./resources/test_detection/with_projector_on/without_halo/6.png",
+            "./resources/test_detection/with_projector_on/without_halo/7.png",
+            "./resources/test_detection/with_projector_on/without_halo/8.png",
+            "./resources/test_detection/with_projector_on/without_halo/9.png",
+            "./resources/test_detection/with_projector_on/without_halo/10.png",
+            "./resources/test_detection/with_projector_on/without_halo/11.png",
+            "./resources/test_detection/with_projector_on/without_halo/12.png",
+            "./resources/test_detection/with_projector_on/without_halo/13.png",
+            "./resources/test_detection/with_projector_on/without_halo/14.png",
+            "./resources/test_detection/with_projector_on/without_halo/15.png",
+            "./resources/test_detection/with_projector_on/without_halo/16.png",
+            "./resources/test_detection/with_projector_on/without_halo/17.png",
+            "./resources/test_detection/with_projector_on/without_halo/18.png",
+            "./resources/test_detection/with_projector_on/without_halo/19.png",
+            "./resources/test_detection/with_projector_on/without_halo/20.png",
+            "./resources/test_detection/with_projector_on/without_halo/21.png",
+            "./resources/test_detection/with_projector_on/without_halo/22.png",
+            "./resources/test_detection/with_projector_on/without_halo/23.png",
+            "./resources/test_detection/with_projector_on/without_halo/24.png",
+//            "./resources/test_detection/with_projector_on/with_halo/1.png",
 //            "./resources/test_detection/with_projector_on/with_halo/2.png",
 //            "./resources/test_detection/with_projector_on/with_halo/3.png",
 //            "./resources/test_detection/with_projector_on/with_halo/4.png",
 //            "./resources/test_detection/with_projector_on/with_halo/5.png",
 //            "./resources/test_detection/with_projector_on/with_halo/6.png",
-            "./resources/test_detection/with_projector_on/with_halo/11.png",
-            "./resources/test_detection/with_projector_on/with_halo/12.png",
-            "./resources/test_detection/with_projector_on/with_halo/13.png",
-            "./resources/test_detection/with_projector_on/with_halo/14.png",
-            "./resources/test_detection/with_projector_on/with_halo/15.png",
-            "./resources/test_detection/with_projector_on/with_halo/16.png",
-            "./resources/test_detection/with_projector_on/with_halo/17.png",
-            "./resources/test_detection/with_projector_on/with_halo/18.png",
-            "./resources/test_detection/with_projector_on/with_halo/19.png",
-//            "./resources/test_detection_with_projector_with_live_texts/1.png",
-//            "./resources/test_detection_with_projector_with_live_texts/2.png",
-//            // TODO 3: red ball in top-left corner is detected poorly
-//            "./resources/test_detection_with_projector_with_live_texts/3.png",
-//            "./resources/test_detection_with_projector_with_live_texts/4.png",
-//            "./resources/test_detection_with_projector_with_live_texts/5.png",
-//            "./resources/test_detection_with_projector_with_live_texts/6.png",
-//            "./resources/test_detection_with_projector_with_live_texts/7.png",
-//            "./resources/test_detection_with_projector_with_live_texts/8.png",
-//            "./resources/test_detection_with_projector_with_live_texts/9.png",
-//            "./resources/test_detection_with_projector_with_live_texts/10.png",
-//            "./resources/test_detection_with_projector_with_live_texts/11.png",
-//            // TODO 12: extra black circle near blue ball in top-right corner
-//            "./resources/test_detection_with_projector_with_live_texts/12.png",
-//            "./resources/test_detection_with_projector_with_live_texts/13.png",
-//            "./resources/test_detection_with_projector_with_live_texts/14.png",
-//            "./resources/test_detection_with_projector_with_live_texts/15.png",
-//            "./resources/test_detection_with_projector_with_live_texts/16.png",
-//            "./resources/test_detection_with_projector_with_live_texts/17.png",
-//            "./resources/test_detection_with_projector_with_live_texts/18.png",
-//            "./resources/test_detection_with_projector_with_live_texts/19.png",
-//            "./resources/test_detection_with_projector_with_live_texts/20.png",
-//            "./resources/test_detection_with_projector_with_live_texts/21.png",
-//            "./resources/test_detection_with_projector_with_live_texts/22.png",
-//            "./resources/test_detection_with_projector_with_live_texts/23.png",
+//            "./resources/test_detection/with_projector_on/with_halo/11.png",
+//            "./resources/test_detection/with_projector_on/with_halo/12.png",
+//            "./resources/test_detection/with_projector_on/with_halo/13.png",
+//            "./resources/test_detection/with_projector_on/with_halo/14.png",
+//            "./resources/test_detection/with_projector_on/with_halo/15.png",
+//            "./resources/test_detection/with_projector_on/with_halo/16.png",
+//            "./resources/test_detection/with_projector_on/with_halo/17.png",
+//            "./resources/test_detection/with_projector_on/with_halo/18.png",
+//            "./resources/test_detection/with_projector_on/with_halo/19.png"
     };
 
     cv::Size imageSize = getImageSize();
@@ -145,7 +119,7 @@ TEST(BallDetectionTests, record_reference_data) {
             frame.copyTo(drawn);
             drawBalls(drawn, pixelState._balls);
 
-            grid = drawDetectedBallsGrid(frame, pixelState, 128, 8);
+            grid = drawDetectedBallsGrid(drawn, pixelState, 128, 8);
         }
 
         cv::imshow(frameName, drawn);
@@ -168,12 +142,12 @@ TEST(BallDetectionTests, record_reference_data) {
             }
         } else if (key == 'k') {
             if (selectedBallIndex >= 0) {
-                pixelState._balls[selectedBallIndex]._position += glm::vec2 { 0, -1 };
+                pixelState._balls[selectedBallIndex]._position += glm::vec2 { 0, +1 };
                 redraw = true;
             }
         } else if (key == 'i') {
             if (selectedBallIndex >= 0) {
-                pixelState._balls[selectedBallIndex]._position += glm::vec2 { 0, +1 };
+                pixelState._balls[selectedBallIndex]._position += glm::vec2 { 0, -1 };
                 redraw = true;
             }
         } else if (key == 'w') {
