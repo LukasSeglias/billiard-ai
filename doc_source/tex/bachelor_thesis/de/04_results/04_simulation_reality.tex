@@ -1,11 +1,170 @@
 \section{Vergleich Simulation und Realität}
 
-\begin{align}
+
+\begin{multline}
     s = \frac{1}{2} \cdot a \cdot t^2 + v_0 \cdot t + s_0\\
     s = \frac{1}{2} \cdot a \cdot t^2 + v_0 \cdot t\\
     v_0 \cdot t = s - \frac{1}{2} \cdot a \cdot t^2\\
     v_0 = \frac{s}{t} - \frac{1}{2} \cdot a \cdot t\\
     c_R = \frac{a}{g}\\
-    a = c_R \cdot g\\
-    v_0 = \frac{s}{t} - \frac{1}{2} \cdot c_R \cdot g \cdot t\\
-\end{align}
+    a = c_R \cdot -g\\
+    v_0 = \frac{s}{t} - \frac{1}{2} \cdot c_R \cdot -g \cdot t\\
+\end{multline}
+
+\begin{equation}
+\begin{aligned}
+    s = & \frac{1}{2} \cdot a \cdot t^2 + v_0 \cdot t + s_0\\
+    s = & \frac{1}{2} \cdot a \cdot t^2 + v_0 \cdot t\\
+    t = & t_g + t_r\\
+    a = & -g \cdot \mu\\
+    a_r = & -g \cdot \mu_r\\
+    a_g = & -g \cdot \mu_g\\
+    s = & s_r + s_g\\
+    s_g = & \frac{1}{2} \cdot a_g \cdot t_g^2 + v_0 \cdot t_g\\
+    s_g = & \frac{1}{2} \cdot -g \cdot \mu_g \cdot t_g^2 + v_0 \cdot t_g\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t_r^2 + v_{0r} \cdot t_r\\
+    v_{0r} = & v_0 + a_g \cdot t_g\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t_r^2 + (v_0 + -g \cdot \mu_g \cdot t_g) \cdot t_r
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+    t_r = & t - t_g\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot (t - t_g)^2 + (v_0 + -g \cdot \mu_g \cdot t_g) \cdot (t - t_g)\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot (t^2 - 2 \cdot t \cdot t_g + t_g^2) + v_0 \cdot t - v_0 \cdot t_g - g \cdot \mu_g \cdot t_g \cdot t + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot (t^2 - 2 \cdot t \cdot t_g + t_g^2) + v_0 \cdot t + t_g \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot (t^2 - 2 \cdot t \cdot t_g + t_g^2) + v_0 \cdot t + t_g \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+t_g = & \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g}\\
+s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot (t^2 - 2 \cdot t \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} + t_g^2) + v_0 \cdot t + t_g \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot (t^2 + t_g^2) - \frac{1}{2} \cdot -g \cdot \mu_r \cdot 2 \cdot t \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} + v_0 \cdot t + t_g \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot (t^2 + t_g^2) + \frac{1}{2} \cdot \mu_r \cdot 2 \cdot t \cdot \frac{v_0}{\frac{7}{2} \cdot \mu_g} + v_0 \cdot t + t_g \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot (t^2 + t_g^2) + \mu_r \cdot t \cdot \frac{v_0}{\frac{7}{2} \cdot \mu_g} + v_0 \cdot t + t_g \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot (t^2 + t_g^2) + v_0 \cdot \frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + v_0 \cdot t + t_g \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot (t^2 + t_g^2) + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) + t_g \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+t_g^2 = & \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2}\\
+s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot (t^2 + \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2}) + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) + t_g \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 + \frac{1}{2} \cdot -g \cdot \mu_r \cdot \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2} + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) + t_g \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - \frac{1}{2} \cdot \mu_r \cdot \frac{v_0^2}{\frac{49}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) + t_g \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - \mu_r \cdot \frac{v_0^2}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) + t_g \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) + t_g \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) + \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (-v_0 - g \cdot \mu_g \cdot t) + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) + \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot -v_0 - \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot g \cdot \mu_g \cdot t + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) - \frac{v_0^2}{\frac{7}{2} \cdot g \cdot \mu_g} - \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot g \cdot \mu_g \cdot t + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) - \frac{v_0^2}{\frac{7}{2} \cdot g \cdot \mu_g} - \frac{v_0}{\frac{7}{2}} \cdot t + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) - v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} - v_0 \cdot \frac{t}{\frac{7}{2}} + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} - v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) - v_0 \cdot \frac{t}{\frac{7}{2}} + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot (\frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} - \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g}) + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) - v_0 \cdot \frac{t}{\frac{7}{2}} + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot (\frac{\mu_r}{\mu_g} \cdot \frac{1}{\frac{98}{4} \cdot g \cdot \mu_g} - \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g}) + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) - v_0 \cdot \frac{t}{\frac{7}{2}} + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot (\frac{\mu_r}{\mu_g} \cdot \frac{1}{\frac{7}{2} \cdot \frac{14}{2} \cdot g \cdot \mu_g} - \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g}) + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) - v_0 \cdot \frac{t}{\frac{7}{2}} + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} - 1) + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t) - v_0 \cdot \frac{t}{\frac{7}{2}} + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} - 1) + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t - \frac{t}{\frac{7}{2}}) + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} - 1) + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + t - \frac{\mu_g \cdot t}{\frac{7}{2} \cdot \mu_g}) + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} - 1) + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} - \frac{\mu_g \cdot t}{\frac{7}{2} \cdot \mu_g} + t) + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} - 1) + v_0 \cdot (\frac{\mu_r \cdot t - \mu_g \cdot t}{\frac{7}{2} \cdot \mu_g} + t) + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} - 1) + v_0 \cdot (t \cdot (\frac{\mu_r - \mu_g}{\frac{7}{2} \cdot \mu_g} + 1)) + g \cdot \mu_g \cdot t_g^2\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} - 1) + v_0 \cdot (t \cdot (\frac{\mu_r - \mu_g}{\frac{7}{2} \cdot \mu_g} + 1)) + g \cdot \mu_g \cdot \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2}\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} - 1) + v_0 \cdot (t \cdot (\frac{\mu_r - \mu_g}{\frac{7}{2} \cdot \mu_g} + 1)) + v_0^2 \cdot \frac{1}{\frac{49}{4} \cdot g \cdot \mu_g}\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} - 1) + v_0^2 \cdot \frac{1}{\frac{49}{4} \cdot g \cdot \mu_g} + v_0 \cdot (t \cdot (\frac{\mu_r - \mu_g}{\frac{7}{2} \cdot \mu_g} + 1))\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} - 1 + \frac{7}{2}) + v_0 \cdot (t \cdot (\frac{\mu_r - \mu_g}{\frac{7}{2} \cdot \mu_g} + 1))\\
+    s_r = & \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} + \frac{5}{2}) + v_0 \cdot (t \cdot (\frac{\mu_r - \mu_g}{\frac{7}{2} \cdot \mu_g} + 1))\\
+    s_r = & -v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} + \frac{5}{2}) + v_0 \cdot (t \cdot (\frac{\mu_r - \mu_g}{\frac{7}{2} \cdot \mu_g} + 1)) + \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2\\
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+    s_g = & \frac{1}{2} \cdot -g \cdot \mu_g \cdot t_g^2 + v_0 \cdot t_g\\
+    s_g = & \frac{1}{2} \cdot -g \cdot \mu_g \cdot \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2} + v_0 \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g}\\
+    s_g = & \frac{1}{2} \cdot -g \cdot \mu_g \cdot v_0^2 \cdot \frac{1}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2} + v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g}\\
+    s_g = & -\frac{1}{2} \cdot v_0^2 \cdot \frac{1}{\frac{49}{4} \cdot g \cdot \mu_g} + v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g}\\
+    s_g = & -\frac{1}{2} \cdot v_0^2 \cdot (\frac{1}{\frac{49}{4} \cdot g \cdot \mu_g} +  \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g})\\
+    s_g = & -\frac{1}{2} \cdot v_0^2 \cdot (\frac{7}{2} \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} + \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g})\\
+    s_g = & -\frac{1}{2} \cdot v_0^2 \cdot (\frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{7}{2} + 1))\\
+    s_g = & -\frac{1}{2} \cdot v_0^2 \cdot (\frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot \frac{9}{2})\\
+    s_g = & -\frac{1}{2} \cdot v_0^2 \cdot (\frac{\frac{9}{2}}{\frac{7}{2} \cdot g \cdot \mu_g})\\
+    s_g = & -\frac{1}{2} \cdot v_0^2 \cdot \frac{18}{14 \cdot g \cdot \mu_g}\\
+    s_g = & -v_0^2 \cdot \frac{9}{14 \cdot g \cdot \mu_g}\\
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+s = & s_r + s_g\\
+s = & -v_0^2 \cdot \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} + \frac{5}{2})
+    & + v_0 \cdot (t \cdot (\frac{\mu_r - \mu_g}{\frac{7}{2} \cdot \mu_g} + 1)) + \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{9}{14 \cdot g \cdot \mu_g}
+s = & -v_0^2 \cdot (\frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} + \frac{5}{2}) + \frac{9}{14 \cdot g \cdot \mu_g})
+    & + v_0 \cdot (t \cdot (\frac{\mu_r - \mu_g}{\frac{7}{2} \cdot \mu_g} + 1)) + \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2
+0 = & -v_0^2 \cdot (\frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} + \frac{5}{2}) + \frac{9}{14 \cdot g \cdot \mu_g})
+    & + v_0 \cdot (t \cdot (\frac{\mu_r - \mu_g}{\frac{7}{2} \cdot \mu_g} + 1)) + \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - s
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+
+s_r = & v_0^2 \cdot \frac{-\mu_r - 5 \cdot \mu_g}{\frac{49}{2} \cdot g \cdot \mu_g^2} + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + \frac{5 \cdot t}{7}) - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+s = & v_0^2 \cdot (\frac{-\mu_r - 5 \cdot \mu_g}{\frac{49}{2} \cdot g \cdot \mu_g^2} + \frac{12}{49 \cdot g \cdot \mu_g})\\
+    & + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + \frac{5 \cdot t}{7}) - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+0 = & v_0^2 \cdot (\frac{-\mu_r - 5 \cdot \mu_g}{\frac{49}{2} \cdot g \cdot \mu_g^2} + \frac{12}{49 \cdot g \cdot \mu_g})\\
+    & + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + \frac{5 \cdot t}{7}) - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - s\\
+a = & (\frac{-\mu_r - 5 \cdot \mu_g}{\frac{49}{2} \cdot g \cdot \mu_g^2} + \frac{12}{49 \cdot g \cdot \mu_g})\\
+b = & (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + \frac{5 \cdot t}{7})\\
+c = & -\frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - s
+\end{aligned}
+\end{equation}
+
+%    %+ -g \cdot \mu_g \cdot t_g \cdot t - v_0 + -g \cdot \mu_g \cdot t_g \cdot t_g\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - \frac{1}{2} \cdot -g \cdot \mu_r \cdot 2 \cdot t \cdot t_g + \frac{1}{2} \cdot -g \cdot \mu_r \cdot t_g^2 + v_0 + -g \cdot \mu_g \cdot t_g \cdot t - v_0 + -g \cdot \mu_g \cdot t_g \cdot t_g\\
+%    t_g = \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g}\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - \frac{1}{2} \cdot -g \cdot \mu_r \cdot 2 \cdot t \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} + \frac{1}{2} \cdot -g \cdot \mu_r \cdot (\frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g})^2 + v_0 + -g \cdot \mu_g \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot t - v_0 + -g \cdot \mu_g \cdot (\frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g})^2\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - \frac{1}{2} \cdot -g \cdot \mu_r \cdot 2 \cdot t \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} + \frac{1}{2} \cdot -g \cdot \mu_r \cdot \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2} + v_0 + -g \cdot \mu_g \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot t - v_0 + -g \cdot \mu_g \cdot \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2}\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - \frac{1}{2} \cdot -g \cdot \mu_r \cdot 2 \cdot t \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} + \frac{1}{2} \cdot -g \cdot \mu_r \cdot \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2} + -g \cdot \mu_g \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot t + -g \cdot \mu_g \cdot \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2}\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - \frac{1}{2} \cdot -g \cdot \mu_r \cdot 2 \cdot t \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} + \frac{1}{2} \cdot -g \cdot \mu_r \cdot \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2} + -g \cdot \mu_g \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot t + -1 \cdot \frac{v_0^2}{\frac{49}{4} \cdot g \cdot \mu_g}\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - \frac{1}{2} \cdot -g \cdot \mu_r \cdot 2 \cdot t \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} + \frac{1}{2} \cdot -g \cdot \mu_r \cdot \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2} + -1 \cdot \frac{v_0}{\frac{7}{2}} \cdot t + -1 \cdot \frac{v_0^2}{\frac{49}{4} \cdot g \cdot \mu_g}\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - \frac{1}{2} \cdot -g \cdot \mu_r \cdot 2 \cdot t \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} + \frac{1}{2} \cdot -1 \cdot \frac{v_0^2}{\frac{49}{4} \cdot g \cdot \mu_g} + -1 \cdot \frac{v_0}{\frac{7}{2}} \cdot t + -1 \cdot \frac{v_0^2}{\frac{49}{4} \cdot g \cdot \mu_g}\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - \frac{1}{2} \cdot -1 \cdot 2 \cdot t \cdot \frac{v_0}{\frac{7}{2}} + \frac{1}{2} \cdot -1 \cdot \frac{v_0^2}{\frac{49}{4} \cdot g \cdot \mu_g} + -1 \cdot \frac{v_0}{\frac{7}{2}} \cdot t + -1 \cdot \frac{v_0^2}{\frac{49}{4} \cdot g \cdot \mu_g}\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 + \frac{1}{2} \cdot 2 \cdot t \cdot \frac{v_0}{\frac{7}{2}} - \frac{1}{2} \cdot \frac{v_0^2}{\frac{49}{4} \cdot g \cdot \mu_g} - \frac{v_0}{\frac{7}{2}} \cdot t - \frac{v_0^2}{\frac{49}{4} \cdot g \cdot \mu_g}\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 + t \cdot \frac{v_0}{\frac{7}{2}} - \frac{v_0^2}{\frac{98}{4} \cdot g \cdot \mu_g} - \frac{v_0}{\frac{7}{2}} \cdot t - \frac{v_0^2}{\frac{49}{4} \cdot g \cdot \mu_g}\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 + \frac{v_0}{\frac{7}{2}} \cdot t - \frac{v_0}{\frac{7}{2}} \cdot t - \frac{v_0^2}{\frac{98}{4} \cdot g \cdot \mu_g} - \frac{v_0^2}{\frac{49}{4} \cdot g \cdot \mu_g}\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - \frac{v_0^2}{\frac{98}{4} \cdot g \cdot \mu_g} - \frac{v_0^2}{\frac{49}{4} \cdot g \cdot \mu_g}\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - \frac{v_0^2}{g \cdot \mu_g} \cdot (\frac{1}{\frac{98}{4}} - \frac{1}{\frac{49}{4}})\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - \frac{v_0^2}{g \cdot \mu_g} \cdot \frac{-2}{49}\\
+%    s_r = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 + \frac{v_0^2}{g \cdot \mu_g} \cdot \frac{2}{49}\\
+%    s_g = \frac{1}{2} \cdot -g \cdot \mu_g \cdot (\frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g})^2 + v_0 \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g}\\
+%    s_g = \frac{1}{2} \cdot -g \cdot \mu_g \cdot \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2} + v_0 \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g}\\
+%    s_g = -1 \cdot \frac{v_0^2}{2 \cdot \frac{49}{4} \cdot g \cdot \mu_g} + \frac{v_0^2}{\frac{7}{2} \cdot g \cdot \mu_g}\\
+%    s_g = \frac{-v_0^2}{\frac{98}{4} \cdot g \cdot \mu_g} + \frac{v_0^2}{\frac{7}{2} \cdot g \cdot \mu_g}\\
+%    s_g = \frac{v_0^2}{-\frac{98}{4} \cdot g \cdot \mu_g} + \frac{v_0^2}{\frac{7}{2} \cdot g \cdot \mu_g}\\
+%    s_g = \frac{v_0^2}{g \cdot \mu_g} \cdot (\frac{1}{-\frac{98}{4}} + \frac{1}{\frac{7}{2}})\\
+%    s_g = \frac{v_0^2}{g \cdot \mu_g} \cdot (-\frac{4}{98} + \frac{2}{7})\\
+%    s_g = \frac{v_0^2}{g \cdot \mu_g} \cdot \frac{12}{49}\\
+%    s = s_r + s_g\\
+%    s = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 + \frac{v_0^2}{g \cdot \mu_g} \cdot \frac{2}{49} + \frac{v_0^2}{g \cdot \mu_g} \cdot \frac{12}{49}\\
+%    s = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 + v_0^2 \cdot (\frac{1}{g \cdot \mu_g} \cdot \frac{2}{49} + \frac{1}{g \cdot \mu_g} \cdot \frac{12}{49})\\
+%    s = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 + v_0^2 \cdot (\frac{1}{g \cdot \mu_g} \cdot (\frac{2}{49} + \frac{12}{49}))\\
+%    s = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 + v_0^2 \cdot \frac{1}{g \cdot \mu_g} \cdot \frac{2}{7}\\
+%    s = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 + v_0^2 \cdot \frac{2}{7 \cdot g \cdot \mu_g}\\
+%    s = v_0^2 \cdot \frac{2}{7 \cdot g \cdot \mu_g} + \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2\\
+%    s = v_0^2 \cdot \frac{2}{7 \cdot g \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+%    s + \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 = v_0^2 \cdot \frac{2}{7 \cdot g \cdot \mu_g}\\
+%    v_0^2 = \frac{s + \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2}{\frac{2}{7 \cdot g \cdot \mu_g}}\\
+%    v_0^2 = \frac{(s + \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2) \cdot 7 \cdot g \cdot \mu_g}{2}\\
+%    v_0^2 = \frac{1}{2} \cdot (s + \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2) \cdot 7 \cdot g \cdot \mu_g\\
+%    v_0 = \sqrt(\frac{1}{2} \cdot (s + \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2) \cdot 7 \cdot g \cdot \mu_g)\\
+
+\begin{multline}
+    a = \frac{1}{\frac{7}{2} \cdot g \cdot \mu_g} \cdot (\frac{\mu_r}{\mu_g \cdot \frac{14}{2}} + \frac{5}{2}) + \frac{9}{14 \cdot g \cdot \mu_g}\\
+    b = t \cdot (\frac{\mu_r - \mu_g}{\frac{7}{2} \cdot \mu_g} + 1)\\
+    c = \frac{1}{2} \cdot -g \cdot \mu_r \cdot t^2 - s\\
+\end{multline}
