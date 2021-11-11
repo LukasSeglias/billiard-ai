@@ -1,0 +1,120 @@
+\section{Initialgeschwindgkeit auf Basis der Zeit und Distanz mit Bezug von Reibung}\label{anhang:herleitung:initialVelocityWithTime}
+Über eine Strecke $s$ wirkt eine Gleit- $F^g_R$ sowie eine Rollreibungskraft $F^r_R$ auf die Kugel.
+Die verschiedenen Reibungskräfte wirken nur auf sukzessiven Teilstrecken. So wirkt die Gleitreibungskraft nur auf
+der Teilstrecke $s_g$ und die Rollreibungskraft auf der Teilstrecke $s_r$\footnote{Eine Herleitung der Initialgeschwindigkeit
+auf Basis der bekannten Endgeschwindigkeit wie auch der Strecke wird im Kapitel \ref{anhang:herleitung:StartgeschwAnhandEndgeschwMitReibung} vorgestellt.}.
+
+Die nachfolgenden Gleichungen sind demnach gegeben:
+\begin{align}
+    s = \frac{1}{2} \cdot a \cdot t^2 + v_0 \cdot t\\
+    s = s_g + s_r
+\end{align}
+
+Aus Kapitel \ref{anhang:herleitung:gleitdistanz} ist die Teilstrecke, auf welcher die Kugel nur gleitet, zu entnehmen.
+Hierbei steht $\mu_g$ für den Gleitreibungskoeffizienten:
+\begin{align}
+    s_g = \frac{12}{49} \cdot \frac{v_0^2}{g \cdot \mu_g}
+\end{align}
+
+Die Zeit $t$ bezieht sich auf die Gesamtzeit, welche eine Kugel braucht, um die Strecke $s$ zu überqueren.
+Diese setzt sich wiederum aus der Zeit $t_g$ sowie $t_r$ zusammen, die die Kugel für das Zurücklegen der einzelnen
+Teilstrecken benötigt. Es wird bereits eine Umformung vollzogen, da diese in der nachfolgenden Herleitung erfordert ist.
+\begin{align}
+    t = t_g + t_r\\
+    t_r = t - t_g
+\end{align}
+
+Die Zeit $t_g$ ist aus Kapitel \ref{anhang:herleitung:event:rollen} bekannt. In der Herleitung wird auch die quadrierte
+Form verwendet, weswegen diese ebenso angegeben wird.
+\begin{align}
+    t_g = \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g}\\
+    t_g^2 = \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2}
+\end{align}
+
+Für die abschliessende Herleitung fehlt nur noch die Teilstrecke $s_r$:
+\begin{align}
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t_r^2 + v^r_0 \cdot t_r
+\end{align}
+
+Die Anfangsgeschwindigkeit $v^r_0$ entspricht der Endgeschwindigkeit der Kugel nach dem Gleiten:
+\begin{align}
+    v^r_0 = - g \cdot \mu_g \cdot t_g + v_0
+\end{align}
+
+Die Rollzeit der Gleichung der Teilstrecke $s_r$ kann über die Beziehung zur Gesamtzeit und der Gleitzeit ausgedrückt werden.
+\begin{align}
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot (t - t_g)^2 + v^r_0 \cdot (t - t_g)
+\end{align}
+
+Die Anfangsgeschwindigkeit $v^r_0$ beim Rollen kann über die Endgeschwindigkeit nach dem Gleiten ausgedrückt werden.
+\begin{align}
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot (t - t_g)^2 + (-g \cdot \mu_g \cdot t_g + v_0) \cdot (t - t_g)
+\end{align}
+
+Es werden die Variablen $t_g$ nacheinander ersetzt und umgeformt.
+\begin{align}
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot (t^2 - 2 \cdot t \cdot t_g + t_g^2) + (-g \cdot \mu_g \cdot t_g + v_0) \cdot (t - t_g)\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot (t^2 + t_g^2) + \frac{1}{2} \cdot g \cdot \mu_r \cdot 2 \cdot t \cdot t_g + (-g \cdot \mu_g \cdot t_g + v_0) \cdot (t - t_g)\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot (t^2 + t_g^2) + g \cdot \mu_r \cdot t \cdot t_g + (-g \cdot \mu_g \cdot t_g + v_0) \cdot (t - t_g)\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot (t^2 + t_g^2) + g \cdot \mu_r \cdot t \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} + (-g \cdot \mu_g \cdot t_g + v_0) \cdot (t - t_g)\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot (t^2 + t_g^2) + v_0 \cdot \frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + (-g \cdot \mu_g \cdot t_g + v_0) \cdot (t - t_g)\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - \frac{1}{2} \cdot g \cdot \mu_r \cdot t_g^2 + v_0 \cdot \frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + (-g \cdot \mu_g \cdot t_g + v_0) \cdot (t - t_g)\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - \frac{1}{2} \cdot g \cdot \mu_r \cdot \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2} + v_0 \cdot \frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + (-g \cdot \mu_g \cdot t_g + v_0) \cdot (t - t_g)\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + (-g \cdot \mu_g \cdot t_g + v_0) \cdot (t - t_g)\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + (-g \cdot \mu_g \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g} + v_0) \cdot (t - t_g)\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + (-v_0 \cdot \frac{1}{\frac{7}{2}} + v_0) \cdot (t - t_g)\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + v_0 \cdot (-\frac{1}{\frac{7}{2}} + 1) \cdot (t - t_g)\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + v_0 \cdot (-\frac{2}{7} + \frac{7}{7}) \cdot (t - t_g)\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + v_0 \cdot \frac{5}{7} \cdot (t - t_g)\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + v_0 \cdot \frac{5 \cdot t}{7} - v_0 \cdot \frac{5}{7} \cdot t_g\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot (\frac{\mu_r \cdot t}{\frac{7}{2} \cdot \mu_g} + \frac{5 \cdot t}{7}) - v_0 \cdot \frac{5}{7} \cdot t_g\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot (\frac{2 \cdot \mu_r \cdot t}{7 \cdot \mu_g} + \frac{5 \cdot t \cdot \mu_g}{7 \cdot \mu_g}) - v_0 \cdot \frac{5}{7} \cdot t_g\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{2 \cdot \mu_r \cdot t + 5 \cdot t \cdot \mu_g}{7 \cdot \mu_g} - v_0 \cdot \frac{5}{7} \cdot t_g\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - v_0 \cdot \frac{5}{7} \cdot t_g\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - v_0 \cdot \frac{5}{7} \cdot \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu_g}\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot \frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - v_0^2 \cdot \frac{5}{\frac{49}{2} \cdot g \cdot \mu_g}\\
+    s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - v_0^2 \cdot (\frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} - \frac{5}{\frac{49}{2} \cdot g \cdot \mu_g}) + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g}\\
+    s_r = - v_0^2 \cdot (\frac{\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} + \frac{5}{\frac{49}{2} \cdot g \cdot \mu_g}) + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+    s_r = v_0^2 \cdot (\frac{-\mu_r}{\frac{98}{4} \cdot g \cdot \mu_g^2} - \frac{5}{\frac{49}{2} \cdot g \cdot \mu_g}) + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+    s_r = v_0^2 \cdot (\frac{-\mu_r}{\frac{49}{2} \cdot g \cdot \mu_g^2} - \frac{5 \cdot \mu_g}{\frac{49}{2} \cdot g \cdot \mu_g^2}) + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+    s_r = v_0^2 \cdot \frac{-\mu_r - 5 \cdot \mu_g}{\frac{49}{2} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2
+\end{align}
+
+Es wird nun die Anfangsgeschwindigkeit $v_0$ berechnet, welche die Kugel braucht, um die Strecke $s$ in der Zeit $t$
+zurückzulegen.
+\begin{align}
+    s = s_g + s_r\\
+    s = \frac{12}{49} \cdot \frac{v_0^2}{g \cdot \mu_g} + v_0^2 \cdot \frac{-\mu_r - 5 \cdot \mu_g}{\frac{49}{2} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+    s = v_0^2 \cdot \frac{12}{49 \cdot g \cdot \mu_g} + v_0^2 \cdot \frac{-\mu_r - 5 \cdot \mu_g}{\frac{49}{2} \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+    s = v_0^2 \cdot (\frac{-\mu_r - 5 \cdot \mu_g}{\frac{49}{2} \cdot g \cdot \mu_g^2} + \frac{12}{49 \cdot g \cdot \mu_g}) + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+    s = v_0^2 \cdot (\frac{-2 \cdot \mu_r - 10 \cdot \mu_g}{49 \cdot g \cdot \mu_g^2} + \frac{12 \cdot \mu_g}{49 \cdot g \cdot \mu_g^2}) + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+    s = v_0^2 \cdot \frac{-2 \cdot \mu_r - 10 \cdot \mu_g + 12 \cdot \mu_g}{49 \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+    s = v_0^2 \cdot \frac{-2 \cdot \mu_r + 2 \cdot \mu_g}{49 \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+    s = v_0^2 \cdot \frac{2 \cdot (\mu_g - \mu_r)}{49 \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+    v_0^2 \cdot \frac{2 \cdot (\mu_g - \mu_r)}{49 \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - s = 0
+\end{align}
+
+Die Formel zur Berechnung der Initialgeschwindigkeit auf Basis der bekannten Strecke $s$, Zeit $t$, Gleitreibung $\mu_g$ und
+Rollreibung $\mu_r$ lautet:
+\begin{align}
+    v_0^2 \cdot \frac{2 \cdot (\mu_g - \mu_r)}{49 \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - s = 0
+\end{align}
+
+Die Koeffizienten zur Lösung der quadratischen Gleichung sind:
+\begin{align}
+    a = \frac{2 \cdot (\mu_g - \mu_r)}{49 \cdot g \cdot \mu_g^2}\\
+    b = \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g}\\
+    c = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - s
+\end{align}
+
+Wenn die Reibungskoeffizienten $\mu_g$ und $\mu_r$ äquivalent sind, reduziert sich der Ausdruck auf die gleichmässig beschleunigte
+Geschwindigkeit. Es werden $\mu_g$ und $\mu_r$ durch $\mu$ ersetzt.
+\begin{align}
+    v_0^2 \cdot \frac{2 \cdot (\mu_g - \mu_r)}{49 \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - s = 0\\
+    s = v_0^2 \cdot \frac{2 \cdot (\mu_g - \mu_r)}{49 \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2\\
+    s = v_0^2 \cdot \frac{2 \cdot (\mu - \mu)}{49 \cdot g \cdot \mu^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu + 5 \cdot \mu)}{7 \cdot \mu} - \frac{1}{2} \cdot g \cdot \mu \cdot t^2\\
+    s = v_0 \cdot \frac{t \cdot 7 \cdot \mu}{7 \cdot \mu} - \frac{1}{2} \cdot g \cdot \mu \cdot t^2\\
+    s = v_0 \cdot \frac{t}{1} - \frac{1}{2} \cdot g \cdot \mu \cdot t^2\\
+    s = v_0 \cdot t - \frac{1}{2} \cdot g \cdot \mu \cdot t^2\\
+    s = - \frac{1}{2} \cdot g \cdot \mu \cdot t^2 + v_0 \cdot t
+\end{align}
