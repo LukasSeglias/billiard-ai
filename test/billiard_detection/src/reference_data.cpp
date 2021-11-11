@@ -108,6 +108,7 @@ TEST(BallDetectionTests, record_reference_data) {
             selectedBallIndex = -1;
 
             pixelState = billiard::snooker::detect(billiard::detection::State(), frame);
+            billiard::snooker::classify(billiard::detection::State(), pixelState, frame);
             state = billiard::detection::pixelToModelCoordinates(*detectionConfig, pixelState);
 
             redraw = true;
@@ -164,6 +165,7 @@ TEST(BallDetectionTests, record_reference_data) {
                 cv::Point2d modelPoint = cv::Point2d(ball._position.x, ball._position.y);
                 cv::Point2d pixelPoint = cv::Point2d(pixelBall._position.x, pixelBall._position.y);
                 std::cout << "{ " << std::endl;
+                std::cout << R"("type": ")" << ball._type << "\"," << std::endl;
                 std::cout << R"("x": )" << modelPoint.x << ", " << R"("y": )" << modelPoint.y << "," << std::endl;
                 std::cout << R"("pixelX": )" << pixelPoint.x << ", " << R"("pixelY": )" << pixelPoint.y << "" << std::endl;
                 if (i < state._balls.size() - 1) {
@@ -178,8 +180,17 @@ TEST(BallDetectionTests, record_reference_data) {
 
         } else if (key == 'r') {
 
-            state._balls.erase(state._balls.begin() + selectedBallIndex);
+            pixelState._balls.erase(pixelState._balls.begin() + selectedBallIndex);
             selectedBallIndex = -1;
+            redraw = true;
+
+        } else if (key == 'n') {
+
+            billiard::detection::Ball ball;
+            ball._type = "UNKNOWN";
+            ball._position = glm::vec2 {frame.cols/2, frame.rows/2};
+            pixelState._balls.push_back(ball);
+            selectedBallIndex = pixelState._balls.size() - 1;
             redraw = true;
 
         } else if (key == 97 /* A */) {
