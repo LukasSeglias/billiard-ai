@@ -307,6 +307,12 @@ namespace billiard::search {
         }
     }
 
+    /*
+     * TEST
+     * WHITE0, WHITE, 0, 0
+     * RED2, RED, 62.31, -150
+     * RED1, RED, 0, -300
+     */
     bool collidesOnTheWay(const std::shared_ptr<SearchNodeSearch>& parent,
                           const std::shared_ptr<SearchState>& state,
                           const Ball& ball,
@@ -321,10 +327,18 @@ namespace billiard::search {
                 continue;
             }
 
-            float ballDiameterSquared = state->_config._ball._diameterSquared;
+            // a = ballDiameter
+            // b = spacing
+            // minDistance = a + b
+            // minSquaredDistance = (a + b)^2 = a^2 + 2ab + b^2
+            // 2ab = 2 * ballDiameter * spacing, b^2 = spacing^2
+            static float spacing = 10.0f;
+            static float minSquaredDistance = state->_config._ball._diameterSquared +
+                                            2 * state->_config._ball._diameter * spacing +
+                                            spacing * spacing;
             float squaredDistance = billiard::physics::pointToLineSegmentSquaredDistance(ball._position, targetPosition,
                                                                                          other.second._position);
-            if (squaredDistance <= ballDiameterSquared) {
+            if (squaredDistance <= minSquaredDistance) {
 
                 DEBUG("Ball " << ball._id
                 << " collides on the way to " << targetPosition
