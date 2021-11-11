@@ -37,4 +37,4 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
         BILLIARD_SNOOKER_IMPORT
         BILLIARD_CAPTURE_IMPORT
         GTEST_LINKED_AS_SHARED_LIBRARY=1)
-target_link_libraries(${PROJECT_NAME} PRIVATE billiard_detection billiard_search billiard_debug billiard_snooker billiard_capture gtest gtest_main gmock gmock_main)
+target_link_libraries(${PROJECT_NAME} PRIVATE billiard_detection billiard_search billiard_debug billiard_snooker billiard_capture nlohmann_json::nlohmann_json gtest gtest_main gmock gmock_main)
