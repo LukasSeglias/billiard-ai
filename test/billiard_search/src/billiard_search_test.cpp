@@ -13,7 +13,6 @@ namespace billiard::search::test {
     billiard::search::State state(nlohmann::json& json);
     billiard::search::Search search(nlohmann::json& json);
     billiard::search::Configuration config(nlohmann::json& json);
-    billiard::search::Configuration loadConfig(const std::string& configFilepath);
 }
 
 class BilliardSearchTest :public ::testing::TestWithParam<std::string> {
@@ -72,6 +71,7 @@ void showResults(const billiard::search::State& state, const billiard::search::S
 TEST(BilliardSearchTest, three_balls_in_a_row_with_cueball_and_pocket_manually_set) {
 
     float ballDiameter = 52.3;
+    glm::vec2 pocketNormal { 0.707107, 0.707107};
 
     billiard::search::State state { {
             billiard::search::Ball { glm::vec2 {-739.289, -241.31}, "WHITE", "WHITE-1" },
@@ -79,14 +79,14 @@ TEST(BilliardSearchTest, three_balls_in_a_row_with_cueball_and_pocket_manually_s
             billiard::search::Ball { glm::vec2 {-810.029, -336.596}, "RED", "RED-2" },
             billiard::search::Ball { glm::vec2 {-843.714, -384.238}, "RED", "RED-1" },
     } };
-    billiard::search::Search search { "RED-1", "" };
+    billiard::search::Search search { "RED-1", {} };
     uint16_t solutions = 10;
     billiard::search::Configuration config {};
     config._ball._radius = ballDiameter / 2.0f;
     config._ball._diameter = ballDiameter;
     config._ball._diameterSquared = ballDiameter * ballDiameter;
     config._table._pockets = {
-            billiard::search::Pocket { "BOTTOM-LEFT", billiard::search::PocketType::CORNER, glm::vec2 {-915.5, -456.5}, 52}
+            billiard::search::Pocket { "BOTTOM-LEFT", billiard::search::PocketType::CORNER, glm::vec2 {-915.5, -456.5}, pocketNormal, 52}
     };
     config._table.minimalPocketVelocity = 10.0f;
 
@@ -99,6 +99,7 @@ TEST(BilliardSearchTest, three_balls_in_a_row_with_cueball_and_pocket) {
     float space = 0.1;
     glm::vec2 whitePosition {0, 0};
     glm::vec2 pocketPosition { -700, -400};
+    glm::vec2 pocketNormal { 0.707107, 0.707107};
     glm::vec2 whiteToPocket = pocketPosition - whitePosition;
     glm::vec2 whiteToPocketDirection = glm::normalize(whiteToPocket);
     glm::vec2 red3 = whitePosition + (ballDiameter + space) * whiteToPocketDirection;
@@ -112,14 +113,14 @@ TEST(BilliardSearchTest, three_balls_in_a_row_with_cueball_and_pocket) {
         billiard::search::Ball { red1, "RED", "RED-1" },
     } };
 
-    billiard::search::Search search { "RED-1", "" };
+    billiard::search::Search search { "RED-1", {""} };
     uint16_t solutions = 10;
     billiard::search::Configuration config {};
     config._ball._radius = ballDiameter / 2.0f;
     config._ball._diameter = ballDiameter;
     config._ball._diameterSquared = ballDiameter * ballDiameter;
     config._table._pockets = {
-            billiard::search::Pocket { "BOTTOM-LEFT", billiard::search::PocketType::CORNER, pocketPosition, 52}
+            billiard::search::Pocket { "BOTTOM-LEFT", billiard::search::PocketType::CORNER, pocketPosition, pocketNormal, 52}
     };
     config._table.minimalPocketVelocity = 10.0f;
 
@@ -129,7 +130,7 @@ TEST(BilliardSearchTest, three_balls_in_a_row_with_cueball_and_pocket) {
 TEST(BilliardSearchTest, visualizationOfManualCase) {
 
     billiard::search::State state { {} };
-    billiard::search::Search search { "", "RED" };
+    billiard::search::Search search { "", {"RED"} };
     uint16_t solutions = 10;
     billiard::search::Configuration config {};
 
@@ -138,7 +139,7 @@ TEST(BilliardSearchTest, visualizationOfManualCase) {
 
 TEST(BilliardSearchTest, visualizationOfTestCase) {
 
-    billiard::search::Configuration config = billiard::search::test::loadConfig("./resources/configuration.json");
+    billiard::search::Configuration config = loadConfig("./resources/configuration.json");
 
 
     const auto& descriptionPath = "./resources/00_test_01.json";
@@ -273,7 +274,7 @@ TEST(BilliardSearchTest, visualizationWithDummyData) {
 
 TEST_P(BilliardSearchTest, doSearch) {
 
-    billiard::search::Configuration config = billiard::search::test::loadConfig("./resources/configuration.json");
+    billiard::search::Configuration config = loadConfig("./resources/configuration.json");
 
     const auto& descriptionPath = GetParam();
     std::ifstream descriptionFile{descriptionPath};
@@ -309,13 +310,6 @@ INSTANTIATE_TEST_CASE_P(
                 "./resources/00_test_01.json"
         ));
 
-billiard::search::Configuration billiard::search::test::loadConfig(const std::string& configFilepath) {
-    std::ifstream configFile{configFilepath};
-    nlohmann::json json;
-    configFile >> json;
-    return billiard::search::test::config(json);
-}
-
 void billiard::search::test::printDescription(nlohmann::json& json) {
     for(auto& line : json) {
         std::cout << line << std::endl;
@@ -334,40 +328,4 @@ billiard::search::State billiard::search::test::state(nlohmann::json& json) {
 
 billiard::search::Search billiard::search::test::search(nlohmann::json& json) {
     return Search {json["id"], json["type"]};
-}
-
-billiard::search::Configuration billiard::search::test::config(nlohmann::json& json) {
-
-    static const std::unordered_map<std::string, PocketType> pocketTypes = {
-            {"CORNER", PocketType::CORNER},
-            {"CENTER", PocketType::CENTER}
-    };
-
-    std::vector<Pocket> pockets;
-    for (auto& pocket : json["pockets"]) {
-        pockets.emplace_back(Pocket{pocket["id"],
-                                    pocketTypes.at(pocket["type"]),
-                                    glm::vec2{pocket["position"]["x"],
-                                              pocket["position"]["y"]},
-                                    pocket["radius"]});
-    }
-    float ballRadius = json["ball"]["radius"];
-    std::vector<Rail> rails;
-    for (auto& rail : json["banks"]) {
-        rails.emplace_back(Rail{rail["id"],
-                                glm::vec2{rail["start"]["x"], rail["start"]["y"]},
-                                glm::vec2{rail["end"]["x"], rail["end"]["y"]},
-                                ballRadius,
-                                rail["location"]});
-    }
-    auto conf = Configuration{};
-    conf._ball._radius = ballRadius;
-    conf._ball._diameterSquared = (conf._ball._radius * 2) * (conf._ball._radius * 2);
-    conf._table._pockets = pockets;
-    conf._table._rails = rails;
-    conf._rules._modifyState = billiard::snooker::stateAfterBreak;
-    conf._rules._nextSearch = billiard::snooker::nextSearchType;
-    conf._rules._isValidEndState = billiard::snooker::validEndState;
-
-    return conf;
 }
