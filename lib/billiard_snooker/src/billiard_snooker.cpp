@@ -34,7 +34,7 @@
 //#undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
 
 // TODO: remove this
-#define BILLIARD_SNOOKER_TIMING 1
+//#define BILLIARD_SNOOKER_TIMING 1
 
 #ifndef BILLIARD_SNOOKER_TIMING
     #ifdef NDEBUG
@@ -209,6 +209,7 @@ namespace billiard::snooker {
                 cv::Mat dst = result(resultRoi);
                 ballImageScaled.copyTo(dst);
 
+#ifdef BILLIARD_SNOOKER_DEBUG_PRINT
                 std::cout
                         << "    Ball tile: " << " "
                         << "colIndex=" << colIndex << " "
@@ -216,14 +217,14 @@ namespace billiard::snooker {
                         << "x=" << x << " "
                         << "y=" << y << " "
                         << std::endl;
-
+#endif
             } else {
                 std::cout << "unable to cut out ball image since roi is not inside image" << std::endl; // TODO: handle this?
             }
             tileIndex++;
         }
         return result;
-    };
+    }
 
     billiard::detection::State detect(const billiard::detection::State& previousState, const cv::Mat& original) {
 
@@ -289,10 +290,10 @@ namespace billiard::snooker {
 #endif
         }
 
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         cv::Mat saturationMaskedGrayscale;
         cv::bitwise_and(grayscaleInput, grayscaleInput, saturationMaskedGrayscale, saturatedBallMask);
 
-#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         cv::Mat saturationMaskedInput;
         cv::bitwise_and(input, input, saturationMaskedInput, saturatedBallMask);
 
@@ -388,14 +389,14 @@ namespace billiard::snooker {
 #endif
         }
 
-        cv::Mat whitePinkMaskedGrayscale;
-        cv::bitwise_and(grayscaleInput, grayscaleInput, whitePinkMaskedGrayscale, whitePinkMask);
-
-        cv::Mat closedWhitePinkMaskedGrayscale;
-        cv::morphologyEx(whitePinkMaskedGrayscale, closedWhitePinkMaskedGrayscale, cv::MORPH_CLOSE, config.morphElementRect3x3, cv::Point(-1, -1), 2);
-
 #ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         {
+            cv::Mat whitePinkMaskedGrayscale;
+            cv::bitwise_and(grayscaleInput, grayscaleInput, whitePinkMaskedGrayscale, whitePinkMask);
+
+            cv::Mat closedWhitePinkMaskedGrayscale;
+            cv::morphologyEx(whitePinkMaskedGrayscale, closedWhitePinkMaskedGrayscale, cv::MORPH_CLOSE, config.morphElementRect3x3, cv::Point(-1, -1), 2);
+
             cv::Mat whitePinkMaskedInput;
             cv::bitwise_and(input, input, whitePinkMaskedInput, whitePinkMask);
 
@@ -408,15 +409,26 @@ namespace billiard::snooker {
             cv::imshow("white&pink - masked grayscale", whitePinkMaskedGrayscale);
             cv::imshow("white&pink - masked and closed grayscale", closedWhitePinkMaskedGrayscale);
             cv::imshow("white&pink - masked delta", maskedDelta);
-        };
+        }
 #endif
 
         tock("Building white&pink mask");
         tick();
 
-        // Hough on saturation masked input
-        std::vector<cv::Vec3f> saturationCircles;
-        HoughCircles(saturationMaskedGrayscale, saturationCircles, config.houghMethod, 1,
+        cv::Mat saturationAndWhitePinkMask;
+        cv::bitwise_or(saturatedBallMask, whitePinkMask, saturationAndWhitePinkMask);
+
+        cv::Mat saturationAndWhitePinkMaskedGrayscale;
+        cv::bitwise_and(grayscaleInput, grayscaleInput, saturationAndWhitePinkMaskedGrayscale, saturationAndWhitePinkMask);
+
+#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
+        cv::imshow("saturationAndWhitePinkMask", saturationAndWhitePinkMask);
+        cv::imshow("saturationAndWhitePinkMaskedGrayscale", saturationAndWhitePinkMaskedGrayscale);
+#endif
+
+        // Hough on saturation and white&pink masked input
+        std::vector<cv::Vec3f> saturationAndWhitePinkCircles;
+        HoughCircles(saturationAndWhitePinkMaskedGrayscale, saturationAndWhitePinkCircles, config.houghMethod, 1,
                      config.houghMinDistance, // minimal distance between centers
                      config.houghCannyHigherThreshold, // higher threshold of the two passed to the Canny edge detector (lower threshold is twice smaller)
                      config.houghAccumulatorThreshold, // accumulator threshold for the circle centers (if the value is smaller, the more "circles" are detected)
@@ -425,9 +437,9 @@ namespace billiard::snooker {
 
 #ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         cv::Mat edges;
-        cv::Canny(saturationMaskedGrayscale, edges, config.houghCannyHigherThreshold / 2, config.houghCannyHigherThreshold);
+        cv::Canny(saturationAndWhitePinkMaskedGrayscale, edges, config.houghCannyHigherThreshold / 2, config.houghCannyHigherThreshold);
 
-        cv::imshow("saturationMask - maskedInput grayscale edges", edges);
+        cv::imshow("saturationAndWhitePinkMask - maskedInput grayscale edges", edges);
 #endif
 
         // Hough on black masked input
@@ -448,32 +460,15 @@ namespace billiard::snooker {
         };
 #endif
 
-        // Hough on white&pink masked input
-        std::vector<cv::Vec3f> whitePinkCircles;
-        HoughCircles(closedWhitePinkMaskedGrayscale, whitePinkCircles, config.houghMethod, 1,
-                     config.houghMinDistance, // minimal distance between centers
-                     config.houghCannyHigherThreshold, // higher threshold of the two passed to the Canny edge detector (lower threshold is twice smaller)
-                     config.houghAccumulatorThreshold, // accumulator threshold for the circle centers (if the value is smaller, the more "circles" are detected)
-                     config.minRadius, config.maxRadius
-        );
-
         tock("hough");
         tick();
-
-#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
-        {
-            cv::Mat edges;
-            cv::Canny(closedWhitePinkMaskedGrayscale, edges, config.houghCannyHigherThreshold / 2, config.houghCannyHigherThreshold);
-            cv::imshow("white&pink - maskedInput grayscale edges", edges);
-        };
-#endif
 
         std::vector<cv::Vec3f> allCircles;
 
         {
-            std::vector<cv::Vec3f> circles = saturationCircles;
+            std::vector<cv::Vec3f> circles = saturationAndWhitePinkCircles;
             std::vector<cv::Vec3f> filteredCircles1 = filterCircles(circles, config.railMask, true);
-            std::vector<cv::Vec3f> filteredCircles2 = filterCircles(filteredCircles1, saturatedBallMask, true);
+            std::vector<cv::Vec3f> filteredCircles2 = filterCircles(filteredCircles1, saturationAndWhitePinkMask, true);
             std::vector<cv::Vec3f> filteredCircles3 = filterCircles(filteredCircles2, blackMask, false);
             for (auto& circle : filteredCircles3) allCircles.push_back(circle);
 
@@ -489,11 +484,11 @@ namespace billiard::snooker {
                 drawHoughResult(houghOnMaskedInputAfterCircleFilter2, filteredCircles2);
                 drawHoughResult(houghOnMaskedInputAfterCircleFilter3, filteredCircles3);
 
-                cv::imshow("saturated - hough on masked input", houghOnMaskedInput);
-                cv::imshow("saturated - hough on masked input after circle filter 1", houghOnMaskedInputAfterCircleFilter1);
-                cv::imshow("saturated - hough on masked input after circle filter 2", houghOnMaskedInputAfterCircleFilter2);
-                cv::imshow("saturated - hough on masked input after circle filter 3", houghOnMaskedInputAfterCircleFilter3);
-            };
+                cv::imshow("saturated&whitepink - hough on masked input", houghOnMaskedInput);
+                cv::imshow("saturated&whitepink - hough on masked input after circle filter 1", houghOnMaskedInputAfterCircleFilter1);
+                cv::imshow("saturated&whitepink - hough on masked input after circle filter 2", houghOnMaskedInputAfterCircleFilter2);
+                cv::imshow("saturated&whitepink - hough on masked input after circle filter 3", houghOnMaskedInputAfterCircleFilter3);
+            }
 #endif
         }
 
@@ -518,42 +513,14 @@ namespace billiard::snooker {
 #endif
         }
 
-        {
-            std::vector<cv::Vec3f> circles = whitePinkCircles;
-            std::vector<cv::Vec3f> filteredCircles1 = filterCircles(circles, config.railMask, true);
-            std::vector<cv::Vec3f> filteredCircles2 = filterCircles(filteredCircles1, whitePinkMask, true);
-
-            // Filter circles by saturated ball mask in order to remove 'duplicate' balls
-            std::vector<cv::Vec3f> filteredCircles3 = filterCircles(filteredCircles2, saturatedBallMask, false);
-
-            for (auto& circle : filteredCircles3) allCircles.push_back(circle);
-
-#ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
-            cv::Mat houghOnMaskedInput = input.clone();
-            cv::Mat houghOnMaskedInputAfterCircleFilter1 = input.clone();
-            cv::Mat houghOnMaskedInputAfterCircleFilter2 = input.clone();
-            cv::Mat houghOnMaskedInputAfterCircleFilter3 = input.clone();
-
-            drawHoughResult(houghOnMaskedInput, whitePinkCircles);
-            drawHoughResult(houghOnMaskedInputAfterCircleFilter1, filteredCircles1);
-            drawHoughResult(houghOnMaskedInputAfterCircleFilter2, filteredCircles2);
-            drawHoughResult(houghOnMaskedInputAfterCircleFilter3, filteredCircles3);
-
-            cv::imshow("white&pink - hough on masked input", houghOnMaskedInput);
-            cv::imshow("white&pink - hough on masked input after circle filter 1", houghOnMaskedInputAfterCircleFilter1);
-            cv::imshow("white&pink - hough on masked input after circle filter 2", houghOnMaskedInputAfterCircleFilter2);
-            cv::imshow("white&pink - hough on masked input after circle filter 3", houghOnMaskedInputAfterCircleFilter3);
-#endif
-        }
+        tock("filtering circles");
+        tick();
 
 #ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
         cv::Mat hough = input.clone();
         drawHoughResult(hough, allCircles);
         cv::imshow("hough", hough);
 #endif
-
-        tock("filtering circles");
-        tick();
 
         std::vector<cv::Point2d> imagePoints = circleCenters(allCircles);
 
