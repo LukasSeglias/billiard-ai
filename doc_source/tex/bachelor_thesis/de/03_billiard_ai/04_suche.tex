@@ -119,6 +119,29 @@ $T$ eine Kollision mit der Bande stattfinden, wie es in diesem Szenario der Fall
 \end{figure}
 
 \newpage
+Sobald die weisse Kugel expandiert wird, muss sichergestellt werden, dass diese auch an der entsprechenden Position
+mit dem Queue getroffen werden kann. Dies wird, wie in Abbildung \ref{fig:kugelexpansion_platz_fuer_queue} veranschaulicht,
+durch einen Vektor $\vec{s}$ mit einer bestimmten Länge $s$ entgegen der Rollrichtung der Kugel sowie einem Mindestabstand
+$e$ zu diesem Vektor sichergestellt. Die Länge von $e$ wird auf $10 [mm]$ gewählt. Von jeder Kugel aus
+werden die Abstände gemessen, liegt die Kugel zwischen $W$ und $W + \vec{s}$, so wird der Abstand senkrecht zum Vektor $\vec{s}$
+berechnet, zu sehen bei der Kugel $K_1$. Liegt die Kugel wie $K_2$ vorne oder hinten, wird der Abstand zum Punkt $W$ oder $W + \vec{s}$
+berechnet. Für die so erhaltenen Distanzen $d_i$ muss gelten, wobei $r$ für den Kugelradius steht:
+\begin{align}
+    d_i >= e + r
+\end{align}
+
+Liegt die Kugel in Richtung der Rollrichtung, wurde die Bedingung bereits geprüft, ansonsten dürfte die weisse Kugel nicht
+expandiert worden sein. Daher muss dieser Fall nicht speziell behandelt werden.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/37_platz_fuer_queue.png}
+    \end{center}
+    \caption{Kugelexpansion - Platz für Queue}
+    \label{fig:kugelexpansion_platz_fuer_queue}
+\end{figure}
+
+\newpage
 \subsubsection{Bewertungsfunktion}
 Um die Suche zu vereinfachen und in eine spezfische Richtung zu lenken, wo die besten Resultate zu erwarten sind, ist
 es unerlässlich eine Bewertung des Stosses durchzuführen. Die Heuristik wurde so definiert, dass sie sich auf den

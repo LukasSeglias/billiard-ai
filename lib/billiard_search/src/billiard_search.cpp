@@ -406,12 +406,71 @@ namespace billiard::search {
         return result;
     }
 
+    /*
+     * TEST: State 1 - Alle Kugeln untereinander
+     * RED2, RED, 0, 114.6
+     * WHITE0, WHITE, 0, 0
+     * RED1, RED, 0, -52.31
+     *
+     * TEST: State 2 - Kugel neben Queue Bahn
+     * RED2, RED, 36.15, 52.3
+     * WHITE0, WHITE, 0, 0
+     * RED1, RED, 0, -52.31
+     *
+     * TEST: Kombi
+     * RED2, RED, 36.15, 52.3
+     * RED3, RED, -36.15, 52.3
+     * RED4, RED, 0, 114.6
+     * WHITE0, WHITE, 0, 0
+     * RED1, RED, 0, -52.31
+     *
+     */
+    bool enoughSpace(const std::shared_ptr<SearchNode>& input,
+                     const std::shared_ptr<SearchState>& state,
+                     const std::shared_ptr<SearchNodeSearch>& parent,
+                     const std::pair<std::string, Ball>& ball) {
+        std::string agent = "[enoughSpace] ";
+        auto lengthS = state->_config._ball._diameter + state->_config._ball._radius;
+        auto lengthE = 10; // [mm]
+        auto minDistance = lengthE + state->_config._ball._radius;
+        auto minDistanceSquared = minDistance * minDistance;
+
+        assert(parent->_events.size() >= 2);
+
+        auto lastEvent = parent->_events.at(parent->_events.size() - 1);
+        auto secondLastEvent = parent->_events.at(parent->_events.size() - 2);
+        auto s = -lengthS * glm::normalize(secondLastEvent._targetPosition - lastEvent._targetPosition);
+        auto targetPoint = parent->_state.at(ball.first)._position + s;
+
+        return std::all_of(parent->_state.begin(), parent->_state.end(),
+                           [&ball, &targetPoint, &minDistanceSquared, &agent](
+                                   const std::pair<std::string, Ball>& otherBall) -> bool {
+                               if (ball.first != otherBall.first) {
+                                   auto squaredDistance = billiard::physics::pointToLineSegmentSquaredDistance(
+                                           ball.second._position, targetPoint, otherBall.second._position);
+                                   if (squaredDistance < minDistanceSquared) {
+                                       DEBUG(agent << "squared distance " << squaredDistance << " "
+                                                   << "of ball " << otherBall.first << " "
+                                                   << "is closer than minimum squared distance " << minDistanceSquared
+                                                   << std::endl);
+                                       return false;
+                                   }
+                               }
+                               return true;
+                           });
+    }
+
     std::shared_ptr<SearchNode> expandBallIfPossible(const std::shared_ptr<SearchNode>& input,
                                                      const std::shared_ptr<SearchState>& state,
                                                      const std::shared_ptr<SearchNodeSearch>& searchInput,
                                                      const std::pair<std::string, Ball>& ball) {
 
         auto& parent = searchInput;
+
+        if (ball.second._type == "WHITE" && !enoughSpace(input, state, parent, ball)) {
+            return nullptr;
+        }
+
         if (parent->_action == SearchActionType::NONE) {
             // Must hit pocket
             return pocketCollision(input, state, parent, ball.second);
