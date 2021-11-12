@@ -11,6 +11,7 @@ target_sources(${PROJECT_NAME} PRIVATE
         video_analysis.cpp
         snooker_classification.cpp
         error_estimation.cpp
+        video_detection.cpp
         util.hpp
         util.cpp
         )
