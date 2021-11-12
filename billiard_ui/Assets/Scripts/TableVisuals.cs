@@ -11,6 +11,7 @@ public class TableVisuals : MonoBehaviour
 	public GameObject Table;
 	public bool show = false;
 	private Color lineColor = Color.white;
+// 	private Color lineColor = Color.black;
 
 	private List<GameObject> railSegments;
 	private List<GameObject> railSegmentNormals;
