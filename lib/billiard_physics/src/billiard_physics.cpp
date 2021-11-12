@@ -638,7 +638,7 @@ billiard::physics::intersection::LineIntersection billiard::physics::intersectio
     return solveQuadraticFormula(a, b, c);
 }
 
-std::vector<float> billiard::physics::nonNegative(const std::vector<float>&& values) {
+std::vector<float> billiard::physics::nonNegative(const std::vector<float>& values) {
     std::vector<float> filtered;
     for (auto value : values) {
         if (value >= 0.0f) {

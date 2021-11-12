@@ -214,7 +214,7 @@ namespace billiard::physics {
                                                                   const glm::vec2& acceleration,
                                                                   float radius);
 
-    EXPORT_BILLIARD_PHYSICS_LIB std::vector<float> nonNegative(const std::vector<float>&& values);
+    EXPORT_BILLIARD_PHYSICS_LIB std::vector<float> nonNegative(const std::vector<float>& values);
 
     /**
      * Berechnet einen Vektor der Länge 1, welcher in dieselbe Richtung wie vector zeigt.

@@ -1,4 +1,4 @@
-\section{Initialgeschwindgkeit auf Basis der Zeit und Distanz mit Bezug von Reibung}\label{anhang:herleitung:initialVelocityWithTime}
+\section{Herleitung Startgeschwindigkeit auf Basis der Zeit und Distanz unter Einbezug von Reibung}\label{anhang:herleitung:initialVelocityWithTime}
 Über eine Strecke $s$ wirkt eine Gleit- $F^g_R$ sowie eine Rollreibungskraft $F^r_R$ auf die Kugel.
 Die verschiedenen Reibungskräfte wirken nur auf sukzessiven Teilstrecken. So wirkt die Gleitreibungskraft nur auf
 der Teilstrecke $s_g$ und die Rollreibungskraft auf der Teilstrecke $s_r$\footnote{Eine Herleitung der Initialgeschwindigkeit
@@ -31,13 +31,17 @@ Form verwendet, weswegen diese ebenso angegeben wird.
     t_g^2 = \frac{v_0^2}{\frac{49}{4} \cdot g^2 \cdot \mu_g^2}
 \end{align}
 
-Für die abschliessende Herleitung fehlt nur noch die Teilstrecke $s_r$:
+Für die abschliessende Herleitung fehlt nur noch die Teilstrecke $s_r$.
+Da die Beschleunigung $a$ mit $g$ definiert ist, und $g$ als positive Zahl angenommen wird,
+kommt das negative Vorzeichen dazu, damit $a$ negativ wird.
 \begin{align}
+    s_r = \frac{1}{2} \cdot a_r \cdot t_r^2 + v^r_0 \cdot t_r\\
     s_r = - \frac{1}{2} \cdot g \cdot \mu_r \cdot t_r^2 + v^r_0 \cdot t_r
 \end{align}
 
 Die Anfangsgeschwindigkeit $v^r_0$ entspricht der Endgeschwindigkeit der Kugel nach dem Gleiten:
 \begin{align}
+    v^r_0 = a_g \cdot t_g + v_0\\
     v^r_0 = - g \cdot \mu_g \cdot t_g + v_0
 \end{align}
 
@@ -116,5 +120,6 @@ Geschwindigkeit. Es werden $\mu_g$ und $\mu_r$ durch $\mu$ ersetzt.
     s = v_0 \cdot \frac{t \cdot 7 \cdot \mu}{7 \cdot \mu} - \frac{1}{2} \cdot g \cdot \mu \cdot t^2\\
     s = v_0 \cdot \frac{t}{1} - \frac{1}{2} \cdot g \cdot \mu \cdot t^2\\
     s = v_0 \cdot t - \frac{1}{2} \cdot g \cdot \mu \cdot t^2\\
-    s = - \frac{1}{2} \cdot g \cdot \mu \cdot t^2 + v_0 \cdot t
+    s = - \frac{1}{2} \cdot g \cdot \mu \cdot t^2 + v_0 \cdot t\\
+    s = \frac{1}{2} \cdot a \cdot t^2 + v_0 \cdot t
 \end{align}

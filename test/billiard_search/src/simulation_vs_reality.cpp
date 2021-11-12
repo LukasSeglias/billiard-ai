@@ -41,19 +41,14 @@ float checkDirection(const glm::vec2& actual, const glm::vec2& expected) {
 glm::vec2 calculateInitialVelocity(const glm::vec2& traveledDistance, int frameDuration) {
     float duration = ((float) frameDuration) / 30.0f; // assuming 30 fps
 
-    const float gravitationalAcceleration = billiard::physics::gravitationalAcceleration; // mm/s^2
-    const float frictionCoefficient = billiard::physics::frictionCoefficient;
-    const float slideFrictionCoefficient = billiard::physics::slideFrictionCoefficient;
+    const float g = billiard::physics::gravitationalAcceleration; // mm/s^2
+    const float mu_r = billiard::physics::frictionCoefficient;
+    const float mu_g = billiard::physics::slideFrictionCoefficient;
     float s = glm::length(traveledDistance);
-    float v0_old = s/duration - (-0.5f * frictionCoefficient * gravitationalAcceleration) * duration;
 
-    float a = (-frictionCoefficient - 5.0f * slideFrictionCoefficient)/(49.0f/2.0f * gravitationalAcceleration * slideFrictionCoefficient*slideFrictionCoefficient) + 12.0f/(49.0f * gravitationalAcceleration * slideFrictionCoefficient);
-    float b = (frictionCoefficient * duration)/(7.0f/2.0f * slideFrictionCoefficient) + (5.0f * duration)/7.0f;
-    float c = -0.5f * gravitationalAcceleration * frictionCoefficient * duration * duration - s;
-
-//    float a = 1.0f / (7.0f/2.0f * gravitationalAcceleration * slideFrictionCoefficient) * (frictionCoefficient / (slideFrictionCoefficient * 14.0f/2.0f) + 5.0f/2.0f) + 9.0f/(14.0f * gravitationalAcceleration * slideFrictionCoefficient);
-//    float b = duration * ((frictionCoefficient - slideFrictionCoefficient)/(7.0f/2.0f * slideFrictionCoefficient) + 1.0f);
-//    float c = 0.5f * -gravitationalAcceleration * frictionCoefficient * duration * duration - s;
+    float a = (-mu_r - 5.0f * mu_g)/(49.0f/2.0f * g * mu_g * mu_g) + 12.0f/(49.0f * g * mu_g);
+    float b = (mu_r * duration)/(7.0f/2.0f * mu_g) + (5.0f * duration)/7.0f;
+    float c = -0.5f * g * mu_r * duration * duration - s;
 
     auto result = billiard::physics::nonNegative(billiard::physics::intersection::solveQuadraticFormula(a, b, c));
     if (result.empty()) {
@@ -61,7 +56,6 @@ glm::vec2 calculateInitialVelocity(const glm::vec2& traveledDistance, int frameD
     }
     float v0 = result[0];
 
-//    float v0 = std::sqrt(0.5f * (s + 0.5f * gravitationalAcceleration * frictionCoefficient * duration * duration) * 7 * gravitationalAcceleration * slideFrictionCoefficient);
     glm::vec2 velocity = v0 * glm::normalize(traveledDistance);
 
     return velocity;

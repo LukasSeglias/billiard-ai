@@ -25,27 +25,27 @@ Dadurch entsteht eine Arbeit $E_{Reibung}$\cite{wiki.arbeit_physik:1}:
 \end{align}
 Da die beiden Reibungen nur auf bestimmten Teilstrecken relevant sind, werden diese entsprechend aufgeteilt.
 \begin{align}
-    \Delta s = \Delta_r s + \Delta_g s\\
-    E^r_{Reibung} = F^r_R \cdot \Delta_r s\\
-    E^g_{Reibung} = F^g_R \cdot \Delta_g s\\
+    \Delta s = \Delta s_r + \Delta s_g\\
+    E^r_{Reibung} = F^r_R \cdot \Delta s_r\\
+    E^g_{Reibung} = F^g_R \cdot \Delta s_g\\
 \end{align}
-Ein relevanter Zusatz vor der Herleitung ist die Tatsache, dass die Strecke $\Delta_g s$ des Gleitens von der initialen
+Ein relevanter Zusatz vor der Herleitung ist die Tatsache, dass die Strecke $\Delta s_g$ des Gleitens von der initialen
 Startgeschwindigkeit abhängig ist, welche in diesem Schritt berechnet werden soll. Diese Abhängigkeit wird in Kapitel \ref{anhang:herleitung:gleitdistanz} beschrieben
 und hergeleitet. Die wichtigsten Erkenntnisse lauten:
 \begin{align}
-    \Delta_g s = \frac{12}{49} \cdot \frac{v_0^2}{g \cdot \mu_g}\\
-    \Delta_r s = \Delta s - \Delta_g s
+    \Delta s_g = \frac{12}{49} \cdot \frac{v_0^2}{g \cdot \mu_g}\\
+    \Delta s_r = \Delta s - \Delta s_g
 \end{align}
 Nun kann der Energieerhaltungssatz angewendet werden.
 \begin{align}
     E_{vorher} = E_{nachher} + E_{Reibung}\\
     E_{vorher} = E_{nachher} + E^r_{Reibung} + E^g_{Reibung}\\
-    \frac{1}{2} \cdot m \cdot \norm{\vec{v_1}}^2 = \frac{1}{2} \cdot m \cdot \norm{\vec{v_2}}^2 + F^r_R \cdot \Delta_r s + F^g_R \cdot \Delta_g s\\
-    m \cdot \norm{\vec{v_1}}^2 = m \cdot \norm{\vec{v_2}}^2 + 2 \cdot F^r_R \cdot \Delta_r s + 2 \cdot F^g_R \cdot \Delta_g s\\
-    \norm{\vec{v_1}}^2 = \frac{m \cdot \norm{\vec{v_2}}^2 + 2 \cdot F^r_R \cdot \Delta_r s + 2 \cdot F^g_R \cdot \Delta_g s}{m}\\
-    \norm{\vec{v_1}}^2 = \frac{m \cdot \norm{\vec{v_2}}^2 + 2 \cdot m \cdot g \cdot \mu_r \cdot \Delta_r s + 2 \cdot m \cdot g \cdot \mu_g \cdot \Delta_g s}{m}\\
-    \norm{\vec{v_1}}^2 = \norm{\vec{v_2}}^2 + 2 \cdot g \cdot \mu_r \cdot \Delta_r s + 2 \cdot g \cdot \mu_g \cdot \Delta_g s\\
-    \norm{\vec{v_1}}^2 = \norm{\vec{v_2}}^2 + 2 \cdot g \cdot \mu_r \cdot (\Delta s - \Delta_g s) + 2 \cdot g \cdot \mu_g \cdot \Delta_g s\\
+    \frac{1}{2} \cdot m \cdot \norm{\vec{v_1}}^2 = \frac{1}{2} \cdot m \cdot \norm{\vec{v_2}}^2 + F^r_R \cdot \Delta s_r + F^g_R \cdot \Delta s_g\\
+    m \cdot \norm{\vec{v_1}}^2 = m \cdot \norm{\vec{v_2}}^2 + 2 \cdot F^r_R \cdot \Delta s_r + 2 \cdot F^g_R \cdot \Delta s_g\\
+    \norm{\vec{v_1}}^2 = \frac{m \cdot \norm{\vec{v_2}}^2 + 2 \cdot F^r_R \cdot \Delta s_r + 2 \cdot F^g_R \cdot \Delta s_g}{m}\\
+    \norm{\vec{v_1}}^2 = \frac{m \cdot \norm{\vec{v_2}}^2 + 2 \cdot m \cdot g \cdot \mu_r \cdot \Delta s_r + 2 \cdot m \cdot g \cdot \mu_g \cdot \Delta s_g}{m}\\
+    \norm{\vec{v_1}}^2 = \norm{\vec{v_2}}^2 + 2 \cdot g \cdot \mu_r \cdot \Delta s_r + 2 \cdot g \cdot \mu_g \cdot \Delta s_g\\
+    \norm{\vec{v_1}}^2 = \norm{\vec{v_2}}^2 + 2 \cdot g \cdot \mu_r \cdot (\Delta s - \Delta s_g) + 2 \cdot g \cdot \mu_g \cdot \Delta s_g\\
     \norm{\vec{v_1}}^2 = \norm{\vec{v_2}}^2 + 2 \cdot g \cdot \mu_r \cdot (\Delta s - (\frac{12}{49} \cdot \frac{\norm{\vec{v_1}}^2}{g \cdot \mu_g})) + 2 \cdot g \cdot \mu_g \cdot (\frac{12}{49} \cdot \frac{\norm{\vec{v_1}}^2}{g \cdot \mu_g})\\
     \norm{\vec{v_1}}^2 = \norm{\vec{v_2}}^2 + 2 \cdot g \cdot \mu_r \cdot \Delta s - \frac{24 \cdot g \cdot \mu_r \cdot \norm{\vec{v_1}}^2}{49 \cdot g \cdot \mu_g} + \frac{24 \cdot g \cdot \mu_g \cdot \norm{\vec{v_1}}^2}{49 \cdot g \cdot \mu_g}\\
     \norm{\vec{v_1}}^2 = \norm{\vec{v_2}}^2 + 2 \cdot g \cdot \mu_r \cdot \Delta s - \frac{24 \cdot \mu_r \cdot \norm{\vec{v_1}}^2}{49 \cdot \mu_g} + \frac{24 \cdot \norm{\vec{v_1}}^2}{49}\\

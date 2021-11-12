@@ -4,7 +4,8 @@ durchgeführter Stösse verfolgt. Dabei ist die Geschwindigkeit, welche die Kuge
 unbekannt. Diese wird in einem ersten Schritt eruiert. Bekannt dabei ist die Zeit sowie die Distanz, welche über die
 Selektion einzelner Frames berechnet werden. Die Zeit ergibt sich durch den Abstand zweier Frames. Bei einem Video mit
 30 FPS liegt der Fehler bei $\frac{1}{30} t [s] = 0.03 [s]$. Die Distanz wird über zwei selektierte Pixelpositionen
-auf denselben Frames zur Berechnung der Zeit bestimmt. Diese Positionen werden zu Modellkoordinaten $P_0, P_1$ übersetzt, um die
+auf denselben Frames zur Berechnung der Zeit bestimmt. Diese Positionen werden zu Modellkoordinaten $P_0, P_1$
+übersetzt\ref{project2:pixel_to_model_coordinates}, um die
 Distanz in der Einheit $[mm]$ anzugeben. Anschliessend kann über die Formel \ref{eq:simvsReal:initialVelocity} die Anfangsgeschwindigkeit berechnet
 werden, wobei auch die Gleitreibung $\mu_g$ sowie die Rollreibung $\mu_r$ bekannt sein müssen\footnote{Die Herleitung
 erfolgt in Kapitel \ref{anhang:herleitung:initialVelocityWithTime}.}.
@@ -13,7 +14,7 @@ erfolgt in Kapitel \ref{anhang:herleitung:initialVelocityWithTime}.}.
 \end{align}
 
 Es wird eine quadratische Formel gelöst, welche zwei Resultate $v^1_0, v^2_0$ liefert. Von diesen wird nur die
-kleinste positive Lösung $v_0 = \min{(\max{(0, v^1_0)}, \max{(0, v^2_0)})}$ in Betracht gezogen.
+kleinste positive Lösung $v_0$ in Betracht gezogen.
 
 Sobald $v_0$ bestimmt ist, kann der Geschwindigkeitsvektor $\vec{v_0}$ berechnet werden. Dies geschieht über den Einheitsvektor,
 welcher über die beiden Punkte zur Bestimmung der Distanz gegeben ist:
@@ -23,6 +24,9 @@ welcher über die beiden Punkte zur Bestimmung der Distanz gegeben ist:
     \vec{v_0} = v_0 \cdot \hat{d}
 \end{align}
 
-In einem weiteren Schritt kann die Simulation mit der errechneten Realität durchgeführt werden. Es resultiert ein Simulationsmodell.
-Dieses wird mit einem manuell erstellten Simulationsmodell abgeglichen, bei welchem alle Positionen der Kugeln und Ereigniszeitpunkte
-anhand der Aufnahmen bestimmt wurden. Die Summe der Differenzen zwischen den erwarteten Zeiten und Positionen bilden den Gesamtfehler.
+Im nächsten Schritt kann die Simulation mit der errechneten Startgeschwindigkeit des Spielballs ausgeführt werden.
+Daraus resultiert eine Abfolge von Ereignissen, die in der Simulation gefunden wurden.
+Diese werden mit manuell erstellten Ereignissabfolgen abgeglichen, bei welchem alle Positionen der Kugeln und Ereigniszeitpunkte
+anhand der Videoaufnahmen bestimmt wurden. Die Summe der Differenzen zwischen den erwarteten Zeiten und Positionen bilden den Gesamtfehler.
+
+% TODO: vergleich ausschnitte vom video und simulation zu bestimmten Ereigniszeitpunkten für Diskussion über Weg der weissen Kugel
