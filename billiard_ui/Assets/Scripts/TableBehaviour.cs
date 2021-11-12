@@ -113,6 +113,8 @@ public class TableBehaviour : MonoBehaviour
 			visuals.toggleTableAndRailsAndTargets();
 		} else if (Input.GetKeyDown(KeyCode.D)) {
 			this.isDebug = !isDebug;
+        } else if (Input.GetKeyDown(KeyCode.P)) {
+			this.dottedPaths.showDots = !this.dottedPaths.showDots;
 		} else if (Input.GetKeyDown(KeyCode.L)) {
 			isLive = !isLive;
 			AnimationService.captureState(isLive);
@@ -275,7 +277,7 @@ public class TableBehaviour : MonoBehaviour
 				}
 			}
 		}
-		
+
 		private void updateLocationText(string id, string type, GameObject ball) {
 			var textObject = ball.transform.Find("Text").gameObject;
 			var pos = new Vec2{x = ball.transform.position.x, y = ball.transform.position.y};
@@ -610,7 +612,7 @@ public class TableBehaviour : MonoBehaviour
 
     	private float ttl = 2.0f;    // in seconds
     	private float radius = 5.0f / 1000.0f; // in meters
-    	private bool showDots = true;
+    	public bool showDots = true;
     	private Material material;
     	private GameObject parentGameObject;
 
