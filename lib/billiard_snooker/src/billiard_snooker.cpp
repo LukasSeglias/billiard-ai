@@ -32,6 +32,7 @@
 // TODO: remove this
 //#undef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
 //#undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
+//#define BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT 1
 
 // TODO: remove this
 //#define BILLIARD_SNOOKER_TIMING 1
@@ -171,15 +172,15 @@ namespace billiard::snooker {
         int imageWidth = tileSize * tilesPerLine + padding * (tilesPerLine + 1);
         int imageHeight = numberOfTileLines * tileSize + padding * (numberOfTileLines + 1);
 
-        std::cout
-                << "Ball tiles: " << " "
-                << "totalTiles=" << totalTiles << " "
-                << "tileSize=" << tileSize << " "
-                << "tilesPerLine=" << tilesPerLine << " "
-                << "numberOfTileLines=" << numberOfTileLines << " "
-                << "imageWidth=" << imageWidth << " "
-                << "imageHeight=" << imageHeight << " "
-                << std::endl;
+//        std::cout
+//                << "Ball tiles: " << " "
+//                << "totalTiles=" << totalTiles << " "
+//                << "tileSize=" << tileSize << " "
+//                << "tilesPerLine=" << tilesPerLine << " "
+//                << "numberOfTileLines=" << numberOfTileLines << " "
+//                << "imageWidth=" << imageWidth << " "
+//                << "imageHeight=" << imageHeight << " "
+//                << std::endl;
 
         float ballRadiusInPixels = 30;
 

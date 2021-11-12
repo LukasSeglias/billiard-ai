@@ -67,7 +67,7 @@ namespace billiard::snooker {
         cv::Point2d whiteSaturation {0, 80};
         cv::Point2d whiteValue {245, 255};
 
-        cv::Point2d blackValue {0, 70};
+        cv::Point2d blackValue {0, 100};
         cv::Point2d blueHue {95, 110};
         cv::Point2d greenHue {80, 94};
 
@@ -75,7 +75,7 @@ namespace billiard::snooker {
         cv::Point2d redHue2 {170, 180};
 
         cv::Point2d brownValue {150, 255};
-        cv::Point2d brownSaturation {175, 240};
+        cv::Point2d brownSaturation {180, 240};
 
         cv::Point2d pinkSaturation {0, 180};
         cv::Point2d pinkValue {245, 255};
