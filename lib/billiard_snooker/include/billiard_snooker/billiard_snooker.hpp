@@ -6,8 +6,13 @@
 #include "type.hpp"
 #include <billiard_detection/billiard_detection.hpp>
 #include <billiard_search/type.hpp>
+#include <glm/glm.hpp>
+#include <unordered_map>
+#include <string>
 
 namespace billiard::snooker {
+
+    #define SPOT_REPLACE_RADIUS_MULTIPLIER 5
 
     struct EXPORT_BILLIARD_SNOOKER_LIB SnookerDetectionConfig {
         bool valid = false;
@@ -81,7 +86,21 @@ namespace billiard::snooker {
         cv::Point2d pinkValue {245, 255};
     };
 
+    struct EXPORT_BILLIARD_SNOOKER_LIB Spot {
+        glm::vec2 _position;
+    };
+
+    struct EXPORT_BILLIARD_SNOOKER_LIB SnookerSearchConfig {
+        std::unordered_map<std::string, Spot> spots;
+        glm::vec2 headRailDirection;
+        float diameterSquared;
+        float radius;
+        glm::vec2 _minimum;
+        glm::vec2 _maximum;
+    };
+
     EXPORT_BILLIARD_SNOOKER_LIB bool configure(const billiard::detection::DetectionConfig& detectionConfig);
+    EXPORT_BILLIARD_SNOOKER_LIB void searchConfig(const SnookerSearchConfig& searchConfig);
 
     EXPORT_BILLIARD_SNOOKER_LIB billiard::detection::State detect(const billiard::detection::State& previousState, const cv::Mat& image);
     EXPORT_BILLIARD_SNOOKER_LIB void classify(const billiard::detection::State& previousState,
@@ -91,11 +110,11 @@ namespace billiard::snooker {
 
     EXPORT_BILLIARD_SNOOKER_LIB double scoreForPottedBall(const std::string& ballType);
 
-    EXPORT_BILLIARD_SNOOKER_LIB billiard::search::Search nextSearch(const billiard::search::Search& previousSearch,
+    EXPORT_BILLIARD_SNOOKER_LIB billiard::search::Search nextSearch(const billiard::search::State& state,
                                                                     const std::vector<std::string>& previousTypes); // TODO: Naming
 
-    EXPORT_BILLIARD_SNOOKER_LIB billiard::search::node::Layer
-    stateAfterBreak(const billiard::search::node::Layer& layer); // TODO: Naming
+    EXPORT_BILLIARD_SNOOKER_LIB billiard::search::State stateAfterBreak(const billiard::search::State& state,
+                                                                        const std::unordered_map<std::string, std::string>& ids); // TODO: Naming
 
     EXPORT_BILLIARD_SNOOKER_LIB bool
     validEndState(const std::vector<std::string>& expectedTypes, const billiard::search::node::Layer& layer); // TODO: Naming

@@ -1,6 +1,10 @@
 #include <billiard_snooker/billiard_snooker.hpp>
 #include <billiard_debug/billiard_debug.hpp>
+#include <billiard_physics/billiard_physics.hpp>
 #include <algorithm>
+#include <optional>
+#include <vector>
+#include <ostream>
 
 #ifndef BILLIARD_SNOOKER_DEBUG_PRINT
     #ifdef NDEBUG
@@ -78,6 +82,7 @@
 namespace billiard::snooker {
 
     SnookerDetectionConfig config;
+    SnookerSearchConfig _searchConfig;
     SnookerClassificationConfig classificationConfig {};
 
     bool configure(const billiard::detection::DetectionConfig& detectionConfig) {
@@ -105,6 +110,10 @@ namespace billiard::snooker {
         classificationConfig.roiRadius = detectionConfig.ballRadiusInPixel * classificationConfig.roiRadiusFactor;
         classificationConfig.valid = true;
         return true;
+    }
+
+    void searchConfig(const SnookerSearchConfig& searchConfig) {
+        _searchConfig = searchConfig;
     }
 
     void hsvFromBgr(cv::Mat& bgr, cv::Mat& hue, cv::Mat& saturation, cv::Mat& value) {
@@ -746,6 +755,24 @@ namespace billiard::snooker {
                                                                 {"BLACK", 7}
                                                         });
 
+    std::unordered_map<std::string, std::string> nextSearchType({
+                                                                {"RED", "YELLOW"},
+                                                                {"YELLOW", "GREEN"},
+                                                                {"GREEN", "BROWN"},
+                                                                {"BROWN", "BLUE"},
+                                                                {"BLUE", "PINK"},
+                                                                {"PINK", "BLACK"},
+                                                                {"BLACK", ""}
+                                                        });
+    std::vector<std::string> typesToReplace({
+        "YELLOW",
+        "GREEN",
+        "BROWN",
+        "BLUE",
+        "PINK",
+        "BLACK"
+    });
+
     int pointsForPottedBall(const std::string& ballType) {
         if (pointsPerColor.count(ballType)) {
             return pointsPerColor.at(ballType);
@@ -758,13 +785,336 @@ namespace billiard::snooker {
         return ((double) pointsForPottedBall(ballType)) / MAX_POINTS;
     }
 
-    billiard::search::Search nextSearch(const billiard::search::Search& previousSearch,
+    billiard::search::Search nextSearch(const billiard::search::State& state,
                                         const std::vector<std::string>& previousTypes) {
-        return previousSearch; // TODO: Switch between search types -> From RED to color and vice versa
+        static std::string agent = "[nextSearch] ";
+
+        uint8_t reds = 0;
+        for (auto& ball : state._balls) {
+            reds += ball._type == "RED" ? 1 : 0;
+        }
+
+        if (std::count(previousTypes.begin(), previousTypes.end(), "RED")) { // 1. Red was searched
+            if (reds > 0) { // 1.1 It has more reds in layer -> search by all colors
+                DEBUG(agent << "prev was red, search by all colors" << std::endl);
+                return billiard::search::Search{"", std::vector<std::string>{"BLACK", "PINK", "BLUE", "BROWN", "GREEN", "YELLOW"}};
+            } else { // 1.2 It has no more reds in layer -> search yellow
+                DEBUG(agent << "prev was red, search by yellow" << std::endl);
+                return billiard::search::Search{"", std::vector<std::string>{nextSearchType[previousTypes.at(0)]}};
+            }
+        } else { // 2. Color was searched
+            if (reds > 0) {// 1.1 It has red/s in layer -> search by red
+                DEBUG(agent << "prev was color, search by red" << std::endl);
+                return billiard::search::Search{"", std::vector<std::string>{"RED"}};
+            } else { // 1.2 It has no red in layer -> search by next higher color
+                DEBUG(agent << "prev was color, search next color: " << nextSearchType[previousTypes.at(0)] << std::endl);
+                return billiard::search::Search{"", std::vector<std::string>{nextSearchType[previousTypes.at(0)]}};
+            }
+        }
     }
 
-    billiard::search::node::Layer stateAfterBreak(const billiard::search::node::Layer& layer) {
-        return layer; // TODO: Replace colorized balls at their positions. (Pass config and append configuration)
+    billiard::search::Ball createBall(const glm::vec2& position, const std::string& type, const std::string& id) {
+
+        return billiard::search::Ball {
+            position,
+            type,
+            id
+        };
+    }
+
+    enum ReplacePositionAction {
+        EXPAND_1,
+        EXPAND_2,
+        EXPAND_3,
+        EXPAND_4,
+        NONE
+    };
+
+    std::unordered_map<ReplacePositionAction, ReplacePositionAction> revertActions {
+            {ReplacePositionAction::EXPAND_1, ReplacePositionAction::EXPAND_4},
+            {ReplacePositionAction::EXPAND_4, ReplacePositionAction::EXPAND_1},
+            {ReplacePositionAction::EXPAND_2, ReplacePositionAction::EXPAND_3},
+            {ReplacePositionAction::EXPAND_3, ReplacePositionAction::EXPAND_2}
+    };
+
+    struct ReplacePosition {
+        glm::vec2 _position;
+        ReplacePositionAction _action;
+
+        bool operator==(const ReplacePosition& other) const {
+            return _position == other._position;
+        }
+    };
+
+#ifdef BILLIARD_DEBUG
+    std::ostream& operator<<(std::ostream& os, const ReplacePosition& pos){
+        os << "ReplacePosition { "
+           << "position=(" << pos._position.x << ";" << pos._position.y << " "
+           << "action=" << pos._action <<
+           " }";
+        return os;
+    }
+#endif
+
+    std::vector<ReplacePosition>
+    expandBySpace(const glm::vec2& spot, float searchRadiusSquared, const std::vector<ReplacePosition>& fringe,
+                  const glm::vec2& space, const glm::vec2& minimum, const glm::vec2& maximum, const float radius,
+                  const ReplacePositionAction& action) {
+        static std::string agent = "[expandBySpace] ";
+        std::vector<ReplacePosition> newPositions;
+
+        const auto minX = minimum.x + radius;
+        const auto minY = minimum.y + radius;
+        const auto maxX = maximum.x - radius;
+        const auto maxY = maximum.y - radius;
+
+        for (auto& position : fringe) {
+            if (position._action == ReplacePositionAction::NONE || action != revertActions.at(position._action)) {
+                auto nextPosition = position._position + space;
+
+                if (nextPosition.x < minX ||
+                    nextPosition.y < minY ||
+                    nextPosition.x > maxX ||
+                    nextPosition.y > maxY) {
+                    DEBUG(agent << "position (" << nextPosition.x << ";" << nextPosition.y << ") is lower than" << " "
+                                << "(" << minX << ";" << minY << ") or greater than" << " "
+                                << "(" << maxX << ";" << maxY << ")"
+                                << std::endl);
+                    continue;
+                }
+
+                auto distance = nextPosition - spot;
+                auto squaredDistance = glm::dot(distance, distance);
+
+                if (squaredDistance < searchRadiusSquared) {
+                    DEBUG(agent << " add possible position: (" << nextPosition.x << ";" << nextPosition.y << ")" << std::endl);
+                    newPositions.emplace_back(ReplacePosition{nextPosition, action});
+                } else {
+                    DEBUG(agent << " position: (" << nextPosition.x << ";" << nextPosition.y << ")" << " "
+                                << "is not possible." << " "
+                                << "max squared distance: " << searchRadiusSquared << " "
+                                << "squared distance: " << squaredDistance
+                                << std::endl);
+                }
+            }
+        }
+
+        return newPositions;
+    }
+
+    template<class T>
+    std::vector<T> operator-(const std::vector<T>& from, const std::vector<T>& subtract) {
+        static std::string agent = "[vector::operator::-] ";
+
+        std::vector<T> subtracted = from;
+        auto iterator = subtracted.begin();
+        while (iterator != subtracted.end()) {
+            if (std::find(subtract.begin(), subtract.end(), *iterator) != subtract.end()) {
+                iterator = subtracted.erase(iterator);
+            } else {
+                iterator++;
+            }
+        }
+
+        DEBUG(agent << " result: ");
+        for (auto& sub : subtracted) {
+            DEBUG("val: " << sub);
+        }
+        DEBUG(" finish result" << std::endl);
+
+        return subtracted;
+    }
+
+    std::optional<billiard::search::Ball> tryToSetBallAtPositions(const std::vector<ReplacePosition>& positions,
+                                                                  float diameterSquared,
+                                                                  const std::string& type,
+                                                                  const std::string& id,
+                                                                  const billiard::search::State& state) {
+        static std::string agent = "[tryToSetBallAtPositions] ";
+        for(auto& position : positions) {
+            bool isValidPosition = true;
+            DEBUG(agent << "try to set" << " "
+                        << id << " at position (" << position._position.x << ";" << position._position.y << ")"
+                        << std::endl);
+
+            for (auto& ball : state._balls) {
+                auto s = ball._position - position._position;
+                auto distanceSquared = glm::dot(s, s);
+                if (distanceSquared < diameterSquared) {
+                    DEBUG(agent << "cannot set ball because " << ball._id << " is too close." << " "
+                                << "distance squared: " << distanceSquared << " "
+                                << "min distance squared: " << diameterSquared
+                                << std::endl);
+                    isValidPosition = false;
+                    break;
+                }
+            }
+
+            if (isValidPosition) {
+                return createBall(position._position, type, id);
+            }
+        }
+
+        return std::nullopt;
+    }
+
+    std::optional<billiard::search::Ball> replaceInArea(float searchRadius,
+                                                               float diameterSquared,
+                                                               const glm::vec2& minimum,
+                                                               const glm::vec2& maximum,
+                                                               const float radius,
+                                                               const glm::vec2& spot,
+                                                               const std::string& type,
+                                                               const std::string& id,
+                                                               const billiard::search::State& state) {
+        static std::string agent = "[replaceInArea] ";
+
+        auto perpRailDirection = billiard::physics::perp(_searchConfig.headRailDirection);
+        float expandStepSize = _searchConfig.radius / 2.0f;
+        auto expandSpace1 = expandStepSize * _searchConfig.headRailDirection;
+        auto expandSpace2 = expandStepSize * perpRailDirection;
+        auto expandSpace3 = expandStepSize * -perpRailDirection;
+        auto expandSpace4 = expandStepSize * -_searchConfig.headRailDirection;
+
+        DEBUG(agent
+                    << "radius: " << _searchConfig.radius << " "
+                    << "expand step size: " << expandStepSize << " "
+                    << "expand space 1: (" << expandSpace1.x << ";" << expandSpace1.y << ")" << " "
+                    << "expand space 2: (" << expandSpace2.x << ";" << expandSpace2.y << ")" << " "
+                    << "expand space 3: (" << expandSpace3.x << ";" << expandSpace3.y << ")" << " "
+                    << "expand space 4: (" << expandSpace4.x << ";" << expandSpace4.y << ")" << " "
+                    << std::endl);
+
+        std::vector<ReplacePosition> fringe {ReplacePosition{spot, ReplacePositionAction::NONE}};
+        auto searchRadiusSquared = searchRadius * searchRadius;
+
+        while (!fringe.empty()) {
+            DEBUG(agent << "do expansion 1" << std::endl);
+            auto nextPositions1 = expandBySpace(spot, searchRadiusSquared, fringe, expandSpace1, minimum, maximum, radius,
+                                                ReplacePositionAction::EXPAND_1) - fringe;
+            auto replaced1 = tryToSetBallAtPositions(nextPositions1, diameterSquared, type, id, state);
+            if (replaced1) {
+                return replaced1;
+            }
+
+            DEBUG(agent << "do expansion 2" << std::endl);
+            auto nextPositions2 = expandBySpace(spot, searchRadiusSquared, fringe, expandSpace2, minimum, maximum, radius,
+                                                ReplacePositionAction::EXPAND_2) - fringe - nextPositions1;
+            auto replaced2 = tryToSetBallAtPositions(nextPositions2, diameterSquared, type, id, state);
+            if (replaced2) {
+                return replaced2;
+            }
+
+            DEBUG(agent << "do expansion 3" << std::endl);
+            auto nextPositions3 = expandBySpace(spot, searchRadiusSquared, fringe, expandSpace3, minimum, maximum, radius,
+                                                ReplacePositionAction::EXPAND_3) - fringe - nextPositions1 - nextPositions2;
+            auto replaced3 = tryToSetBallAtPositions(nextPositions3, diameterSquared, type, id, state);
+            if (replaced3) {
+                return replaced3;
+            }
+
+            DEBUG(agent << "do expansion 4" << std::endl);
+            auto nextPositions4 = expandBySpace(spot, searchRadiusSquared, fringe, expandSpace4, minimum, maximum, radius,
+                                                ReplacePositionAction::EXPAND_4) - fringe - nextPositions1 - nextPositions2 - nextPositions3;
+            auto replaced4 = tryToSetBallAtPositions(nextPositions4, diameterSquared, type, id, state);
+            if (replaced4) {
+                return replaced4;
+            }
+
+            fringe.clear();
+            fringe.insert(fringe.end(), nextPositions1.begin(), nextPositions1.end());
+            fringe.insert(fringe.end(), nextPositions2.begin(), nextPositions2.end());
+            fringe.insert(fringe.end(), nextPositions3.begin(), nextPositions3.end());
+            fringe.insert(fringe.end(), nextPositions4.begin(), nextPositions4.end());
+
+            DEBUG(agent << "fringe consists of: " << std::endl);
+            for(auto& fringeValue : fringe) {
+                DEBUG(agent << "fringe position: (" << fringeValue._position.x << ";" << fringeValue._position.y << ")" << std::endl);
+            }
+            DEBUG(agent << "end of fringe" << std::endl);
+        }
+
+        return std::nullopt;
+    }
+
+    struct BallReplacement {
+        std::optional<billiard::search::Ball> _ball;
+        bool _mustBeReplaced;
+    };
+
+    BallReplacement replace(const std::string& type, const std::string& id,
+                                                  const billiard::search::State& state) {
+        static std::string agent = "[replace] ";
+
+        for (auto& ball : state._balls) {
+            if (ball._type == type) {
+                DEBUG(agent << "found ball of type " << type << ". No replace needed!" << std::endl);
+                return BallReplacement{std::nullopt, false};
+            }
+        }
+
+        auto spotType = type;
+
+        do {
+            auto spot = _searchConfig.spots[spotType];
+            DEBUG(agent << "try to replace " << type << " at (" << spot._position.x << ";" << spot._position.y << ")" << std::endl);
+
+            bool positionIsValid = true;
+            for (auto& ball : state._balls) {
+                auto s = ball._position - spot._position;
+                auto distanceSquared = glm::dot(s, s);
+                if (distanceSquared < _searchConfig.diameterSquared) {
+                    DEBUG(agent << "cannot replace because ball " << ball._id << " is too close!" << " "
+                                << "squared distance: " << distanceSquared << " "
+                                << "min distance squared: " << _searchConfig.diameterSquared << std::endl);
+                    positionIsValid = false;
+                    break;
+                }
+            }
+
+            if (positionIsValid) {
+                DEBUG(agent << "replaces ball " << type << std::endl);
+                return BallReplacement{createBall(spot._position, type, id), true};
+            }
+        } while (!(spotType = nextSearchType[spotType]).empty());
+
+        auto spot = _searchConfig.spots[type];
+        return BallReplacement{
+                replaceInArea(_searchConfig.radius * SPOT_REPLACE_RADIUS_MULTIPLIER, _searchConfig.diameterSquared,
+                              _searchConfig._minimum, _searchConfig._maximum, _searchConfig.radius,
+                              spot._position, type, id, state),
+            true};
+    }
+
+    billiard::search::State stateAfterBreak(const billiard::search::State& state,
+                                            const std::unordered_map<std::string, std::string>& ids) {
+        bool hasRed = false;
+
+        for (auto& ball : state._balls) {
+            if (ball._type == "RED") {
+                hasRed = true;
+                break;
+            }
+        }
+
+        if (!hasRed) {
+            return state;
+        }
+
+        auto balls = state._balls;
+
+        for(auto& type : typesToReplace) {
+            if (ids.count(type)) {
+                auto replaced = replace(type, ids.at(type), state);
+                if (replaced._ball) {
+                    balls.push_back(*replaced._ball);
+                } else if (replaced._mustBeReplaced) {
+                    return billiard::search::State{std::vector<billiard::search::Ball>{}};
+                }
+            }
+        }
+
+        return billiard::search::State{balls};
     }
 
     bool validEndState(const std::vector<std::string>& expectedTypes, const billiard::search::node::Layer& layer) {

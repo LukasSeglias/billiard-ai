@@ -161,6 +161,8 @@ public class TableBehaviour : MonoBehaviour
 
 		this.animationIndex = 0;
 		this.root = root;
+
+		Debug.Log("[animationChanged] animations received: " + root.animations.Length);
 		
 		recreateAnimator();
 	}

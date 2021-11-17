@@ -9,6 +9,7 @@
 #include <billiard_capture/billiard_capture.hpp>
 #include <billiard_search/billiard_search.hpp>
 #include <billiard_debug/billiard_debug.hpp>
+#include <billiard_physics/billiard_physics.hpp>
 #include <cstring>
 
 Debugger _debugger;
@@ -116,6 +117,7 @@ inline cv::Vec3d toVec3d(const Vec3& vec) {
 inline billiard::detection::CameraIntrinsics toIntrinsics(const CameraIntrinsics& camera);
 inline billiard::detection::ArucoMarkers createArucoMarkers(const ArucoMarkers& input);
 inline billiard::detection::Table toTable(const Configuration& configuration);
+inline billiard::snooker::SnookerSearchConfig toSnookerSearchConfig(const Configuration& configuration);
 inline billiard::search::Configuration toSearchConfig(const Configuration& config);
 
 void configuration(Configuration config) {
@@ -153,10 +155,10 @@ void configuration(Configuration config) {
     }
 
     billiard::detection::CameraIntrinsics intrinsics = toIntrinsics(config.camera);
-    DEBUG("CameraIntrinsics created");
+    DEBUG("CameraIntrinsics created" << std::endl);
 
     billiard::detection::ArucoMarkers markers = createArucoMarkers(config.markers);
-    DEBUG("Aruco-board created");
+    DEBUG("Aruco-board created" << std::endl);
     DEBUG((std::string("Markers:")
                + " patternSize: " + std::to_string(markers.patternSize)
                + " sideLength: " + std::to_string(markers.sideLength)
@@ -164,7 +166,7 @@ void configuration(Configuration config) {
                + " bottomRight: " + "" + std::to_string(markers.bottomRight.x) + ", " + std::to_string(markers.bottomRight.y) + ", " + std::to_string(markers.bottomRight.z)
                + " topLeft: " + "" + std::to_string(markers.topLeft.x) + ", " + std::to_string(markers.topLeft.y) + ", " + std::to_string(markers.topLeft.z)
                + " topRight: " + "" + std::to_string(markers.topRight.x) + ", " + std::to_string(markers.topRight.y) + ", " + std::to_string(markers.topRight.z)
-              ).c_str());
+              ).c_str() << std::endl);
 
     billiard::detection::Table table = toTable(config);
     DEBUG((std::string("Table: ")
@@ -174,7 +176,7 @@ void configuration(Configuration config) {
                 + " arucoHeightAboveInnerTable: " + std::to_string(table.arucoHeightAboveInnerTable)
                 + " railWorldPointZComponent: " + std::to_string(table.railWorldPointZComponent)
                 + " worldToRail: " + std::to_string(table.worldToRail[0]) + ", " + std::to_string(table.worldToRail[1]) + ", " + std::to_string(table.worldToRail[2])
-                ).c_str());
+                ).c_str() << std::endl);
 
     if (cameraCapture) {
         cameraCapture->close();
@@ -230,6 +232,9 @@ void configuration(Configuration config) {
         });
     }
 
+    auto snookerSearchConfig = toSnookerSearchConfig(config);
+    billiard::snooker::searchConfig(snookerSearchConfig);
+
     searchConfig = std::make_shared<billiard::search::Configuration>(toSearchConfig(config));
 
     DEBUG("All configuration mapped");
@@ -265,6 +270,35 @@ inline billiard::detection::Table toTable(const Configuration& config) {
             pockets,
             rails
     };
+}
+
+inline billiard::snooker::SnookerSearchConfig toSnookerSearchConfig(const Configuration& configuration) {
+    static std::string agent = "[toSnookerSearchConfig] ";
+    std::unordered_map<std::string, billiard::snooker::Spot> spots;
+    DEBUG(agent << "spots: " << configuration.spotSize << std::endl);
+    for (int i = 0; i < configuration.spotSize; i++) {
+        auto spot = configuration.spots[i];
+        spots.insert({spot.type, billiard::snooker::Spot{glm::vec2{spot.position.x, spot.position.y}}});
+    }
+
+    glm::vec2 headRailDirection;
+    for (int i = 0; i < configuration.segmentSize; i++) {
+        auto segment = configuration.segments[i];
+        if (std::string{segment.id} == std::string{configuration.headRail}) {
+            glm::vec2 start {segment.start.x, segment.start.y};
+            glm::vec2 end {segment.end.x, segment.end.y};
+            headRailDirection = -glm::normalize(billiard::physics::perp(end - start));
+        }
+    }
+    DEBUG(agent << "head rail direction: (" << headRailDirection.x << ";" << headRailDirection.y << ")" << std::endl);
+
+    float diameter = configuration.radius * 2;
+    float diameterSquared = diameter * diameter;
+    DEBUG(agent << "diameter squared: " << diameterSquared << std::endl);
+    return billiard::snooker::SnookerSearchConfig{spots, headRailDirection, diameterSquared, configuration.radius,
+                                                  glm::vec2{-configuration.width / 2.0f, -configuration.height / 2.0f},
+                                                  glm::vec2{configuration.width / 2.0f, configuration.height / 2.0f}};
+
 }
 
 inline billiard::detection::CameraIntrinsics toIntrinsics(const CameraIntrinsics& camera) {

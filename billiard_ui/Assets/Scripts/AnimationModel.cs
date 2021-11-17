@@ -74,8 +74,10 @@ public class Ball
 public class RailSegment {
 	public Vec2 start;
 	public Vec2 end;
+	public string id;
 
 	public static RailSegment operator /(RailSegment segment, float value) => new RailSegment{
+		id = segment.id,
 		start = segment.start / value,
 		end = segment.end / value
 	};
@@ -175,13 +177,21 @@ public class Table {
 }
 
 [Serializable]
+public class Spot {
+	public string type;
+	public Vec2 position;
+}
+
+[Serializable]
 public class Configuration {
 	public float radius;
 	public float width;
     public float height;
 	public float scale;
+	public string headRail;
 	public RailSegment[] segments;
 	public Circle[] targets;
+	public Spot[] spots;
 	public ArucoMarkers markers;
 	public CameraIntrinsics camera;
 	public Plane ballPlane;

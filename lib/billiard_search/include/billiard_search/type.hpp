@@ -25,6 +25,8 @@ namespace billiard::search {
     struct EXPORT_BILLIARD_SEARCH_LIB Ball {
         Ball(const glm::vec2& position, std::string type, std::string id);
 
+        bool operator==(const Ball& other) const;
+
         glm::vec2 _position;
         std::string _type;
         std::string _id;
@@ -309,9 +311,10 @@ namespace billiard::search {
         } _table;
 
         struct {
-            std::function<Search (const Search&, const std::vector<std::string>&)> _nextSearch =
-                    [](const Search& previousType, const std::vector<std::string>& previousTypes) {return Search{};};
-            std::function<node::Layer (const node::Layer&)> _modifyState = [](const node::Layer& layer) {return layer;};
+            std::function<Search (const State&, const std::vector<std::string>&)> _nextSearch =
+                    [](const State& state, const std::vector<std::string>& previousTypes) {return Search{};};
+            std::function<State (const State&, const std::unordered_map<std::string, std::string>&)> _modifyState =
+                    [](const State& state, const std::unordered_map<std::string, std::string>& ids) {return state;};
             std::function<bool(const std::vector<std::string>&, const node::Layer&)> _isValidEndState = [](
                     const std::vector<std::string>& expectedTypes, const node::Layer& layer) { return true; };
             std::function<double(const std::string&)> _scoreForPottedBall = [](const std::string& ballType) { return 0.0; };

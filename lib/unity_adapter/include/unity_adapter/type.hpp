@@ -20,6 +20,7 @@ extern "C" {
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB RailSegment {
+        char* id;
         Vec2 start;
         Vec2 end;
     };
@@ -35,6 +36,11 @@ extern "C" {
         Vec2 position;
         Vec2 normal;
         PocketType pocketType;
+    };
+
+    struct EXPORT_UNITY_ADAPTER_LIB Spot {
+        char* type;
+        Vec2 position;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB ArucoMarkers {
@@ -99,10 +105,13 @@ extern "C" {
         float radius;
         float width;
         float height;
+        char* headRail;
         int segmentSize;
         int targetSize;
+        int spotSize;
         RailSegment* segments;
         Circle* targets;
+        Spot* spots;
         ArucoMarkers markers;
         CameraIntrinsics camera;
         Plane ballPlane;

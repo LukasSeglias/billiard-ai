@@ -11,12 +11,12 @@ namespace billiard::search {
 
     #define PROCESSES 1
     #define SYNC_PERIOD_MS 100
-    #define BREAKS 1
+    #define BREAKS 2
     #define BANK_INDIRECTION 0
     // TODO: find a good number
-    #define FORWARD_SEARCHES 3
+    #define FORWARD_SEARCHES 2
     // TODO: find a good number
-    #define MAX_VELOCITY_TO_ADD 50.0f
+    #define MAX_VELOCITY_TO_ADD 2000.0f
     // TODO: find a good number
     #define MAX_VELOCITY_SQUARED 10000.0f * 10000.0f
     #define MAX_EVENTS 30
@@ -671,7 +671,7 @@ namespace billiard::search {
 
         DEBUG("[prepareForSimulation] Found path: " << logPath(path) << std::endl);
 
-        for (int i = 0; i < FORWARD_SEARCHES; ++i) {
+        for (int i = 0; i <= FORWARD_SEARCHES; ++i) {
             glm::vec2 increasedVelocity = minimalVelocity + (i * VELOCITY_STEP * minimalVelocityNormalized);
             if (glm::dot(increasedVelocity, increasedVelocity) > MAX_VELOCITY_SQUARED) {
                 DEBUG("[prepareForSimulation] Start velocity " << increasedVelocity << " is too high" << std::endl);
@@ -1011,25 +1011,42 @@ namespace billiard::search {
 
                     if (simCount < BREAKS) {
                         DEBUG(agent << "Prepare simulated output for next break" << std::endl);
-                        auto search = state->_config._rules._nextSearch(parentSearchInput->_search, searchedTypes);
-                        auto modifiedLayer = state->_config._rules._modifyState(layer);
 
                         std::vector<Ball> newBallPositions;
-                        bool hasTypeToSearch = false;
-                        for (auto& node : modifiedLayer._nodes) {
+                        std::unordered_map<std::string, std::string> idsByType;
+                        for (auto& node : layer._nodes) {
                             auto inRest = node.second.toInRest();
                             if (inRest) {
                                 newBallPositions.emplace_back(Ball{
                                         inRest->_ball._position,
                                         parentSearchInput->_state.at(node.first)._type,
                                         node.first});
-                                hasTypeToSearch |= std::count(search._types.begin(), search._types.end(),
-                                                              parentSearchInput->_state.at(node.first)._type) > 0;
+                            }
+
+                            if (!idsByType.count(node.second._ballType)) {
+                                idsByType.insert({node.second._ballType, node.first});
+                            }
+                        }
+
+                        State nextState{newBallPositions};
+                        auto search = state->_config._rules._nextSearch(nextState, searchedTypes);
+                        auto modifiedNextState = state->_config._rules._modifyState(nextState, idsByType);
+
+                        if (modifiedNextState._balls.empty()) {
+                            DEBUG(agent << "could not replace all balls!" << std::endl);
+                            break;
+                        }
+
+                        bool hasTypeToSearch = false;
+                        for (auto& ball : modifiedNextState._balls) {
+                            hasTypeToSearch = std::count(search._types.begin(), search._types.end(), ball._type) > 0;
+                            if (hasTypeToSearch) {
+                                break;
                             }
                         }
 
                         if (hasTypeToSearch) {
-                            auto enrichedWithPockets = addPocketsAsInitialTargets(State{newBallPositions}, search, state->_config);
+                            auto enrichedWithPockets = addPocketsAsInitialTargets(modifiedNextState, search, state->_config);
                             for (auto& output : enrichedWithPockets) {
                                 output->_parent = input;
                                 output->_cost = cost;

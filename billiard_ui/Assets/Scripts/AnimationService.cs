@@ -182,6 +182,7 @@ public class AnimationService : MonoBehaviour
 	
 	[StructLayout(LayoutKind.Sequential)]
 	struct RailSegment_t {
+		public string id;
 		public Vec2_t start;
 		public Vec2_t end;
 	}
@@ -193,6 +194,12 @@ public class AnimationService : MonoBehaviour
 		public Vec2_t position;
 		public Vec2_t normal;
 		public PocketType pocketType;
+	}
+	
+	[StructLayout(LayoutKind.Sequential)]
+	struct Spot_t {
+	    public string type;
+		public Vec2_t position;
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
@@ -257,17 +264,20 @@ public class AnimationService : MonoBehaviour
 
 	[StructLayout(LayoutKind.Sequential)]
 	class Configuration_t {
-		public Configuration_t(float radius, float width, float height,
-                               RailSegment_t[] segments, Circle_t[] targets, ArucoMarkers_t markers,
+		public Configuration_t(float radius, float width, float height, string headRail,
+                               RailSegment_t[] segments, Circle_t[] targets, Spot_t[] spots, ArucoMarkers_t markers,
                                CameraIntrinsics_t camera, Plane_t ballPlane, WorldToModel_t worldToModel,
                                Table_t table, int solutions) {
 			this.radius = radius;
 			this.width = width;
 			this.height = height;
+			this.headRail = headRail;
 			this.segments = allocate(segments);
 			this.segmentSize = segments.Length;
 			this.targets = allocate(targets);
 			this.targetSize = targets.Length;
+			this.spots = allocate(spots);
+			this.spotSize = spots.Length;
 			this.markers = markers;
 			this.camera = camera;
 			this.ballPlane = ballPlane;
@@ -284,10 +294,13 @@ public class AnimationService : MonoBehaviour
 		public float radius;
 		public float width;
 		public float height;
+		public string headRail;
 		public int segmentSize;
 		public int targetSize;
+		public int spotSize;
 		public IntPtr segments;
 		public IntPtr targets;
+		public IntPtr spots;
 		public ArucoMarkers_t markers;
 		public CameraIntrinsics_t camera;
 		public Plane_t ballPlane;
@@ -350,8 +363,8 @@ public class AnimationService : MonoBehaviour
 	////////////////////////////////////////////////////////////////////
 	
 	private static Configuration_t map(Configuration from) {
-		return new Configuration_t(from.radius, from.width, from.height, map(from.segments), map(from.targets),
-                                   map(from.markers), map(from.camera), map(from.ballPlane),
+		return new Configuration_t(from.radius, from.width, from.height, from.headRail, map(from.segments), map(from.targets),
+                                   map(from.spots), map(from.markers), map(from.camera), map(from.ballPlane),
                                    map(from.worldToModel), map(from.table), from.solutions
                                   );
 	}
@@ -365,7 +378,7 @@ public class AnimationService : MonoBehaviour
 	}
 	
 	private static RailSegment_t map(RailSegment from) {
-		return new RailSegment_t{start = map(from.start), end = map(from.end)};
+		return new RailSegment_t{id = from.id, start = map(from.start), end = map(from.end)};
 	}
 	
 	private static Circle_t[] map(Circle[] from) {
@@ -378,6 +391,18 @@ public class AnimationService : MonoBehaviour
 	
 	private static Circle_t map(Circle from) {
 		return new Circle_t{id = from.id, radius = from.radius, position = map(from.position), normal = map(from.normal), pocketType = from.pocketType};
+	}
+	
+	private static Spot_t[] map(Spot[] from) {
+		Spot_t[] spots = new Spot_t[from.Length];
+		for (int i = 0; i < spots.Length; i++) {
+			spots[i] = map(from[i]);
+		}
+		return spots;
+	}
+	
+	private static Spot_t map(Spot from) {
+		return new Spot_t{type = from.type, position = map(from.position)};
 	}
 
 	private static ArucoMarkers_t map(ArucoMarkers from) {

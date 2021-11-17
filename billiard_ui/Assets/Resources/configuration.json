@@ -4,118 +4,119 @@
 	"width": 1881,
 	"height": 943,
 	"scale": 3.550,
+	"headRail": "Right",
 	"segments": [
 		{
-			"description": "Left",
+			"id": "Left",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"start": {"x": -940.5, "y": 390},
 			"end":   {"x": -940.5, "y": -390}
 		},
 		{
-			"description": "Right",
+			"id": "Right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"start": {"x": 940.5, "y": -390},
 			"end":   {"x": 940.5, "y": 390}
 		},
 		{
-			"description": "Top left",
+			"id": "Top left",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"start": {"x": -55, "y": 471.5},
 			"end": {"x": -860, "y": 471.5}
 		},
 		{
-			"description": "Top right",
+			"id": "Top right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"start": {"x": 860, "y": 471.5},
 			"end": {"x": 55, "y": 471.5}
 		},
 		{
-			"description": "Bottom left",
+			"id": "Bottom left",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"start": {"x": -862.5, "y": -471.5},
 			"end": {"x": -57.5, "y": -471.5}
 		},
 		{
-			"description": "Bottom right",
+			"id": "Bottom right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"start": {"x": 57.5, "y": -471.5},
 			"end": {"x": 862.5, "y": -471.5}
 		},
 		{
-			"description": "small rail on the left of bottom center",
+			"id": "small rail on the left of bottom center",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"start": {"x": -57.5, "y": -471.5},
 			"end": {"x": -50, "y": -500}
 		},
 		{
-			"description": "small rail on the right of bottom center",
+			"id": "small rail on the right of bottom center",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"start": {"x": 50, "y": -500},
 			"end": {"x": 57.5, "y": -471.5}
 		},
 		{
-			"description": "small rail on the left of top center",
+			"id": "small rail on the left of top center",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"start": {"x": -47.5, "y": 500},
 			"end": {"x": -55, "y": 471.5}
 		},
 		{
-			"description": "small rail on the right of top center",
+			"id": "small rail on the right of top center",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"start": {"x": 55, "y": 471.5},
 			"end": {"x": 47.5, "y": 500}
 		},
 		{
-			"description": "small rail on the left of bottom left",
+			"id": "small rail on the left of bottom left",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"wolfram_alpha": "https://www.wolframalpha.com/input/?i=rotate+%7B0%2C+-40%7D+by+-40+degrees",
 			"start": {"x": -940.5, "y": -390},
 			"end": {"x": -966.212, "y": -420.642}
 		},
 		{
-			"description": "small rail on the right of bottom left",
+			"id": "small rail on the right of bottom left",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"wolfram_alpha": "https://www.wolframalpha.com/input/?i=rotate+%7B-40%2C+0%7D+by+40+degrees",
 			"start": {"x": -893.142, "y": -497.212},
 			"end": {"x": -862.5, "y": -471.5}
 		},
 		{
-			"description": "small rail on the left of top left",
+			"id": "small rail on the left of top left",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"wolfram_alpha": "https://www.wolframalpha.com/input/?i=rotate+%7B0%2C+40%7D+by+40+degrees",
 			"start": {"x": -966.212, "y": 420.642},
 			"end": {"x": -940.5, "y": 390}
 		},
 		{
-			"description": "small rail on the right of top left",
+			"id": "small rail on the right of top left",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"wolfram_alpha": "https://www.wolframalpha.com/input/?i=rotate+%7B-40%2C+0%7D+by+-40+degrees",
 			"start": {"x": -860, "y": 471.5},
 			"end": {"x": -890.642, "y": 497.212}
 		},
 		{
-			"description": "small rail on the left of top right",
+			"id": "small rail on the left of top right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"wolfram_alpha": "https://www.wolframalpha.com/input/?i=rotate+%7B40%2C+0%7D+by+40+degrees",
 			"start": {"x": 890.642, "y": 497.212},
 			"end": {"x": 860, "y": 471.5}
 		},
 		{
-			"description": "small rail on the right of top right",
+			"id": "small rail on the right of top right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"wolfram_alpha": "https://www.wolframalpha.com/input/?i=rotate+%7B0%2C+40%7D+by+-40+degrees",
 			"start": {"x": 940.5, "y": 390},
 			"end": {"x": 966.212, "y": 420.642}
 		},
 		{
-			"description": "small rail on the left of bottom right",
+			"id": "small rail on the left of bottom right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"wolfram_alpha": "https://www.wolframalpha.com/input/?i=rotate+%7B40%2C+0%7D+by+-40+degrees",
 			"start": {"x": 862.5, "y": -471.5},
 			"end": {"x": 893.142, "y": -497.212}
 		},
 		{
-			"description": "small rail on the right of bottom right",
+			"id": "small rail on the right of bottom right",
 			"comment": "Liniensegment muss im Gegenuhrzeigersinn um den Tisch definiert werden, damit die Normale des Segments mit dem Perp-Operator berechnet werden kann -> zeigt gegen Zentrum",
 			"wolfram_alpha": "https://www.wolframalpha.com/input/?i=rotate+%7B0%2C+-40%7D+by+40+degrees",
 			"start": {"x": 966.212, "y": -420.642},
@@ -129,6 +130,14 @@
 		{ "id": "TOP-RIGHT",     "position": {"x": 940.5, "y": 471.5},   "radius": 50, "normal":  { "x": -0.707107, "y": -0.707107 }, "type": 0 },
 		{ "id": "BOTTOM-RIGHT",  "position": {"x": 940.5, "y": -471.5},  "radius": 50, "normal":  { "x": -0.707107, "y":  0.707107 }, "type": 0 },
 		{ "id": "BOTTOM-CENTER", "position": {"x": 0, "y": -491.5},    "radius": 50, "normal":  { "x":  0.0,      "y":  1.0 },      "type": 1 }
+	],
+	"spots": [
+		{ "type": "BLACK", "position": {"x": 893.8, "y": 0}},
+		{ "type": "PINK", "position": {"x": 580, "y": 0}},
+		{ "type": "BLUE", "position": {"x": 0, "y": 0}},
+		{ "type": "BROWN", "position": {"x": -600, "y": 0}},
+		{ "type": "GREEN", "position": {"x": -600, "y": -200}},
+		{ "type": "YELLOW", "position": {"x": -600, "y": 200}}
 	],
 	"markers": {
 		"patternSize": 3,

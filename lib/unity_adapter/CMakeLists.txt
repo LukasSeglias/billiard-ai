@@ -36,4 +36,4 @@ if(DEFINED BILLIARD_OPENCV_FFMPEG_FILEPATH)
             )
 endif()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE billiard_search billiard_detection billiard_snooker billiard_capture billiard_debug)
+target_link_libraries(${PROJECT_NAME} PRIVATE billiard_physics billiard_search billiard_detection billiard_snooker billiard_capture billiard_debug)

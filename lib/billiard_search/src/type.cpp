@@ -13,6 +13,12 @@ billiard::search::Ball::Ball(const glm::vec2& position, std::string type, std::s
     _id(std::move(id)) {
 }
 
+bool billiard::search::Ball::operator==(const Ball& other) const {
+    return _position == other._position &&
+           _type == other._type &&
+           _id == other._id;
+}
+
 billiard::search::State::State(std::vector<Ball> balls) :
     _balls(std::move(balls)) {
 }
