@@ -12,7 +12,7 @@
 namespace billiard::physics {
 
     const float gravitationalAcceleration = 9.8 * 1000; // mm/s^2
-    const float frictionCoefficient = 0.0142435; // TODO: may improve number!
+    const float frictionCoefficient = 0.0142435;
     const float slideFrictionCoefficient = 12.0f * frictionCoefficient; // TODO: find a good number!
     const float energyLossByBall = 0.05; // TODO: Document and find a number!
     const float energyLossFactorBall = 1 - energyLossByBall;

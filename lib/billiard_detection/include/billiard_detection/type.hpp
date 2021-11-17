@@ -34,5 +34,4 @@ namespace billiard::detection {
         glm::vec2 end;
     };
 
-    // TODO: Add configuration for aruco markers
 }

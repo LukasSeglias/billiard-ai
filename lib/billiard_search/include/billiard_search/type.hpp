@@ -76,10 +76,15 @@ namespace billiard::search {
     namespace event {
 
         enum EventType {
+            // Two balls collide
             BALL_COLLISION,
+            // Ball collides with rail
             BALL_RAIL_COLLISION,
+            // Ball rolls into pocket
             BALL_POTTING,
-            BALL_IN_REST, // TODO: besserer name
+            // Ball stops moving
+            BALL_IN_REST,
+            // Ball is rolling
             BALL_ROLLING
         };
 
@@ -104,7 +109,7 @@ namespace billiard::search {
             std::string _pocket;
         };
 
-        struct EXPORT_BILLIARD_SEARCH_LIB BallInRest { // TODO: besserer name
+        struct EXPORT_BILLIARD_SEARCH_LIB BallInRest {
             explicit BallInRest(std::string ball);
 
             std::string _ball;
@@ -151,12 +156,18 @@ namespace billiard::search {
     namespace node {
 
         enum NodeType {
+            // Ball is rolling
             BALL_MOVING,
+            // Two balls collide
             BALL_COLLISION,
+            // Ball collides with rail
             BALL_RAIL_COLLISION,
+            // Ball rolls into pocket
             BALL_POTTING,
+            // Ball is stroke with the cue stick
             BALL_SHOT,
-            BALL_IN_REST // TODO: besserer name
+            // Ball stops moving
+            BALL_IN_REST
         };
 
         struct EXPORT_BILLIARD_SEARCH_LIB BallMovingNode {
@@ -196,21 +207,21 @@ namespace billiard::search {
             event::BallPotting _cause;
         };
 
-        struct EXPORT_BILLIARD_SEARCH_LIB BallInRestNode { // TODO: besserer name
+        struct EXPORT_BILLIARD_SEARCH_LIB BallInRestNode {
             explicit BallInRestNode(const state::BallState& ball);
             BallInRestNode(const BallInRestNode& node) = default;
 
             state::BallState _ball;
         };
 
-        struct EXPORT_BILLIARD_SEARCH_LIB BallShotNode { // TODO: besserer name
+        struct EXPORT_BILLIARD_SEARCH_LIB BallShotNode {
             explicit BallShotNode(const state::BallState& ball);
             BallShotNode(const BallShotNode& node) = default;
 
             state::BallState _ball;
         };
 
-        struct EXPORT_BILLIARD_SEARCH_LIB BallNode { // TODO: besserer name
+        struct EXPORT_BILLIARD_SEARCH_LIB BallNode {
             explicit BallNode(const state::BallState& ball);
             BallNode(const BallNode& node) = default;
 
@@ -238,7 +249,7 @@ namespace billiard::search {
 
             NodeType _type;
             std::string _ballType;
-            NodeVariant _body; // TODO: besserer name
+            NodeVariant _body;
         };
 
         struct EXPORT_BILLIARD_SEARCH_LIB Layer {
@@ -295,7 +306,6 @@ namespace billiard::search {
             float minimalPocketVelocity;
             // Quadrierte diagonale Länge des Spielfelds
             float diagonalLengthSquared;
-            // TODO: deceleration?
         } _table;
 
         struct {

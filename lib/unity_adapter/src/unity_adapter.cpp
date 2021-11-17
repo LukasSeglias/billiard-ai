@@ -121,13 +121,12 @@ inline billiard::search::Configuration toSearchConfig(const Configuration& confi
 void configuration(Configuration config) {
     solutions = config.solutions;
 
-    // TODO: Map configuration and pass it to the library, delete all debugger outputs
     DEBUG("radius: " << std::to_string(config.radius) << " "
-    << "width: " << std::to_string(config.width) << " "
-       << "height: " << std::to_string(config.height) << " "
-       << "segments: " << std::to_string(config.segmentSize) << " "
-       << "targets: " << std::to_string(config.targetSize)
-       << std::endl);
+           << "width: " << std::to_string(config.width) << " "
+           << "height: " << std::to_string(config.height) << " "
+           << "segments: " << std::to_string(config.segmentSize) << " "
+           << "targets: " << std::to_string(config.targetSize)
+           << std::endl);
 
     DEBUG("marker pattern size: " << std::to_string(config.markers.patternSize) << ", side length: " << std::to_string(config.markers.sideLength) << "mm" << std::endl);
     DEBUG("world to model" << " translation is (" << std::to_string(config.worldToModel.translation.x) << std::to_string(config.worldToModel.translation.y) << ", " << std::to_string(config.worldToModel.translation.z) << ")" << std::endl);

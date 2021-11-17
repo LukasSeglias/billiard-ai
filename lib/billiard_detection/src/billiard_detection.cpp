@@ -54,7 +54,6 @@ std::future<billiard::detection::State> billiard::detection::StateTracker::captu
 void assignIds(const billiard::detection::State& previousState, billiard::detection::State& currentState) {
 
     int id = 1;
-    // TODO: check previous state (if not empty) and try tracking of balls?
     for (auto& ball : currentState._balls) {
         ball._id = ball._type + "-" + std::to_string(id++);
     }
@@ -233,8 +232,10 @@ namespace billiard::detection {
         //
         // Note that if v * n = 0, then there is no intersection
         //
-        // TODO: handle case where v * n = 0 -> no intersection
-        double lambda = (planePoint - linePoint).dot(planeNormal) / lineDirection.dot(planeNormal);
+        double vDotP = lineDirection.dot(planeNormal);
+        assert(vDotP != 0.0);
+
+        double lambda = (planePoint - linePoint).dot(planeNormal) / vDotP;
 
         cv::Point3d worldPoint(linePoint + (lambda * lineDirection));
 

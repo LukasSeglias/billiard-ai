@@ -134,7 +134,7 @@ namespace billiard::detection {
                      const std::function<State(const State& previousState, const cv::Mat&)>& detect,
                      const std::function<void (const State& previousState,
                                                State& currentState,
-                                               const cv::Mat& image)>& classify); // TODO: Add Configuration for aruco initialization
+                                               const cv::Mat& image)>& classify);
         ~StateTracker();
 
         std::future<State> capture();
@@ -151,7 +151,7 @@ namespace billiard::detection {
                          const std::shared_ptr<billiard::detection::DetectionConfig>& config,
                          const std::function<State (const State& previousState, const cv::Mat&)>& detect,
                          const std::function<void (const State& previousState, State& currentState, const cv::Mat&)>& classify,
-                         std::queue<std::promise<State>>& waiting); // TODO: Pass configuration for auruco configuration
+                         std::queue<std::promise<State>>& waiting);
     };
 
     struct EXPORT_BILLIARD_DETECTION_LIB DetectedMarkers {

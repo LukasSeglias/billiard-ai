@@ -360,14 +360,12 @@ namespace billiard::search {
         auto pocket = getPocketById(state, pocketId);
         assert(pocket);
 
-        // TODO: check if that is possible
-
         // Only possible to hit ball if no other ball is on the way
         if (collidesOnTheWay(parent, state, ball, "", pocket->_position)) {
             return nullptr;
         }
 
-        // TODO: check if collides with rail on the way
+        // TODO: check if collides with rail on the way? Maybe not since simulation will take care of this?
 
         auto result = SearchNode::search(parentNode);
         auto resultSearchNode = result->asSearch();
@@ -880,50 +878,22 @@ namespace billiard::search {
             assert(cosTheta >= 0);
             // cosTheta is 0 for 90 degrees, 1 for 0 degrees -> flip that using a linear function y = -1x + 1
             double angleCost = -1 * cosTheta + 1;
-            // y = ax^2 + bx + c
-            // P0 = (0, 0)
-            // P1 = (1, 1)
-            // -> c = 0
-            //    1 = a + b
-            //    a = 1 - b
 
-            // y = c(e^(ax) + b)
-            // P0 = (0, 0)
-            // P1 = (1, 1)
-            // P2 = (0.8, 0.2)
-            // ->
-            //    b = -1
-            //    1.2 = ce^(0.8a)
-            //    ln(1.2) = ln(c) + 0.8a
-            //    a = (ln(1.2) - ln(c))/0.8
-            //    1 = c(e^a - 1)
-            //    c = 1/(e^a - 1)
-
-//            double weightedAngleCost = 1.0/(200.0 - 1.0) * (pow(200.0, angleCost) - 1.0);
-//            double weightedAngleCost = 0.0;
-//            if (angleCost < 0.8) {
-//                // Line between (0,0) and (0.75, 0.2): y = (0.2/0.75)x
-//                weightedAngleCost = 0.2/0.75 * angleCost;
-//            } else {
-//                // Line between (0.75, 0.2) and (1,1): y = ((1-0.2)/(1-0.75))x
-//                weightedAngleCost = 0.8/0.25 * angleCost;
-//            }
-
+            // Weight the angle cost using a bezier curve
             glm::vec4 t {angleCost*angleCost*angleCost, angleCost*angleCost, angleCost, 1};
-            glm::mat4x4 coeff { glm::vec4 {-1, 3, -3, 1}, glm::vec4 {3, -6, 3, 0}, glm::vec4 {-3, 3, 0, 0}, glm::vec4 {1, 0, 0, 0} };
+            glm::mat4x4 coeff {
+                glm::vec4 {-1,  3, -3, 1},
+                glm::vec4 { 3, -6,  3, 0},
+                glm::vec4 {-3,  3,  0, 0},
+                glm::vec4 { 1,  0,  0, 0}
+            };
             glm::vec4 x {0, 1, 0.5, 1};
             glm::vec4 y {0, 0, 1, 1};
-//            glm::vec2 p0 {0, 0};
-//            glm::vec2 p1 {1, 0};
-//            glm::vec2 p2 {0.5, 1};
-//            glm::vec2 p3 {1, 1};
-//            glm::mat4x2 points { p0, p1, p2, p3 };
             glm::mat2x4 points { x, y };
             auto coeffPoints = coeff * points;
             glm::vec2 result = t * coeff * points;
             double weightedAngleCost = result.y;
 
-//            totalAngleCost += angleCost;
             totalAngleCost += weightedAngleCost;
 
             std::stringstream indirectionDebugOutput {};
@@ -971,8 +941,7 @@ namespace billiard::search {
                     << "totalCostInt=" << std::to_string(totalCostInt) << " "
                     << std::endl);
 
-        // TODO: Improve heuristic
-        return totalCostInt; // TODO: tweak number
+        return totalCostInt;
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -1125,7 +1094,6 @@ namespace billiard::search {
                     << "weightedTotalCostInt=" << std::to_string(weightedTotalCostInt) << " "
                     << std::endl);
 
-        // TODO: Improve heuristic
         return weightedTotalCostInt;
     }
 
