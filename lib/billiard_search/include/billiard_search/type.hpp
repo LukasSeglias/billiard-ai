@@ -319,6 +319,8 @@ namespace billiard::search {
                     const std::vector<std::string>& expectedTypes, const node::Layer& layer) { return true; };
             std::function<double(const std::string&)> _scoreForPottedBall = [](const std::string& ballType) { return 0.0; };
         } _rules;
+
+        bool _depthSearchEnabled = true;
     };
 
     struct EXPORT_BILLIARD_SEARCH_LIB SearchState {

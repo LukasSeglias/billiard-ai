@@ -64,6 +64,10 @@ public class AnimationService : MonoBehaviour
 	public static void imageCapture() {
 	    image();
 	}
+	
+	public static void toggleSearch() {
+		toggleDepthSearch();
+	}
 
 	public static void videoCapture() {
         video();
@@ -113,6 +117,9 @@ public class AnimationService : MonoBehaviour
 
 	[DllImport("unity_adapter", CallingConvention = CallingConvention.Cdecl)]
     private static extern void image();
+	
+	[DllImport("unity_adapter", CallingConvention = CallingConvention.Cdecl)]
+    private static extern void toggleDepthSearch();
 
     [DllImport("unity_adapter", CallingConvention = CallingConvention.Cdecl)]
     private static extern void video();
