@@ -179,11 +179,10 @@ namespace billiard::capture {
     }
 #endif
 
+    const bool depthEnabled = false;
     const cv::Size colorFrameSize { 1280, 720 };
     const cv::Size depthFrameSize { 1280, 720 };
-    // TODO: cleanup
-//    const int colorFps = 30;
-    const int colorFps = 15;
+    const int colorFps = 30;
     const int depthFps = 30;
     const int fourcc = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');
     const std::string fileExtension = "avi";
@@ -198,11 +197,11 @@ namespace billiard::capture {
             return false;
         }
 
-        // TODO: cleanup
         rs2::config cfg;
-//        cfg.enable_stream(RS2_STREAM_COLOR, 1920, 1080, RS2_FORMAT_BGR8, 30);
         cfg.enable_stream(RS2_STREAM_COLOR, colorFrameSize.width, colorFrameSize.height, RS2_FORMAT_BGR8, colorFps);
-//        cfg.enable_stream(RS2_STREAM_DEPTH, depthFrameSize.width, depthFrameSize.height, RS2_FORMAT_Z16, depthFps);
+        if (depthEnabled) {
+            cfg.enable_stream(RS2_STREAM_DEPTH, depthFrameSize.width, depthFrameSize.height, RS2_FORMAT_Z16, depthFps);
+        }
 
         camera = new Camera();
         if (camera->pipe.start(cfg)) {
@@ -237,45 +236,25 @@ namespace billiard::capture {
 
         rs2::frameset data = camera->pipe.wait_for_frames();
 
-        // TODO: cleanup
-//        rs2::depth_frame depthFrame = data.get_depth_frame();
-//        cv::Mat depth = toMat(depthFrame, CV_16UC1);
-        cv::Mat depth;
-//        auto depthFrame = data.get_depth_frame();
-//        cv::Mat depthInt = toMat(depthFrame, CV_16SC1);
-//        depthInt.convertTo(depth, CV_32FC1);
-//        depth *= depthFrame.get_units();
-//        depth = depthInt; // TODO: remove this
-
-        cv::Mat colorizedDepth;
-//        cv::Mat colorizedDepth;
-//        if (depthFrame && depthFrame.get_data() != nullptr) {
-//            rs2::colorizer color_map;
-//            colorizedDepth = toMat(depthFrame.apply_filter(color_map),CV_8UC3);
-//        }
-
         cv::Mat color = toMat(data.get_color_frame(), CV_8UC3);
+        cv::Mat depth;
+        cv::Mat colorizedDepth;
 
-//        if (capture && imageNumber < 1000) {
-//            std::string nr = std::to_string(imageNumber++);
-//            std::string colorOutputFileName = "image_" + nr + "_color.png";
-//            std::string depthOutputFileName = "image_" + nr + "_depth.png";
-//
-//            cv::Mat depthScaledToCentimeters = 100.0 * depth;
-//            cv::Mat depthScaledThresholded;
-//            cv::threshold(depthScaledToCentimeters, depthScaledThresholded, 255, 255, cv::THRESH_BINARY);
-//            cv::Mat depthNormalized;
-//            cv::normalize(depthScaledThresholded, depthNormalized, 0, 255, cv::NORM_MINMAX, CV_8UC1);
-//
-//            cv::imshow("depth - original", depth);
-//            cv::imshow("depth - scaled", depthScaledToCentimeters);
-//            cv::imshow("depth - scaled & thresholded", depthScaledThresholded);
-//            cv::imshow("depth - normalized", depthNormalized);
-//            cv::waitKey();
-//
-//            cv::imwrite(colorOutputFileName, color);
-//            cv::imwrite(depthOutputFileName, depthNormalized);
-//        }
+        if (depthEnabled) {
+            auto depthFrame = data.get_depth_frame();
+
+            if (depthFrame && depthFrame.get_data() != nullptr) {
+
+                cv::Mat depthInt = toMat(depthFrame, CV_16SC1);
+                cv::Mat depthFloat;
+                depthInt.convertTo(depthFloat, CV_32FC1);
+                depthFloat *= depthFrame.get_units();
+                depth = depthFloat;
+
+                rs2::colorizer color_map;
+                colorizedDepth = toMat(depthFrame.apply_filter(color_map),CV_8UC3);
+            }
+        }
 
         return CameraFrames(color, depth, colorizedDepth);
     }
@@ -311,11 +290,19 @@ namespace billiard::capture {
         std::string colorOutputFileName = "video_" + videoNr + "_color." + fileExtension;
         std::string depthOutputFileName = "video_" + videoNr + "_depth." + fileExtension;
         cv::VideoWriter colorVideo { colorOutputFileName, fourcc, (double) colorFps, colorFrameSize, true };
-        cv::VideoWriter depthVideo { depthOutputFileName, fourcc, (double) depthFps, depthFrameSize, false };
 
-        if (!colorVideo.isOpened() || !depthVideo.isOpened()) {
+        if (!colorVideo.isOpened()) {
             std::cout << "CameraCapture: Unable to open VideoWriter for recording" << std::endl;
             return;
+        }
+
+        cv::VideoWriter depthVideo;
+        if (depthEnabled) {
+            depthVideo.open(depthOutputFileName, fourcc, (double) depthFps, depthFrameSize, false);
+            if (!depthVideo.isOpened()) {
+                std::cout << "CameraCapture: Unable to open VideoWriter for recording" << std::endl;
+                return;
+            }
         }
 
         while (capture->recording) {
@@ -325,13 +312,16 @@ namespace billiard::capture {
             capture->latestRecordedFrames = frames;
             capture->latestRecordedFramesLock.unlock();
 
-            // TODO: cleanup
             colorVideo.write(frames.color);
-//            depthVideo.write(frames.depth);
+            if (depthEnabled && !frames.depth.empty()) {
+                depthVideo.write(frames.depth);
+            }
 
 #ifdef BILLIARD_CAPTURE_DEBUG_VISUAL
             cv::imshow("Color", frames.color);
-            cv::imshow("Depth", frames.depth);
+            if (depthEnabled && !frames.depth.empty()) {
+                cv::imshow("Depth", frames.depth);
+            }
 #endif
         }
     }
