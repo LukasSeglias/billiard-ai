@@ -1,16 +1,22 @@
 #pragma once
 
-#include <ebus/PvDevice.h>
-#include <ebus/PvStream.h>
-#include <ebus/PvBuffer.h>
 #include <opencv2/opencv.hpp>
 #include <list>
 #include <iostream>
 
+#ifdef BILLIARD_CAPTURE_WITH_EBUS_SDK
+#include <ebus/PvDevice.h>
+#include <ebus/PvStream.h>
+#include <ebus/PvBuffer.h>
+#endif
+
+#ifdef BILLIARD_CAPTURE_WITH_EBUS_SDK
 typedef std::list<PvBuffer*> BufferList;
+#endif
 
 namespace billiard::capture {
 
+#ifdef BILLIARD_CAPTURE_WITH_EBUS_SDK
     class Device {
     public:
         PvDevice* device = nullptr;
@@ -83,4 +89,5 @@ namespace billiard::capture {
         bool read(cv::Mat& result);
         void stop();
     };
+#endif
 }

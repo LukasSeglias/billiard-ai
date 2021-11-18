@@ -1,7 +1,7 @@
 #include <billiard_capture/billiard_capture.hpp>
 
+#ifdef BILLIARD_CAPTURE_WITH_EBUS_SDK
 #include <ebus/PvBufferConverter.h>
-
 #include <ebus/PvSystem.h>
 #include <ebus/PvDevice.h>
 #include <ebus/PvDeviceGEV.h>
@@ -11,6 +11,7 @@
 #include <ebus/PvStreamGEV.h>
 #include <ebus/PvStreamU3V.h>
 #include <ebus/PvBuffer.h>
+#endif
 
 #include <librealsense2/rs.hpp>
 #include <librealsense2/hpp/rs_internal.hpp>
@@ -18,14 +19,12 @@
 #include "image_stream.hpp"
 #include "camera.hpp"
 
-// TODO: remove this
-//#define BILLIARD_DETECTION_DEBUG_VISUAL 1
+namespace billiard::capture {
 
 // @Source: This code is heavily based on the eBUS SDK Example 'PVStreamSample'
+#ifdef BILLIARD_CAPTURE_WITH_EBUS_SDK
 
-#define BUFFER_COUNT ( 16 )
-
-namespace billiard::capture {
+    #define BUFFER_COUNT ( 16 )
 
     // @Source: Heavily based on function PvSelectDevice from PVSampleUtils.h
     bool findGigEDeviceWithMAC(std::string& macAddress, PvString* aConnectionID) {
@@ -178,6 +177,7 @@ namespace billiard::capture {
         delete device;
         device = nullptr;
     }
+#endif
 
     const cv::Size colorFrameSize { 1280, 720 };
     const cv::Size depthFrameSize { 1280, 720 };

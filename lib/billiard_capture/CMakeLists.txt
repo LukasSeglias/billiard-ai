@@ -1,5 +1,7 @@
 project(billiard_capture)
 
+option(BILLIARD_CAPTURE_WITH_EBUS_SDK "Enable EBUS SDK" OFF)
+
 add_library(${PROJECT_NAME} SHARED)
 target_include_directories(${PROJECT_NAME}
         PUBLIC
@@ -10,4 +12,8 @@ target_include_directories(${PROJECT_NAME}
 
 add_subdirectory(src)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCV_LIBS} ${realsense2_LIBRARY} camera_sdk)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCV_LIBS} ${realsense2_LIBRARY})
+
+if(BILLIARD_CAPTURE_WITH_EBUS_SDK)
+    target_link_libraries(${PROJECT_NAME} PUBLIC camera_sdk)
+endif()

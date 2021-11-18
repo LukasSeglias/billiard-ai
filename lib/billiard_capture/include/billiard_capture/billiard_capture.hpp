@@ -8,6 +8,7 @@
 
 namespace billiard::capture {
 
+#ifdef BILLIARD_CAPTURE_WITH_EBUS_SDK
     class Device;
     class Stream;
     class ImageStream;
@@ -26,6 +27,7 @@ namespace billiard::capture {
         Stream* stream;
         ImageStream* imageStream;
     };
+#endif
 
     struct EXPORT_BILLIARD_CAPTURE_LIB CameraFrames {
         cv::Mat color;

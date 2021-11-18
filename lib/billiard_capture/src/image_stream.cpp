@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 
+#ifdef BILLIARD_CAPTURE_WITH_EBUS_SDK
 void configureStream(PvGenParameterArray* deviceParams) {
     // TODO: ist das notwendig?
     PvGenBoolean* doubleRateEnable = dynamic_cast<PvGenBoolean*>(deviceParams->Get("DoubleRate_Enable"));
@@ -129,3 +130,4 @@ void billiard::capture::ImageStream::stop() {
         opened = false;
     }
 }
+#endif
