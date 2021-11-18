@@ -375,6 +375,8 @@ inline billiard::search::Configuration toSearchConfig(const Configuration& confi
     billiardSearchConfig._rules._isValidEndState = billiard::snooker::validEndState;
     billiardSearchConfig._rules._scoreForPottedBall = billiard::snooker::scoreForPottedBall;
 
+    billiardSearchConfig._depthSearchEnabled = true;
+
     return billiardSearchConfig;
 }
 
@@ -413,6 +415,15 @@ void video() {
     if (cameraCapture) {
         DEBUG("Toggle recording" << std::endl);
         cameraCapture->toggleRecording();
+    }
+}
+
+void toggleDepthSearch() {
+    if (searchConfig) {
+        searchConfig->_depthSearchEnabled = !searchConfig->_depthSearchEnabled;
+        DEBUG("[toggleDepthSearch] depth search enabled: " << (searchConfig->_depthSearchEnabled ? "true" : "false") << std::endl);
+    } else {
+        DEBUG("[toggleDepthSearch] no configuration available!" << std::endl);
     }
 }
 

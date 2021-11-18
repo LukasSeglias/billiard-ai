@@ -671,7 +671,7 @@ namespace billiard::search {
 
         DEBUG("[prepareForSimulation] Found path: " << logPath(path) << std::endl);
 
-        for (int i = 0; i <= FORWARD_SEARCHES; ++i) {
+        for (int i = 0; i <= (state->_config._depthSearchEnabled ? FORWARD_SEARCHES : 0); ++i) {
             glm::vec2 increasedVelocity = minimalVelocity + (i * VELOCITY_STEP * minimalVelocityNormalized);
             if (glm::dot(increasedVelocity, increasedVelocity) > MAX_VELOCITY_SQUARED) {
                 DEBUG("[prepareForSimulation] Start velocity " << increasedVelocity << " is too high" << std::endl);
@@ -1009,7 +1009,7 @@ namespace billiard::search {
 
                     auto cost = input->_cost + simulationCost(simulationInput->_simulation, input->_searchCost, state);
 
-                    if (simCount < BREAKS) {
+                    if (state->_config._depthSearchEnabled && simCount < BREAKS) {
                         DEBUG(agent << "Prepare simulated output for next break" << std::endl);
 
                         std::vector<Ball> newBallPositions;

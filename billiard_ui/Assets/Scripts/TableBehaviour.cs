@@ -131,6 +131,8 @@ public class TableBehaviour : MonoBehaviour
             search.types = config.coloredSearchTypes;
             Debug.Log("[TableBehaviour] Search with colored balls: " + string.Join(", ", search.types));
             searchSolution(search);
+		} else if (Input.GetKeyDown(KeyCode.Y)) {
+			AnimationService.toggleSearch();
 		}
 		
 		if (statePresenter != null) {

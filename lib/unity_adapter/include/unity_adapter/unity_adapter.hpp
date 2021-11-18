@@ -19,6 +19,7 @@ extern "C" {
     EXPORT_UNITY_ADAPTER_LIB void capture();
     EXPORT_UNITY_ADAPTER_LIB void image();
     EXPORT_UNITY_ADAPTER_LIB void video();
+    EXPORT_UNITY_ADAPTER_LIB void toggleDepthSearch();
     EXPORT_UNITY_ADAPTER_LIB void search(Search search);
 
     ///////////////////////////////////////////////////////
