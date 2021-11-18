@@ -18,7 +18,7 @@ int solutions = 10;
 bool WRITE_LOG_FILE = true;
 bool LIVE = false;
 bool STATIC_IMAGE = false;
-std::string IMAGE_PATH = "D:\\Dev\\billiard-ai\\cmake-build-debug\\test\\billiard_detection\\resources\\test_detection\\1_scaled_HD.png";
+std::string IMAGE_PATH = "";
 
 ///////////////////////////////////////////////////////
 //// Event-Queues
@@ -237,7 +237,7 @@ void configuration(Configuration config) {
 
     searchConfig = std::make_shared<billiard::search::Configuration>(toSearchConfig(config));
 
-    DEBUG("All configuration mapped");
+    DEBUG("All configuration mapped" << std::endl);
 }
 
 inline billiard::detection::Table toTable(const Configuration& config) {
@@ -352,12 +352,13 @@ inline billiard::search::Configuration toSearchConfig(const Configuration& confi
             + config.table.innerTableWidth * config.table.innerTableWidth;
 
     for (int i = 0; i < config.segmentSize; i++) {
-        billiardSearchConfig._table._rails.emplace_back(billiard::search::Rail {
-            std::to_string(i),
-            glm::vec2{config.segments[i].start.x, config.segments[i].start.y},
-            glm::vec2{config.segments[i].end.x, config.segments[i].end.y},
-            billiardSearchConfig._ball._radius
-        });
+        std::string id = config.segments[i].id;
+        billiardSearchConfig._table._rails.insert(std::make_pair(id, billiard::search::Rail {
+                id,
+                glm::vec2{config.segments[i].start.x, config.segments[i].start.y},
+                glm::vec2{config.segments[i].end.x, config.segments[i].end.y},
+                billiardSearchConfig._ball._radius
+        }));
     }
 
     for(int i = 0; i < config.targetSize; i++) {

@@ -161,8 +161,7 @@
 		"arucoHeightAboveInnerTable": 38.1,
 		"railWorldPointZComponent": 0.0,
 		"worldToRail": { "x": 79.0, "y": -71.5, "z": 0.0 },
-		"minimalPocketVelocity": 10,
-		"COMMENT": "TODO: bessere zahl für minimalPocketVelocity finden"
+		"minimalPocketVelocity": 10
 	},
 	"camera": {
 		"fx": 917.126,

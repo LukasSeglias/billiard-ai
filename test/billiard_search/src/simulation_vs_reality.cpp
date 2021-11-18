@@ -182,7 +182,7 @@ TEST(SimulationVsReality, video_1_0233_0240) {
 
 TEST(SimulationVsReality, video_9_0056_0101) {
 
-    // TODO: die weisse kugel scheint nach der Kollision mit der roten noch spin zu haben.
+    // NOTE: die weisse kugel scheint nach der Kollision mit der roten noch spin zu haben. Dieser Test ist demnach nicht zwingend verlässlich.
     std::string name = "video_9_0056_0101";
     /*
     Strong impact, WHITE collides with RED, RED goes into pocket, WHITE collides with rail and stops.
@@ -320,7 +320,7 @@ TEST(SimulationVsReality, video_9_0056_0101) {
 
 TEST(SimulationVsReality, video_12_0130_0140) {
 
-    // TODO: ist dieser Testfall verlässlich? Die Kugel könnte womöglich side-spin bei der Kollision mit der Bande haben
+    // NOTE: ist dieser Testfall verlässlich? Die Kugel könnte womöglich side-spin bei der Kollision mit der Bande haben.
     std::string name = "video_12_0130_0140";
     /*
 

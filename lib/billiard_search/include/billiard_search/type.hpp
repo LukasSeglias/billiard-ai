@@ -43,11 +43,10 @@ namespace billiard::search {
         CENTER
     };
 
-    struct EXPORT_BILLIARD_SEARCH_LIB PocketPottingPoint {
+    struct EXPORT_BILLIARD_SEARCH_LIB PocketPottingPoint { // TODO: LAST: use or remove
         PocketPottingPoint(glm::vec2 position);
 
         glm::vec2 _position;
-        // TODO:
     };
 
     struct EXPORT_BILLIARD_SEARCH_LIB Pocket {
@@ -58,7 +57,7 @@ namespace billiard::search {
         glm::vec2 _position;
         glm::vec2 _normal;
         float _radius;
-        //std::vector<PocketPottingPoint> _pottingPoints;
+        //std::vector<PocketPottingPoint> _pottingPoints; // TODO: LAST: use or remove
     };
 
     struct EXPORT_BILLIARD_SEARCH_LIB Rail {
@@ -303,7 +302,7 @@ namespace billiard::search {
             // |     |
             // o--o--o
             std::vector<Pocket> _pockets;
-            std::vector<Rail> _rails;
+            std::unordered_map<std::string, Rail> _rails;
             // Minimale erwünschte Geschwindigkeit einer Kugel zum Zeitpunkt, wenn diese ins Loch rollt.
             float minimalPocketVelocity;
             // Quadrierte diagonale Länge des Spielfelds

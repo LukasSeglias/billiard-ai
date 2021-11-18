@@ -278,11 +278,8 @@ namespace billiard::search {
     }
 
     std::optional<Rail> getRailById(const std::shared_ptr<SearchState>& state, const std::string& id) {
-
-        for (auto& rail : state->_config._table._rails) {
-            if (rail._id == id) {
-                return std::make_optional(rail);
-            }
+        if (state->_config._table._rails.count(id)) {
+            return state->_config._table._rails.at(id);
         }
         return std::nullopt;
     }
@@ -365,8 +362,6 @@ namespace billiard::search {
             return nullptr;
         }
 
-        // TODO: check if collides with rail on the way? Maybe not since simulation will take care of this?
-
         auto result = SearchNode::search(parentNode);
         auto resultSearchNode = result->asSearch();
         resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::POCKET_COLLISION, pocket->_position, pocket->_id });
@@ -407,8 +402,6 @@ namespace billiard::search {
         if (collidesOnTheWay(parent, state, ball, targetBall._id, targetPosition)) {
             return nullptr;
         }
-
-        // TODO: check if that is possible further
 
         auto result = SearchNode::search(parentNode);
         auto resultSearchNode = result->asSearch();
@@ -533,7 +526,6 @@ namespace billiard::search {
 
     glm::vec2
     calculateMinimalVelocity(const std::vector<const SearchNode*>& nodes, const std::shared_ptr<SearchState>& state) {
-        // TODO: @performance: cancel early when minimal velocity is already over maximum if we gain perf from that?
         static glm::vec2 zero{0, 0};
         float minimalVelocityInPocket = state->_config._table.minimalPocketVelocity; // TODO: find a good number
         assert(minimalVelocityInPocket > 0.0f);
@@ -609,6 +601,11 @@ namespace billiard::search {
                                 << " distance: " << distance
                                 << " from: " << currentPosition
                                 << " to: " << targetPosition << std::endl);
+                        }
+
+                        if (glm::dot(minimalVelocity, minimalVelocity) > MAX_VELOCITY_SQUARED) {
+                            DEBUG(agent << " Minimal velocity " << minimalVelocity << " is already too high. Cancel further calculation" << std::endl);
+                            break;
                         }
                     }
 
@@ -971,16 +968,8 @@ namespace billiard::search {
             if (event) {
                 DEBUG(agent << "nextEvent: " << event << std::endl);
                 eventCount++;
-                // TODO: uncomment
-//                if (eventCount > MAX_EVENTS) {
-//                    DEBUG(agent << "Too many events. Cancel simulation." << std::endl);
-//                    break;
-//                }
-                if (eventCount == MAX_EVENTS) {
+                if (eventCount > MAX_EVENTS) {
                     DEBUG(agent << "Too many events. Cancel simulation." << std::endl);
-                }
-                if (eventCount > 100) { // TODO: remove this
-                    DEBUG(agent << "REALLY Too many events. Cancel simulation." << std::endl);
                     break;
                 }
                 auto layer = createLayer(*event, system.lastLayer(), state);
@@ -1094,7 +1083,6 @@ namespace billiard::search {
         }
 
         double totalCost = 1.0 - std::min(totalScore, 1.0);
-        uint64_t totalCostInt = totalCost * COST_FLOAT_TO_INT_FACTOR; // TODO: remove?
 
         double simulationCostCap = SIMULATION_COST_FRACTION_OF_SEARCH_COST * (double) searchCost;
         uint64_t weightedTotalCostInt = totalCost * simulationCostCap;
@@ -1102,7 +1090,6 @@ namespace billiard::search {
         DEBUG(agent << "Result: "
                     << "totalScore=" << std::to_string(totalScore) << " "
                     << "totalCost=" << std::to_string(totalCost) << " "
-                    << "totalCostInt=" << std::to_string(totalCostInt) << " "
                     << "searchCost=" << std::to_string(searchCost) << " "
                     << std::endl);
         DEBUG(agent << "Result: "
@@ -1122,8 +1109,9 @@ namespace billiard::search {
                       const std::unordered_map<std::string, node::Node>& balls,
                       float diameter);
     std::optional<event::Event>
-    nextRailCollision(const std::pair<std::string, node::Node>& ball, const std::vector<Rail>& rails,
-        const std::unordered_map<std::string, std::string>& lastRailCollisions);
+    nextRailCollision(const std::pair<std::string, node::Node>& ball,
+                      const std::unordered_map<std::string, Rail>& rails,
+                      const std::unordered_map<std::string, std::string>& lastRailCollisions);
     std::optional<event::Event>
     nextPocketCollision(const std::pair<std::string, node::Node>& ball, const std::vector<Pocket>& pockets);
     std::optional<event::Event> min(const std::optional<event::Event>& event,
@@ -1217,7 +1205,7 @@ namespace billiard::search {
     }
 
     std::optional<event::Event> nextRailCollision(const std::pair<std::string, node::Node>& ball,
-                                                  const std::vector<Rail>& rails,
+                                                  const std::unordered_map<std::string, Rail>& rails,
                                                   const std::unordered_map<std::string, std::string>& lastRailCollisions) {
 
         std::optional<event::Event> nextEvent = std::nullopt;
@@ -1233,12 +1221,13 @@ namespace billiard::search {
                     lastRailCollisions.at(ball.first) :
                     "";
 
-            for (auto& rail : rails) {
+            for (auto& railEntry : rails) {
 
-                if (previousRailId == rail._id) {
+                if (previousRailId == railEntry.first) {
                     continue;
                 }
 
+                auto& rail = railEntry.second;
                 auto& railPoint1 = rail._start;
                 auto& railPoint2 = rail._end;
                 auto& shiftedRailPoint1 = rail._shiftedStart;
@@ -1336,12 +1325,9 @@ namespace billiard::search {
                                                                       previousState._velocity,
                                                                       time);
 
-        glm::vec2 normal;
-        for (auto& rail : state->_config._table._rails) { // TODO: Hold rail as map
-            if (rail._id == event._rail) {
-                normal = rail._normal;
-            }
-        }
+        assert(state->_config._table._rails.count(event._rail));
+        auto& rail = state->_config._table._rails.at(event._rail);
+        glm::vec2 normal = rail._normal;
 
         auto velocityAfterCollision = billiard::physics::railCollision(velocityBeforeCollision, normal);
 

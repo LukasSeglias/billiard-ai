@@ -44,12 +44,15 @@ billiard::search::Configuration config(nlohmann::json& json) {
                                     pocket["radius"]});
     }
     float ballRadius = json["ball"]["radius"];
-    std::vector<Rail> rails;
+    std::unordered_map<std::string, Rail> rails;
     for (auto& rail : json["banks"]) {
-        rails.emplace_back(Rail{rail["id"],
-                                glm::vec2{rail["start"]["x"], rail["start"]["y"]},
-                                glm::vec2{rail["end"]["x"], rail["end"]["y"]},
-                                ballRadius});
+        std::string id = rail["id"];
+        rails.insert(std::make_pair(id, Rail{
+            id,
+            glm::vec2{rail["start"]["x"], rail["start"]["y"]},
+            glm::vec2{rail["end"]["x"], rail["end"]["y"]},
+            ballRadius
+        }));
     }
     auto conf = Configuration{};
     conf._ball._radius = ballRadius;

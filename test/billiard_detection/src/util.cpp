@@ -164,15 +164,17 @@ cv::Mat drawDetectedBallsGrid(const cv::Mat& input, const billiard::detection::S
     int imageWidth = tileSize * tilesPerLine + padding * (tilesPerLine + 1);
     int imageHeight = numberOfTileLines * tileSize + padding * (numberOfTileLines + 1);
 
-//    std::cout
-//            << "Ball tiles: " << " "
-//            << "totalTiles=" << totalTiles << " "
-//            << "tileSize=" << tileSize << " "
-//            << "tilesPerLine=" << tilesPerLine << " "
-//            << "numberOfTileLines=" << numberOfTileLines << " "
-//            << "imageWidth=" << imageWidth << " "
-//            << "imageHeight=" << imageHeight << " "
-//            << std::endl;
+#if 0
+    std::cout
+            << "Ball tiles: " << " "
+            << "totalTiles=" << totalTiles << " "
+            << "tileSize=" << tileSize << " "
+            << "tilesPerLine=" << tilesPerLine << " "
+            << "numberOfTileLines=" << numberOfTileLines << " "
+            << "imageWidth=" << imageWidth << " "
+            << "imageHeight=" << imageHeight << " "
+            << std::endl;
+#endif
 
     float ballRadiusInPixels = 30;
 
@@ -202,16 +204,18 @@ cv::Mat drawDetectedBallsGrid(const cv::Mat& input, const billiard::detection::S
             cv::Mat dst = result(resultRoi);
             ballImageScaled.copyTo(dst);
 
-//            std::cout
-//                    << "    Ball tile: " << " "
-//                    << "colIndex=" << colIndex << " "
-//                    << "rowIndex=" << rowIndex << " "
-//                    << "x=" << x << " "
-//                    << "y=" << y << " "
-//                    << std::endl;
+#if 0
+            std::cout
+                    << "    Ball tile: " << " "
+                    << "colIndex=" << colIndex << " "
+                    << "rowIndex=" << rowIndex << " "
+                    << "x=" << x << " "
+                    << "y=" << y << " "
+                    << std::endl;
+#endif
 
         } else {
-            std::cout << "unable to cut out ball image since roi is not inside image" << std::endl; // TODO: handle this?
+            std::cout << "unable to cut out ball image since roi is not inside image" << std::endl;
         }
         tileIndex++;
     }

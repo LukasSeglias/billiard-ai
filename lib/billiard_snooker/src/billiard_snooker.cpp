@@ -181,15 +181,17 @@ namespace billiard::snooker {
         int imageWidth = tileSize * tilesPerLine + padding * (tilesPerLine + 1);
         int imageHeight = numberOfTileLines * tileSize + padding * (numberOfTileLines + 1);
 
-//        std::cout
-//                << "Ball tiles: " << " "
-//                << "totalTiles=" << totalTiles << " "
-//                << "tileSize=" << tileSize << " "
-//                << "tilesPerLine=" << tilesPerLine << " "
-//                << "numberOfTileLines=" << numberOfTileLines << " "
-//                << "imageWidth=" << imageWidth << " "
-//                << "imageHeight=" << imageHeight << " "
-//                << std::endl;
+#ifdef BILLIARD_SNOOKER_DEBUG_PRINT
+        std::cout
+                << "Ball tiles: " << " "
+                << "totalTiles=" << totalTiles << " "
+                << "tileSize=" << tileSize << " "
+                << "tilesPerLine=" << tilesPerLine << " "
+                << "numberOfTileLines=" << numberOfTileLines << " "
+                << "imageWidth=" << imageWidth << " "
+                << "imageHeight=" << imageHeight << " "
+                << std::endl;
+#endif
 
         float ballRadiusInPixels = 30;
 
@@ -229,7 +231,7 @@ namespace billiard::snooker {
                         << std::endl;
 #endif
             } else {
-                std::cout << "unable to cut out ball image since roi is not inside image" << std::endl; // TODO: handle this?
+                std::cout << "unable to cut out ball image since roi is not inside image" << std::endl;
             }
             tileIndex++;
         }

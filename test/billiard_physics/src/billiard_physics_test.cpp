@@ -7,7 +7,7 @@ void assertComplex(const std::vector<std::complex<double>>& expected, const std:
 
 TEST(frictionCoefficient, measurements) {
 
-    double mass = 140.0 / 1000.0; // in kg // TODO: measure
+    double mass = 140.0 / 1000.0; // in kg
     double g = 9.81 * 1000.0; // mm/s^2
 
     struct Measurement {
@@ -19,7 +19,6 @@ TEST(frictionCoefficient, measurements) {
 
     std::vector<Measurement> measurements = {
             // All lengths in Millimeters!
-            // TODO: measure
             Measurement { 13, 334.747666161, 941},
             Measurement { 19, 334.46076003, 1295},
     };

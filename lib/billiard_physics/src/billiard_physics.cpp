@@ -187,13 +187,18 @@ std::optional<float> billiard::physics::timeToCollisionWithRail(const glm::vec2&
         return std::nullopt;
     }
 
+    // Try intersection with shifted rail points
     auto shiftedSegmentIntersection = billiard::physics::intersection::halfLineIntersectsLineSegment(ballPosition, ballVelocity, shiftedRailPoint1, shiftedRailPoint2);
     float lambda = 0.0f;
     if (shiftedSegmentIntersection) {
+        // Got intersection, intersection point is the position where the ball is when the collision occurs.
         lambda = shiftedSegmentIntersection->first;
     } else {
+        // If there is no intersection, then the collision may still be possible since the ball may hit the rail at the very end of the rail segment.
+        // Therefore, check intersection without shifting the rail points.
         auto segmentIntersection = billiard::physics::intersection::halfLineIntersectsLineSegment(ballPosition, ballVelocity, railPoint1, railPoint2);
         if (segmentIntersection) {
+            // Now intersect with the shifted rail points in order to get the position where the ball is when the collision occurs.
             auto intersection = billiard::physics::intersection::lineIntersectsLine(ballPosition, ballVelocity, shiftedRailPoint1, shiftedRailPoint2 - shiftedRailPoint1);
             assert(intersection);
             lambda = intersection->first;
@@ -203,6 +208,7 @@ std::optional<float> billiard::physics::timeToCollisionWithRail(const glm::vec2&
     }
 
     if (lambda < 0.0f) {
+        // Ball cannot collide with rails that are behind it.
         DEBUG("[timeToCollisionWithRail]: no rail collision ... "
                       << "segment intersection lambda=" << lambda
                       << std::endl);
@@ -210,19 +216,6 @@ std::optional<float> billiard::physics::timeToCollisionWithRail(const glm::vec2&
     }
 
     float distance = glm::length(lambda * ballVelocity);
-
-    if (distance <= 0.00000000001f) { // TODO: Epsilon definieren
-        DEBUG("[timeToCollisionWithRail]: no rail collision ... "
-                      << "lambda=" << lambda
-                      << "distance=" << distance
-                      << std::endl);
-        return std::nullopt;
-    }
-
-    // Kugel A rollt zu dieser Position und kollidiert mit der Bande.
-    glm::vec2 ballTargetPoint = ballPosition + lambda * ballVelocity; // TODO: remove
-
-    //float distance = glm::distance(ballPosition, ballTargetPoint);
     float velocity = glm::length(ballVelocity);
     float a = -glm::length(acceleration);
 
@@ -238,7 +231,7 @@ std::optional<float> billiard::physics::timeToCollisionWithRail(const glm::vec2&
 
         DEBUG("[timeToCollisionWithRail]: "
                       << "lambda1=" << lambda << " "
-                      << "ballTargetPoint=" << ballTargetPoint << " "
+                      << "ballTargetPoint=" << (ballPosition + lambda * ballVelocity) << " "
                       << "distance=" << distance << " "
                       << "velocity=" << velocity << " "
                       << "acceleration=" << acceleration << " "
@@ -248,11 +241,6 @@ std::optional<float> billiard::physics::timeToCollisionWithRail(const glm::vec2&
 
         return std::make_optional(time);
     }
-
-    DEBUG("[timeToCollisionWithRail]: "
-              << "no intersection point found"
-              << std::endl);
-    return std::nullopt;
 }
 
 float billiard::physics::timeToStop(const glm::vec2& acceleration, const glm::vec2& velocity) {
@@ -340,12 +328,14 @@ std::optional<float> billiard::physics::timeToCollision(const glm::vec2& acceler
             return std::nullopt;
         }
     }
-    // TODO: Evtl. weitere möglich Checks.
 
-    auto diameterInMeters = diameter / 1000.0f;
-    auto deltaAcceleration = (acceleration1 - acceleration2) / 1000.0f;
-    auto deltaVelocity = (velocity1 - velocity2) / 1000.0f;
-    auto deltaPosition = (position1 - position2) / 1000.0f;
+    // Convert input from unit millimeters to meters in order for the input numbers to be
+    // lower in magnitude for the quartic formula solver.
+    float toMeter = 1.0f / 1000.0f;
+    auto diameterInMeters = diameter * toMeter;
+    auto deltaAcceleration = (acceleration1 - acceleration2) * toMeter;
+    auto deltaVelocity = (velocity1 - velocity2) * toMeter;
+    auto deltaPosition = (position1 - position2) * toMeter;
     float a = floorf(0.25f * glm::dot(deltaAcceleration, deltaAcceleration) * 1000000) / 1000000;
     float b = floorf(glm::dot(deltaAcceleration, deltaVelocity) * 1000000) / 1000000;
     float c = floorf((glm::dot(deltaAcceleration, deltaPosition) + glm::dot(deltaVelocity, deltaVelocity)) * 1000000) / 1000000;
@@ -564,9 +554,11 @@ std::vector<std::complex<double>> billiard::physics::intersection::solveQuartic(
 }
 
 std::vector<float> billiard::physics::intersection::realRoot(const std::vector<std::complex<double>>& roots) {
+    static const float REAL_ROOT_EPSILON = 0.001f;
+
     std::vector<float> solutions;
     for (auto& solution : roots) {
-        if (std::abs(solution.imag()) < 0.001f) { // TODO: Epsilon definieren
+        if (std::abs(solution.imag()) < REAL_ROOT_EPSILON) {
             solutions.push_back(static_cast<float>(solution.real()));
         }
     }

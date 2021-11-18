@@ -213,7 +213,6 @@ TEST(SnookerClassificationTests, snooker_classify_visualization) {
 
         int borderWidth = 1; // in pixels
         cv::Scalar borderColor {40, 40, 40}; // IN BGR
-        // TODO: maybe scale image?
         cv::Mat image {imageSize, imageSize, CV_8UC3, backgroundColor};
 
         for (auto& labelToDraw : labelsToDraw) {

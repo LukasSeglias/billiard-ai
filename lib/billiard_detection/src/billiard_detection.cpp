@@ -514,6 +514,8 @@ namespace billiard::detection {
         cv::Mat pocketMask(cv::Size(original.cols, original.rows), CV_8UC1, cv::Scalar(0));
         cv::Mat innerTableMask(cv::Size(original.cols, original.rows), CV_8UC1, cv::Scalar(0));
 
+        double pixelsPerMillimeter;
+
         // Rails
         {
             std::vector<cv::Point2d> modelPoints = railRect;
@@ -553,8 +555,7 @@ namespace billiard::detection {
                       << std::endl;
 #endif
 
-            double pixelsPerMillimeter = pixelsPerMillimeterX; // Take X because that's the longer axis
-            config.pixelsPerMillimeter = pixelsPerMillimeter;
+            pixelsPerMillimeter = pixelsPerMillimeterX; // Take X because that's the longer axis
             config.ballRadiusInPixel = ceil((table.ballDiameter / 2.0) * pixelsPerMillimeter);
         }
 
@@ -590,7 +591,7 @@ namespace billiard::detection {
 
             for (int i = 0; i < pockets.size(); i++) {
                 auto& pocket = pockets[i];
-                int pocketPixelRadius = pocket.radius * (config.pixelsPerMillimeter + 0.1); // TODO: 0.1 because detection
+                int pocketPixelRadius = pocket.radius * (pixelsPerMillimeter + 0.1); // TODO: 0.1 because detection
                 cv::circle(pocketMask, imagePoints[i], pocketPixelRadius, cv::Scalar{255},
                            cv::LineTypes::FILLED);
                 cv::circle(innerTableMask, imagePoints[i], pocketPixelRadius, cv::Scalar{0},

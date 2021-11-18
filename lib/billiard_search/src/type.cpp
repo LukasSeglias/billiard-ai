@@ -401,7 +401,8 @@ void billiard::search::node::System::append(Layer layer) {
         deltaTime = layer._time - _layers.at(_layers.size() - 1)._time;
     }
 
-    for(auto& node : layer._nodes) { // TODO: effizienter implementieren
+    for(auto& node : layer._nodes) {
+
         if (_nextRolling.find(node.first) != _nextRolling.end()) {
             auto nextRollingEvent = _nextRolling.find(node.first)->second - deltaTime;
             _nextRolling.erase(node.first);
@@ -411,7 +412,6 @@ void billiard::search::node::System::append(Layer layer) {
         if (node.second._type == NodeType::BALL_COLLISION) {
             _lastRailCollisions.erase(node.first);
 
-            // TODO: Dokumentieren
             // Wenn Kugel nicht rollt, dann gleitet sie bei einer Kollision.
             auto after = node.second.after();
             static glm::vec2 zero {0, 0};
@@ -422,16 +422,20 @@ void billiard::search::node::System::append(Layer layer) {
                 _nextRolling.erase(node.first);
             }
         } else if (node.second._type == NodeType::BALL_SHOT) {
+            // Kugel wurde mit cue stick angestossen, sie gleitet zuerst und wechselt nach einer gewissen Zeit zu rollen.
             auto after = node.second.after();
             _nextRolling.erase(node.first);
             _nextRolling.insert({node.first, billiard::physics::timeToRolling(after->_velocity)});
         } else if (node.second._type == NodeType::BALL_IN_REST) {
+            // Kugel ist stehengeblieben, sie kann nicht mehr von gleiten zu rollen wechseln.
             _nextRolling.erase(node.first);
         } else if (node.second._type == NodeType::BALL_POTTING) {
+            // Kugel wurde eingelocht, sie kann nicht mehr von gleiten zu rollen wechseln.
             _nextRolling.erase(node.first);
         } else if (node.second._type == NodeType::BALL_MOVING) {
             auto after = node.second.after();
             if (after->_isRolling) {
+                // Kugel rollt bereits, sie kann nicht mehr von gleiten zu rollen wechseln.
                 _nextRolling.erase(node.first);
             }
         }
@@ -440,8 +444,8 @@ void billiard::search::node::System::append(Layer layer) {
         if (asRailCollision) {
             _lastRailCollisions.erase(node.first);
             _lastRailCollisions.insert({node.first, asRailCollision->_cause._rail});
-            // TODO: Dokumentieren
-            // Bei einer Bandenkollision rollt die Kugel aufgrund der Eigenschaft der Bandenhöhe weiter
+
+            // Bei einer Bandenkollision rollt die Kugel aufgrund der Eigenschaft der Bandenhöhe weiter.
             _nextRolling.erase(node.first);
         }
     }

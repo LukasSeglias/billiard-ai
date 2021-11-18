@@ -11,22 +11,21 @@
 
 TEST(BallDetectionTests, snooker_with_projector) {
 
-    int a = 0; // TODO: remove
     bool live = false;
     std::vector<std::string> imagePaths = {
 //            "./resources/test_detection/with_projector_on/without_halo/1.png",
 //            "./resources/test_detection/with_projector_on/without_halo/2.png",
-//            // DONE: TODO 3: green: hole in saturation-mask
+//            // DONE: 3: green: hole in saturation-mask
 //            "./resources/test_detection/with_projector_on/without_halo/3.png",
 //            "./resources/test_detection/with_projector_on/without_halo/4.png",
 //            "./resources/test_detection/with_projector_on/without_halo/5.png",
 //            "./resources/test_detection/with_projector_on/without_halo/6.png",
-//            // DONE: TODO 7: black: because of pocket-mask?
-//            // DONE: TODO 7: red: why?
+//            // DONE: 7: black: because of pocket-mask?
+//            // DONE: 7: red: why?
 //            "./resources/test_detection/with_projector_on/without_halo/7.png",
-//            // DONE: TODO 8: brown: killed by filter 2 (saturation-mask)?
-//            // DONE: TODO 8: green: killed by filter 2 (saturation-mask)?
-//            // DONE: TODO 8: black: killed by filter 2 (hole in mask)?
+//            // DONE: 8: brown: killed by filter 2 (saturation-mask)?
+//            // DONE: 8: green: killed by filter 2 (saturation-mask)?
+//            // DONE: 8: black: killed by filter 2 (hole in mask)?
 //            "./resources/test_detection/with_projector_on/without_halo/8.png",
 //            "./resources/test_detection/with_projector_on/without_halo/9.png",
 //            "./resources/test_detection/with_projector_on/without_halo/10.png",

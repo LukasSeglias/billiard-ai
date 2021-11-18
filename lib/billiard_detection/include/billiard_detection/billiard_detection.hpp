@@ -101,7 +101,6 @@ namespace billiard::detection {
         // Scaling of input image
         double scale = 1.0;
 
-        double pixelsPerMillimeter; // In X-Direction // TODO: remove?
         int ballRadiusInPixel;
 
         // Binary mask (255=true) to determine possible locations of balls (only on the green inner table)

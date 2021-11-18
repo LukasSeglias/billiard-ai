@@ -181,6 +181,7 @@ namespace billiard::capture {
 
     const cv::Size colorFrameSize { 1280, 720 };
     const cv::Size depthFrameSize { 1280, 720 };
+    // TODO: cleanup
 //    const int colorFps = 30;
     const int colorFps = 15;
     const int depthFps = 30;
@@ -197,6 +198,7 @@ namespace billiard::capture {
             return false;
         }
 
+        // TODO: cleanup
         rs2::config cfg;
 //        cfg.enable_stream(RS2_STREAM_COLOR, 1920, 1080, RS2_FORMAT_BGR8, 30);
         cfg.enable_stream(RS2_STREAM_COLOR, colorFrameSize.width, colorFrameSize.height, RS2_FORMAT_BGR8, colorFps);
@@ -235,6 +237,7 @@ namespace billiard::capture {
 
         rs2::frameset data = camera->pipe.wait_for_frames();
 
+        // TODO: cleanup
 //        rs2::depth_frame depthFrame = data.get_depth_frame();
 //        cv::Mat depth = toMat(depthFrame, CV_16UC1);
         cv::Mat depth;
@@ -322,6 +325,7 @@ namespace billiard::capture {
             capture->latestRecordedFrames = frames;
             capture->latestRecordedFramesLock.unlock();
 
+            // TODO: cleanup
             colorVideo.write(frames.color);
 //            depthVideo.write(frames.depth);
 

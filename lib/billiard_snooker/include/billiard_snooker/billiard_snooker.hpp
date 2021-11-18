@@ -111,11 +111,11 @@ namespace billiard::snooker {
     EXPORT_BILLIARD_SNOOKER_LIB double scoreForPottedBall(const std::string& ballType);
 
     EXPORT_BILLIARD_SNOOKER_LIB billiard::search::Search nextSearch(const billiard::search::State& state,
-                                                                    const std::vector<std::string>& previousTypes); // TODO: Naming
+                                                                    const std::vector<std::string>& previousTypes);
 
     EXPORT_BILLIARD_SNOOKER_LIB billiard::search::State stateAfterBreak(const billiard::search::State& state,
-                                                                        const std::unordered_map<std::string, std::string>& ids); // TODO: Naming
+                                                                        const std::unordered_map<std::string, std::string>& ids);
 
     EXPORT_BILLIARD_SNOOKER_LIB bool
-    validEndState(const std::vector<std::string>& expectedTypes, const billiard::search::node::Layer& layer); // TODO: Naming
+    validEndState(const std::vector<std::string>& expectedTypes, const billiard::search::node::Layer& layer);
 }
