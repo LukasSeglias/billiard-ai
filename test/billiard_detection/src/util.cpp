@@ -81,7 +81,7 @@ DetectionTestCases detectionTestCases(nlohmann::json& json) {
         for (auto& ballJson : caseJson["balls"]) {
 
             glm::vec2 position { ballJson["x"], ballJson["y"] };
-            std::string type = ballJson["type"];
+            std::string type = ballJson.contains("type") ? ballJson["type"] : "???";
 
             DetectionBall ball;
             ball.position = position;
