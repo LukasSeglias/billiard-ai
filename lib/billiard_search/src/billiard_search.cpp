@@ -28,6 +28,9 @@ namespace billiard::search {
     #define MAX_SEARCH_DEPTH 3
     // Maximum number of ball collisions to be considered in search of a path
     #define SEARCH_MAX_BALL_COLLISIONS 2
+    #define PI 3.14159265358979323846 /* pi */
+    // Maximum angle in which a ball can hit another ball (must be <= 90 degrees).
+    #define MAX_POSSIBLE_HIT_ANGLE std::cos(PI/180.0f * 87.0f) // 87 degrees
 
     struct SearchNode;
     std::vector<node::System> mapToSolution(const std::shared_ptr<SearchNode>& solution);
@@ -391,10 +394,14 @@ namespace billiard::search {
         glm::vec2 targetPosition = billiard::physics::elasticCollisionTargetPosition(lastEvent->_targetPosition, targetBallTargetDirection, ballRadius);
 
         // Only possible to hit ball from "behind"
-        auto targetToBall = ballPosition - targetPosition;
-        assert(targetToBall != zero);
-        float sign = glm::dot(targetBallTargetDirection, glm::normalize(targetToBall));
-        if (sign >= 0) { // TODO: find better
+        auto ballToTarget = targetPosition - ballPosition;
+        assert(ballToTarget != zero);
+        float cosTheta = glm::dot(targetBallTargetDirection, glm::normalize(ballToTarget));
+        if (cosTheta <= MAX_POSSIBLE_HIT_ANGLE) {
+            DEBUG("[ballCollision]" << " maximum possible hit angle exceeded: "
+                  << "angle: " << (180.0f / PI * std::acos(cosTheta)) << " "
+                  << "max: " << (180.0f / PI * std::acos(MAX_POSSIBLE_HIT_ANGLE)) << " "
+                  << std::endl);
             return nullptr;
         }
 
@@ -527,7 +534,7 @@ namespace billiard::search {
     glm::vec2
     calculateMinimalVelocity(const std::vector<const SearchNode*>& nodes, const std::shared_ptr<SearchState>& state) {
         static glm::vec2 zero{0, 0};
-        float minimalVelocityInPocket = state->_config._table.minimalPocketVelocity; // TODO: find a good number
+        float minimalVelocityInPocket = state->_config._table.minimalPocketVelocity;
         assert(minimalVelocityInPocket > 0.0f);
         glm::vec2 minimalVelocity { 0, 0 };
 
