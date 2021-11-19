@@ -3,10 +3,10 @@
 Aufgrund eines Bildes des Billardtisches soll der Spielstand mit der Position aller Kugeln bestimmt werden.
 Der in dieser Arbeit verwendete Detektionsalgorithmus stammte von der vorherigen Projektarbeit\cite{project2:snooker_detection}
 und funktioniert für Snooker-Kugeln.
-In der Vorarbeit wurde die Detektion dafür vorgesehen, per Knopfdruck durchgeführt zu werden.
+In der Vorarbeit wurde die Detektion dafür vorgesehen, die per Knopfdruck durchgeführt werden konnte.
 Mit dieser Arbeit wurde darauf aufbauend eine Live-Detektion implementiert, welche kontinuierlich Bilder vom Tisch macht,
 den Spielstand detektiert und dem Benutzer über den Projektor anzeigt.
-Dadurch entsteht ein Feedback-Loop, weil die dargestellten Augmentationen im Bild, das Verarbeitet wird, ersichtlich sind.
+Dadurch entsteht ein Feedback-Loop, weil die dargestellten Augmentationen im Bild, das verarbeitet wird, ersichtlich sind.
 Ein Eingabebild für die Detektion ist in Abbildung \ref{fig:detection_feedback_loop} dargestellt und zeigt diesen Feedback-Loop.
 
 \begin{figure}[h!]
@@ -19,7 +19,7 @@ Ein Eingabebild für die Detektion ist in Abbildung \ref{fig:detection_feedback_
 
 Um diesem Feedback-Loop entgegenzuwirken wurden die Parameter der Detektion angepasst.
 
-Des weiteren wurde die Performance der Detektion erhöht, um die Live-Detektion aufzuwerten.
+Des Weiteren wurde die Performance der Detektion erhöht, um die Live-Detektion aufzuwerten.
 In der bisherigen Detektion wurden drei separate Circle Hough transform\cite{wiki:circle_hough} angewendet, eine für
 jede der drei Gruppen von Kugeln, in die das Bild mittels Segmentation aufgeteilt wurde\cite{project2:snooker_detection}.
 Zwei dieser drei konnten ohne einen grossen Verlust in der Qualität der Detektion zusammengefasst werden.
