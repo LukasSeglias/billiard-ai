@@ -603,7 +603,7 @@ namespace billiard::detection {
 
             for (int i = 0; i < pockets.size(); i++) {
                 auto& pocket = pockets[i];
-                int pocketPixelRadius = pocket.radius * config.pixelsPerMillimeter;
+                int pocketPixelRadius = pocket.radius * pixelsPerMillimeter;
                 cv::circle(pocketsOutput, imagePoints[i], pocketPixelRadius, cv::Scalar{0, 0, 255}, 1);
             }
 
