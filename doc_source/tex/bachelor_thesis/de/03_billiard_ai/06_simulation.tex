@@ -321,7 +321,13 @@ Bevor die Lösung zu $t_1$ und $t_2$ berechnet wird, muss jedoch der Radikand au
     0 \leq v^2 + 2 \cdot a \cdot \Delta s
 \end{align}
 Nur in diesem Fall gibt es eine Lösung und somit an dieser Position eine Kollision. Ansonsten hat die Kugel vorher schon
-ihre Gesamtenergie verloren und steht still. Es wird das minimum der beiden Zeiten $\Delta t_1$ und $\Delta t_2$ verwendet.
+ihre Gesamtenergie verloren und steht still. Es wird das Minimum der beiden Zeiten $\Delta t_1$ und $\Delta t_2$ verwendet.
+
+Probleme hat dieser Ansatz ergeben, wenn die Kugel z.B. nahe der Bande rollt oder teilweise auch aufgrund der Ungenauigkeiten
+beim Rechnen mit Fliesskommazahlen. So wurden viele Bandenkollisionen direkt aufeinanderfolgend detektiert und die Kugel konnte
+den Tisch verlassen, indem sie durch die genannten Ungenauigkeiten hinter der Bande lagen. Das Problem wurde behoben, indem
+die letzte Bande, mit welchere die Kugel kollidierte, von der Ereignisberechnung ausgeschlossen wurde. Die Bande wird
+erst wieder miteinbezogen, wenn die Kugel eine andere Bande oder eine andere Kugel getroffen hat.
 
 \subsubsection{Ereignis - Totaler Energieverlust}
 Dieses Ereignis trifft ein, sobald eine Kugel stillsteht. Der Zeitpunkt wird über die Formel \ref{eq:ereignis:out_of_energy:00}
@@ -371,6 +377,14 @@ werden, wobei $\mu$ für den Gleitreibungskoeffizienten steht.
 \begin{align}
     t = \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu}\label{eq:rollzeitpunkt_2}
 \end{align}
+
+Dieser Zeitpunkt wird einmal beim Anstossen einer Kugel berechnet und zwischengespeichert. Würde dieses Ereignis nach
+jedem Vorherhigen neu berechnet werden, so würde der Rollzeitpunkt immer weiter in der Zukunft liegen. Dieses Zwischenspeichern
+wäre nicht nötig, würde die Simulation sämtliche Ereignisse vorausberechnen, zwischenspeichern, abarbeiten und bei Bedarf
+invalidieren\footnote{Eine mögliche Verbesserung des Algorithmus wird in Kapitel \ref{anhang:simulation:algorithmus} beschrieben.}.
+
+Weiterhin wird angenommen, dass gleitende Kugeln nach einer Kollision mit einer anderen Kugel weitergleiten. Es ist
+auch bekannt, dass die Kugel nach der Kollision mit der Bande sofort zu rollen beginnt\cite{sciphysik:kugelohneschlupf}.
 
 \subsubsection{Bewertungsfunktion}
 Wie auch die Suche nach einem guten Lösungskandidaten muss das Endresultat der Simulation bewertet werden.
