@@ -34,9 +34,11 @@
 #endif
 
 // TODO: remove this
-//#undef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
-//#undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
+#undef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
+//#define BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL 1
+#undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
 //#define BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT 1
+#define BILLIARD_SNOOKER_CLASSIFICATION_CLUSTERS 1 // TODO: make this the default?
 
 // TODO: remove this
 //#define BILLIARD_SNOOKER_TIMING 1
@@ -652,24 +654,79 @@ namespace billiard::snooker {
 
         auto histogramByChannels = histogram(hsv);
 
-        Histogram hueHist = histogramByChannels[0];
+        Histogram hueHist        = histogramByChannels[0];
         Histogram saturationHist = histogramByChannels[1];
-        Histogram valueHist = histogramByChannels[2];
-        int maxHue = hueHist.maxLocation.y;
+        Histogram valueHist      = histogramByChannels[2];
+        int maxHue        = hueHist.maxLocation.y;
         int maxSaturation = saturationHist.maxLocation.y;
-        int maxValue = valueHist.maxLocation.y;
+        int maxValue      = valueHist.maxLocation.y;
 
         std::string label = "UNKNOWN";
 
-//        const auto between = [](int value, int min, int max)  {
-//            return value >= min && value <= max;
-//        };
+        // TODO: remove uncommented code in this function
 
         const auto between = [](int value, cv::Point2d minMax)  {
             return value >= minMax.x && value <= minMax.y;
         };
 
-        cv::Vec2f redPinkSeparatorLine = cv::Point2f { 1.0, 1.0 }; // Separate by (saturation, value)
+#ifdef BILLIARD_SNOOKER_CLASSIFICATION_CLUSTERS
+
+        std::vector<std::string> potentialLabels;
+
+        if (between(maxHue, classificationConfig.yellowHue) && between(maxSaturation, classificationConfig.yellowSaturation) && between(maxValue, classificationConfig.yellowValue)) {
+            potentialLabels.emplace_back("YELLOW");
+        }
+        if (between(maxHue, classificationConfig.whiteHue) && between(maxSaturation, classificationConfig.whiteSaturation) && between(maxValue, classificationConfig.whiteValue)) {
+            potentialLabels.emplace_back("WHITE");
+        }
+        if (between(maxValue, classificationConfig.blackValue)) {
+            potentialLabels.emplace_back("BLACK");
+        }
+        if (between(maxHue, classificationConfig.blueHue)) {
+            potentialLabels.emplace_back("BLUE");
+        }
+        if (between(maxHue, classificationConfig.greenHue)) {
+            potentialLabels.emplace_back("GREEN");
+        }
+        if (between(maxHue, classificationConfig.brownHue) && between(maxSaturation, classificationConfig.brownSaturation) && between(maxValue, classificationConfig.brownValue)) {
+            potentialLabels.emplace_back("BROWN");
+        }
+        if ((between(maxHue, classificationConfig.redHue1) || between(maxHue, classificationConfig.redHue2)) && between(maxSaturation, classificationConfig.pinkSaturation) && between(maxValue, classificationConfig.pinkValue)) {
+            potentialLabels.emplace_back("PINK");
+        }
+        if(between(maxHue, classificationConfig.redHue1) || between(maxHue, classificationConfig.redHue2)) {
+            potentialLabels.emplace_back("RED");
+        }
+
+        if (potentialLabels.empty()) {
+            label = "UNKNOWN";
+        } else if (potentialLabels.size() == 1) {
+            label = potentialLabels[0];
+        } else {
+
+            // TODO: max distance to a cluster, as to classify as UNKNOWN if too far away
+            float minDistanceSquared = 100000.0f;
+            for (auto& cluster : classificationConfig.clusters) {
+
+                if (std::find(potentialLabels.begin(), potentialLabels.end(), cluster.type) == potentialLabels.end()) {
+                    continue;
+                }
+
+                glm::vec3 dataPoint {maxHue, maxSaturation, maxValue};
+                glm::vec3& clusterPoint = cluster.point;
+                glm::vec3 delta = dataPoint - clusterPoint;
+
+                float distanceSquared = glm::dot(delta, delta);
+                if (distanceSquared < minDistanceSquared) {
+                    label = cluster.type;
+                    minDistanceSquared = distanceSquared;
+                }
+            }
+        }
+
+#else
+
+//        cv::Vec2f redPinkSeparatorLine = cv::Point2f { 1.0, 1.0 }; // Separate by (saturation, value)
 
         if (between(maxHue, classificationConfig.yellowHue) && between(maxSaturation, classificationConfig.yellowSaturation) && between(maxValue, classificationConfig.yellowValue)) {
             label = "YELLOW";
@@ -689,8 +746,7 @@ namespace billiard::snooker {
         else if(between(maxHue, classificationConfig.redHue1) || between(maxHue, classificationConfig.redHue2)) {
             // BROWN or RED or PINK
 
-            cv::Point2i brownHue {0, 10};
-            if (between(maxHue, brownHue) && between(maxSaturation, classificationConfig.brownSaturation) && between(maxValue, classificationConfig.brownValue)) {
+            if (between(maxHue, classificationConfig.brownHue) && between(maxSaturation, classificationConfig.brownSaturation) && between(maxValue, classificationConfig.brownValue)) {
                 label = "BROWN";
             }
             else if (between(maxSaturation, classificationConfig.pinkSaturation) && between(maxValue, classificationConfig.pinkValue)) {
@@ -699,25 +755,21 @@ namespace billiard::snooker {
             else {
                 label = "RED";
             }
-//            else {
-//                cv::Vec2f point { (float) maxSaturation / 255, (float) maxValue / 255 }; // Separate by (saturation, value)
-//
-//                float perpProduct = redPinkSeparatorLine[0] * point[1] - redPinkSeparatorLine[1] * point[0];
-//#ifdef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
-//                std::cout << "redPinkSeparatorLine: " << redPinkSeparatorLine <<  " point: " << point << " perp product: " << perpProduct << std::endl;
-//#endif
-//                if (perpProduct <= 0) {
-//                    label = "RED";
-//                } else {
-//                    label = "PINK";
-//                }
-//            }
         }
+#endif
 
         ball._type = label;
 
 #ifdef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
-        std::cout << "Ball " << ball._id << " at (" << ball._position.x << ", " << ball._position.y << ")" << " classified as " << label << std::endl;
+        std::cout << "Ball " << ball._id << " at (" << ball._position.x << ", " << ball._position.y << ")"
+                  << " classified as " << label << " ";
+
+        std::cout << "potential classes: [";
+        for(auto& label : potentialLabels) {
+            std::cout << label << " ";
+        }
+        std::cout << "]";
+        std::cout << std::endl;
 
         cv::Mat rgbDebug {original.rows + 100, 3*original.cols + 100, CV_8UC3, cv::Scalar{120, 120, 120}};
         original.copyTo(rgbDebug(cv::Rect{cv::Point(0, 0), cv::Size{original.cols, original.rows}}));

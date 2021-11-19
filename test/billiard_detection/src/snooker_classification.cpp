@@ -170,7 +170,8 @@ TEST(SnookerClassificationTests, snooker_classify_from_live_or_from_image) {
 TEST(SnookerClassificationTests, snooker_classify_visualization) {
 
 //    std::string classificationFolder = "./resources/test_classification/with_projector_off/";
-    std::string classificationFolder = "./resources/test_classification/with_projector_on/without_text/";
+//    std::string classificationFolder = "./resources/test_classification/with_projector_on/without_text/";
+    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_halo/";
 //    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_text/";
     std::vector<std::string> labels = {
             "BLACK",
@@ -382,9 +383,10 @@ TEST(SnookerClassificationTests, snooker_classify_visualization) {
 
 TEST(SnookerClassificationTests, snooker_classify_single_balls) {
 
+    std::string configurationImage = "./resources/test_detection/with_projector_on/with_halo/1.png";
 //    std::string classificationFolder = "./resources/test_classification/with_projector_off/";
-    std::string classificationFolder = "./resources/test_classification/with_projector_on/without_text/";
-//    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_halo/";
+//    std::string classificationFolder = "./resources/test_classification/with_projector_on/without_text/";
+    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_halo/";
 //    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_text/";
     std::vector<std::string> labels = {
             "BROWN",
@@ -405,7 +407,7 @@ TEST(SnookerClassificationTests, snooker_classify_single_balls) {
     billiard::detection::Table table = getTable();
     billiard::detection::ArucoMarkers markers = getMarkers();
     billiard::detection::CameraIntrinsics intrinsics = getIntrinsics_realsense_hd();
-    cv::Mat frame = cv::imread("./resources/test_detection_with_projector/1.png");
+    cv::Mat frame = cv::imread(configurationImage);
     std::shared_ptr<billiard::detection::DetectionConfig> detectionConfig = std::make_shared<billiard::detection::DetectionConfig>(billiard::detection::configure(frame, table, markers, intrinsics));
     billiard::snooker::SnookerClassificationConfig classificationConfig {};
     if (!billiard::snooker::configure(*detectionConfig)) {
@@ -511,6 +513,108 @@ TEST(SnookerClassificationTests, snooker_classify_single_balls) {
 
     std::cout << "Total accuracy: " << totalAccuracy << std::endl;
     std::cout << "Confusion matrix: " << std::endl << confusionMatrix << std::endl;
+}
+
+TEST(SnookerClassificationTests, snooker_find_cluster_centers) {
+
+    std::string configurationImage = "./resources/test_detection/with_projector_on/with_halo/1.png";
+//    std::string classificationFolder = "./resources/test_classification/with_projector_off/";
+    std::string classificationFolder = "./resources/test_classification/with_projector_on/without_text/";
+//    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_halo/";
+//    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_text/";
+    std::vector<std::string> labels = {
+            "BROWN",
+            "PINK",
+            "RED",
+            "BLACK",
+            "YELLOW",
+            "WHITE",
+            "BLUE",
+            "GREEN",
+            "UNKNOWN"
+    };
+    int numberOfLabels = (int) labels.size();
+
+    billiard::detection::Table table = getTable();
+    billiard::detection::ArucoMarkers markers = getMarkers();
+    billiard::detection::CameraIntrinsics intrinsics = getIntrinsics_realsense_hd();
+    cv::Mat frame = cv::imread(configurationImage);
+    std::shared_ptr<billiard::detection::DetectionConfig> detectionConfig = std::make_shared<billiard::detection::DetectionConfig>(billiard::detection::configure(frame, table, markers, intrinsics));
+    billiard::snooker::SnookerClassificationConfig classificationConfig {};
+    if (!billiard::snooker::configure(*detectionConfig)) {
+        std::cout << "Unable to configure" << std::endl;
+        return;
+    }
+
+    for (auto& trueLabel : labels) {
+
+        int trueLabelIndex = findLabelIndex(labels, trueLabel);
+
+        int totalHue1 = 0;
+        int totalHue2 = 0;
+        int totalSaturation = 0;
+        int totalValue = 0;
+        int sampleCounter = 0;
+        int hueCounter1 = 0;
+        int hueCounter2 = 0;
+
+        std::string path = classificationFolder + trueLabel + "/";
+        for (const auto& fileEntry : std::filesystem::directory_iterator(path)) {
+            const auto& imagePath = fileEntry.path().string();
+
+            cv::Mat original = imread(imagePath, cv::IMREAD_COLOR);
+
+            double radius = original.rows / 2 * classificationConfig.roiRadiusFactor;
+
+            const cv::Rect& roi = cv::Rect{
+                    (int) ((double) original.cols / 2 - radius),
+                    (int) ((double) original.rows / 2 - radius),
+                    (int) (2 * radius),
+                    (int) (2 * radius)
+            };
+            cv::Mat frame = original(roi);
+
+            cv::Mat blurred;
+            cv::GaussianBlur(frame, blurred, classificationConfig.blurSize, 0, 0);
+
+            cv::Mat hsv;
+            cv::cvtColor(blurred, hsv, cv::COLOR_BGR2HSV);
+
+            auto histogramByChannels = histogram(hsv);
+
+            billiard::snooker::Histogram hueHist = histogramByChannels[0];
+            billiard::snooker::Histogram saturationHist = histogramByChannels[1];
+            billiard::snooker::Histogram valueHist = histogramByChannels[2];
+            int maxHue = hueHist.maxLocation.y;
+            int maxSaturation = saturationHist.maxLocation.y;
+            int maxValue = valueHist.maxLocation.y;
+
+            if (maxHue < 128) {
+                totalHue1 += maxHue;
+                hueCounter1++;
+            } else {
+                totalHue2 += maxHue;
+                hueCounter2++;
+            }
+
+            totalSaturation += maxSaturation;
+            totalValue += maxValue;
+
+            sampleCounter++;
+        }
+
+        double averageHue1 = (double) totalHue1 / (double) hueCounter1;
+        double averageHue2 = (double) totalHue2 / (double) hueCounter2;
+        double averageSaturation = (double) totalSaturation / (double) sampleCounter;
+        double averageValue = (double) totalValue / (double) sampleCounter;
+
+        std::cout << "class: " << trueLabel << " samples: " << sampleCounter
+                  << " avg hue1: " << averageHue1 << " (" << hueCounter1 << ")"
+                  << " avg hue2: " << averageHue2 << " (" << hueCounter2 << ")"
+                  << " avg saturation: " << averageSaturation
+                  << " avg value: " << averageValue
+                  << std::endl;
+    }
 }
 
 TEST(SnookerClassificationTests, snooker_write_classification_test_images) {

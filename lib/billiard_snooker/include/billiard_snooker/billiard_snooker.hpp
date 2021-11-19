@@ -54,6 +54,12 @@ namespace billiard::snooker {
         cv::Mat railMask;
     };
 
+    struct Cluster {
+        std::string type;
+        glm::vec3 point;
+        Cluster(std::string type, glm::vec3 point): type(std::move(type)), point(point) {}
+    };
+
     struct EXPORT_BILLIARD_SNOOKER_LIB SnookerClassificationConfig {
         bool valid = false;
 
@@ -65,10 +71,18 @@ namespace billiard::snooker {
         cv::Size blurSize {5, 5};
 
         cv::Point2d yellowHue {10, 35};
+#ifdef BILLIARD_SNOOKER_CLASSIFICATION_CLUSTERS
+        cv::Point2d yellowSaturation {90, 255};
+#else
         cv::Point2d yellowSaturation {170, 255};
+#endif
         cv::Point2d yellowValue {245, 255};
 
+#ifdef BILLIARD_SNOOKER_CLASSIFICATION_CLUSTERS
+        cv::Point2d whiteHue {0, 40};
+#else
         cv::Point2d whiteHue {10, 40};
+#endif
         cv::Point2d whiteSaturation {0, 80};
         cv::Point2d whiteValue {245, 255};
 
@@ -79,11 +93,51 @@ namespace billiard::snooker {
         cv::Point2d redHue1 {0, 10};
         cv::Point2d redHue2 {170, 180};
 
+        cv::Point2i brownHue {0, 10};
         cv::Point2d brownValue {150, 255};
+#ifdef BILLIARD_SNOOKER_CLASSIFICATION_CLUSTERS
+        cv::Point2d brownSaturation {175, 250};
+#else
         cv::Point2d brownSaturation {180, 240};
+#endif
 
         cv::Point2d pinkSaturation {0, 180};
         cv::Point2d pinkValue {245, 255};
+
+        std::vector<Cluster> clusters {
+                // Based on images under ./resources/test_classification/with_projector_on/with_halo/
+//                Cluster { "BROWN",  {   2, 210, 225 } },
+//                Cluster { "PINK",   { 171, 106, 250 } },
+//                Cluster { "RED",    {   0, 252, 240 } },
+//                Cluster { "RED",    { 179, 252, 240 } },
+//                Cluster { "BLACK",  { 163,  91,  37 } },
+//                Cluster { "YELLOW", {  30, 252, 250 } },
+//                Cluster { "WHITE",  {  30,   6, 254 } },
+//                Cluster { "BLUE",   { 102, 253, 241 } },
+//                Cluster { "GREEN",  {  93, 253, 150 } }
+                // Based on images under ./resources/test_classification/with_projector_on/without_text/
+                //class: BROWN samples: 24 avg hue1: 4.20833 (24) avg hue2: -nan(ind) (0) avg saturation: 191.083 avg value: 195.667
+                //class: PINK samples: 24 avg hue1: 4.5 (14) avg hue2: 175.7 (10) avg saturation: 92.2083 avg value: 254.375
+                //class: RED samples: 358 avg hue1: -nan(ind) (0) avg hue2: 176.542 (358) avg saturation: 244.788 avg value: 223.12
+                //class: BLACK samples: 24 avg hue1: 34.6429 (14) avg hue2: 165.9 (10) avg saturation: 88 avg value: 42.25
+                //class: YELLOW samples: 24 avg hue1: 25.875 (24) avg hue2: -nan(ind) (0) avg saturation: 239.333 avg value: 254.75
+                //class: WHITE samples: 24 avg hue1: 33.5 (24) avg hue2: -nan(ind) (0) avg saturation: 16 avg value: 255
+                //class: BLUE samples: 24 avg hue1: 99.4583 (24) avg hue2: -nan(ind) (0) avg saturation: 254.042 avg value: 196.75
+                //class: GREEN samples: 24 avg hue1: 89.625 (24) avg hue2: -nan(ind) (0) avg saturation: 248.583 avg value: 136.792
+                //class: UNKNOWN samples: 0 avg hue1: -nan(ind) (0) avg hue2: -nan(ind) (0) avg saturation: -nan(ind) avg value: -nan(ind)
+                Cluster { "BROWN",  {   4, 191, 195 } },
+                Cluster { "PINK",   {   4,  92, 254 } },
+                Cluster { "PINK",   { 176,  92, 254 } },
+                Cluster { "RED",    {   0, 244, 223 } },
+                Cluster { "RED",    { 179, 244, 223 } },
+                Cluster { "BLACK",  { 34,  88,  42 } },
+                Cluster { "BLACK",  { 166,  88,  42 } },
+                Cluster { "YELLOW", {  26, 239, 254 } },
+                Cluster { "WHITE",  {  33,   16, 255 } },
+                Cluster { "BLUE",   { 99, 254, 196 } },
+                Cluster { "GREEN",  {  89, 248, 136 } }
+        };
+
     };
 
     struct EXPORT_BILLIARD_SNOOKER_LIB Spot {

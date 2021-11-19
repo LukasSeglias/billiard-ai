@@ -7,6 +7,7 @@
 
 TEST(BallDetectionTests, detection_accuracy) {
 
+    bool autoplay = true;
     std::vector<std::string> testcasesPaths = {
         "./resources/test_detection/with_projector_on/with_halo/testcases.json"
     };
@@ -85,15 +86,24 @@ TEST(BallDetectionTests, detection_accuracy) {
         cv::imshow("actual grid", actualGrid);
         cv::imshow("bad grid", badGrid);
 
-        char key = (char) cv::waitKey(30);
-        if (key == 'q' || key == 27) {
-            break;
-        } else if (key == 97 /* A */) {
-            testcaseIndex = testcaseIndex == 0 ? testcases.cases.size() - 1 : testcaseIndex - 1;
+        if (autoplay) {
+            testcaseIndex++;
+            if (testcaseIndex >= testcases.cases.size()) {
+                return;
+            }
             imageChanged = true;
-        } else if (key == 100 /* D */) {
-            testcaseIndex = (testcaseIndex + 1) % (testcases.cases.size());
-            imageChanged = true;
+
+        } else {
+            char key = (char) cv::waitKey(30);
+            if (key == 'q' || key == 27) {
+                break;
+            } else if (key == 97 /* A */) {
+                testcaseIndex = testcaseIndex == 0 ? testcases.cases.size() - 1 : testcaseIndex - 1;
+                imageChanged = true;
+            } else if (key == 100 /* D */) {
+                testcaseIndex = (testcaseIndex + 1) % (testcases.cases.size());
+                imageChanged = true;
+            }
         }
     }
 }
