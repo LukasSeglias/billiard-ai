@@ -14,4 +14,5 @@ target_sources(${PROJECT_NAME} PRIVATE
         video_detection.cpp
         util.hpp
         util.cpp
+        optical_flow.cpp
         )
