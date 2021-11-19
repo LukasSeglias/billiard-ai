@@ -16,22 +16,37 @@ vertikalen Versatz und der passenden Geschwindigkeit ausführen kann. Dieser Que
 steuern, sodass ein Spieler teilnehmen kann, der gar nicht physisch vor Ort ist.
 
 Die vorliegende Arbeit beinhaltet hingegen nicht nur die Anzeige des Suchresultats wie bei \glqq Stuff Made Here\grqq{},
-sondern auch der Simulation. Es werden demnach die Wege aller Kugeln bis zum
-Stillstand oder Einlochen korrekt animiert auf Basis der physikalischen Eigenschaften des Tisches sowie der Kugeln
-veranschaulicht. Dadurch ist die Konsequenz des Stosses bekannt, was wiederum die Möglichkeit der Berücksichtigung
-mehrerer Stösse eröffnete. Diese Ergänzung wird als mögliche weitere Arbeit bei \glqq Stuff Made Here\grqq{} am Ende
-des Videos erwähnt.
+sondern auch deren Simulation. Es werden die Wege aller Kugeln bis zum
+Stillstand oder Einlochen auf Basis der physikalischen Eigenschaften des Tisches sowie der Kugeln korrekt animiert.
+Dadurch ist die Konsequenz des Stosses bekannt, was wiederum die Möglichkeit der Berücksichtigung
+mehrerer aufeinanderfolgender Stösse eröffnet hat.
+Diese Ergänzung wird als mögliche weitere Arbeit bei \glqq Stuff Made Here\grqq{} am Ende des Videos erwähnt.
 
 \subsection{Pool Live AR}
 Dieses Projekt befasst sich nicht mit der Suche und Visualisierung eines optimalen Stosses, sondern mit der
 Detektion des Queues und der Anzeige des resultierenden Weges der weissen Kugel\cite{poollivear}. Zudem wurden einige
 Effekte/Animationen eingebaut, die das Spielerlebnis verbessern sollen, z.B. wenn die weisse Kugel angestossen wird.
-Anscheinend kann das System lediglich den Weg der weissen  Kugel mit einem konstanten Fehlerwinkel und einer bestimmten Anzahl an
-Bandenreflektionen anzeigen. Kollisionen mit anderen Kugeln werden nicht erkannt, genau so wenig die Konsequenz daraus.
+Das System kann den Weg der weissen Kugel mit einem konstanten Fehlerwinkel und einer bestimmten Anzahl an
+Bandenreflektionen anzeigen.
+Kollisionen mit anderen Kugeln wie auch deren Konsequenzen für den Spielstand werden nicht erkannt.
+Das System hat demnach vermutlich keine Simulation, sondern detektiert die 2D-Orientierung des Queues und reflektiert die
+daraus enstehende Linie des Spielballs an den Banden.
 
 \subsection{Innovationsgrad}
 Es gibt bereits viele Arbeiten die sich thematisch mit derselben Problematik befassen, sei dies theoretischer oder
-praktischer Natur. Als innovativ kann die animierte Darstellung der Konsequenz eines Stosses wie auch die Suche über
-mehrere Spielstände genannt werden. Des Weiteren bietet die Interpretation der Kugeln in Modellkoordinaten einen gewissen Spielraum,
-der weitere Innovationen wie z.B. eine Replay-Funktionalität zulässt. Durch die Berücksichtigung weiterer physikalischer
-Eigenschaften wie Spin oder Rollverhalten könnte sich das Projekt noch weiter von der Konkurrenz abheben.
+praktischer Natur.
+Als innovativ kann die animierte Darstellung der Konsequenz eines Stosses wie auch die Suche über
+mehrere Spielstände genannt werden.
+Ausserdem wurde mit dem Infinity-Modus eine interaktive Möglichkeit geschaffen, um den Spieler mit Stossvorschlägen zu unterstützen.
+Dem Spieler wird die benötigte Stärke eines Stosses angezeigt, wodurch dieser lernt, dass viele Stösse im Billard nicht viel
+Kraft benötigen, um das Ziel zu erreichen.
+Die Suche über mehrere Spielstände verdeutlicht dem Spieler, dass in Snooker die Platzierung des Spielballs essentiell ist
+und fördert dessen Weitsicht.
+
+Des Weiteren bietet die Interpretation der Kugeln in Modellkoordinaten Spielraum,
+der weitere Innovationen wie z.B. eine Replay-Funktionalität oder andere Verarbeitungen des Spielstandes zulassen.
+
+Physikalische Eigenschaften wie Topspin und dass die Billardkugeln zunächst gleiten und nach einer gewissen Zeit rollen
+wurde in der Simulation berücksichtigt.
+Durch die Berücksichtigung von Sidespin oder Verbesserungen in der Simulation des Rollverhalten könnte sich das
+Projekt noch weiter von der Konkurrenz abheben.
