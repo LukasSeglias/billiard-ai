@@ -34,7 +34,7 @@
 #endif
 
 // TODO: remove this
-#undef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
+//#undef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
 //#define BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL 1
 #undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
 //#define BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT 1
@@ -75,8 +75,7 @@
         do {                     \
             stopTimer(agent);    \
         } while(0);
-#endif
-#ifndef BILLIARD_SNOOKER_TIMING
+#else
     #define tick() do {} while(0);
     #define tock(agent) do {} while(0);
 #endif
@@ -159,17 +158,17 @@ namespace billiard::snooker {
     }
 
 
-    void drawHoughResult(cv::Mat& image, std::vector<cv::Vec3f>& circles) {
+    void drawHoughResult(cv::Mat& image, std::vector<cv::Vec3f>& circles, int radius = 0) {
         for(auto c : circles) {
             cv::Point center = cv::Point(c[0], c[1]);
-            uint8_t radius = c[2];
-            cv::Rect roi(center.x - radius, center.y - radius, radius * 2, radius * 2);
+            int R = radius > 0 ? radius : c[2];
+            cv::Rect roi(center.x - R, center.y - R, R * 2, R * 2);
             if (roi.x >= 0 && roi.y >= 0 && roi.width <= image.cols && roi.height <= image.rows) {
 
                 // circle center
                 cv::circle(image, center, 1, cv::Scalar(0, 100, 100), 3, cv::LINE_AA);
                 // circle outline
-                cv::circle(image, center, radius, cv::Scalar(255, 0, 255), 1, cv::LINE_AA);
+                cv::circle(image, center, R, cv::Scalar(255, 0, 255), 1, cv::LINE_AA);
             }
         }
     }

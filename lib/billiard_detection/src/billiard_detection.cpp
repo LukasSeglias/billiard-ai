@@ -22,7 +22,7 @@
 //#undef BILLIARD_DETECTION_DEBUG_VISUAL
 //#undef BILLIARD_DETECTION_DEBUG_PRINT
 
-billiard::detection::StateTracker::StateTracker(const std::shared_ptr<capture::CameraCapture>& capture,
+billiard::detection::StateTracker::StateTracker(const std::function<capture::CameraFrames ()>& capture,
                                                 const std::shared_ptr<billiard::detection::DetectionConfig>& config,
                                                 const std::function<State(const State& previousState,
                                                                           const cv::Mat&)>& detect,
@@ -51,43 +51,275 @@ std::future<billiard::detection::State> billiard::detection::StateTracker::captu
     return future;
 }
 
-void assignIds(const billiard::detection::State& previousState, billiard::detection::State& currentState) {
+struct TrackedBall {
+    bool tracked;
+    float distance;
+    int previousStateIndex;
+    int currentStateIndex;
+    TrackedBall(bool tracked, float distance, int previousStateIndex, int currentStateIndex):
+            tracked(tracked),
+            distance(distance),
+            previousStateIndex(previousStateIndex),
+            currentStateIndex(currentStateIndex) {
+    }
+};
 
-    int id = 1;
-    for (auto& ball : currentState._balls) {
-        ball._id = ball._type + "-" + std::to_string(id++);
+void addPosition(billiard::detection::BallStats& stats, const glm::vec2& position) {
+
+    stats.positions[stats.currentIndex++] = position;
+    if (stats.currentIndex == AVERAGE_OVER_N_FRAMES) {
+        // History full, overwrite oldest entries
+        stats.currentIndex = 0;
+    }
+    if (stats.size < AVERAGE_OVER_N_FRAMES) {
+        // History not full yet
+        stats.size++;
     }
 }
 
+glm::vec2 calculateAveragePosition(const billiard::detection::BallStats& stats) {
+    glm::vec2 totalPosition = glm::vec2{0, 0};
+    for (int i = 0 ; i < stats.size; i++) {
+        totalPosition += stats.positions[i];
+    }
+    return totalPosition / ((float) stats.size);
+}
+
+int findNearestBall(const glm::vec2& currentPosition, bool* skip, const billiard::detection::State& state, float maxTrackingDistanceSquared) {
+    float minDistanceSquared = 2.0f * maxTrackingDistanceSquared; // just some number bigger than any distance considered
+    int bestMatchIndex = -1;
+
+    for (int index = 0; index < state._balls.size(); index++) {
+        if (skip[index]) {
+            continue;
+        }
+
+        auto& ball = state._balls[index];
+        glm::vec2 distance = currentPosition - ball._position;
+        float distanceSquared = glm::dot(distance, distance);
+
+        if (distanceSquared < maxTrackingDistanceSquared) {
+            if (distanceSquared < minDistanceSquared) {
+                minDistanceSquared = distanceSquared;
+                bestMatchIndex = index;
+            }
+        }
+    }
+
+    return bestMatchIndex;
+}
+
+billiard::detection::State track(billiard::detection::Tracking& tracking,
+                                       const billiard::detection::State& previousState,
+                                       const billiard::detection::State& currentState,
+                                       float maxTrackingDistanceSquared) {
+
+    std::string agent = "[track] ";
+
+    billiard::detection::State result;
+    result._balls.reserve(currentState._balls.size());
+
+    std::vector<TrackedBall> trackedBalls;
+    trackedBalls.reserve(currentState._balls.size());
+
+    std::vector<std::string> alreadyAssignedIds;
+    alreadyAssignedIds.reserve(currentState._balls.size());
+
+    int previousBallCount = previousState._balls.size();
+    bool* assigned = new bool[previousBallCount];
+    for (int previousBallIndex = 0; previousBallIndex < previousBallCount; previousBallIndex++) {
+        assigned[previousBallIndex] = false;
+    }
+    std::list<int> untrackedBallIndices;
+    std::set<std::string> trackedIds;
+
+    for (int currentBallIndex = 0; currentBallIndex < currentState._balls.size(); currentBallIndex++) {
+        auto& currentBall = currentState._balls[currentBallIndex];
+        glm::vec2 currentPosition = currentBall._position;
+        int bestMatchIndex = findNearestBall(currentPosition, assigned, previousState, maxTrackingDistanceSquared);
+
+        if (bestMatchIndex >= 0) {
+            // Successful tracking
+            assigned[bestMatchIndex] = true;
+            int previousBallIndex = bestMatchIndex;
+
+            auto& id = previousState._balls[previousBallIndex]._id;
+            alreadyAssignedIds.push_back(id);
+            trackedIds.insert(id);
+
+            auto& detectedPosition = currentBall._position;
+
+            billiard::detection::BallStats& stats = tracking.stats[id];
+            addPosition(stats, detectedPosition);
+
+            glm::vec2 newPosition;
+
+            if (stats.size >= WARMED_UP_LIMIT) {
+                // History is warmed up, use average position from history
+                glm::vec2 averagePosition = calculateAveragePosition(stats);
+
+                float maxDistanceSquared = maxTrackingDistanceSquared;
+                glm::vec2 delta = averagePosition - currentPosition;
+                float distanceSquared = glm::dot(delta, delta);
+                // Factor is 1.0 if distance is high -> use current position
+                // Factor is 0.0 if distance is low -> use average position
+                float factor = std::min(distanceSquared / maxDistanceSquared, 1.0f);
+
+                // Mix current position and average position based on factor
+                newPosition = factor * currentPosition + (1.0f - factor) * averagePosition;
+
+#if 0
+                std::cout << agent
+                          << "Successful " << id << ", "
+                          << "avg: (" << averagePosition.x << ", " << averagePosition.y << ") "
+                          << "current: (" << currentBall._position.x << ", " << currentBall._position.y << ") "
+                          << "new: (" << newPosition.x << ", " << newPosition.y << ") "
+                          << "factor: " << factor << " "
+                          << "moved: " << glm::length(previousState._balls[previousBallIndex]._position - currentBall._position) << " "
+                          << "history: " << stats.size << ", " << stats.currentIndex
+                          << std::endl;
+#endif
+            } else {
+                // History is not warmed up yet, use detected position
+                newPosition = detectedPosition;
+
+#if 0
+                std::cout << agent
+                          << "Successful " << id << ", " << "but history not warmed-up yet" << " "
+                          << "new: (" << newPosition.x << ", " << newPosition.y << ") "
+                          << "moved: " << glm::length(previousState._balls[previousBallIndex]._position - currentBall._position)
+                          << "history: " << stats.size << ", " << stats.currentIndex
+                          << std::endl;
+#endif
+            }
+
+            billiard::detection::Ball ball;
+            ball._id = id;
+            ball._type = currentBall._type;
+            ball._position = newPosition;
+
+            result._balls.push_back(ball);
+        } else {
+            // Could not track ball
+            untrackedBallIndices.push_back(currentBallIndex);
+        }
+    }
+
+    // Cleanup tracking history of lost balls
+    for (auto& tracked : tracking.tracked) {
+        if (std::find(trackedIds.begin(), trackedIds.end(), tracked) == trackedIds.end()) {
+            tracking.stats.erase(tracked);
+        }
+    }
+    tracking.tracked = trackedIds;
+
+    // Assign IDs to untracked balls that do not collide with tracked balls
+    int number = 0;
+    for (auto ballIndex : untrackedBallIndices) {
+        auto& currentBall = currentState._balls[ballIndex];
+
+        std::string id = currentBall._type + "-" + std::to_string(number++);
+        while(std::find(alreadyAssignedIds.begin(), alreadyAssignedIds.end(), id) != alreadyAssignedIds.end()) {
+            id = currentBall._type + "-" + std::to_string(number++);
+        }
+
+        billiard::detection::Ball ball;
+        ball._id = id;
+        ball._type = currentBall._type;
+        ball._position = currentBall._position;
+
+#if 0
+        std::cout << agent
+                  << "Failed " << id << " "
+                  << "new: (" << currentBall._position.x << ", " << currentBall._position.y << ") "
+                  << std::endl;
+#endif
+
+        result._balls.push_back(ball);
+    }
+
+#if 0
+    std::cout << agent << "Tracked: ";
+    std::cout << tracking.tracked.size() << " ";
+    std::cout << "[ ";
+    for (auto& tracked : tracking.tracked) {
+        std::cout << tracked << ", ";
+    }
+    std::cout << "]";
+    std::cout << std::endl;
+#endif
+
+    delete[] assigned;
+    return result;
+}
+
+void drawHoughResult(cv::Mat& image, std::vector<cv::Vec3f>& circles, int radius = 0) {
+    for(auto c : circles) {
+        cv::Point center = cv::Point(c[0], c[1]);
+        int R = radius > 0 ? radius : c[2];
+        cv::Rect roi(center.x - R, center.y - R, R * 2, R * 2);
+        if (roi.x >= 0 && roi.y >= 0 && roi.width <= image.cols && roi.height <= image.rows) {
+
+            // circle center
+            cv::circle(image, center, 1, cv::Scalar(0, 100, 100), 3, cv::LINE_AA);
+            // circle outline
+            cv::circle(image, center, R, cv::Scalar(255, 0, 255), 1, cv::LINE_AA);
+        }
+    }
+}
+
+const float MAX_TRACKING_DISTANCE_SQUARED = 20.f * 20.0f;
+
 void billiard::detection::StateTracker::work(std::future<void> exitSignal,
           std::mutex& lock,
-          const std::shared_ptr<capture::CameraCapture>& capture,
+          const std::function<capture::CameraFrames ()>& capture,
           const std::shared_ptr<billiard::detection::DetectionConfig>& config,
           const std::function<State (const State& previousState, const cv::Mat&)>& detect,
           const std::function<void (const State& previousState, State& currentState, const cv::Mat&)>& classify,
           std::queue<std::promise<State>>& waiting) {
-    State previousState;
+    Tracking tracking;
+    State previousPixelState;
+    State previousModelState;
     while (exitSignal.wait_for(std::chrono::nanoseconds(10)) == std::future_status::timeout) {
-#ifndef NDEBUG
-        lock.lock();
-        if (waiting.empty()) {
-            lock.unlock();
+        auto image = capture();
+        if (image.color.empty()) {
             continue;
         }
-        lock.unlock();
+        auto pixelState = detect(previousPixelState, image.color);
+        classify(previousPixelState, pixelState, image.color);
+
+        // Convert state to internal coordinates
+        auto modelState = pixelToModelCoordinates(*config, pixelState);
+        // Track balls and smoothen the detected positions over time
+        auto trackedState = track(tracking, previousModelState, modelState, MAX_TRACKING_DISTANCE_SQUARED);
+
+#if 0
+        std::vector<cv::Point2d> modelPoints;
+        for (billiard::detection::Ball& ball : trackedState._balls) {
+            modelPoints.emplace_back(ball._position.x, ball._position.y);
+        }
+        auto worldPoints = billiard::detection::modelPointsToWorldPoints(config->worldToModel, modelPoints, 0.0);
+        auto imagePoints = billiard::detection::worldPointsToImagePoints(config->cameraToWorld, worldPoints);
+
+        cv::Mat trackedResult;
+        image.color.copyTo(trackedResult);
+        for (auto& point : imagePoints) {
+            cv::Point center = cv::Point(point.x, point.y);
+            cv::circle(trackedResult, center, 1, cv::Scalar(0, 100, 100), 3, cv::LINE_AA);
+            cv::circle(trackedResult, center, config->ballRadiusInPixel, cv::Scalar(255, 0, 255), 1, cv::LINE_AA);
+        }
+        cv::imshow("Tracked", trackedResult);
+        cv::waitKey(1);
 #endif
-        auto image = capture->read();
-        auto state = detect(previousState, image.color);
-        classify(previousState, state, image.color);
-        assignIds(previousState, state);
-        previousState = state;
+
+        previousPixelState = pixelState;
+        previousModelState = trackedState;
+
         lock.lock();
         if (!waiting.empty()) {
-            // Convert state to internal coordinates
-            auto modelState = pixelToModelCoordinates(*config, state);
             while (!waiting.empty()) {
                 auto& prom = waiting.front();
-                prom.set_value(modelState);
+                prom.set_value(trackedState);
                 waiting.pop();
             }
         }

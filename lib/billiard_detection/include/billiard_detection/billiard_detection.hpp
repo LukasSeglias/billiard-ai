@@ -126,9 +126,27 @@ namespace billiard::detection {
 
     EXPORT_BILLIARD_DETECTION_LIB State detect(const State& previousState, const cv::Mat& image);
 
+    // Average ball's position over the last N frames in which the ball could be tracked
+    #define AVERAGE_OVER_N_FRAMES 20
+    // After N successful trackings, the balls detected position is averaged, before it was tracked N times,
+    // the position is the detected position
+    #define WARMED_UP_LIMIT 10
+    static_assert(AVERAGE_OVER_N_FRAMES >= WARMED_UP_LIMIT);
+
+    struct EXPORT_BILLIARD_DETECTION_LIB BallStats {
+        glm::vec2 positions[AVERAGE_OVER_N_FRAMES];
+        short currentIndex = 0;
+        short size = 0;
+    };
+
+    struct EXPORT_BILLIARD_DETECTION_LIB Tracking {
+        std::set<std::string> tracked;
+        std::unordered_map<std::string, BallStats> stats;
+    };
+
     class EXPORT_BILLIARD_DETECTION_LIB StateTracker {
     public:
-        StateTracker(const std::shared_ptr<capture::CameraCapture>& capture,
+        StateTracker(const std::function<capture::CameraFrames ()>& capture,
                      const std::shared_ptr<billiard::detection::DetectionConfig>& config,
                      const std::function<State(const State& previousState, const cv::Mat&)>& detect,
                      const std::function<void (const State& previousState,
@@ -146,7 +164,7 @@ namespace billiard::detection {
 
         static void work(std::future<void> exitSignal,
                          std::mutex& lock,
-                         const std::shared_ptr<capture::CameraCapture>& capture,
+                         const std::function<capture::CameraFrames ()>& capture,
                          const std::shared_ptr<billiard::detection::DetectionConfig>& config,
                          const std::function<State (const State& previousState, const cv::Mat&)>& detect,
                          const std::function<void (const State& previousState, State& currentState, const cv::Mat&)>& classify,
