@@ -160,3 +160,124 @@ TEST(DetectionTest, detection_errors_over_time) {
     }
 
 }
+
+TEST(DetectionTest, video) {
+
+    bool paused = true;
+    std::string videoPath = "./resources/video_detection/infinity/spiel_mit_infinity_mode.avi";
+
+    cv::Size imageSize = getImageSize();
+    billiard::detection::Table table = getTable();
+    billiard::detection::ArucoMarkers markers = getMarkers();
+    billiard::detection::CameraIntrinsics intrinsics = getIntrinsics_realsense_hd();
+
+    std::shared_ptr<billiard::detection::DetectionConfig> detectionConfig;
+
+    std::vector<cv::Mat> frames {};
+    int frameIndex = 0;
+    bool imageChanged = true;
+
+    cv::VideoCapture video = cv::VideoCapture {videoPath};
+    if (!video.isOpened()) {
+        std::cout << "Unable to open video" << std::endl;
+        return;
+    }
+
+    cv::Mat frame;
+    if (video.read(frame)) {
+        frames.push_back(frame);
+    }
+
+    detectionConfig = std::make_shared<billiard::detection::DetectionConfig>(billiard::detection::configure(frames.at(0), table, markers, intrinsics));
+    if (!detectionConfig->valid) {
+        std::cout << "Unable to configure detection" << std::endl;
+        return;
+    }
+
+    if (!billiard::snooker::configure(*detectionConfig)) {
+        std::cout << "Unable to configure snooker detection" << std::endl;
+        return;
+    }
+
+    cv::Mat drawn;
+    cv::Mat grid;
+
+    while(true) {
+
+        if (imageChanged) {
+            imageChanged = false;
+
+            while (frameIndex >= frames.size()) {
+                cv::Mat temp;
+                if (video.read(temp)) {
+                    frames.push_back(temp);
+                } else {
+                    frameIndex = 0;
+                    break;
+                }
+            }
+
+            std::cout << "frame " << std::to_string(frameIndex) << std::endl;
+            frame = frames.at(frameIndex);
+            cv::resize(frame, frame, imageSize);
+
+            billiard::detection::State pixelState = billiard::snooker::detect(billiard::detection::State(), frame);
+            billiard::snooker::classify(billiard::detection::State(), pixelState, frame);
+            billiard::detection::State state = billiard::detection::pixelToModelCoordinates(*detectionConfig, pixelState);
+
+            frame.copyTo(drawn);
+            drawBalls(drawn, pixelState._balls);
+            drawTypes(drawn, pixelState._balls);
+
+            // Sort by distance to origin to have balls at same positions in grid
+            std::sort(pixelState._balls.begin(), pixelState._balls.end(), [](const billiard::detection::Ball& ball1, const billiard::detection::Ball& ball2) {
+                float dist1 = glm::length(ball1._position);
+                float dist2 = glm::length(ball2._position);
+                return dist1 < dist2;
+            });
+            grid = drawDetectedBallsGrid(drawn, pixelState, 128, 8);
+
+        }
+
+        cv::imshow("Frame", frame);
+        cv::imshow("drawn", drawn);
+        cv::imshow("grid", grid);
+
+        char key = (char) cv::waitKey(5);
+        if (key == ' ') {
+            paused = !paused;
+        } else if (key == 27 /* ESC */) {
+            break;
+        }
+
+        if (!paused) {
+            frameIndex++;
+            imageChanged = true;
+            cv::Mat temp;
+            if (video.read(temp)) {
+                frames.push_back(temp);
+            }
+            if (frameIndex >= frames.size()) {
+                return;
+            }
+        } else {
+            if (key == 97 /* A */) {
+                frameIndex = frameIndex == 0 ? 0 : frameIndex - 1;
+                imageChanged = true;
+            } else if (key == 100 /* D */) {
+                frameIndex++;
+                imageChanged = true;
+            } else if (key == 'q') {
+                frameIndex = frameIndex - 30 <= 0 ? 0 : frameIndex - 30;
+                imageChanged = true;
+            } else if (key == 'e') {
+                frameIndex += 30;
+                imageChanged = true;
+            } else if (key == 'l') {
+                std::string imageName = "video_frame_" + std::to_string(frameIndex) + ".png";
+                cv::imwrite(imageName, frame);
+            }
+        }
+    }
+
+}
