@@ -1,17 +1,25 @@
-TODO: Beschreiben oder löschen
+\section{Simulation Algorithmusverbesserung}\label{anhang:simulation:algorithmus}
+
+Aktuell hat der Simulationsalgorithmus zwei Probleme. Er kann einerseits nur ein Ereignis zu einem Zeitpunkt bestimmen und
+andererseits werden alle Ereignisse ab einem Zeitpunkt neu berechnet. Neu soll demnach die Möglichkeit bestehen, mehrere
+Ereignisse zum selben Zeitpunkt zuzulassen und alle Ereignisse vorgängig einmal zu berechnen und entsprechend ihrem Eintreten
+abzuarbeiten. Sobald eine Kugel an einem Ereignis beteiligt ist, werden sämtliche gespeicherten Ereignisse für diese Kugel und
+ihre Partnerkugel gelöscht. Zudem werden alle Ereignisse bei anderen Kugeln entfernt, die mit an dem Ereignis beteiligten Kugeln
+zusammenhängen. Danach wird ein neuer Layer zu diesem Zeitpunkt berechnet. Wenn das System nicht konstant ist, werden
+für sämtliche Kugeln die Ereignisse neu berechnet, die keine mehr haben. Dabei werden auch die gelöschten Ereignisse
+mit am vorigen Ereignis unbeteiligten Kugeln ergänzt, sollte es diese geben.
+
 \begin{algorithm}[H]
     \DontPrintSemicolon
     \SetKwFunction{simulate}{simulate}
     \SetKwFunction{events}{events}
-    \SetKwFunction{nextEvent}{nextEvent}
     \SetKwFunction{append}{append}
-    \SetKwFunction{delete}{delete}
     \SetKwProg{Fn}{Function}{}{}
     struct Event \{\\
     timestamp: datetime\\
     me: string\\
     partner: string\\
-    event: [OutOfEnergy, Collision, OutOfSystem]\\
+    event: [OutOfEnergy, Collision, OutOfSystem, Rolling]\\
     \}\\
     \;
     \Fn{\simulate{start: Layer, constantObjects: list} $\longrightarrow$ System}{
@@ -21,9 +29,10 @@ TODO: Beschreiben oder löschen
 
         \While{! system.isStatic()}{
             events $\longleftarrow$ events(system.lastLayer(), constantObjects, events)\\
-            nextEvent $\longleftarrow$ nextEvent(events)\\
-            events $\longleftarrow$ delete(events, nextEvent)\\
-            layer $\longleftarrow$ atMoment(nextEvent)\\
+            nextEvents $\longleftarrow$ nextEvents(events)\\
+            events $\longleftarrow$ delete(events, nextEvents.second)\\
+            events $\longleftarrow$ subtractTime(events, nextEvents.first)\\
+            layer $\longleftarrow$ atMoment(nextEvents)\\
             system $\longleftarrow$ appendLayer(system, layer)
         }
         \KwRet system
@@ -37,42 +46,63 @@ TODO: Beschreiben oder löschen
                 events = append(collision(object, layer.staticObjects()), events)\\
                 events = append(collision(object, constantObjects), events)\\
                 events = append(outOfSystem(object, constantObjects), events)\\
+                events = append(rolling(object), events)\\
             }
         }
         \KwRet events
     }
     \;
-    \Fn{\append{events: Map[string, Event[]], event: Event} $\longrightarrow$ Map[string, Event[]]}{
+    \Fn{\append{event: Event, events: Map[string, Event[]]} $\longrightarrow$ Map[string, Event[]]}{
         events $\longleftarrow$ append(event.me, event, events)\\
         \If{event.me != event.partner}{
             events $\longleftarrow$ append(event.partner, event, events)\\
         }
         \KwRet events
     }
-    \;
-    \Fn{\delete{events: Map[string, Event[]], event: Event} $\longrightarrow$ Map[string, Event[]]}{
-        events $\longleftarrow$ drop(event.me, events)\\
-        events $\longleftarrow$ drop(event.partner, events)\\
-        \For{pair in events}{
-            \For{myEvent in pair.second}{
-                \If{myEvent.partner == event.me or myEvent.partner == event.partner}{
-                    cleaned $\longleftarrow$ drop(myEvent.partner, pair.second)\\
-                    events $\longleftarrow$ replace(pair.first, cleaned, events)
+    \caption{Algorithmus zum Aufbau eines physikalischen Systems - Part 1}
+    \label{alg:physikalisches_system_verbesserung_algorithmus_1}
+\end{algorithm}
+\newpage
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \SetKwFunction{delete}{delete}
+    \SetKwFunction{nextEvents}{nextEvents}
+    \SetKwFunction{subtractTime}{subtractTime}
+    \SetKwProg{Fn}{Function}{}{}
+    \Fn{\delete{events: Map[string, Event[]], nextEvents: Event[]} $\longrightarrow$ Map[string, Event[]]}{
+        \For{event in nextEvents}{
+            events $\longleftarrow$ drop(event.me, events)\\
+            events $\longleftarrow$ drop(event.partner, events)\\
+            \For{pair in events}{
+                \For{anEvent in pair.second}{
+                    \If{anEvent.partner == event.me or anEvent.partner == event.partner}{
+                        cleaned $\longleftarrow$ drop(anEvent.partner, pair.second)\\
+                        events $\longleftarrow$ replace(pair.first, cleaned, events)
+                    }
                 }
             }
         }
         \KwRet events
     }
     \;
-    \Fn{\nextEvent{events: Map[string, Event[]]} $\longrightarrow$ Event}{
-        nextEvent: Node $\longleftarrow$ none\\
+    \Fn{\nextEvents{events: Map[string, Event[]]} $\longrightarrow$ [float, Event[]]}{
+        nextEvents: [float, Event[]] $\longleftarrow$ [$\infty$, []]\\
         \For{pair in events}{
             \For{event in pair.second} {
-                nextEvent $\longleftarrow$ min(nextEvent, event)
+                nextEvents $\longleftarrow$ min(nextEvents.first, event)
             }
         }
-        \KwRet nextEvent
+        \KwRet nextEvent.second
     }
-    \caption{Algorithmus zum Aufbau eines physikalischen Systems}
-    \label{alg:physikalisches_system}
+    \;
+    \Fn{\subtractTime{events: Map[string, Event[]], time: float} $\longrightarrow$ Map[string, Event[]]}{
+        \For{pair in events}{
+            \For{event in pair.second}{
+                event.timestamp $\longleftarrow$ event.timestamp - time
+            }
+        }
+        \KwRet events
+    }
+    \caption{Algorithmus zum Aufbau eines physikalischen Systems - Part 2}
+    \label{alg:physikalisches_system_verbesserung_algorithmus_2}
 \end{algorithm}

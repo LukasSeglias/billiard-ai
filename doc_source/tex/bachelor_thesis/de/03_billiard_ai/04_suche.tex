@@ -168,7 +168,10 @@ Es werden zwei Expansionen gezeigt. Die relevanten Informationen $d$ für die Di
 einen entsprechenden Index auf, welcher den Expansionsschritt markiert. Beim ersten Expansionsschritt bildet der Zielpunkt
 den Elternknoten. Der Winkel $\alpha_1$ ist definiert durch die Rollrichtung der Kugel und einer Normalen auf den Zielpunkt.
 Die Normalen zeigen jeweils zum Ursprung in der Mitte des Tisches. Die Distanz $d_1$ ist definiert über die Länge des
-zurückzulegenden Weges. Im zweiten Fall wird der Winkel $\alpha_2$ durch die Rollrichtung der ersten und der Rollrichtung
+zurückzulegenden Weges. Ist in einem Expansionsschritt die weisse Kugel betroffen, werden die Distanzkosten mit den
+Distanzkosten des vorangegangenen Expansionsschritts gewichtet. Dies stellt sicher, dass der Weg, welcher die nächste
+Kugel nehmen wird, möglichst kurz sein muss, damit sich ein allfälliger Fehler beim Stoss der weissen Kugel nicht zu
+stark akkumuliert. Im zweiten Fall wird der Winkel $\alpha_2$ durch die Rollrichtung der ersten und der Rollrichtung
 der zweiten Kugel definiert.
 
 \begin{figure}[h!]
