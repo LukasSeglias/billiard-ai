@@ -30,7 +30,7 @@ public class StabilizationController : MonoBehaviour {
 	private int maximumStableLostBallCount = 0;
 
 	private CueBallTracking cueBallTracking = new CueBallTracking(1.0f, 2.0f);
-	private BallTracking ballTracking = new BallTracking(10*10, 1.0f, 2.0f);
+	private BallTracking ballTracking = new BallTracking(10*10, 1.0f, 2.0f, 0.0f, 0.25f, 0.25f);
 	private StabilizationStatus currentStatus = StabilizationStatus.UNKNOWN;
 	private DateTime? lastStateChange = null;
 	private float lastAverageBallCount = -1;
@@ -130,6 +130,9 @@ public class StabilizationController : MonoBehaviour {
                         unstableBallIds.Add(trackedBall.id);
                     }
                 }
+                int stableBallCountChange = ballTracking.getStableBallCountChange();
+                int stableBallCount = ballTracking.getStableBallCount();
+                int currentBallCount = ballTracking.getCurrentBallCount();
                 float currentAverageBallCount = ballTracking.averageBallCount();
 //                 float lastAverageBallCount = ballTracking.oldestAverageBallCount(); // TODO: remove?
                 float lastAverageBallCount = ballTracking.previousAverageBallCount(); // TODO: remove?
@@ -141,20 +144,78 @@ public class StabilizationController : MonoBehaviour {
 //                 bool averageBallCountChangedTooMuch = lastAverageBallCount > 0 && Math.Abs(lastAverageBallCount - currentAverageBallCount) > 0.5;
 //                 bool averageBallCountChangedTooMuch = Math.Abs(lastAverageBallCount - currentAverageBallCount) > 0.5;
                 bool averageBallCountChangedTooMuch = Math.Abs(totalAverageBallCountChange) > 0.5;
+                // Consider positive values only, because lost balls are already handled with a different metric
+                bool newBallsWereAdded = stableBallCountChange >= 1;
+                bool countEqualsStableCount = currentBallCount == stableBallCount;
+
+                /*
+                    TODO: ??
+                    no change
+                    if stablecountchange == 0 && count == stablecount then stable
+                    ball was added
+                    if stablecountchange >= 1 && count != stablecount then unstable
+                    ghost?
+                    if stablecountchange == 0 && count != stablecount then stable
+                    ball stopped moving
+                    if stablecountchange >= 1 && count == stablecount then stable
+                */
+
 
 //                 if (cueBallStable && !tooManyUnstableBalls && !tooManyLostBalls) {
-                if (cueBallStable && !tooManyUnstableBalls && !tooManyLostBalls && !averageBallCountChangedTooMuch) {
-                   cueBallDebugOutput += "Cue ball stable ("
-                       + String.Format("{0:0.000}", Math.Sqrt(avgCueBallSquaredDistance)) + "mm, "
-                       + "unstable=" + unstableBallIds.Count + ", "
-                       + "lost=" + totalLostBallsCount + ", "
-                       + currentAverageBallCount
+//                 if (cueBallStable && !tooManyUnstableBalls && !tooManyLostBalls && !averageBallCountChangedTooMuch) {
+                if (cueBallStable && !tooManyUnstableBalls && !tooManyLostBalls && !newBallsWereAdded) { // TODO: try out newBallsWereAdded
+//                    cueBallDebugOutput += "Cue ball stable ("
+//                        + String.Format("{0:0.000}", Math.Sqrt(avgCueBallSquaredDistance)) + "mm, "
+//                        + "unstable=" + unstableBallIds.Count + ", "
+//                        + "lost=" + totalLostBallsCount + ", "
+//                        + currentAverageBallCount
+// //                        + "/"
+// //                        + lastAverageBallCount
 //                        + "/"
-//                        + lastAverageBallCount
-                       + "/"
-                       + totalAverageBallCountChange
-                       + ") ";
-                   currentStatus = StabilizationStatus.STABLE;
+//                        + totalAverageBallCountChange
+//                        + ", "
+//                        + "added=" + stableBallCountChange
+//                        + ", "
+//                        + "stable count=" + stableBallCount
+//                        + "/" + currentBallCount
+//                        + ") ";
+                   if (countEqualsStableCount) {
+                       cueBallDebugOutput += "Cue ball stable ("
+                                          + String.Format("{0:0.000}", Math.Sqrt(avgCueBallSquaredDistance)) + "mm, "
+                                          + "unstable=" + unstableBallIds.Count + ", "
+                                          + "lost=" + totalLostBallsCount + ", "
+                                          + currentAverageBallCount
+                   //                        + "/"
+                   //                        + lastAverageBallCount
+                                          + "/"
+                                          + totalAverageBallCountChange
+                                          + ", "
+                                          + "added=" + stableBallCountChange
+                                          + ", "
+                                          + "stable count=" + stableBallCount
+                                          + "/" + currentBallCount
+                                          + ") ";
+                       currentStatus = StabilizationStatus.STABLE;
+                   } else {
+                       // Do not change status because not all balls have stabilized,
+                       // that may be because of ghost balls appearing in a stable state, in which case we do not want to change to UNSTABLE,
+                       // or it may be because some ball is moving and could not be tracked and is therefore classified as a ghost in a unstable state, in which case we do not want to change to STABLE.
+                       cueBallDebugOutput += "Cue ball indecisive ("
+                                          + String.Format("{0:0.000}", Math.Sqrt(avgCueBallSquaredDistance)) + "mm, "
+                                          + "unstable=" + unstableBallIds.Count + ", "
+                                          + "lost=" + totalLostBallsCount + ", "
+                                          + currentAverageBallCount
+                     //                      + "/"
+                     //                      + lastAverageBallCount
+                                          + "/"
+                                          + totalAverageBallCountChange
+                                          + ", "
+                                          + "added=" + stableBallCountChange
+                                          + ", "
+                                          + "stable count=" + stableBallCount
+                                          + "/" + currentBallCount
+                                          + ") ";
+                   }
                 } else {
                    cueBallDebugOutput += "Cue ball unstable ("
                        + String.Format("{0:0.000}", Math.Sqrt(avgCueBallSquaredDistance)) + "mm, "
@@ -167,6 +228,11 @@ public class StabilizationController : MonoBehaviour {
 //                        + lastAverageBallCount
                        + "/"
                        + totalAverageBallCountChange
+                       + ", "
+                       + "added=" + stableBallCountChange
+                       + ", "
+                       + "stable count=" + stableBallCount
+                       + "/" + currentBallCount
                        + ") ";
                    currentStatus = StabilizationStatus.UNSTABLE;
                 }
@@ -285,8 +351,14 @@ public class StabilizationController : MonoBehaviour {
         private float minTime = 0.0f;   // in seconds
         // Maximum timespan of recorded history
         private float maxTime = 0.0f;   // in seconds
-        // Maximale quadrierte Distanz, die eine Kugel zurücklegen darf, um noch wiedererkennt zu werden.
+        // Timespan to delay processing of recorded history to "see in the future"
+        private float delayTime = 0.0f; // TODO: use or remove
+        // Maximum squared distance, that a ball may move, in order to still be tracked.
         private float maxTrackingSquaredDistance = 0.0f; // in millimeters^2
+        // Minimal duration that a ball has to be tracked successfully before being considered lost, when tracking fails
+        private float minTrackedDurationBeforeLost = 0.0f; // in seconds
+        // Minimal duration that a ball has to be tracked successfully before being counted as a ball in the total of balls present on the table
+        private float minTrackedDurationBeforeCounted = 0.0f; // in seconds
 
         // Newest entry is first, oldest is last
         public LinkedList<TimedState<Balls>> history = new LinkedList<TimedState<Balls>>();
@@ -302,10 +374,18 @@ public class StabilizationController : MonoBehaviour {
 
         public string debugOutput = "";
 
-        public BallTracking(float maxTrackingSquaredDistance, float minTime, float maxTime) {
+        public BallTracking(float maxTrackingSquaredDistance,
+                            float minTime,
+                            float maxTime,
+                            float delayTime,
+                            float minTrackedDurationBeforeLost,
+                            float minTrackedDurationBeforeCounted) {
             this.maxTrackingSquaredDistance = maxTrackingSquaredDistance;
             this.minTime = minTime;
             this.maxTime = maxTime;
+            this.delayTime = delayTime;
+            this.minTrackedDurationBeforeLost = minTrackedDurationBeforeLost;
+            this.minTrackedDurationBeforeCounted = minTrackedDurationBeforeCounted;
         }
 
         public bool warmedUp() {
@@ -316,13 +396,47 @@ public class StabilizationController : MonoBehaviour {
             return (float) totalBallCount / (float) history.Count;
         }
 
+        public int getStableBallCount() {
+            return history.First.Value.state.stableBallCount;
+        }
+
+        public int getCurrentBallCount() {
+            return history.First.Value.state.balls.Count;
+        }
+
+        public int getStableBallCountChange() {
+            LinkedListNode<TimedState<Balls>> newestNode = history.First;
+            LinkedListNode<TimedState<Balls>> secondNewestNode = newestNode.Next;
+            return newestNode.Value.state.stableBallCount - secondNewestNode.Value.state.stableBallCount;
+        }
+
         public float oldestAverageBallCount() {
             // Last history entries average ball count is the average ball count from N seconds before that last entry
             return history.Last().state.averageBallCount;
         }
 
         public float previousAverageBallCount() {
+            // TODO: delayTime berücksichtigen
             return history.ElementAt(history.Count / 2).state.averageBallCount;
+        }
+
+        // TODO: use or remove
+        public LinkedList<TimedState<Balls>> getFuture() {
+            LinkedList<TimedState<Balls>> future = new LinkedList<TimedState<Balls>>();
+
+            float elapsed = 0.0f;
+            LinkedListNode<TimedState<Balls>> cursor = history.First;
+            while (elapsed <= delayTime && cursor != null) {
+                future.AddFirst(cursor.Value);
+                elapsed += cursor.Value.deltaTime;
+                cursor = cursor.Previous;
+            }
+
+            if (elapsed >= delayTime) {
+                return future;
+            } else {
+                return new LinkedList<TimedState<Balls>>();
+            }
         }
 
         public void add(List<BallState> balls, float deltaTime) {
@@ -334,6 +448,7 @@ public class StabilizationController : MonoBehaviour {
 
                 List<TrackedBall> result = new List<TrackedBall>();
                 int lostCount = 0;
+                int stableBallCount = 0;
 
                 foreach (BallState ball in balls) {
 
@@ -344,6 +459,7 @@ public class StabilizationController : MonoBehaviour {
                     TrackedBall previousBall = null;
                     Vec2 movement = new Vec2 { x = 0.0, y = 0.0 };
                     Vec2 averageMovement = new Vec2 { x = 0.0, y = 0.0 };
+                    float trackedDuration = 0.0f;
 
                     var (nearestBall, squaredDistance) = findNearestBall(previousState.state.balls, ball.position);
                     if (nearestBall != null) {
@@ -352,19 +468,21 @@ public class StabilizationController : MonoBehaviour {
                             // Seems good
                             previousBall = nearestBall;
                             movement = ball.position - nearestBall.position;
+                            trackedDuration = previousBall.trackedDuration + deltaTime;
 
                             debugOutput += ball.id + " tracked ("
                                 + previousBall.id + ", "
-                                + String.Format("{0:0.000}", Math.Sqrt(Vec2.dot(movement, movement))) + "mm";
+                                + String.Format("{0:0.000}", Math.Sqrt(Vec2.dot(movement, movement))) + "mm, "
+                                + String.Format("{0:0.00}", trackedDuration) + "s";
                             averageMovement = calculateAverageMovement(ball.position, previousBall);
                         } else {
-                            // Too far away, ball has been lost
+                            // Too far away, ball is either new or could not be tracked
                             previousBall = null;
                             movement = new Vec2 { x = 0.0, y = 0.0 };
                             averageMovement = new Vec2 { x = 0.0, y = 0.0 };
-                            lostCount++;
+                            trackedDuration = 0.0f;
 
-                            debugOutput += ball.id + " lost ("
+                            debugOutput += ball.id + " not tracked ("
                                 + String.Format("{0:0.000}", Math.Sqrt(squaredDistance)) + "mm" + " > "
                                 + String.Format("{0:0.000}", Math.Sqrt(maxTrackingSquaredDistance)) + ", "
                                 + "moved ("
@@ -377,19 +495,52 @@ public class StabilizationController : MonoBehaviour {
                         previousBall = null;
                         movement = new Vec2 { x = 0.0, y = 0.0 };
                         averageMovement = new Vec2 { x = 0.0, y = 0.0 };
-                        lostCount++;
+                        trackedDuration = 0.0f;
 
-                        debugOutput += ball.id + " lost (no balls)" + " ";
+                        debugOutput += ball.id + " not tracked (no balls)" + " ";
                     }
 
-                    result.Add(new TrackedBall {
-                        id = ball.id,
-                        previous = previousBall,
-                        type = ball.type,
-                        position = ball.position,
-                        movement = movement,
-                        averageMovement = averageMovement
-                    });
+                    TrackedBall trackedBall = new TrackedBall {
+                       id = ball.id,
+                       previous = previousBall,
+                       next = null,
+                       trackedDuration = trackedDuration,
+                       type = ball.type,
+                       position = ball.position,
+                       movement = movement,
+                       averageMovement = averageMovement
+                    };
+                    if (trackedBall.previous != null) {
+                        // Update previous balls link to current ball
+                        trackedBall.previous.next = trackedBall;
+                    }
+
+                    if (trackedBall.trackedDuration > minTrackedDurationBeforeCounted) {
+                        // Count ball in total number of balls present on the table only if it has been successfully tracked for some time
+                        stableBallCount++;
+                    }
+
+                    result.Add(trackedBall);
+                }
+
+                // Go through balls from previous state
+                foreach (TrackedBall ball in previousState.state.balls) {
+                    if (ball.next == null) {
+                        // Ball could not be found in current frame, maybe it was lost?
+                        if (ball.trackedDuration > minTrackedDurationBeforeLost) {
+                            // Ball was tracked long enough to be considered a lost ball
+                            // (Balls not tracked long enough may just be detection errors)
+                            lostCount++;
+
+                            debugOutput += ball.id + " lost ("
+                                        + String.Format("{0:0.00}", ball.trackedDuration) + "s" + ") ";
+                        } else {
+                            // Ball may have been a ghost
+                            // (a ball that is detected in one frame and immediately disappears in the next frame)
+                            debugOutput += ball.id + " ghost? ("
+                                        + String.Format("{0:0.00}", ball.trackedDuration) + "s" + ") ";
+                        }
+                    }
                 }
 
                 float currentAverageBallCount = averageBallCount();
@@ -399,6 +550,7 @@ public class StabilizationController : MonoBehaviour {
                     state = new Balls {
                         balls = result,
                         lostCount = lostCount,
+                        stableBallCount = stableBallCount,
                         averageBallCount = currentAverageBallCount,
                         averageBallCountChange = averageBallCountChange
                     },
@@ -418,6 +570,45 @@ public class StabilizationController : MonoBehaviour {
             cleanup();
         }
 
+// TODO: use or remove
+//         public void process() {
+//
+//             debugOutput = "";
+//
+//             LinkedList<TimedState<Balls>> future = getFuture();
+//             // TODO: what if future is empty?
+//             TimedState<Balls> now = future.Last(); // Oldest entry of future
+//
+//             if (now.state.lostCount > 0) {
+//
+//                 // TODO: check other entries in future as well?
+//                 // TODO: if delayTime is too high, chances are that a lost ball is found again because a different ball ended up in its previous position
+//                 TimedState<Balls> future = future.First(); // Newest entry
+//
+//                 foreach (TrackedBall ball in now.state.balls) {
+//
+//                     if (ball.Previous == null) {
+//                         // Ball seems to be lost, check if it is found again in the "future"
+//
+//                         var (nearestBall, squaredDistance) = findNearestBall(future.state.balls, ball.position);
+//                         if (nearestBall != null) {
+//                             // Potential match found
+//                             if (squaredDistance < maxTrackingSquaredDistance) {
+//                                 // Seems good, ball was not really lost
+//                                 now.lostCount--;
+//                             } else {
+//                                 // Too far away, ball really has been lost
+//                                 // do not change lostCount
+//                             }
+//                         } else {
+//                             // No ball found, happens only when there were no balls on the table in the future
+//
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+
         private void addFirstEntry(List<BallState> balls, float deltaTime) {
             debugOutput += "First entry";
 
@@ -431,6 +622,8 @@ public class StabilizationController : MonoBehaviour {
                 result.Add(new TrackedBall {
                     id = ball.id,
                     previous = null,
+                    next = null,
+                    trackedDuration = 0.0f,
                     type = ball.type,
                     position = ball.position,
                     movement = new Vec2 { x = 0.0, y = 0.0 },
@@ -469,6 +662,9 @@ public class StabilizationController : MonoBehaviour {
                     foreach(TrackedBall ball in secondOldest.state.balls) {
                         ball.previous = null;
                     }
+                }
+                foreach(TrackedBall ball in oldest.state.balls) {
+                    ball.next = null;
                 }
 
                 history.RemoveLast();
@@ -536,6 +732,7 @@ public class StabilizationController : MonoBehaviour {
     public class Balls {
         public List<TrackedBall> balls;
         public int lostCount = 0;
+        public int stableBallCount = 0;
         // Average ball count over several successful trackings, once written, never updated
         public float averageBallCount;
 
@@ -544,10 +741,14 @@ public class StabilizationController : MonoBehaviour {
 
     public class TrackedBall {
         public string id;
-        // Previous ball if tracking succeeded, null if tracking failed
-        public TrackedBall previous;
         public string type;
         public Vec2 position;
+        // Previous ball if tracking succeeded, null if tracking failed
+        public TrackedBall previous;
+        // Next ball if tracking succeeded (in the future), null if tracking failed
+        public TrackedBall next;
+        // Amount of time the ball was successfully tracked
+        public float trackedDuration;
         // Movement since previous entry or zero-vector if tracking failed
         public Vec2 movement;
         // Average movement over several successful trackings, once written, never updated

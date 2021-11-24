@@ -242,6 +242,20 @@ namespace Tests
             double step = 50.0; // In Millimeters
             float maxPerturbation = 3; // in millimeters (in both directions)
 
+            StateChangeSequence expectedStateChangeSequence = new StateChangeSequence(new StabilizationStatus[] {
+                // Start
+                StabilizationStatus.UNKNOWN,
+                // Warmed up
+                StabilizationStatus.STABLE,
+                // White moves
+                StabilizationStatus.UNSTABLE,
+                // Red moves
+                StabilizationStatus.UNSTABLE,
+                // End
+                StabilizationStatus.STABLE
+            });
+            StateChangeSequence actualStateChangeSequence = new StateChangeSequence();
+
             Debug.Log("No ball moving yet ------------------------------------------------------------");
             StabilizationStatus lastStatus = StabilizationStatus.UNKNOWN;
             controller.stateChanged(new List<BallState> { red, white, blue }, 0.0f);
@@ -252,6 +266,7 @@ namespace Tests
                     // As soon as status has changed to STABLE, it should not change anymore for stability purposes.
                     Assert.AreEqual(StabilizationStatus.STABLE, status);
                 }
+                actualStateChangeSequence.add(status);
                 lastStatus = status;
             }
             Assert.AreEqual(StabilizationStatus.STABLE, lastStatus);
@@ -263,6 +278,7 @@ namespace Tests
                     // As soon as status has changed to UNSTABLE, it should not change anymore for stability purposes.
                     Assert.AreEqual(StabilizationStatus.UNSTABLE, status);
                 }
+                actualStateChangeSequence.add(status);
                 lastStatus = status;
             }
             Assert.AreEqual(StabilizationStatus.UNSTABLE, lastStatus);
@@ -270,21 +286,24 @@ namespace Tests
             for (double i = 0.0; i < redToTarget.length(); i += step) {
                 List<BallState> balls = new List<BallState> { positionedAt(red, red.position + redDirection * i), positionedAt(white, whiteTarget), perturb(blue, maxPerturbation) };
                 StabilizationStatus status = controller.stateChanged(balls, timeStep);
-                Assert.AreEqual(StabilizationStatus.UNSTABLE, status);
+//                 Assert.AreEqual(StabilizationStatus.UNSTABLE, status);
+                actualStateChangeSequence.add(status);
                 lastStatus = status;
             }
-            Assert.AreEqual(StabilizationStatus.UNSTABLE, lastStatus);
+//             Assert.AreEqual(StabilizationStatus.UNSTABLE, lastStatus);
             Debug.Log("No ball moving anymore ------------------------------------------------------------");
             for (int i = 0; i < 2.0f / timeStep + 5; i++) {
                 List<BallState> balls = new List<BallState> { positionedAt(red, redTarget), positionedAt(white, whiteTarget), blue };
                 StabilizationStatus status = controller.stateChanged(perturb(balls, maxPerturbation), timeStep);
-                if (lastStatus == StabilizationStatus.STABLE) {
-                    // As soon as status has changed to STABLE, it should not change anymore for stability purposes.
-                    Assert.AreEqual(StabilizationStatus.STABLE, status);
-                }
+//                 if (lastStatus == StabilizationStatus.STABLE) {
+//                     // As soon as status has changed to STABLE, it should not change anymore for stability purposes.
+//                     Assert.AreEqual(StabilizationStatus.STABLE, status);
+//                 }
+                actualStateChangeSequence.add(status);
                 lastStatus = status;
             }
             Assert.AreEqual(StabilizationStatus.STABLE, lastStatus);
+            Assert.AreEqual(expectedStateChangeSequence, actualStateChangeSequence);
         }
 
         [Test]
@@ -305,6 +324,22 @@ namespace Tests
             double step = 50.0; // In Millimeters
             float maxPerturbation = 3; // in millimeters (in both directions)
 
+            StateChangeSequence expectedStateChangeSequence = new StateChangeSequence(new StabilizationStatus[] {
+                // Start
+                StabilizationStatus.UNKNOWN,
+                // Warmed up
+                StabilizationStatus.STABLE,
+                // White moves
+                StabilizationStatus.UNSTABLE,
+                // White fell into pocket
+                StabilizationStatus.UNSTABLE,
+                // White was put on the table
+                StabilizationStatus.UNSTABLE,
+                // End
+                StabilizationStatus.STABLE
+            });
+            StateChangeSequence actualStateChangeSequence = new StateChangeSequence();
+
             Debug.Log("No ball moving yet ------------------------------------------------------------");
             StabilizationStatus lastStatus = StabilizationStatus.UNKNOWN;
             controller.stateChanged(new List<BallState> { red, white, blue }, 0.0f);
@@ -315,6 +350,7 @@ namespace Tests
                     // As soon as status has changed to STABLE, it should not change anymore for stability purposes.
                     Assert.AreEqual(StabilizationStatus.STABLE, status);
                 }
+                actualStateChangeSequence.add(status);
                 lastStatus = status;
             }
             Assert.AreEqual(StabilizationStatus.STABLE, lastStatus);
@@ -326,6 +362,7 @@ namespace Tests
                     // As soon as status has changed to UNSTABLE, it should not change anymore for stability purposes.
                     Assert.AreEqual(StabilizationStatus.UNSTABLE, status);
                 }
+                actualStateChangeSequence.add(status);
                 lastStatus = status;
             }
             Assert.AreEqual(StabilizationStatus.UNSTABLE, lastStatus);
@@ -337,6 +374,7 @@ namespace Tests
                     // As soon as status has changed to UNSTABLE, it should not change anymore for stability purposes.
                     Assert.AreEqual(StabilizationStatus.UNSTABLE, status);
                 }
+                actualStateChangeSequence.add(status);
                 lastStatus = status;
             }
             Assert.AreEqual(StabilizationStatus.UNSTABLE, lastStatus);
@@ -344,13 +382,15 @@ namespace Tests
             for (int i = 0; i < 2.0f / timeStep + 5; i++) {
                 List<BallState> balls = new List<BallState> { red, blue, white };
                 StabilizationStatus status = controller.stateChanged(perturb(balls, maxPerturbation), timeStep);
-                if (lastStatus == StabilizationStatus.STABLE) {
-                    // As soon as status has changed to STABLE, it should not change anymore for stability purposes.
-                    Assert.AreEqual(StabilizationStatus.STABLE, status);
-                }
+//                 if (lastStatus == StabilizationStatus.STABLE) {
+//                     // As soon as status has changed to STABLE, it should not change anymore for stability purposes.
+//                     Assert.AreEqual(StabilizationStatus.STABLE, status);
+//                 }
+                actualStateChangeSequence.add(status);
                 lastStatus = status;
             }
             Assert.AreEqual(StabilizationStatus.STABLE, lastStatus);
+            Assert.AreEqual(expectedStateChangeSequence, actualStateChangeSequence);
         }
 
         [Test]
@@ -425,6 +465,22 @@ namespace Tests
             double step = 50.0; // In Millimeters
             float maxPerturbation = 3; // in millimeters (in both directions)
 
+            StateChangeSequence expectedStateChangeSequence = new StateChangeSequence(new StabilizationStatus[] {
+                // Start
+                StabilizationStatus.UNKNOWN,
+                // Warmed up
+                StabilizationStatus.STABLE,
+                // Blue moves
+                StabilizationStatus.UNSTABLE,
+                // Blue fell into pocket
+                StabilizationStatus.STABLE,
+                // Blue was put on the table
+                StabilizationStatus.UNSTABLE,
+                // End
+                StabilizationStatus.STABLE
+            });
+            StateChangeSequence actualStateChangeSequence = new StateChangeSequence();
+
             Debug.Log("No ball moving yet ------------------------------------------------------------");
             StabilizationStatus lastStatus = StabilizationStatus.UNKNOWN;
             controller.stateChanged(new List<BallState> { red, white, blue }, 0.0f);
@@ -435,6 +491,7 @@ namespace Tests
                     // As soon as status has changed to STABLE, it should not change anymore for stability purposes.
                     Assert.AreEqual(StabilizationStatus.STABLE, status);
                 }
+                actualStateChangeSequence.add(status);
                 lastStatus = status;
             }
             Assert.AreEqual(StabilizationStatus.STABLE, lastStatus);
@@ -446,6 +503,7 @@ namespace Tests
                     // As soon as status has changed to UNSTABLE, it should not change anymore for stability purposes.
                     Assert.AreEqual(StabilizationStatus.UNSTABLE, status);
                 }
+                actualStateChangeSequence.add(status);
                 lastStatus = status;
             }
             Assert.AreEqual(StabilizationStatus.UNSTABLE, lastStatus);
@@ -457,23 +515,21 @@ namespace Tests
                     // As soon as status has changed to STABLE, it should not change anymore for stability purposes.
                     Assert.AreEqual(StabilizationStatus.STABLE, status);
                 }
+                actualStateChangeSequence.add(status);
                 lastStatus = status;
             }
             Assert.AreEqual(StabilizationStatus.STABLE, lastStatus);
             Debug.Log("Blue was put on table ------------------------------------------------------------");
             lastStatus = controller.stateChanged(perturb(new List<BallState> { red, blue2, white }, maxPerturbation), timeStep);
-            Assert.AreEqual(StabilizationStatus.UNSTABLE, lastStatus);
 
             for (int i = 0; i < 2.0f / timeStep + 5; i++) {
                 List<BallState> balls = new List<BallState> { red, blue2, white };
                 StabilizationStatus status = controller.stateChanged(perturb(balls, maxPerturbation), timeStep);
-                if (lastStatus == StabilizationStatus.STABLE) {
-                    // As soon as status has changed to STABLE, it should not change anymore for stability purposes.
-                    Assert.AreEqual(StabilizationStatus.STABLE, status);
-                }
+                actualStateChangeSequence.add(status);
                 lastStatus = status;
             }
             Assert.AreEqual(StabilizationStatus.STABLE, lastStatus);
+            Assert.AreEqual(expectedStateChangeSequence, actualStateChangeSequence);
         }
 
         [Test]
@@ -516,6 +572,67 @@ namespace Tests
 
         private BallState positionedAt(BallState ball, Vec2 position) {
             return new BallState { id = ball.id, type = ball.type, position = position };
+        }
+
+        private class StateChangeSequence {
+            private LinkedList<StabilizationStatus> sequence;
+
+            public StateChangeSequence() {
+                this.sequence = new LinkedList<StabilizationStatus>();
+            }
+
+            public StateChangeSequence(StabilizationStatus[] sequence) {
+                this.sequence = new LinkedList<StabilizationStatus>();
+                foreach (StabilizationStatus status in sequence) {
+                    add(status);
+                }
+            }
+
+            public void add(StabilizationStatus status) {
+                if (sequence.Count == 0 || status != sequence.Last.Value) {
+                    // Only record changes
+                    sequence.AddLast(status);
+                }
+            }
+
+            public override bool Equals(System.Object obj) {
+                if (obj == null || !this.GetType().Equals(obj.GetType())) {
+                    return false;
+                }
+                StateChangeSequence other = (StateChangeSequence) obj;
+                if (sequence.Count != other.sequence.Count) {
+                    return false;
+                }
+                LinkedListNode<StabilizationStatus> cursor1 = sequence.First;
+                LinkedListNode<StabilizationStatus> cursor2 = other.sequence.First;
+                while (cursor1 != null && cursor2 != null) {
+                    if (cursor1.Value != cursor2.Value) {
+                        return false;
+                    }
+                    cursor1 = cursor1.Next;
+                    cursor2 = cursor2.Next;
+                }
+                return true;
+            }
+
+            public override int GetHashCode() {
+                return sequence.GetHashCode();
+            }
+
+            public override string ToString() {
+                string text = "";
+                text += "[";
+                LinkedListNode<StabilizationStatus> cursor = sequence.First;
+                while(cursor != null) {
+                    text += cursor.Value;
+                    if (cursor.Next != null) {
+                        text += ", ";
+                    }
+                    cursor = cursor.Next;
+                }
+                text += "]";
+                return text;
+            }
         }
     }
 }
