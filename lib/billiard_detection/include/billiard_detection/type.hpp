@@ -14,6 +14,8 @@ namespace billiard::detection {
         glm::vec2 _position;
         std::string _type;
         std::string _id;
+        // How many detections this ball was successfully tracked for
+        int _trackingCount = 0;
     };
 
     struct EXPORT_BILLIARD_DETECTION_LIB State {

@@ -530,7 +530,7 @@ BallState* map(const std::vector<billiard::detection::Ball>& ballStates) {
     for (int i = 0; i < ballStates.size(); i++) {
         auto& ballState = ballStates[i];
         const Vec2& position = Vec2{ballState._position[0], ballState._position[1]};
-        balls[i] = BallState{ballState._type.c_str(), ballState._id.c_str(), position, false};
+        balls[i] = BallState{ballState._type.c_str(), ballState._id.c_str(), position, ballState._trackingCount, false};
     }
 
     return balls;

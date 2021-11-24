@@ -340,6 +340,7 @@ public class AnimationService : MonoBehaviour
 		public string type;
 		public string id;
 		public Vec2_t position;
+		public int trackingCount;
 		[MarshalAs(UnmanagedType.I1)] public bool fromUnity = true;
 	}
 
@@ -543,7 +544,8 @@ public class AnimationService : MonoBehaviour
 			BallState_t ballState = new BallState_t {
 				type = ball.type,
 				id = ball.id,
-				position = new Vec2_t { x = ball.position.x, y = ball.position.y }
+				position = new Vec2_t { x = ball.position.x, y = ball.position.y },
+				trackingCount = ball.trackingCount
 			};
 			ballStates[i] = ballState;
 		}
@@ -567,6 +569,7 @@ public class AnimationService : MonoBehaviour
 		result.type = from.type;
 		result.id = from.id;
 		result.position = map(from.position) / 1000;
+		result.trackingCount = from.trackingCount;
 			
 		return result;
 	}

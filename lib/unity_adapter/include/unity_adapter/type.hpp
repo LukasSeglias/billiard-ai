@@ -178,7 +178,7 @@ extern "C" {
 
     struct EXPORT_UNITY_ADAPTER_LIB BallState {
         BallState();
-        BallState(const char* type, const char* id, Vec2 position, bool fromUnity = true);
+        BallState(const char* type, const char* id, Vec2 position, int trackingCount, bool fromUnity = true);
         BallState(BallState&& other) noexcept;
         BallState(const BallState& other) noexcept;
         BallState& operator=(BallState&& other) noexcept;
@@ -188,6 +188,7 @@ extern "C" {
         char* type;
         char* id;
         Vec2 position;
+        int trackingCount;
         bool fromUnity;
     };
 

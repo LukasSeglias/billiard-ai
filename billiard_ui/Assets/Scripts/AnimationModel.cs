@@ -265,6 +265,7 @@ public class BallState {
 	public string type;
 	public string id;
     public Vec2 position;
+    public int trackingCount;
 }
 
 public class BallObjectInformation : MonoBehaviour

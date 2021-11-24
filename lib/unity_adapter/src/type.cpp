@@ -212,13 +212,15 @@ BallState::BallState() :
     type(nullptr),
     id(nullptr),
     position(),
+    trackingCount(0),
     fromUnity(false) {
 }
 
-BallState::BallState(const char* type, const char* id, Vec2 position, bool fromUnity) :
+BallState::BallState(const char* type, const char* id, Vec2 position, int trackingCount, bool fromUnity) :
     type(_strdup(type)),
     id(_strdup(id)),
     position(position),
+    trackingCount(trackingCount),
     fromUnity(fromUnity) {
 }
 
@@ -226,6 +228,7 @@ BallState::BallState(BallState&& other) noexcept :
     type(other.type),
     id(other.id),
     position(other.position),
+    trackingCount(other.trackingCount),
     fromUnity(other.fromUnity) {
     other.type = nullptr;
     other.id = nullptr;
@@ -235,6 +238,7 @@ BallState::BallState(const BallState& other) noexcept :
     type(_strdup(other.type)),
     id(_strdup(other.id)),
     position(other.position),
+    trackingCount(other.trackingCount),
     fromUnity(other.fromUnity) {
 }
 
@@ -242,6 +246,7 @@ BallState& BallState::operator=(BallState&& other) noexcept {
     type = other.type;
     id = other.id;
     position = other.position;
+    trackingCount = other.trackingCount;
     fromUnity = other.fromUnity;
     other.type = nullptr;
     other.id = nullptr;
@@ -257,6 +262,7 @@ BallState& BallState::operator=(const BallState& other) noexcept {
     type = _strdup(other.type);
     id = _strdup(other.id);
     position = other.position;
+    trackingCount = other.trackingCount;
     fromUnity = other.fromUnity;
 
     return *this;

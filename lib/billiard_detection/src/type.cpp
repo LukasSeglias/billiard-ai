@@ -3,7 +3,8 @@
 bool billiard::detection::Ball::operator==(const Ball& other) const {
     return this->_position == other._position &&
             this->_type == other._type &&
-            this->_id == other._id;
+            this->_id == other._id &&
+            this->_trackingCount == other._trackingCount;
 }
 
 bool billiard::detection::State::operator==(const State& other) const {
