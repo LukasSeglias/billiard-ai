@@ -79,36 +79,30 @@ public class TableBehaviour : MonoBehaviour
 
 		if (Input.GetKeyDown(KeyCode.UpArrow)) {
 			animationIndex = (animationIndex + 1) % animations.Length;
-			recreateAnimator();
+            animator.setAnimation(animations.Length > 0 ? animations[animationIndex].keyFrames : new KeyFrame[]{});
 
 		} else if (Input.GetKeyDown(KeyCode.DownArrow)) {
 			animationIndex = (animationIndex - 1) % animations.Length;
 			animationIndex = animationIndex > 0 ? animationIndex : -animationIndex;
-			recreateAnimator();
+			animator.setAnimation(animations.Length > 0 ? animations[animationIndex].keyFrames : new KeyFrame[]{});
 		}
 
-		if (animator == null && animations.Length > 0) {
-			animator = new Animator(root, animations[animationIndex].keyFrames, mappedMaterials, transparent, config, Queue);
+		if (animator == null) {
+			animator = new Animator(mappedMaterials, transparent, config, Queue);
 		}
 
 		if (Input.GetKeyDown(KeyCode.Space)) {
             isPlaying = !isPlaying;
         } else if (Input.GetKeyDown(KeyCode.Backspace)) {
-            if (animator != null) {
-				animator.reset();
-				animator.update(0);
-			}
+            animator.reset();
+            animator.update(0);
         } else if (Input.GetKey(KeyCode.RightArrow)) {
 			animate(Time.deltaTime * FastFactor);
 		} else if (Input.GetKey(KeyCode.LeftArrow)) {
 			animate(Time.deltaTime * -FastFactor);
 		} else if (Input.GetKeyDown(KeyCode.K)) {
 			isPlaying = false;
-			if (animator != null) {
-				animator.reset();
-				animator.update(0);
-				animator.toggleBalls();
-			}
+            animator.toggleBalls();
 		} else if (Input.GetKeyDown(KeyCode.T)) {
 			visuals.toggleTableAndRailsAndTargets();
 		} else if (Input.GetKeyDown(KeyCode.D)) {
@@ -122,6 +116,7 @@ public class TableBehaviour : MonoBehaviour
 			showBallHalos = !showBallHalos;
 		} else if (Input.GetKeyDown(KeyCode.M)) {
             stabilizationController.track = !stabilizationController.track;
+            stabilizationStatusInfoText.SetText("");
         } else if (Input.GetKeyDown(KeyCode.Return)) {
 			AnimationService.captureState();
 		} else if (Input.GetKeyDown(KeyCode.R)) {
@@ -152,9 +147,7 @@ public class TableBehaviour : MonoBehaviour
     }
 
 	private void animate(double deltaTime) {
-		if (animator != null) {
-			animator.update(deltaTime);
-		}
+        animator.update(deltaTime);
 	}
 
 	private void animationChanged(RootObject root) {
@@ -166,24 +159,19 @@ public class TableBehaviour : MonoBehaviour
 
 		Debug.Log("[animationChanged] animations received: " + root.animations.Length);
 
-		recreateAnimator();
+        KeyFrame[] keyFrames = this.root.animations.Length > 0 ? this.root.animations[animationIndex].keyFrames : new KeyFrame[]{};
+        animator.setAnimation(keyFrames);
 	}
 
 	private void stateChanged(RootState state) {
 		if (this.statePresenter == null) {
-			statePresenter = new StatePresenter(transparent, config);
+		    Material background = Background.GetComponent<MeshRenderer>().material;
+			statePresenter = new StatePresenter(transparent, background, config);
 		}
 
 		statePresenter.update(state);
 		dottedPaths.stateChanged(state);
 	}
-
-	private void recreateAnimator() {
-        if (this.animator != null) {
-            this.animator.delete();
-            this.animator = null;
-        }
-    }
 
 	private void stabilizationChanged(StabilizationChange change) {
 
@@ -191,7 +179,7 @@ public class TableBehaviour : MonoBehaviour
             // -> STABLE
 
              this.root = new RootObject();
-             recreateAnimator();
+             this.animator.setAnimation(new KeyFrame[]{});
 
              Search search = new Search();
              search.types = config.infinityModeSearchTypes;
@@ -211,16 +199,24 @@ public class TableBehaviour : MonoBehaviour
 		return new Vector3((float)vector.x, (float)vector.y, z);
 	}
 
+	public enum StateMaterial {
+	    TRANSPARENT,
+	    COVER
+	}
+
 	private class StatePresenter {
 		private readonly List<GameObject> ballObjects = new List<GameObject>();
 		private readonly Configuration config;
 		private readonly Material transparent;
+		private readonly Material background;
+		private StateMaterial material;
 
-		public StatePresenter(Material transparent, Configuration config) {
+		public StatePresenter(Material transparent, Material background, Configuration config) {
 			this.config = config;
 			this.transparent = transparent;
+			this.background = background;
+			this.material = StateMaterial.COVER;
 		}
-
 
 		public void update(RootState state) {
 			for (int i = 0; i < state.balls.Length; i++) {
@@ -245,7 +241,13 @@ public class TableBehaviour : MonoBehaviour
 			ballInfo.selectable = true;
 			ballObject.transform.position = StretchingUtility.get().position(convert(ball.position, -0.01f));
 			float radius = config.radius;
-			ballObject.transform.localScale = new Vector3((float) radius, (float) radius, (float) radius) * 2 * StretchingUtility.get().scale;
+			ballObject.transform.localScale = new Vector3(radius, radius, radius) * 2 * StretchingUtility.get().scale;
+
+			if (material == StateMaterial.COVER) {
+			    // In order to cover ball display from animator
+			    ballObject.transform.localScale *= 1.25f;
+			}
+
 			updateLocationText(ball.id, ball.type, ball.trackingCount, ballObject);
 		}
 
@@ -253,6 +255,7 @@ public class TableBehaviour : MonoBehaviour
 			var ballObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 			ballObject.GetComponent<MeshRenderer>().material = transparent;
 			ballObject.AddComponent<BallObjectInformation>();
+			applyMaterial(ballObject, material);
 
 			GameObject textObject = new GameObject("Text");
 			TMPro.TextMeshPro textMesh = textObject.AddComponent<TMPro.TextMeshPro>();
@@ -265,6 +268,28 @@ public class TableBehaviour : MonoBehaviour
 			ballObjects.Add(ballObject);
 		}
 
+		public void setMaterial(StateMaterial material) {
+		    this.material = material;
+		    applyMaterial(material);
+		}
+
+		private void applyMaterial(StateMaterial material) {
+		    foreach(var ball in ballObjects) {
+                applyMaterial(ball, material);
+		    }
+		}
+
+		private void applyMaterial(GameObject ballObject, StateMaterial material) {
+            switch(material) {
+                case StateMaterial.TRANSPARENT:
+                    ballObject.GetComponent<MeshRenderer>().material = transparent;
+                    break;
+                case StateMaterial.COVER:
+                    ballObject.GetComponent<MeshRenderer>().material = background;
+                    break;
+            }
+        }
+
 		public void enableDebug(bool debug) {
 			foreach(var ball in ballObjects) {
             	var textObject = ball.transform.Find("Text").gameObject;
@@ -274,7 +299,7 @@ public class TableBehaviour : MonoBehaviour
 
 		public void showHalo(bool show) {
 			if (show) {
-				Utility.drawCircle(ballObjects, 1, 50);
+				Utility.drawCircle(ballObjects, 0.75f, 50);
 			} else {
 				foreach (var ball in ballObjects) {
 					Destroy(ball.GetComponent<LineRenderer>());
@@ -290,12 +315,19 @@ public class TableBehaviour : MonoBehaviour
 		}
 	}
 
+    public enum BallMaterial {
+        CIRCLE,
+        FILLED,
+        INVISIBLE
+    }
+
 	private class Animator {
 
 		private static readonly float QUEUE_DIST = 0.1f; // 10 cm
 		private static readonly float QUEUE_DISPLAY_TIME = 1f; // 2s
 
-		private readonly KeyFrame[] frames;
+        private Configuration config;
+		private KeyFrame[] frames;
 		private readonly Dictionary<string, GameObject> ballObjects = new Dictionary<string, GameObject>();
 		private readonly List<GameObject> lines = new List<GameObject>();
 		private readonly GameObject queue;
@@ -310,49 +342,55 @@ public class TableBehaviour : MonoBehaviour
 		private int currentAnimationWindow;
 		private BallMaterial material = BallMaterial.CIRCLE;
 
-		public Animator(RootObject root, KeyFrame[] frames, Dictionary<string, Material> mappedMaterials, Material transparent,
+		public Animator(Dictionary<string, Material> mappedMaterials, Material transparent,
 		    Configuration config, GameObject queue) {
-			this.frames = frames;
+		    this.config = config;
 			this.queue = queue;
 			this.mappedMaterials = mappedMaterials;
 			this.transparent = transparent;
-			float scale = StretchingUtility.get().scale;
-			foreach (var ball in frames[0].balls) {
-				var ballObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-				ballObject.GetComponent<MeshRenderer>().material = transparent;
-				BallObjectInformation ballInfo = ballObject.AddComponent<BallObjectInformation>();
-				ballInfo.id = ball.id;
-				ballInfo.type = ball.type;
-				ballInfo.selectable = false;
-				ballObject.transform.position = StretchingUtility.get().position(convert(ball.position, 0));
-				float radius = config.radius;
-				ballObject.transform.localScale = new Vector3((float) radius, (float) radius, (float) radius) * 2 * scale;
-
-				List<GameObject> objectList = new List<GameObject>();
-				objectList.Add(ballObject);
-				Utility.drawCircle(objectList, (radius * scale) / (radius * scale * 2) - Utility.LINE_WIDTH * 2, 50);
-
-				var circleRenderer = ballObject.GetComponent<LineRenderer>();
-				circleRenderer.material = mappedMaterials[ball.type];
-				circleRenderer.useWorldSpace = false;
-				ballObjects.Add(ball.id, ballObject);
-			}
-
-			reset();
 		}
 
-		private enum BallMaterial {
-            CIRCLE,
-            FILLED,
-            INVISIBLE
+		public void setAnimation(KeyFrame[] frames) {
+            this.frames = frames;
+            float scale = StretchingUtility.get().scale;
+
+            destroyBallObjects();
+
+            if (frames.Length > 0) {
+                foreach (var ball in frames[0].balls) {
+                    var ballObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    ballObject.GetComponent<MeshRenderer>().material = transparent;
+                    BallObjectInformation ballInfo = ballObject.AddComponent<BallObjectInformation>();
+                    ballInfo.id = ball.id;
+                    ballInfo.type = ball.type;
+                    ballInfo.selectable = false;
+                    ballObject.transform.position = StretchingUtility.get().position(convert(ball.position, -0.01f));
+                    float radius = config.radius;
+                    ballObject.transform.localScale = new Vector3(radius, radius, radius) * 2 * scale;
+
+                    float circleLineWidth = Utility.LINE_WIDTH;
+                    float borderLineWidth = Utility.LINE_WIDTH * 1.5f;
+                    float circleRadius = (radius * scale) / (radius * scale * 2) - circleLineWidth * 2; // In local coordinates
+                    GameObject lineBorder = new GameObject();
+                    lineBorder.transform.parent = ballObject.transform;
+                    lineBorder.transform.localPosition = new Vector3(0, 0, 0.01f);
+                    lineBorder.transform.localScale = new Vector3(1, 1, 1);
+                    Utility.drawCircle(new List<GameObject> { lineBorder }, circleRadius, 50, borderLineWidth);
+                    Utility.drawCircle(new List<GameObject> { ballObject }, circleRadius, 50, circleLineWidth);
+
+                    var circleRenderer = ballObject.GetComponent<LineRenderer>();
+                    circleRenderer.material = mappedMaterials[ball.type];
+                    circleRenderer.useWorldSpace = false;
+                    ballObjects.Add(ball.id, ballObject);
+                }
+                applyMaterial(this.material);
+            }
+
+            reset();
         }
 
 		public void drawLines() {
-			foreach (var line in lines) {
-				line.SetActive(false);
-				Destroy(line);
-			}
-			lines.Clear();
+		    destroyLines();
 
 			int windowCount = -1;
 			for (int i = 0; i < this.frames.Length - 1; i+=2) {
@@ -391,28 +429,40 @@ public class TableBehaviour : MonoBehaviour
 			this.windowStartTime = 0;
 			this.animateQueue = true;
 
-			KeyFrame start = this.frames[this.startFrameIndex];
-			KeyFrame end = this.frames[this.startFrameIndex + 1];
-			updateBalls(start, end, 0);
+			if (this.frames.Length > 0) {
+                KeyFrame start = this.frames[this.startFrameIndex];
+                KeyFrame end = this.frames[this.startFrameIndex + 1];
+                updateBalls(start, end, 0);
+            }
+            queue.SetActive(false);
 
 			drawLines();
 		}
 
-		public void delete() {
-			foreach (var ballObject in ballObjects.Values) {
-				ballObject.SetActive(false);
-				Destroy(ballObject);
-			}
-			ballObjects.Clear();
+        private void destroyBallObjects() {
+            foreach (var ballObject in ballObjects.Values) {
+                Destroy(ballObject);
+            }
+            ballObjects.Clear();
+        }
 
-			foreach (var line in lines) {
-				line.SetActive(false);
-				Destroy(line);
-			}
-			lines.Clear();
+        private void destroyLines() {
+            foreach (var line in lines) {
+                Destroy(line);
+            }
+            lines.Clear();
+        }
+
+		public void delete() {
+		    destroyBallObjects();
+		    destroyLines();
 		}
 
 		public void update(double timeDelta) {
+		    if (frames == null || frames.Length == 0) {
+		        return;
+		    }
+
 			double newTime = this.time + timeDelta;
 			this.time = Math.Min(Math.Max(0, newTime), this.endTime);
 
@@ -442,6 +492,7 @@ public class TableBehaviour : MonoBehaviour
 						var ballObject = ballObjects[ball.id];
 						ballObject.SetActive(ball.visible);
 					}
+					queue.SetActive(false);
 				}
 			}
 		}
@@ -449,17 +500,25 @@ public class TableBehaviour : MonoBehaviour
 		public void toggleBalls() {
 			switch(material) {
 			    case BallMaterial.CIRCLE:
-                    material = BallMaterial.FILLED;
+                    setMaterial(BallMaterial.FILLED);
                     break;
 			    case BallMaterial.FILLED:
-			        material = BallMaterial.INVISIBLE;
+			        setMaterial(BallMaterial.INVISIBLE);
                     break;
 			    case BallMaterial.INVISIBLE:
-			        material = BallMaterial.CIRCLE;
+			        setMaterial(BallMaterial.CIRCLE);
                     break;
 			}
-			foreach (var ballObject in ballObjects.Values) {
-				switch(material) {
+		}
+
+		public void setMaterial(BallMaterial material) {
+		    this.material = material;
+		    applyMaterial(material);
+		}
+
+		private void applyMaterial(BallMaterial material) {
+		    foreach (var ballObject in ballObjects.Values) {
+                switch(material) {
                     case BallMaterial.CIRCLE:
                         ballObject.SetActive(true);
                         ballObject.GetComponent<MeshRenderer>().material = transparent;
@@ -472,7 +531,7 @@ public class TableBehaviour : MonoBehaviour
                         ballObject.SetActive(false);
                         break;
                 }
-			}
+            }
 		}
 
 		public bool isFinished() {
@@ -489,7 +548,9 @@ public class TableBehaviour : MonoBehaviour
 				if (startBall.visible) {
 					var endBall = findBall(startBall.id, end);
 
-					ballObject.SetActive(true);
+					if (material != BallMaterial.INVISIBLE) {
+					    ballObject.SetActive(true);
+					}
 					updatePosition(startBall, endBall, ballObject, duration, timeDeltaInAnimationWindow);
 				} else {
 					ballObject.SetActive(false);

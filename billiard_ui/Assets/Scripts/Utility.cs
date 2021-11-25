@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class Utility
 {
-	public static readonly float LINE_WIDTH = 0.02f;
+	public const float LINE_WIDTH = 0.02f;
 
-	public static void drawCircle(List<GameObject> objects, float radius, int segments) {		
+	public static void drawCircle(List<GameObject> objects, float radius, int segments, float lineWidth = LINE_WIDTH) {
 		
 		foreach (var gameObject in objects) {
-			LineRenderer circleRenderer = getRenderer(gameObject);
+			LineRenderer circleRenderer = getRenderer(gameObject, lineWidth);
 			circleRenderer.material.color = Color.white;
 			circleRenderer.positionCount = segments + 2;				
 			CreatePoints (circleRenderer, radius, segments);			
 		}
 	}
 	
-	private static LineRenderer getRenderer(GameObject currentSelected) {
+	private static LineRenderer getRenderer(GameObject currentSelected, float lineWidth = LINE_WIDTH) {
 		LineRenderer circleRenderer = currentSelected.GetComponent<LineRenderer>();
 		if (circleRenderer != null) {
 			circleRenderer.positionCount = 0;
@@ -24,8 +24,8 @@ public class Utility
 		}
 		circleRenderer = currentSelected.AddComponent<LineRenderer>();
 		circleRenderer.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-		circleRenderer.startWidth = LINE_WIDTH;
-		circleRenderer.endWidth = LINE_WIDTH;
+		circleRenderer.startWidth = lineWidth;
+		circleRenderer.endWidth = lineWidth;
 		circleRenderer.useWorldSpace = false;
 		return circleRenderer;
 	}
