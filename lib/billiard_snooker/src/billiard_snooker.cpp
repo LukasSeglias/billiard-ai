@@ -544,6 +544,7 @@ namespace billiard::snooker {
             ball._type = "UNKNOWN";
             ball._id = std::to_string(i);
             ball._position = glm::vec2 {point.x, point.y};
+            ball._trackingCount = 0;
             state._balls.push_back(ball);
         }
 
