@@ -27,15 +27,14 @@ public class TableBehaviour : MonoBehaviour
 	public GameObject dotsParentGameObject;
 	public StabilizationController stabilizationController;
 
-	private RootObject root = new RootObject();
 	private RootState state = new RootState();
 	private Animator animator;
+	private AnimationPlayer animationPlayer;
 	private StatePresenter statePresenter;
 	private BallDottedPaths dottedPaths;
 	private Dictionary<string, Material> mappedMaterials = new Dictionary<string, Material>();
 	private bool isPlaying = true;
 	private Configuration config;
-    private int animationIndex = 0;
 	private bool isLive = true;
 	private bool isDebug = false;
 	private bool showBallHalos = true;
@@ -65,6 +64,9 @@ public class TableBehaviour : MonoBehaviour
 		infoText.gameObject.SetActive(false);
 
 		dottedPaths = new BallDottedPaths(dotMaterial, dotsParentGameObject);
+
+		animator = new Animator(mappedMaterials, transparent, config, Queue);
+		animationPlayer = new AnimationPlayer(animator);
     }
 
 	void OnDestroy() {
@@ -74,21 +76,10 @@ public class TableBehaviour : MonoBehaviour
 
     void Update()
     {
-
-		AnimationModel[] animations = root.animations;
-
 		if (Input.GetKeyDown(KeyCode.UpArrow)) {
-			animationIndex = (animationIndex + 1) % animations.Length;
-            animator.setAnimation(animations.Length > 0 ? animations[animationIndex].keyFrames : new KeyFrame[]{});
-
+		    animationPlayer.next();
 		} else if (Input.GetKeyDown(KeyCode.DownArrow)) {
-			animationIndex = (animationIndex - 1) % animations.Length;
-			animationIndex = animationIndex > 0 ? animationIndex : -animationIndex;
-			animator.setAnimation(animations.Length > 0 ? animations[animationIndex].keyFrames : new KeyFrame[]{});
-		}
-
-		if (animator == null) {
-			animator = new Animator(mappedMaterials, transparent, config, Queue);
+		    animationPlayer.previous();
 		}
 
 		if (Input.GetKeyDown(KeyCode.Space)) {
@@ -154,13 +145,9 @@ public class TableBehaviour : MonoBehaviour
 		infoText.SetText("");
 		infoText.gameObject.SetActive(false);
 
-		this.animationIndex = 0;
-		this.root = root;
-
 		Debug.Log("[animationChanged] animations received: " + root.animations.Length);
 
-        KeyFrame[] keyFrames = this.root.animations.Length > 0 ? this.root.animations[animationIndex].keyFrames : new KeyFrame[]{};
-        animator.setAnimation(keyFrames);
+        animationPlayer.setAnimation(root);
 	}
 
 	private void stateChanged(RootState state) {
@@ -178,8 +165,7 @@ public class TableBehaviour : MonoBehaviour
         if (change.current == StabilizationStatus.STABLE) {
             // -> STABLE
 
-             this.root = new RootObject();
-             this.animator.setAnimation(new KeyFrame[]{});
+             this.animationPlayer.setAnimation(new RootObject());
 
              Search search = new Search();
              search.types = config.infinityModeSearchTypes;
@@ -197,6 +183,48 @@ public class TableBehaviour : MonoBehaviour
 
 	private static Vector3 convert(Vec2 vector, float z) {
 		return new Vector3((float)vector.x, (float)vector.y, z);
+	}
+
+	private class AnimationPlayer {
+
+	    private int animationIndex = 0;
+	    private RootObject root;
+	    private Animator animator;
+
+	    public AnimationPlayer(Animator animator) {
+	        this.animator = animator;
+	    }
+
+	    public void setAnimation(RootObject root) {
+	        this.root = root;
+	        this.animationIndex = 0;
+	        switchToAnimation(animationIndex);
+	    }
+
+	    public void next() {
+	        AnimationModel[] animations = root.animations;
+            animationIndex = (animationIndex + 1) % animations.Length;
+            switchToAnimation(animationIndex);
+	    }
+
+        public void previous() {
+            AnimationModel[] animations = root.animations;
+            animationIndex = (animationIndex - 1) % animations.Length;
+            animationIndex = animationIndex > 0 ? animationIndex : -animationIndex;
+            switchToAnimation(animationIndex);
+	    }
+
+	    private void switchToAnimation(int animationIndex) {
+	        if (root.animations.Length > 0) {
+                setFrames(root.animations[animationIndex].keyFrames);
+            } else {
+                setFrames(new KeyFrame[]{});
+            }
+        }
+
+	    private void setFrames(KeyFrame[] frames) {
+	        animator.setAnimation(frames);
+        }
 	}
 
 	public enum StateMaterial {
