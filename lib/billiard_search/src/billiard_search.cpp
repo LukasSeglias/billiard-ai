@@ -442,7 +442,7 @@ namespace billiard::search {
                      const std::shared_ptr<SearchNodeSearch>& parent,
                      const std::pair<std::string, Ball>& ball) {
         std::string agent = "[enoughSpace] ";
-        auto lengthS = state->_config._ball._diameter + state->_config._ball._radius;
+        auto lengthS = state->_config._ball._radius + state->_config._ball._radius;
         auto lengthE = 10; // [mm]
         auto minDistance = lengthE + state->_config._ball._radius;
         auto minDistanceSquared = minDistance * minDistance;
