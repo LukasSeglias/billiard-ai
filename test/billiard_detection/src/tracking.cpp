@@ -24,6 +24,7 @@ TEST(DetectionTest, tracking) {
 
     cv::Mat frame;
     video.read(frame);
+    cv::resize(frame, frame, imageSize);
 
     detectionConfig = std::make_shared<billiard::detection::DetectionConfig>(billiard::detection::configure(frame, table, markers, intrinsics));
     if (!detectionConfig->valid) {
@@ -38,9 +39,10 @@ TEST(DetectionTest, tracking) {
 
     bool finished = false;
 
-    auto capture = [&video, &finished]() {
+    auto capture = [&video, &finished, &imageSize]() {
         cv::Mat frame;
         video.read(frame);
+        cv::resize(frame, frame, imageSize);
         finished = frame.empty();
         return billiard::capture::CameraFrames { frame, cv::Mat(), cv::Mat() };
     };
