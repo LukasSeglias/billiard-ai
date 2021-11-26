@@ -241,19 +241,22 @@ wird dieser Lösungskandidat verworfen.
     }
     \;
     \Fn{\combos{reflections: int, rails: Rail[]} $\longrightarrow$ Rail[][]}{
-        combinations: [(Rail[], vec2)] $\longleftarrow$ []\\
+        combinations: Rail[][] $\longleftarrow$ []\\
+        lastReflection: vec2[] $\longleftarrow$ []\\
         \For{rail in rails}{
-            combinations = append(([rail], (0, 0)), combinations)
+            combinations $\longleftarrow$ append([rail], combinations)\\
+            lastReflection $\longleftarrow$ append($(0, 0)$, lastReflection)
         }
         \For{index = 0 < reflections}{
-            \For{railIndex = 0 < length(rails)}{
+            \For{railIndex $\longleftarrow$ 0 < length(rails)}{
                 rail $\longleftarrow$ rails[railIndex]\\
-                \If{canReflect(combinations[railIndex].second, rail)}{
-                    combinations[railIndex].first $\longleftarrow$ append(rail, combinations[railIndex].first)\\
-                    combinations[railIndex].second = reflect(combinations[railIndex].second, [rail])[0]
+                \If{canReflect(lastReflection[railIndex], rail)}{
+                    combinations[railIndex] $\longleftarrow$ append(rail, combinations[railIndex])\\
+                    lastReflection[railIndex] $\longleftarrow$ reflect(lastReflection[railIndex], [rail])[0]
                 }
             }
         }
+
         \KwRet combinations
     }
     \;
@@ -277,7 +280,7 @@ wird dieser Lösungskandidat verworfen.
         target $\longleftarrow$ C\\
         \For{rail in Rail}{
             reflected $\longleftarrow$ target $\cdot$ rail.M\\
-            reflections $\longrightarrow$ append(reflected, reflections)\\
+            reflections $\longleftarrow$ append(reflected, reflections)\\
             target $\longleftarrow$ reflected
         }
         \KwRet reflections
