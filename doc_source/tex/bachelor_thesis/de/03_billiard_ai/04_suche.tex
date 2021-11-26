@@ -96,29 +96,248 @@ Kugelradius $r$ berechnet.
     \label{fig:kugelexpansion}
 \end{figure}
 
-Eine Kugel kann nur expandiert werden, wenn keine weitere Kugel oder Bande im Weg ist. Dies wird über die Berechnung
-des Distanzvektors zwischen dem Vektor $\vec{d}$ und der zu prüfenden Kugel erzielt. Dasselbe Prinzip wird
-in Kapitel \ref{kap:kugelkollision:performanceverbesserung} beim Fall einer dynamisch-statischen Kugelkollision erläutert.
-Bei der Prüfung auf eine mögliche Bandenkollision zwischen der aktuellen Position und dem Zielpunkt muss der Durchmesser
-der Kugel mitberücksichtigt werden. Eine mögliche Situation wird in Abbildung \ref{fig:kugelexpansion_bandenkollision} dargestellt.
-Dazu die Bande $R$ in Normalenrichtung verschoben, wobei die Normale in Richtung des Koordinatenursprungs zeigt. Es resultiert
-die virtuelle Bande $R_V$. Da die Bande durch zwei Punkte (Start und Ende) definiert ist, kann eine Gerade beschrieben werden.
-Dies gilt ebenso für die Kugel $K_1$. Deren Geradengleichung lautet:
+Eine Kugel kann ebenso über eine oder mehrere Banden expandiert werden. Dies geschieht über einen
+geometrischen Ansatz durch eine Spiegelung\cite{math.stackexchange:1}
+des Zielpunkts an der entsprechenden Bande, über welche gespielt werden soll. In Abbildung \ref{fig:Tiefe über Bande erreichen mittels Reflektion}
+wird ein Suchschritt über eine Bande modelliert. Es wird ein Punkt $A$ an einer Bande gesucht, zu welchem die Kugel $B$
+gespielt werden muss, um die Kugel $C$ zu treffen. Dieser Bandenkollisionspunkt $A$ wird mithilfe eines Spiegelpunkts $\bar{C}$
+des Punktes $C$ an der Bande berechnet.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/47_rail_reflection_1.png}
+    \end{center}
+    \caption{Tiefe über Bande erreichen mittels Reflektion}
+    \label{fig:Tiefe über Bande erreichen mittels Reflektion}
+\end{figure}
+In der Abbildung \ref{fig:Tiefe über Bande erreichen mittels Reflektion} sind zwei Beispiele ersichtlich.
+Im ersten Fall wird für die weisse Kugel ein Kollisionspunkt an der oberen Bande bestimmt, um die rote Kugel zu treffen.
+Im zweiten Fall wird für die rote Kugel ein Kollisionspunkt an der oberen Bande bestimmt, um ins Ziel zu treffen.\\
+Gegeben sind die folgenden Angaben (Parameter werden gross geschrieben, Variablen dagegen klein):
 \begin{align}
-    K_1(\lambda) = S - \lambda \cdot \hat{d}
+    B = \begin{pmatrix}B_X\\B_Y\end{pmatrix},
+    C = \begin{pmatrix}C_X\\C_Y\end{pmatrix},
+    \bar{C} = \begin{pmatrix}\bar{C_X}\\\bar{C_Y}\end{pmatrix},
 \end{align}
-Ein Schnittpunkttest zwischen diesen Geraden sollte kein Ergebnis liefern, ansonsten wird vor dem Erreichen des Zielpunkts
-$T$ eine Kollision mit der Bande stattfinden, wie es in diesem Szenario der Fall ist.
+Der Schnittpunkt kann über zwei Geraden berechnet werden, die über die Parameterform gegeben sind.
+Eine dieser Geraden liefert der gespiegelte Punkt $\bar{C}$ mit $B$.
+\begin{align}
+    \vec{l} = \vec{\bar{C}} - \vec{B}\\
+    L_1 = \vec{B} + \lambda_1 \cdot \vec{l}
+\end{align}
+Die andere Gerade ist über die Bande (Rail) gegeben, wobei $R_1$ der Startpunkt und $R_2$ der Endpunkt der Bande ist:
+\begin{align}
+    R_1 = \begin{pmatrix}R_{1X}\\R_{1Y}\end{pmatrix}, R_2 = \begin{pmatrix}R_{2X}\\R_{2Y}\end{pmatrix}\\
+    \vec{r} = \vec{R_2} - \vec{R_1}\\
+    L_2 = \vec{R_1} + \lambda_2 \cdot \vec{r}
+\end{align}
+Der Kollisionspunkt $A$ lässt sich über $\lambda_1$ der Gleichung \ref{eq:bandenkollisionspunkt} mithilfe der Linie $L_1$
+bestimmen\footnote{Für Herleitung, siehe Anhang \ref{anhang:herleitung:bandenreflektion}}.
+
+\begin{align}
+    \lambda_1 = \frac{r_x \cdot B_y - r_y \cdot B_x + R_{1,x} \cdot r_y - R_{1,y} \cdot r_x}{l_x \cdot r_y - \cdot l_y \cdot r_x}\label{eq:bandenkollisionspunkt}
+\end{align}
+
+Bevor ein allgemein gültiger Algorithmus definiert wird, muss das Problem der Mehrdimensionalität betrachtet werden.
+Da es sich bei der Billardkugel nicht um einen unendlich kleinen Punkt handelt, muss der Radius mit einbezogen werden.
+Das Problem wird in Abbildung ~\ref{fig:bandenreflektion_kugelradius} veranschaulicht.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/48_bandenreflektion_kugelradius.png}
+    \end{center}
+    \caption{Berücksichtigung des Kugelradius bei Bandenreflektion}
+    \label{fig:bandenreflektion_kugelradius}
+\end{figure}
+Einerseits wird als Zielposition $C$ nicht die Kugelposition selbst, sondern ein um den Radius verschobener Punkt in
+Gegenrichtung zur gewünschten Laufrichtung $\vec{r}$ der Kugel $C$ definiert. Andererseits wird die Bande um den Radius
+der Kugel in Richtung des Zentrums verschoben. Die verschobene virtuelle Bande ist grün eingezeichnet.
+
+Durch Studium mehrerer Beispiele wird ein allgemeiner Algorithmus hergeleitet, wobei die Mehrdimensionalität vernachlässigt
+wird. Diese kann durch die genannten Positionskorrekturen erreicht werden und hat keinen direkten Einfluss auf
+den Algorithmus.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=1\linewidth]{../common/03_billiard_ai/resources/49_rail_reflection_3.png}
+    \end{center}
+    \caption{Dreifache Reflektion an Banden}
+    \label{fig:Dreifache Reflektion an Banden}
+\end{figure}
+In einem ersten Schritt wird ein Stoss über drei Banden betrachtet. Wie in der Abbildung ~\ref{fig:Dreifache Reflektion an Banden} erkannt werden kann,
+müssen zu Beginn alle Spiegelpunkte berechnet werden.
+Um einen Spiegelpunkt zu bestimmen, muss der Ursprung des Koordinatensystems bei einem der Eckpunkte an der zu
+spiegelnden Bande liegen.\\
+Um die Spiegelung durchzuführen, muss der Punkt mit der Transformationsmatrix $M$ multipliziert werden, wobei $\vec{s}$
+für den Spiegelvektor steht\footnote{Für Herleitung, siehe Kapitel \ref{anhang:herleitung:bandenreflektion:zielpunkt}}.
+\begin{align}
+    M = \begin{pmatrix}s_x & 0 & R^1_x - s_x \cdot R^1_x \\ 0 & s_y & R^1_y - s_y \cdot R^1_y \\ 0 & 0 & 1\end{pmatrix}\\
+    \bar{C} = M \cdot C
+\end{align}
+
+Die Abbildung \ref{fig:Zweifache Reflektion an Banden} zeigt einen Stoss über zwei Banden.
+Es wird ersichtlich, dass die alleinige Berechnung des Schnittpunkts $A_n$ mit der gespiegelten Bande
+nicht ausreicht. Dieser Schnittpunkt $A_n$ kann durchaus auch ausserhalb liegen und ist wichtig,
+um den Schnittpunkt mit der nächsten Bande zu bestimmen. Die Kugel kann aber bereits früher
+mit einer Bande kollidieren. Bei $m + 1$ vorhandenen Spiegelungen lässt sich dieser Schnittpunkt $A_n^E$ berechnen, indem
+die Schnittpunkte der Geraden definiert durch den Startpunkt $A_{n-1}^E$ und dem Richtungsvektor $\bar{C}_{m-n} - A_n$
+sowie aller Banden interpretiert als Liniensegment betrachtet werden. Dabei sind immer noch mehrere Schnittpunkte möglich, es wird aber nur derjenige Schnittpunkte
+als valid betrachtet, der nicht mit dem Startpunkt zusammenfällt.
 
 \begin{figure}[h!]
     \begin{center}
-        \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/36_suchkandidat_kugel_expand_banden_kollision.png}
+        \includegraphics[width=1\linewidth]{../common/03_billiard_ai/resources/50_rail_reflection_2.png}
     \end{center}
-    \caption{Kugelexpansion - Bandenkollision}
-    \label{fig:kugelexpansion_bandenkollision}
+    \caption{Zweifache Reflektion an Banden}
+    \label{fig:Zweifache Reflektion an Banden}
 \end{figure}
 
+Es stellt sich weiterhin die Frage, an welcher Bande überhaupt gespiegelt werden darf. Dazu wurden Definitionsbereiche
+für jede Bande erstellt, wie in Abbildung \ref{fig:Definitionsbereich_Bandenspiegelung} ersichtlich ist. Punkte auf
+der roten Seite liegen ausserhalb des Definitionsbereichs, Punkte im grünen Bereich sind spiegelbar. Des Weiteren
+ist die Bandennormale vorhanden, welche zum Ursprung des Koordinatensystems in der Tischmitte zeigt. Um für einen Punkt
+$C$ herauszufinden, ob dieser spiegelbar ist, muss demnach nur geprüft werden, ob er im Definitionsbereich liegt.
+Dazu wird der Ursprung des Koordinatensystems zum Start der Bande verschoben und es wird das Dot-Produkt des verschobenen Punktes $C'$
+mit der Bandennormale gebildet. Die Elemente des Vektors werden geprüft, ob sie grösser oder gleich dem Nullvektor sind,
+dies resultiert in einem Vektor, welcher eine $0$ speichert, wenn das Element kleiner und $1$ wenn es grösser ist.
+Abschliessend wird die quadrierte Länge des resultierenden Vektors gebildet, diese Länge muss $2$ entsprechen, in dem
+Fall liegt der Punkt im Definitionsbereich.
+\begin{align}
+    C^{'} = C \cdot T^0\\
+    \bar{C} = C^{'} \cdot \hat{n}\\
+    \vec{r} = \bar{C} \geq \vec{0}\\
+    l = \vec{r} \cdot \vec{r}\\
+    p = l == 2
+\end{align}
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=1\linewidth]{../common/03_billiard_ai/resources/51_definitionsbereich_spiegelung_bande.png}
+    \end{center}
+    \caption{Definitionsbereich einer Bandenspiegelung}
+    \label{fig:Definitionsbereich_Bandenspiegelung}
+\end{figure}
+
+Algorithmus \ref{alg:stoss_ueber_bande_1} und \ref{alg:stoss_ueber_bande_2} zeigt, wie ein Stoss über die Bande gefunden werden kann.
+Dazu werden in einem ersten Schritt alle möglichen Kombinationen der Banden gebildet. Anschliessend werden die
+Kombinationen sukzessive berechnet. Zuerst werden alle Spiegelpunkte bestimmt, danach alle Kollisionspunkte mit den
+Banden, wobei auch geprüft wird, ob der Weg zwischen den Positionen passierbar ist. Sollte dies nicht der Fall sein,
+wird dieser Lösungskandidat verworfen.
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \SetKwFunction{expandByRail}{expandByRail}
+    \SetKwFunction{combos}{combos}
+    \SetKwFunction{canReflect}{canReflect}
+    \SetKwProg{Fn}{Function}{}{}
+    \Fn{\expandByRail{B: vec2, C: vec2, reflections: int, rails: Rail[]} $\longrightarrow$ Node[]}{
+        nodes $\longleftarrow$ Node[]\\
+        combinations $\longleftarrow$ combos(reflections, rails)\\
+        \For{combination in combinations}{
+            reflected $\longleftarrow$ reflect(C, combination)\\
+            targets $\longleftarrow$ target(B, reflected, rails, combination)\\
+            \If{! empty(targets)}{
+                nodes $\longleftarrow$ append(physicalEvents(B, C, targets), nodes)
+            }
+        }
+        \KwRet nodes
+    }
+    \;
+    \Fn{\combos{reflections: int, rails: Rail[]} $\longrightarrow$ Rail[][]}{
+        combinations: [(Rail[], vec2)] $\longleftarrow$ []\\
+        \For{rail in rails}{
+            combinations = append(([rail], (0, 0)), combinations)
+        }
+        \For{index = 0 < reflections}{
+            \For{railIndex = 0 < length(rails)}{
+                rail $\longleftarrow$ rails[railIndex]\\
+                \If{canReflect(combinations[railIndex].second, rail)}{
+                    combinations[railIndex].first $\longleftarrow$ append(rail, combinations[railIndex].first)\\
+                    combinations[railIndex].second = reflect(combinations[railIndex].second, [rail])[0]
+                }
+            }
+        }
+        \KwRet combinations
+    }
+    \;
+    \Fn{\canReflect{C: vec2, rail: Rail} $\longrightarrow$ bool}{
+        moved $\longleftarrow$ C $-$ rail.start\\
+        reflected $\longleftarrow$ moved $\cdot$ rail.normal\\
+        possible $\longleftarrow$ reflected $\geq \vec{0}$\\
+        \KwRet possible $\cdot$ possible $= 2$
+    }
+    \caption{Algorithmus zur Berechnung eines Stosses über die Bande - Teil 1}
+    \label{alg:stoss_ueber_bande_1}
+\end{algorithm}
 \newpage
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \SetKwFunction{reflect}{reflect}
+    \SetKwFunction{target}{target}
+    \SetKwProg{Fn}{Function}{}{}
+    \Fn{\reflect{C: vec2, rails: Rail[]} $\longrightarrow$ vec2[]}{
+        reflections $\longleftarrow$ vec2[]\\
+        target $\longleftarrow$ C\\
+        \For{rail in Rail}{
+            reflected $\longleftarrow$ target $\cdot$ rail.M\\
+            reflections $\longrightarrow$ append(reflected, reflections)\\
+            target $\longleftarrow$ reflected
+        }
+        \KwRet reflections
+    }
+    \;
+    \Fn{\target{B: vec2, reflected: vec2[], rails: Rail[], combo: Rail[]} $\longrightarrow$ vec2[]}{
+        targets $\longleftarrow$ vec2[]\\
+        reflection $\longleftarrow$ pop(reflected)\\
+        start $\longleftarrow$ B\\
+        startA $\longleftarrow$ B\\
+        comboRail $\longleftarrow$ pop(combo)\\
+        \While{! empty(reflected)}{
+            targetA $\longleftarrow$ lineIntersection(startA, reflection, comboRail.start, comboRail.end)\\
+            target $\longleftarrow$ $(\infty, \infty)$\\
+            \For{rail in rails}{
+                railIntersection $\longleftarrow$ lineLineSegmentIntersection(start, (reflection - targetA), rail.start, rail.end)\\
+                \If{railIntersection and start <> railIntersection}{
+                    target $\longleftarrow$ railIntersection\\
+                    break
+                }
+            }
+            \If{! shotPossible(start, target)}{
+                \KwRet {}
+            }
+            targets $\longleftarrow$ append(target, targets)\\
+            reflection $\longleftarrow$ pop(reflected)\\
+            start $\longleftarrow$ target\\
+            startA $\longleftarrow$ targetA\\
+            comboRail $\longleftarrow$ pop(combo)
+        }
+        \KwRet targets
+    }
+    \caption{Algorithmus zur Berechnung eines Stosses über die Bande - Teil 2}
+    \label{alg:stoss_ueber_bande_2}
+\end{algorithm}
+
+Für die Expansion einer Kugel, sei es über eine weitere Kugel oder über eine Bande,
+muss geprüft werden, dass keine weitere Kugel im Weg ist. Dies wird über die Berechnung
+des Distanzvektors zwischen dem Vektor $\vec{d}$ und der zu prüfenden Kugel erzielt. Dasselbe Prinzip wird
+in Kapitel \ref{kap:kugelkollision:performanceverbesserung} beim Fall einer dynamisch-statischen Kugelkollision erläutert.
+% TODO: Bandenkollision prüfen?
+%Bei der Prüfung auf eine mögliche Bandenkollision zwischen der aktuellen Position und dem Zielpunkt muss der Durchmesser
+%der Kugel mitberücksichtigt werden. Eine mögliche Situation wird in Abbildung \ref{fig:kugelexpansion_bandenkollision} dargestellt.
+%Dazu die Bande $R$ in Normalenrichtung verschoben, wobei die Normale in Richtung des Koordinatenursprungs zeigt. Es resultiert
+%die virtuelle Bande $R_V$. Da die Bande durch zwei Punkte (Start und Ende) definiert ist, kann eine Gerade beschrieben werden.
+%Dies gilt ebenso für die Kugel $K_1$. Deren Geradengleichung lautet:
+%\begin{align}
+%    K_1(\lambda) = S - \lambda \cdot \hat{d}
+%\end{align}
+%Ein Schnittpunkttest zwischen diesen Geraden sollte kein Ergebnis liefern, ansonsten wird vor dem Erreichen des Zielpunkts
+%$T$ eine Kollision mit der Bande stattfinden, wie es in diesem Szenario der Fall ist.
+
+%\begin{figure}[h!]
+%    \begin{center}
+%        \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/36_suchkandidat_kugel_expand_banden_kollision.png}
+%    \end{center}
+%    \caption{Kugelexpansion - Bandenkollision}
+%    \label{fig:kugelexpansion_bandenkollision}
+%\end{figure}
+
 Sobald die weisse Kugel expandiert wird, muss sichergestellt werden, dass diese auch an der entsprechenden Position
 mit dem Queue getroffen werden kann. Dies wird, wie in Abbildung \ref{fig:kugelexpansion_platz_fuer_queue} veranschaulicht,
 durch einen Vektor $\vec{s}$ mit einer bestimmten Länge $s$ entgegen der Rollrichtung der Kugel sowie einem Mindestabstand
@@ -235,4 +454,3 @@ Die endgültigen Kosten werden über die Addition aller Kriterien gebildet.
     K = d_{krit} + \alpha^G_{krit, y} + K_{I,krit}
 \end{align}
 
-%TODO: Spezialkosten (Einlochen) erfassen
