@@ -843,6 +843,10 @@ namespace billiard::snooker {
                                         const std::vector<std::string>& previousTypes) {
         static std::string agent = "[nextSearch] ";
 
+        if (previousTypes.empty()) {
+            return billiard::search::Search{"", std::vector<std::string>{}};
+        }
+
         uint8_t reds = 0;
         for (auto& ball : state._balls) {
             reds += ball._type == "RED" ? 1 : 0;
