@@ -241,23 +241,31 @@ wird dieser Lösungskandidat verworfen.
     }
     \;
     \Fn{\combos{reflections: int, rails: Rail[]} $\longrightarrow$ Rail[][]}{
-        combinations: Rail[][] $\longleftarrow$ []\\
-        lastReflection: vec2[] $\longleftarrow$ []\\
+        combinations: (Rail[], vec2, bool)[] $\longleftarrow$ []\\
         \For{rail in rails}{
-            combinations $\longleftarrow$ append([rail], combinations)\\
-            lastReflection $\longleftarrow$ append($(0, 0)$, lastReflection)
+            combinations $\longleftarrow$ append(([rail] $(0, 0)$, true), combinations)
         }
         \For{index = 0 < reflections}{
             \For{railIndex $\longleftarrow$ 0 < length(rails)}{
                 rail $\longleftarrow$ rails[railIndex]\\
-                \If{canReflect(lastReflection[railIndex], rail)}{
-                    combinations[railIndex] $\longleftarrow$ append(rail, combinations[railIndex])\\
-                    lastReflection[railIndex] $\longleftarrow$ reflect(lastReflection[railIndex], [rail])[0]
+                \If{combinations[railIndex].third and canReflect(combinations[railIndex].second, rail)}{
+                    combinations[railIndex].first $\longleftarrow$ append(rail, combinations[railIndex].first)\\
+                    combinations[railIndex].second $\longleftarrow$ reflect(combinations[railIndex].second, [rail])[0]
+                }
+                \Else{
+                    combinations[railIndex].third $\longleftarrow$ false
                 }
             }
         }
 
-        \KwRet combinations
+        results: Rail[][] $\longleftarrow$ []\\
+        \For{railIndex $\longleftarrow$ 0 < length(rails)}{
+            \If{combinations[railIndex].third}{
+                results $\longleftarrow$ append(combinations[railIndex].first, results)
+            }
+        }
+
+        \KwRet results
     }
     \;
     \Fn{\canReflect{C: vec2, rail: Rail} $\longrightarrow$ bool}{
@@ -288,11 +296,11 @@ wird dieser Lösungskandidat verworfen.
     \;
     \Fn{\target{B: vec2, reflected: vec2[], rails: Rail[], combo: Rail[]} $\longrightarrow$ vec2[]}{
         targets $\longleftarrow$ vec2[]\\
-        reflection $\longleftarrow$ pop(reflected)\\
         start $\longleftarrow$ B\\
         startA $\longleftarrow$ B\\
-        comboRail $\longleftarrow$ pop(combo)\\
         \While{! empty(reflected)}{
+            reflection $\longleftarrow$ pop(reflected)\\
+            comboRail $\longleftarrow$ pop(combo)\\
             targetA $\longleftarrow$ lineIntersection(startA, reflection, comboRail.start, comboRail.end)\\
             target $\longleftarrow$ $(\infty, \infty)$\\
             \For{rail in rails}{
@@ -306,10 +314,8 @@ wird dieser Lösungskandidat verworfen.
                 \KwRet {}
             }
             targets $\longleftarrow$ append(target, targets)\\
-            reflection $\longleftarrow$ pop(reflected)\\
             start $\longleftarrow$ target\\
-            startA $\longleftarrow$ targetA\\
-            comboRail $\longleftarrow$ pop(combo)
+            startA $\longleftarrow$ targetA
         }
         \KwRet targets
     }
