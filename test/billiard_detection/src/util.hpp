@@ -6,6 +6,7 @@
 struct DetectionBall {
     std::string type;
     glm::vec2 position;
+    glm::vec2 pixelPosition;
 };
 
 struct DetectionTestCase {
@@ -21,6 +22,7 @@ DetectionTestCases merge(const DetectionTestCases& testcases1, const DetectionTe
 DetectionTestCases detectionTestCases(nlohmann::json& json);
 DetectionTestCases loadDetectionTestCases(const std::string& configFilepath);
 billiard::detection::State toState(const std::vector<DetectionBall>& detectionBalls);
+billiard::detection::State toPixelState(const std::vector<DetectionBall>& detectionBalls);
 
 struct DetectionStats {
     DetectionTestCase testcase;

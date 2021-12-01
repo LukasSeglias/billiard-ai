@@ -11,7 +11,10 @@ std::ostream& operator<<(std::ostream& os, const std::vector<float>& vec) {
 }
 
 std::ostream& operator<<(std::ostream& os, const DetectionStats& stats) {
-    os << "lost=" << stats.lostBalls.size() << " ghosts=" << stats.ghostBalls.size() << " total distance=" << std::to_string(stats.totalDistance) << " distances=" << stats.sortedDistances;
+    os << "lost=" << stats.lostBalls.size()
+    << " ghosts=" << stats.ghostBalls.size()
+    << " total distance=" << std::to_string(stats.totalDistance)
+    << " distances=" << stats.sortedDistances;
     return os;
 }
 
@@ -81,10 +84,15 @@ DetectionTestCases detectionTestCases(nlohmann::json& json) {
         for (auto& ballJson : caseJson["balls"]) {
 
             glm::vec2 position { ballJson["x"], ballJson["y"] };
+            glm::vec2 pixelPosition {0, 0};
+            if (ballJson.contains("pixelX") && ballJson.contains("pixelY")) {
+                pixelPosition = { ballJson["pixelX"], ballJson["pixelY"] };
+            }
             std::string type = ballJson.contains("type") ? ballJson["type"] : "???";
 
             DetectionBall ball;
             ball.position = position;
+            ball.pixelPosition = pixelPosition;
             ball.type = type;
             balls.push_back(ball);
         }
@@ -116,6 +124,22 @@ billiard::detection::State toState(const std::vector<DetectionBall>& detectionBa
         ball._type = detectionBall.type;
         ball._id = "???";
         state._balls.push_back(ball);
+    }
+    return state;
+}
+
+billiard::detection::State toPixelState(const std::vector<DetectionBall>& detectionBalls) {
+    billiard::detection::State state;
+    for (auto& detectionBall : detectionBalls) {
+
+        static glm::vec2 zero {0, 0};
+        if (detectionBall.pixelPosition != zero) {
+            billiard::detection::Ball ball;
+            ball._position = detectionBall.pixelPosition;
+            ball._type = detectionBall.type;
+            ball._id = "???";
+            state._balls.push_back(ball);
+        }
     }
     return state;
 }

@@ -70,7 +70,6 @@ TEST(OpticalFlow, test) {
     bool ballsAreStationary = true;
     bool looped = true;
     std::string file = "./resources/2.avi";
-//    std::string file = "D:\\Billiard-Videos\\detection and classification videos\\video_3_color.avi";
 
     float maxTrackingDistanceSquared = 10.0f * 10.0f; // In Pixels
 

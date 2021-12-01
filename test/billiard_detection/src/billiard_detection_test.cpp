@@ -9,7 +9,7 @@ TEST(BallDetectionTests, detection_accuracy) {
 
     bool autoplay = true;
     std::vector<std::string> testcasesPaths = {
-        "./resources/test_detection/with_projector_on/with_halo/testcases.json"
+        "./resources/test_detection/with_projector_on/with_halo_2/testcases.json"
     };
 
     cv::Size imageSize = getImageSize();
@@ -30,6 +30,8 @@ TEST(BallDetectionTests, detection_accuracy) {
     std::string imagePath;
     cv::Mat frame;
     cv::Mat drawn;
+    cv::Mat expectedDrawn;
+    cv::Mat expectedGrid;
     cv::Mat actualGrid;
     cv::Mat badGrid;
 
@@ -60,17 +62,24 @@ TEST(BallDetectionTests, detection_accuracy) {
             frame.copyTo(drawn);
             drawBalls(drawn, pixelState._balls);
 
-            billiard::detection::State expected = toState(testcase.balls);
+            billiard::detection::State expectedPixelState = toPixelState(testcase.balls);
+            billiard::detection::State expectedState = toState(testcase.balls);
 
-//            expectedGrid = drawDetectedBallsGrid(frame, expected, 128, 8); // TODO: this does not work
+            if (!expectedPixelState._balls.empty()) {
+                frame.copyTo(expectedDrawn);
+                drawBalls(expectedDrawn, expectedPixelState._balls);
+                expectedGrid = drawDetectedBallsGrid(expectedDrawn, expectedPixelState, 128, 8);
+            } else {
+                expectedGrid = cv::Mat();
+            }
             actualGrid = drawDetectedBallsGrid(drawn, pixelState, 128, 8);
 
-            DetectionStats stats = compare(testcase, expected, state);
+            DetectionStats stats = compare(testcase, expectedState, state);
             std::cout << "Case: " << testcase.image << std::endl
                       << "  Stats: " << stats << std::endl;
 
             billiard::detection::State badDetections;
-            for (int i = 0; i < expected._balls.size(); i++) {
+            for (int i = 0; i < expectedState._balls.size(); i++) {
                 float distance = stats.distances[i];
                 if (distance > 3.0f /*mm*/) {
                     int actualIndex = stats.matchedExpectedBalls[i];
@@ -83,6 +92,7 @@ TEST(BallDetectionTests, detection_accuracy) {
         }
 
         cv::imshow("Image", frame);
+        if (!expectedGrid.empty()) cv::imshow("expected grid", expectedGrid);
         cv::imshow("actual grid", actualGrid);
         cv::imshow("bad grid", badGrid);
 
@@ -108,10 +118,22 @@ TEST(BallDetectionTests, detection_accuracy) {
     }
 }
 
+// See: https://en.wikipedia.org/wiki/Five-number_summary
+struct FiveNumberSummary {
+    float min;
+    float lowerQuartile;
+    float median;
+    float upperQuartile;
+    float max;
+};
+
+FiveNumberSummary calculateFiveNumberSummary(const std::vector<float>& sortedValues);
+std::ostream& operator<<(std::ostream& os, const FiveNumberSummary& summary);
+
 TEST(BallDetectionTests, stats) {
 
     std::vector<std::string> testcasesPaths = {
-            "./resources/test_detection/with_projector_on/with_halo/testcases.json"
+            "./resources/test_detection/with_projector_on/with_halo_2/testcases.json"
     };
 
     cv::Size imageSize = getImageSize();
@@ -124,7 +146,12 @@ TEST(BallDetectionTests, stats) {
         testcases = merge(testcases, loadDetectionTestCases(testcasePath));
     }
 
-    std::vector<DetectionStats> allStats;
+    int totalGhosts = 0;
+    int totalLost = 0;
+    std::vector<float> allPixelDistances;
+    std::vector<float> allModelDistances;
+    std::vector<DetectionStats> allPixelStats;
+    std::vector<DetectionStats> allModelStats;
 
     for (int testcaseIndex = 0; testcaseIndex < testcases.cases.size(); testcaseIndex++) {
 
@@ -145,16 +172,62 @@ TEST(BallDetectionTests, stats) {
         }
 
         billiard::detection::State pixelState = billiard::snooker::detect(billiard::detection::State(), frame);
-        billiard::detection::State state = billiard::detection::pixelToModelCoordinates(*detectionConfig, pixelState);
+        billiard::detection::State modelState = billiard::detection::pixelToModelCoordinates(*detectionConfig, pixelState);
 
-        billiard::detection::State expected = toState(testcase.balls);
+        billiard::detection::State expectedPixelState = toPixelState(testcase.balls);
+        billiard::detection::State expectedModelState = toState(testcase.balls);
 
-        DetectionStats stats = compare(testcase, expected, state);
-        allStats.push_back(stats);
+        DetectionStats modelStats = compare(testcase, expectedModelState, modelState);
+        allModelStats.push_back(modelStats);
+        for (auto& distance : modelStats.distances) {
+            allModelDistances.push_back(distance);
+        }
+
+        if (!expectedPixelState._balls.empty()) {
+            DetectionStats pixelStats = compare(testcase, expectedPixelState, pixelState);
+            allPixelStats.push_back(pixelStats);
+            for (auto& distance : pixelStats.distances) {
+                allPixelDistances.push_back(distance);
+            }
+        }
+
+        totalLost += modelStats.lostBalls.size();
+        totalGhosts += modelStats.ghostBalls.size();
     }
 
-    for (auto& stats : allStats) {
+    for (auto& stats : allModelStats) {
         std::cout << "Case: " << stats.testcase.image << std::endl
-                  << "  Stats: " << stats << std::endl;
+                  << "  Model stats: " << stats << std::endl;
     }
+
+    std::cout << "Total: lost=" << totalLost << ", ghosts=" << totalGhosts << std::endl;
+    if (!allPixelDistances.empty()) {
+        std::sort(allPixelDistances.begin(), allPixelDistances.end());
+        FiveNumberSummary pixelSummary = calculateFiveNumberSummary(allPixelDistances);
+        std::cout << "Pixel distance: " << pixelSummary << std::endl;
+    }
+    std::sort(allModelDistances.begin(), allModelDistances.end());
+    FiveNumberSummary modelSummary = calculateFiveNumberSummary(allModelDistances);
+    std::cout << "Model distance: " << modelSummary << std::endl;
+
+}
+
+FiveNumberSummary calculateFiveNumberSummary(const std::vector<float>& sortedValues) {
+    assert(!sortedValues.empty());
+    FiveNumberSummary summary;
+    summary.min = sortedValues.at(0);
+    summary.lowerQuartile = sortedValues.at((int)((float)sortedValues.size() * 0.25f));
+    summary.median = sortedValues.at(sortedValues.size() / 2);
+    summary.upperQuartile = sortedValues.at((int)((float)sortedValues.size() * 0.75f));
+    summary.max = sortedValues.at(sortedValues.size() - 1);
+    return summary;
+}
+
+std::ostream& operator<<(std::ostream& os, const FiveNumberSummary& summary) {
+    os << "min=" << std::to_string(summary.min) << ", "
+       << "lower quartile=" << std::to_string(summary.lowerQuartile) << ", "
+       << "median=" << std::to_string(summary.median) << ", "
+       << "upper quartile=" << std::to_string(summary.upperQuartile) << ", "
+       << "max=" << std::to_string(summary.max) << " ";
+    return os;
 }
