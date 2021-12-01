@@ -386,6 +386,7 @@ TEST(SnookerClassificationTests, snooker_classify_single_balls) {
     std::string configurationImage = "./resources/test_detection/with_projector_on/with_halo/1.png";
 //    std::string classificationFolder = "./resources/test_classification/with_projector_off/";
 //    std::string classificationFolder = "./resources/test_classification/with_projector_on/without_text/";
+//    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_halo/";
     std::string classificationFolder = "./resources/test_classification/with_projector_on/with_halo_2/";
 //    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_text/";
     std::vector<std::string> labels = {
@@ -519,8 +520,9 @@ TEST(SnookerClassificationTests, snooker_find_cluster_centers) {
 
     std::string configurationImage = "./resources/test_detection/with_projector_on/with_halo/1.png";
 //    std::string classificationFolder = "./resources/test_classification/with_projector_off/";
-    std::string classificationFolder = "./resources/test_classification/with_projector_on/without_text/";
+//    std::string classificationFolder = "./resources/test_classification/with_projector_on/without_text/";
 //    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_halo/";
+    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_halo_2/";
 //    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_text/";
     std::vector<std::string> labels = {
             "BROWN",
@@ -550,6 +552,10 @@ TEST(SnookerClassificationTests, snooker_find_cluster_centers) {
 
         int trueLabelIndex = findLabelIndex(labels, trueLabel);
 
+        std::vector<int> allHues1;
+        std::vector<int> allHues2;
+        std::vector<int> allSaturations;
+        std::vector<int> allValues;
         int totalHue1 = 0;
         int totalHue2 = 0;
         int totalSaturation = 0;
@@ -592,27 +598,42 @@ TEST(SnookerClassificationTests, snooker_find_cluster_centers) {
             if (maxHue < 128) {
                 totalHue1 += maxHue;
                 hueCounter1++;
+                allHues1.push_back(maxHue);
             } else {
                 totalHue2 += maxHue;
                 hueCounter2++;
+                allHues2.push_back(maxHue);
             }
 
             totalSaturation += maxSaturation;
             totalValue += maxValue;
 
+            allSaturations.push_back(maxSaturation);
+            allValues.push_back(maxValue);
+
             sampleCounter++;
         }
+
+        std::sort(allHues1.begin(), allHues1.end());
+        std::sort(allHues2.begin(), allHues2.end());
+        std::sort(allSaturations.begin(), allSaturations.end());
+        std::sort(allValues.begin(), allValues.end());
 
         double averageHue1 = (double) totalHue1 / (double) hueCounter1;
         double averageHue2 = (double) totalHue2 / (double) hueCounter2;
         double averageSaturation = (double) totalSaturation / (double) sampleCounter;
         double averageValue = (double) totalValue / (double) sampleCounter;
 
+        int medianHue1 = allHues1.empty() ? 0 : allHues1.at(allHues1.size() / 2);
+        int medianHue2 = allHues2.empty() ? 0 : allHues2.at(allHues2.size() / 2);
+        int medianSaturation = allSaturations.empty() ? 0 : allSaturations.at(allSaturations.size() / 2);
+        int medianValue = allValues.empty() ? 0 : allValues.at(allValues.size() / 2);
+
         std::cout << "class: " << trueLabel << " samples: " << sampleCounter
-                  << " avg hue1: " << averageHue1 << " (" << hueCounter1 << ")"
-                  << " avg hue2: " << averageHue2 << " (" << hueCounter2 << ")"
-                  << " avg saturation: " << averageSaturation
-                  << " avg value: " << averageValue
+                  << " avg hue1: " << averageHue1 << " median hue1: " << medianHue1 << " (" << hueCounter1 << ")"
+                  << " avg hue2: " << averageHue2 << " median hue2: " << medianHue2 << " (" << hueCounter2 << ")"
+                  << " avg saturation: " << averageSaturation << " median saturation: " << medianSaturation
+                  << " avg value: " << averageValue << " median value: " << medianValue
                   << std::endl;
     }
 }

@@ -125,17 +125,38 @@ namespace billiard::snooker {
                 //class: BLUE samples: 24 avg hue1: 99.4583 (24) avg hue2: -nan(ind) (0) avg saturation: 254.042 avg value: 196.75
                 //class: GREEN samples: 24 avg hue1: 89.625 (24) avg hue2: -nan(ind) (0) avg saturation: 248.583 avg value: 136.792
                 //class: UNKNOWN samples: 0 avg hue1: -nan(ind) (0) avg hue2: -nan(ind) (0) avg saturation: -nan(ind) avg value: -nan(ind)
-                Cluster { "BROWN",  {   4, 191, 195 } },
-                Cluster { "PINK",   {   4,  92, 254 } },
-                Cluster { "PINK",   { 176,  92, 254 } },
-                Cluster { "RED",    {   0, 244, 223 } },
-                Cluster { "RED",    { 179, 244, 223 } },
-                Cluster { "BLACK",  { 34,  88,  42 } },
-                Cluster { "BLACK",  { 166,  88,  42 } },
-                Cluster { "YELLOW", {  26, 239, 254 } },
-                Cluster { "WHITE",  {  33,   16, 255 } },
-                Cluster { "BLUE",   { 99, 254, 196 } },
-                Cluster { "GREEN",  {  89, 248, 136 } }
+//                Cluster { "BROWN",  {   4, 191, 195 } },
+//                Cluster { "PINK",   {   4,  92, 254 } },
+//                Cluster { "PINK",   { 176,  92, 254 } },
+//                Cluster { "RED",    {   0, 244, 223 } },
+//                Cluster { "RED",    { 179, 244, 223 } },
+//                Cluster { "BLACK",  { 34,  88,  42 } },
+//                Cluster { "BLACK",  { 166,  88,  42 } },
+//                Cluster { "YELLOW", {  26, 239, 254 } },
+//                Cluster { "WHITE",  {  33,   16, 255 } },
+//                Cluster { "BLUE",   { 99, 254, 196 } },
+//                Cluster { "GREEN",  {  89, 248, 136 } }
+                // Based on images under ./resources/test_classification/with_projector_on/with_halo_2/
+                // class: BROWN    samples:  32  avg hue1: 3.40625    median hue1: 3 (32)    avg hue2: -nan(ind)  median hue2: 0 (0)     avg saturation: 226.875    median saturation: 228   avg value: 216.5      median value: 233
+                // class: PINK     samples:  32  avg hue1: 3.2        median hue1: 3 (5)     avg hue2: 175.407    median hue2: 175 (27)  avg saturation: 96.375     median saturation: 97    avg value: 253.344    median value: 254
+                // class: RED      samples: 224  avg hue1: 0          median hue1: 0 (192)   avg hue2: 176        median hue2: 176 (32)  avg saturation: 252.585    median saturation: 253   avg value: 241.683    median value: 250
+                // class: BLACK    samples:  32  avg hue1: 20.6667    median hue1: 30 (3)    avg hue2: 165.448    median hue2: 167 (29)  avg saturation: 91.9375    median saturation: 89    avg value: 42.75      median value: 44
+                // class: YELLOW   samples:  32  avg hue1: 28.25      median hue1: 30 (32)   avg hue2: -nan(ind)  median hue2: 0 (0)     avg saturation: 249.312    median saturation: 253   avg value: 254.719    median value: 255
+                // class: WHITE    samples:  32  avg hue1: 32.9688    median hue1: 35 (32)   avg hue2: -nan(ind)  median hue2: 0 (0)     avg saturation: 8.75       median saturation: 6     avg value: 255        median value: 255
+                // class: BLUE     samples:  32  avg hue1: 100.688    median hue1: 101 (32)  avg hue2: -nan(ind)  median hue2: 0 (0)     avg saturation: 254.188    median saturation: 255   avg value: 211.375    median value: 200
+                // class: GREEN    samples:  32  avg hue1: 91.5       median hue1: 92 (32)   avg hue2: -nan(ind)  median hue2: 0 (0)     avg saturation: 253.125    median saturation: 255   avg value: 140.562    median value: 142
+                // class: UNKNOWN  samples:   0  avg hue1: -nan(ind)  median hue1: 0 (0)     avg hue2: -nan(ind)  median hue2: 0 (0)     avg saturation: -nan(ind)  median saturation: 0     avg value: -nan(ind)  median value: 0
+                Cluster { "BROWN",  {   3, 228, 233 } },
+                Cluster { "PINK",   {   3,  97, 254 } },
+                Cluster { "PINK",   { 175,  97, 254 } },
+                Cluster { "RED",    {   0, 253, 250 } },
+                Cluster { "RED",    { 176, 253, 250 } },
+                Cluster { "BLACK",  { 30,  89,  44 } },
+                Cluster { "BLACK",  { 167,  89,  44 } },
+                Cluster { "YELLOW", {  30, 253, 255 } },
+                Cluster { "WHITE",  {  35,   6, 255 } },
+                Cluster { "BLUE",   { 101, 255, 200 } },
+                Cluster { "GREEN",  {  92, 255, 142 } }
         };
 
     };
