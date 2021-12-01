@@ -313,7 +313,7 @@
       "image": "./resources/test_detection/with_projector_on/with_halo_2/4.png",
       "balls": [
         {
-          "type": "UNKNOWN",
+          "type": "YELLOW",
           "x": 222.011,
           "y": 258.111,
           "pixelX": 760.5,
@@ -416,7 +416,7 @@
       "image": "./resources/test_detection/with_projector_on/with_halo_2/5.png",
       "balls": [
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": 47.4946,
           "y": -270.35,
           "pixelX": 658.5,
@@ -596,7 +596,7 @@
           "pixelY": 128.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -173.126,
           "y": -277.673,
           "pixelX": 527.5,
@@ -652,7 +652,7 @@
           "pixelX": 295.5, "pixelY": 540.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -392.794, "y": -282.65,
           "pixelX": 396.5, "pixelY": 530.5
         },
@@ -717,7 +717,7 @@
           "pixelX": 292.5, "pixelY": 325.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -558.663, "y": -307.17,
           "pixelX": 297.5, "pixelY": 546.5
         },
@@ -792,7 +792,7 @@
           "pixelX": 193.5, "pixelY": 605.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -735.909, "y": -307.629,
           "pixelX": 190.5, "pixelY": 547.5
         },
@@ -882,7 +882,7 @@
           "pixelX": 286.5, "pixelY": 531.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -509.465, "y": -395.132,
           "pixelX": 327.5, "pixelY": 598.5
         },
@@ -942,7 +942,7 @@
           "pixelX": 217.5, "pixelY": 414.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -484.508, "y": -218.878,
           "pixelX": 341.5, "pixelY": 493.5
         },
@@ -1042,7 +1042,7 @@
           "pixelX": 444.5, "pixelY": 396.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -484.737, "y": -71.3587,
           "pixelX": 340.5, "pixelY": 405.5
         },
@@ -1072,7 +1072,7 @@
       "image": "./resources/test_detection/with_projector_on/with_halo_2/13.png",
       "balls": [
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -878.958, "y": -286.607,
           "pixelX": 103.5, "pixelY": 535.5
         },
@@ -1177,7 +1177,7 @@
           "pixelX": 160.5, "pixelY": 195.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -325.07, "y": 148.901,
           "pixelX": 435.5, "pixelY": 273.5
         },
@@ -1282,7 +1282,7 @@
           "pixelX": 466.5, "pixelY": 186.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -94.8093, "y": 393.546,
           "pixelX": 572.5, "pixelY": 127.5
         },
@@ -1352,7 +1352,7 @@
           "pixelX": 467.5, "pixelY": 186.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -316.002, "y": 145.832,
           "pixelX": 441.5, "pixelY": 275.5
         },
@@ -1372,7 +1372,7 @@
       "image": "./resources/test_detection/with_projector_on/with_halo_2/17.png",
       "balls": [
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -439.225, "y": 58.863,
           "pixelX": 367.5, "pixelY": 327.5
         },
@@ -1467,7 +1467,7 @@
           "pixelX": 679.5, "pixelY": 378.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -439.019, "y": 57.0621,
           "pixelX": 367.5, "pixelY": 328.5
         },
@@ -1607,7 +1607,7 @@
           "pixelX": 1082.5, "pixelY": 389.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": 837.84, "y": -209.637,
           "pixelX": 1120.5, "pixelY": 482.5
         },
@@ -1732,7 +1732,7 @@
           "pixelX": 826.5, "pixelY": 380.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": 263.641, "y": -30.7596,
           "pixelX": 785.5, "pixelY": 379.5
         },
@@ -1807,7 +1807,7 @@
           "pixelX": 881.5, "pixelY": 279.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": 258.298, "y": 136.198,
           "pixelX": 781.5, "pixelY": 280.5
         },
@@ -1857,7 +1857,7 @@
           "pixelX": 790.5, "pixelY": 133.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": 189.293, "y": 378.995,
           "pixelX": 740.5, "pixelY": 136.5
         },
@@ -1952,7 +1952,7 @@
           "pixelX": 985.5, "pixelY": 351.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": 491.486, "y": 404.506,
           "pixelX": 918.5, "pixelY": 121.5
         },
@@ -2022,7 +2022,7 @@
           "pixelX": 1089.5, "pixelY": 578.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": 503.648, "y": 113.546,
           "pixelX": 925.5, "pixelY": 293.5
         },
@@ -2107,7 +2107,7 @@
           "pixelX": 827.5, "pixelY": 184.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": 757.666, "y": -325.69,
           "pixelX": 1073.5, "pixelY": 550.5
         },
@@ -2157,7 +2157,7 @@
           "pixelX": 1104.5, "pixelY": 146.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": 752.146, "y": 76.6332,
           "pixelX": 1070.5, "pixelY": 314.5
         },
@@ -2272,7 +2272,7 @@
       "image": "./resources/test_detection/with_projector_on/with_halo_2/29.png",
       "balls": [
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -736.785, "y": 311.394,
           "pixelX": 185.5, "pixelY": 176.5
         },
@@ -2362,7 +2362,7 @@
           "pixelX": 805.5, "pixelY": 272.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -514.121, "y": -81.4383,
           "pixelX": 322.5, "pixelY": 411.5
         },
@@ -2482,7 +2482,7 @@
           "pixelX": 548.5, "pixelY": 254.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -515.603, "y": -82.7655,
           "pixelX": 321.5, "pixelY": 412.5
         },
@@ -2547,7 +2547,7 @@
           "pixelX": 648.5, "pixelY": 575.5
         },
         {
-          "type": "RED",
+          "type": "BROWN",
           "x": -846.937, "y": 347.197,
           "pixelX": 118.5, "pixelY": 154.5
         },

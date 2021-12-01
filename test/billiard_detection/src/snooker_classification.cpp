@@ -386,7 +386,7 @@ TEST(SnookerClassificationTests, snooker_classify_single_balls) {
     std::string configurationImage = "./resources/test_detection/with_projector_on/with_halo/1.png";
 //    std::string classificationFolder = "./resources/test_classification/with_projector_off/";
 //    std::string classificationFolder = "./resources/test_classification/with_projector_on/without_text/";
-    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_halo/";
+    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_halo_2/";
 //    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_text/";
     std::vector<std::string> labels = {
             "BROWN",
