@@ -36,9 +36,8 @@
 // TODO: remove this
 //#undef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
 //#define BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL 1
-#undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
-//#define BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT 1
-#define BILLIARD_SNOOKER_CLASSIFICATION_CLUSTERS 1 // TODO: make this the default?
+//#undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
+#define BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT 1
 
 // TODO: remove this
 //#define BILLIARD_SNOOKER_TIMING 1
@@ -663,13 +662,9 @@ namespace billiard::snooker {
 
         std::string label = "UNKNOWN";
 
-        // TODO: remove uncommented code in this function
-
         const auto between = [](int value, cv::Point2d minMax)  {
             return value >= minMax.x && value <= minMax.y;
         };
-
-#ifdef BILLIARD_SNOOKER_CLASSIFICATION_CLUSTERS
 
         std::vector<std::string> potentialLabels;
 
@@ -694,7 +689,7 @@ namespace billiard::snooker {
         if ((between(maxHue, classificationConfig.redHue1) || between(maxHue, classificationConfig.redHue2)) && between(maxSaturation, classificationConfig.pinkSaturation) && between(maxValue, classificationConfig.pinkValue)) {
             potentialLabels.emplace_back("PINK");
         }
-        if(between(maxHue, classificationConfig.redHue1) || between(maxHue, classificationConfig.redHue2)) {
+        if((between(maxHue, classificationConfig.redHue1) || between(maxHue, classificationConfig.redHue2)) && between(maxSaturation, classificationConfig.redSaturation) && between(maxValue, classificationConfig.redValue)) {
             potentialLabels.emplace_back("RED");
         }
 
@@ -723,40 +718,6 @@ namespace billiard::snooker {
                 }
             }
         }
-
-#else
-
-//        cv::Vec2f redPinkSeparatorLine = cv::Point2f { 1.0, 1.0 }; // Separate by (saturation, value)
-
-        if (between(maxHue, classificationConfig.yellowHue) && between(maxSaturation, classificationConfig.yellowSaturation) && between(maxValue, classificationConfig.yellowValue)) {
-            label = "YELLOW";
-        }
-        else if (between(maxHue, classificationConfig.whiteHue) && between(maxSaturation, classificationConfig.whiteSaturation) && between(maxValue, classificationConfig.whiteValue)) {
-            label = "WHITE";
-        }
-        else if (between(maxValue, classificationConfig.blackValue)) {
-            label = "BLACK";
-        }
-        else if (between(maxHue, classificationConfig.blueHue)) {
-            label = "BLUE";
-        }
-        else if (between(maxHue, classificationConfig.greenHue)) {
-            label = "GREEN";
-        }
-        else if(between(maxHue, classificationConfig.redHue1) || between(maxHue, classificationConfig.redHue2)) {
-            // BROWN or RED or PINK
-
-            if (between(maxHue, classificationConfig.brownHue) && between(maxSaturation, classificationConfig.brownSaturation) && between(maxValue, classificationConfig.brownValue)) {
-                label = "BROWN";
-            }
-            else if (between(maxSaturation, classificationConfig.pinkSaturation) && between(maxValue, classificationConfig.pinkValue)) {
-                label = "PINK";
-            }
-            else {
-                label = "RED";
-            }
-        }
-#endif
 
         ball._type = label;
 

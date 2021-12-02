@@ -385,11 +385,13 @@ TEST(SnookerClassificationTests, snooker_classify_visualization) {
 TEST(SnookerClassificationTests, snooker_classify_single_balls) {
 
     std::string configurationImage = "./resources/test_detection/with_projector_on/with_halo/1.png";
-//    std::string classificationFolder = "./resources/test_classification/with_projector_off/";
-//    std::string classificationFolder = "./resources/test_classification/with_projector_on/without_text/";
-//    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_halo/";
-    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_halo_2/";
-//    std::string classificationFolder = "./resources/test_classification/with_projector_on/with_text/";
+    std::vector<std::string> classificationFolders = {
+//            "./resources/test_classification/with_projector_off/",
+//            "./resources/test_classification/with_projector_on/with_text/",
+//            "./resources/test_classification/with_projector_on/without_text/",
+//            "./resources/test_classification/with_projector_on/with_halo/",
+            "./resources/test_classification/with_projector_on/with_halo_2/"
+    };
     std::vector<std::string> labels = {
             "BROWN",
             "PINK",
@@ -403,9 +405,6 @@ TEST(SnookerClassificationTests, snooker_classify_single_balls) {
     };
     int numberOfLabels = (int) labels.size();
 
-    // True classes in horizontal, Predicted classes in vertical
-    cv::Mat confusionMatrix {numberOfLabels, numberOfLabels, CV_32F, cv::Scalar{0.0}};
-
     billiard::detection::Table table = getTable();
     billiard::detection::ArucoMarkers markers = getMarkers();
     billiard::detection::CameraIntrinsics intrinsics = getIntrinsics_realsense_hd();
@@ -417,104 +416,117 @@ TEST(SnookerClassificationTests, snooker_classify_single_balls) {
         return;
     }
 
-    for (auto& trueLabel : labels) {
+    for (auto& classificationFolder : classificationFolders) {
 
-        int trueLabelIndex = findLabelIndex(labels, trueLabel);
+        std::cout << "DATASET: " << classificationFolder << std::endl;
+        std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
 
-        std::string path = classificationFolder + trueLabel + "/";
-        for (const auto& fileEntry : std::filesystem::directory_iterator(path)) {
-            const auto& imagePath = fileEntry.path().string();
+        // True classes in horizontal, Predicted classes in vertical
+        cv::Mat confusionMatrix {numberOfLabels, numberOfLabels, CV_32F, cv::Scalar{0.0}};
 
-//            std::cout << imagePath << std::endl;
+        for (auto& trueLabel : labels) {
 
-            cv::Mat original = imread(imagePath, cv::IMREAD_COLOR);
+            int trueLabelIndex = findLabelIndex(labels, trueLabel);
 
-            double radius = original.rows / 2 * classificationConfig.roiRadiusFactor;
+            std::string path = classificationFolder + trueLabel + "/";
+            for (const auto& fileEntry : std::filesystem::directory_iterator(path)) {
+                const auto& imagePath = fileEntry.path().string();
 
-            const cv::Rect& roi = cv::Rect{
-                    (int) ((double) original.cols / 2 - radius),
-                    (int) ((double) original.rows / 2 - radius),
-                    (int) (2 * radius),
-                    (int) (2 * radius)
-            };
-            cv::Mat frame = original(roi);
+    //            std::cout << imagePath << std::endl;
 
-            billiard::detection::Ball ball {};
-            ball._id = imagePath;
-            ball._position = glm::vec2{};
-            ball._type = "UNKNOWN";
-            billiard::snooker::classify(ball, frame);
+                cv::Mat original = imread(imagePath, cv::IMREAD_COLOR);
 
-            std::string predictedLabel = ball._type;
-            int predictedLabelIndex = findLabelIndex(labels, predictedLabel);
-            confusionMatrix.at<float>(predictedLabelIndex, trueLabelIndex) = confusionMatrix.at<float>(predictedLabelIndex, trueLabelIndex) + 1.0f;
+                double radius = original.rows / 2 * classificationConfig.roiRadiusFactor;
 
-            if (predictedLabelIndex != trueLabelIndex) {
-                std::cout << "---> INCORRECT CLASSIFICATION" << std::endl;
+                const cv::Rect& roi = cv::Rect{
+                        (int) ((double) original.cols / 2 - radius),
+                        (int) ((double) original.rows / 2 - radius),
+                        (int) (2 * radius),
+                        (int) (2 * radius)
+                };
+                cv::Mat frame = original(roi);
+
+                billiard::detection::Ball ball {};
+                ball._id = imagePath;
+                ball._position = glm::vec2{};
+                ball._type = "UNKNOWN";
+                billiard::snooker::classify(ball, frame);
+
+                std::string predictedLabel = ball._type;
+                int predictedLabelIndex = findLabelIndex(labels, predictedLabel);
+                confusionMatrix.at<float>(predictedLabelIndex, trueLabelIndex) = confusionMatrix.at<float>(predictedLabelIndex, trueLabelIndex) + 1.0f;
+
+                if (predictedLabelIndex != trueLabelIndex) {
+                    std::cout << "---> INCORRECT CLASSIFICATION" << std::endl;
+                    std::cout << "test: " << confusionMatrix.rows << ", " << confusionMatrix.cols << ", " << trueLabelIndex << ", " << predictedLabelIndex << std::endl;
+                }
             }
         }
-    }
 
-    const auto calculateConfusionMatrixStats = [](const cv::Mat& confusionMatrix, std::vector<float>& precisionValues) {
+        const auto calculateConfusionMatrixStats = [](const cv::Mat& confusionMatrix, std::vector<float>& precisionValues) {
 
-        float diagonalSum = 0.0f;
-        float totalSum = 0.0f;
+            float diagonalSum = 0.0f;
+            float totalSum = 0.0f;
 
-        for (int row = 0; row < confusionMatrix.rows; row++) {
+            for (int row = 0; row < confusionMatrix.rows; row++) {
 
-            float sumOfRow = 0.0f;
-            for (int col = 0; col < confusionMatrix.cols; col++) {
-                float value = confusionMatrix.at<float>(row, col);
-                sumOfRow += value;
+                float sumOfRow = 0.0f;
+                for (int col = 0; col < confusionMatrix.cols; col++) {
+                    float value = confusionMatrix.at<float>(row, col);
+                    sumOfRow += value;
+                }
+                totalSum += sumOfRow;
+
+                float predictedValue = confusionMatrix.at<float>(row, row);
+                diagonalSum += confusionMatrix.at<float>(row, row);
+
+                // Precision = TP / (TP + FP)
+                float precision = predictedValue / sumOfRow;
+                precisionValues.push_back(precision);
             }
-            totalSum += sumOfRow;
 
-            float predictedValue = confusionMatrix.at<float>(row, row);
-            diagonalSum += confusionMatrix.at<float>(row, row);
+            // Total accuracy = (TP + TN) / (TP + FP + TN + FN)
+            float totalAccuracy = diagonalSum / totalSum;
 
-            // Precision = TP / (TP + FP)
-            float precision = predictedValue / sumOfRow;
-            precisionValues.push_back(precision);
-        }
+            return totalAccuracy;
+        };
 
-        // Total accuracy = (TP + TN) / (TP + FP + TN + FN)
-        float totalAccuracy = diagonalSum / totalSum;
-
-        return totalAccuracy;
-    };
-
-    const auto printConfusionTable = [](const std::vector<std::string>& labels, cv::Mat confusionMatrix) {
-        std::string separator = "|";
-        int maxLabelLength = 0;
-        for (auto& label : labels) {
-            if (label.length() > maxLabelLength) {
-                maxLabelLength = (int) label.length();
+        const auto printConfusionTable = [](const std::vector<std::string>& labels, cv::Mat confusionMatrix) {
+            std::string separator = "&";
+            int maxLabelLength = 0;
+            for (auto& label : labels) {
+                if (label.length() > maxLabelLength) {
+                    maxLabelLength = (int) label.length();
+                }
             }
-        }
-        std::cout << "  ¦-------PREDICTED CLASSES" << std::endl;
-        std::cout << "  v       TRUE CLASSES ------>" << std::endl;
-        std::cout << "  " << std::setfill(' ') << std::setw(maxLabelLength) << " " << separator << " ";
-        for (auto& label : labels) {
-            std::cout << std::setfill(' ') << std::setw(maxLabelLength) << label << " " << separator << " ";
-        }
-        std::cout << std::endl;
-        for (int row = 0; row < confusionMatrix.rows; row++) {
-            std::cout << " ";
-            auto& label = labels[row];
-            std::cout << std::setfill(' ') << std::setw(maxLabelLength) << label << " " << separator << " ";
-            for (int col = 0; col < confusionMatrix.cols; col++) {
-                float value = confusionMatrix.at<float>(row, col);
-                std::cout << std::setfill(' ') << std::setw(maxLabelLength) << value << " " << separator << " ";
+            std::cout << "  ¦-------PREDICTED CLASSES" << std::endl;
+            std::cout << "  v       TRUE CLASSES ------>" << std::endl;
+            std::cout << "  " << std::setfill(' ') << std::setw(maxLabelLength) << " " << separator << " ";
+            for (auto& label : labels) {
+                std::cout << std::setfill(' ') << std::setw(maxLabelLength) << label << " " << separator << " ";
             }
             std::cout << std::endl;
-        }
-    };
-    std::vector<float> precisionValues;
-    float totalAccuracy = calculateConfusionMatrixStats(confusionMatrix, precisionValues);
-    printConfusionTable(labels, confusionMatrix);
+            for (int row = 0; row < confusionMatrix.rows; row++) {
+                std::cout << " ";
+                auto& label = labels[row];
+                std::cout << std::setfill(' ') << std::setw(maxLabelLength) << label << " " << separator << " ";
+                for (int col = 0; col < confusionMatrix.cols; col++) {
+                    float value = confusionMatrix.at<float>(row, col);
+                    std::cout << std::setfill(' ') << std::setw(maxLabelLength) << value << " " << separator << " ";
+                }
+                std::cout << std::endl;
+            }
+        };
+        std::vector<float> precisionValues;
+        float totalAccuracy = calculateConfusionMatrixStats(confusionMatrix, precisionValues);
 
-    std::cout << "Total accuracy: " << totalAccuracy << std::endl;
-    std::cout << "Confusion matrix: " << std::endl << confusionMatrix << std::endl;
+        std::cout << "Confusion matrix:" << std::endl;
+        printConfusionTable(labels, confusionMatrix);
+
+        std::cout << "Total accuracy: " << totalAccuracy << std::endl;
+//        std::cout << "Confusion matrix: " << std::endl << confusionMatrix << std::endl;
+
+    }
 }
 
 TEST(SnookerClassificationTests, snooker_find_cluster_centers) {
