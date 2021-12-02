@@ -99,7 +99,7 @@ Kugelradius $r$ berechnet.
 Eine Kugel kann ebenso über eine oder mehrere Banden expandiert werden. Dies geschieht über einen
 geometrischen Ansatz durch eine Spiegelung\cite{math.stackexchange:1}
 des Zielpunkts an der entsprechenden Bande, über welche gespielt werden soll. In Abbildung \ref{fig:Tiefe über Bande erreichen mittels Reflektion}
-wird ein Suchschritt über eine Bande modelliert. Es wird ein Punkt $A$ an einer Bande gesucht, zu welchem die Kugel $B$
+wird ein Suchschritt über eine Bande visualisiert. Es wird ein Punkt $A$ an einer Bande gesucht, zu welchem die Kugel $B$
 gespielt werden muss, um die Kugel $C$ zu treffen. Dieser Bandenkollisionspunkt $A$ wird mithilfe eines Spiegelpunkts $\bar{C}$
 des Punktes $C$ an der Bande berechnet.
 \begin{figure}[h!]
@@ -137,8 +137,8 @@ bestimmen\footnote{Für Herleitung, siehe Anhang \ref{anhang:herleitung:bandenre
     \lambda_1 = \frac{r_x \cdot B_y - r_y \cdot B_x + R_{1,x} \cdot r_y - R_{1,y} \cdot r_x}{l_x \cdot r_y - \cdot l_y \cdot r_x}\label{eq:bandenkollisionspunkt}
 \end{align}
 
-Bevor ein allgemein gültiger Algorithmus definiert wird, muss das Problem der Mehrdimensionalität betrachtet werden.
-Da es sich bei der Billardkugel nicht um einen unendlich kleinen Punkt handelt, muss der Radius mit einbezogen werden.
+Es gilt zu beachten, dass es sich bei der Billardkugel nicht um einen unendlich kleinen Punkt handelt und
+daher deren Radius berücksichtigt werden muss.
 Das Problem wird in Abbildung ~\ref{fig:bandenreflektion_kugelradius} veranschaulicht.
 \begin{figure}[h!]
     \begin{center}
@@ -151,9 +151,9 @@ Einerseits wird als Zielposition $C$ nicht die Kugelposition selbst, sondern ein
 Gegenrichtung zur gewünschten Laufrichtung $\vec{r}$ der Kugel $C$ definiert. Andererseits wird die Bande, an welcher
 gespiegelt wird, um den Radius der Kugel in Richtung des Zentrums verschoben. Die verschobene virtuelle Bande ist grün eingezeichnet.
 
-Durch Studium des Beispiels eines Stosses über zwei Banden wird ein Algorithmus hergeleitet, wobei die Mehrdimensionalität vernachlässigt
-wird. Diese kann durch die genannten Positionskorrekturen erreicht werden und hat keinen direkten Einfluss auf
-den Algorithmus.
+Durch Studium mehrerer Beispiele wird ein allgemeiner Algorithmus hergeleitet. Hierbei wird zuvor genanntes Problem
+mit dem Kugelradius vernachlässigt, da dieses durch die beschriebenen Positionskorrekturen behandelt werden kann.
+Der Algorithmus kann unabhängig von dieser Korrektur beschrieben werden.
 
 In einem ersten Schritt werden die Banden definiert, über welche der Zielpunkt gespiegelt werden soll. Dies sind in
 diesem Beispiel die linke und die obere Bande, dementsprechend werden die grün markierten Spiegel zuerst links und
@@ -187,8 +187,8 @@ keine wesentlichen Unterschiede. Es wird wiederum nur der letzte Spiegelpunkt $\
 neuen Startpunkt $A_0$ eine Verbindung gezogen wird. Diese Halbgerade wird wiederum auf Schnittpunkte mit allen
 Bandensegmenten geprüft, was im Kollisionspunkt $A_1$ resultiert. Dieser Kollisionspunkt wird der Resultatsmenge
 hinzugefügt und der Punkt $\bar{C_0}$ wird an der Bande mit dem Kollisionspunkt gespiegelt, in dem Fall der Oberen.
-Diese Spiegelung überführt den Punkt $\bar{C_0}$ auf den ursprünglichen Punkt $C$, was auf das Ende des Algorithmus
-hindeutet.
+Diese Spiegelung überführt den Punkt $\bar{C_0}$ auf den ursprünglichen Punkt $C$, was das Ende des Algorithmus
+bedeutet.
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/52_rail_reflection_2_c.png}
@@ -210,9 +210,9 @@ mit dem Zielpunkt $C$ verbunden wird.
 
 Dasselbe Prinzip kann auch auf ein Spiel über drei Banden angewendet werden. Die Abbildung \ref{fig:Dreifache Reflektion an Banden} veranschaulicht
 ein Solches. Es wird zuerst an der linken, dann an der oberen und anschliessend an der rechten Bande gespiegelt.
-Es wird ein einem Schritt wiederum der letze Spiegelpunkt und dessen Startposition betrachtet, mit welchen der Kollisionspunkt
+Es wird in einem Schritt wiederum der letze Spiegelpunkt und dessen Startposition betrachtet, mit welchen der Kollisionspunkt
 an einer Bande gefunden werden kann. Danach kann der Spiegelpunkt an dieser Bande gespiegelt werden und der nächste
-Schritt kann starten. Dies wird solange fortgesetzt, wie es Banden zum spiegeln hat.
+Schritt kann starten. Dies wird so oft wiederholt, wie es Banden zum spiegeln hat.
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=1\linewidth]{../common/03_billiard_ai/resources/54_rail_reflection_3.png}
@@ -235,8 +235,9 @@ für jede Bande erstellt, wie in Abbildung \ref{fig:Definitionsbereich_Bandenspi
 der roten Seite liegen ausserhalb des Definitionsbereichs, Punkte im grünen Bereich sind spiegelbar. Des Weiteren
 ist die Bandennormale vorhanden, welche zum Ursprung des Koordinatensystems in der Tischmitte zeigt. Um für einen Punkt
 $C$ herauszufinden, ob dieser spiegelbar ist, muss demnach nur geprüft werden, ob er im Definitionsbereich liegt.
-Dazu wird der Ursprung des Koordinatensystems zum Start der Bande verschoben und es wird das Dot-Produkt des verschobenen Punktes $C'$
-mit der Bandennormale gebildet. Die Elemente des Vektors werden geprüft, ob sie grösser oder gleich dem Nullvektor sind.
+Dazu wird der Ursprung des Koordinatensystems zum Start der Bande verschoben und es wird die elementweise Multiplikation
+des verschobenen Punktes $C'$ mit der Bandennormale durchgeführt.
+Die Elemente des Vektors werden geprüft, ob sie grösser oder gleich dem Nullvektor sind.
 Dies resultiert in einem Vektor, welcher eine $0$ speichert, wenn das Element kleiner und $1$ wenn es grösser ist.
 Abschliessend wird die quadrierte Länge des resultierenden Vektors gebildet, diese Länge muss $2$ entsprechen, in dem
 Fall liegt der Punkt im Definitionsbereich.

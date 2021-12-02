@@ -1,13 +1,15 @@
 \section{Simulation Algorithmusverbesserung}\label{anhang:simulation:algorithmus}
 
-Aktuell hat der Simulationsalgorithmus zwei Probleme. Er kann einerseits nur ein Ereignis zu einem Zeitpunkt bestimmen und
+Zurzeit hat der Simulationsalgorithmus zwei Probleme. Er kann einerseits nur ein Ereignis zu einem Zeitpunkt bestimmen und
 andererseits werden alle Ereignisse ab einem Zeitpunkt neu berechnet. Neu soll demnach die Möglichkeit bestehen, mehrere
 Ereignisse zum selben Zeitpunkt zuzulassen und alle Ereignisse vorgängig einmal zu berechnen und entsprechend ihrem Eintreten
 abzuarbeiten. Sobald eine Kugel an einem Ereignis beteiligt ist, werden sämtliche gespeicherten Ereignisse für diese Kugel und
 ihre Partnerkugel gelöscht. Zudem werden alle Ereignisse bei anderen Kugeln entfernt, die mit an dem Ereignis beteiligten Kugeln
 zusammenhängen. Danach wird ein neuer Layer zu diesem Zeitpunkt berechnet. Wenn das System nicht konstant ist, werden
 für sämtliche Kugeln die Ereignisse neu berechnet, die keine mehr haben. Dabei werden auch die gelöschten Ereignisse
-mit am vorigen Ereignis unbeteiligten Kugeln ergänzt, sollte es diese geben.
+mit am vorherigen Ereignis unbeteiligten Kugeln ergänzt, sollte es solche geben.
+
+% TODO: bitte beschreiben, resp. die pseudo-code referenzieren
 
 \begin{algorithm}[H]
     \DontPrintSemicolon
