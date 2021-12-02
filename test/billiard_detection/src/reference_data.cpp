@@ -12,6 +12,7 @@ void onReferenceDataMouseClick(int event, int x, int y, int flags, void* userdat
 billiard::detection::State pixelState;
 billiard::detection::State state;
 int selectedBallIndex = -1;
+cv::Point2i clickedPixel {0, 0};
 
 TEST(BallDetectionTests, record_reference_data) {
 
@@ -391,6 +392,38 @@ TEST(BallDetectionTests, display_reference_data) {
             selectedBallIndex = -1;
         }
 
+        if (clickedPixel != cv::Point2i { 0, 0 }) {
+            // Print pixel and corresponding model coordinate of clicked point,
+            // in order to check how much change a one pixel difference makes in model coordinates.
+            billiard::detection::State clickedPixelState;
+            int clickedBallIndex = -1;
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dx = -1; dx <= 1; dx++) {
+                    billiard::detection::Ball pseudoBall;
+                    pseudoBall._position.x = clickedPixel.x + dx;
+                    pseudoBall._position.y = clickedPixel.y + dy;
+                    clickedPixelState._balls.push_back(pseudoBall);
+                    if (dx == 0 && dy == 0) {
+                        clickedBallIndex = clickedPixelState._balls.size() - 1;
+                    }
+                }
+            }
+            billiard::detection::State clickedModelState = billiard::detection::pixelToModelCoordinates(*detectionConfig, clickedPixelState);
+            std::cout << "click at: " << "(" << clickedPixel.x << ", " << clickedPixel.y << ")" << std::endl;
+            auto& centerModelBall = clickedModelState._balls[clickedBallIndex];
+            for (int i = 0; i < clickedModelState._balls.size(); i++) {
+                auto& pixelBall = clickedPixelState._balls[i];
+                auto& modelBall = clickedModelState._balls[i];
+                std::cout << "    "
+                          << "pixel: " << "(" << pixelBall._position.x << ", " << pixelBall._position.y << ")" << " "
+                          << "model: " << "(" << modelBall._position.x << ", " << modelBall._position.y << ")" << " "
+                          << "distance: " << glm::length(centerModelBall._position - modelBall._position)
+                          << std::endl;
+            }
+
+            clickedPixel = cv::Point2i { 0, 0 };
+        }
+
         cv::imshow(frameName, frame);
         if (!expectedGrid.empty()) cv::imshow("expected grid", expectedGrid);
         cv::imshow("actual grid", actualGrid);
@@ -425,6 +458,7 @@ void onReferenceDataMouseClick(int event, int x, int y, int flags, void* userdat
         return;
     }
 
+    clickedPixel = cv::Point2i {x, y};
     selectedBallIndex = -1;
 
     for (int i = 0; i < pixelState._balls.size(); i++) {

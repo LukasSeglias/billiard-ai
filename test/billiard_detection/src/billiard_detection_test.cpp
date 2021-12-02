@@ -133,6 +133,8 @@ std::ostream& operator<<(std::ostream& os, const FiveNumberSummary& summary);
 TEST(BallDetectionTests, stats) {
 
     std::vector<std::string> testcasesPaths = {
+            "./resources/test_detection/with_projector_on/without_halo/testcases.json",
+            "./resources/test_detection/with_projector_on/with_halo/testcases.json",
             "./resources/test_detection/with_projector_on/with_halo_2/testcases.json"
     };
 
@@ -145,6 +147,8 @@ TEST(BallDetectionTests, stats) {
     for (auto& testcasePath : testcasesPaths) {
         testcases = merge(testcases, loadDetectionTestCases(testcasePath));
     }
+
+    std::cout << "Got " << testcases.cases.size() << " images" << std::endl;
 
     int totalGhosts = 0;
     int totalLost = 0;
@@ -204,11 +208,11 @@ TEST(BallDetectionTests, stats) {
     if (!allPixelDistances.empty()) {
         std::sort(allPixelDistances.begin(), allPixelDistances.end());
         FiveNumberSummary pixelSummary = calculateFiveNumberSummary(allPixelDistances);
-        std::cout << "Pixel distance: " << pixelSummary << std::endl;
+        std::cout << "Pixel distance: count=" << allPixelDistances.size() << ", " << pixelSummary << std::endl;
     }
     std::sort(allModelDistances.begin(), allModelDistances.end());
     FiveNumberSummary modelSummary = calculateFiveNumberSummary(allModelDistances);
-    std::cout << "Model distance: " << modelSummary << std::endl;
+    std::cout << "Model distance: count=" << allModelDistances.size() << ", " << modelSummary << std::endl;
 
 }
 
