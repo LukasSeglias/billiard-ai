@@ -1,1 +1,39 @@
 \section{Klassifikation}
+Für die Beurteilung der Klassifikation, die in Kapitel \ref{kap:klassifikation} beschrieben wurde, wird eine
+Wahrheitsmatrix\cite{wiki:confusion_matrix} (engl. \emph{confusion matrix}) verwendet.
+Daraus können Metriken berechnet werden, welche eine Aussage über die Qualität der Klassifikation erlauben.
+
+In Tabelle \ref{tab:klassifikation_resultate_confusion_matrix} ist die Wahrheitsmatrix der Testdaten
+für die Klassifikation aufgeführt. Es wurden 32 Testbilder erstellt, wobei jeweils alle farbigen und einige rote Kugeln
+auf jedem Bild abgebildet sind. Dies führt dazu, dass es mehr Testdaten für die roten Kugeln gibt als für die anderen farbigen Kugeln.
+In den Testbildern sind keine Kugeln mit der Klasse \emph{unknown} vorhanden.
+
+Aus der Wahrheitsmatrix ist ersichtlich, dass braune und rote Kugeln teilweise verwechselt werden.
+Tatsächlich führt
+% TODO: Bild mit Beispiel von braunen Kugeln, die wie rote aussehen
+% TODO: weiter beschreiben
+Die restlichen Kugelfarben werden sehr gut klassifiziert, lediglich ein Bild des Spielballs wird mit einer pinken Kugel verwechselt.
+Keiner der Kugeln wurde die Klasse \emph{unknown} zugewiesen.
+
+\begin{table}[ht]
+\rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+\begin{tabular}{ ccccccccccc }
+        \rowcolor{\seccolor!50}
+        &         & \multicolumn{9}{c}{\textbf{Wahre Farbe}}\\
+        &         &   BROWN &    PINK &     RED &   BLACK &  YELLOW &   WHITE &    BLUE &   GREEN & UNKNOWN \\
+        & BROWN   &      29 &       0 &      11 &       0 &       0 &       0 &       0 &       0 &       0 \\
+        & PINK    &       0 &      32 &       0 &       0 &       0 &       1 &       0 &       0 &       0 \\
+        & RED     &       3 &       0 &     213 &       0 &       0 &       0 &       0 &       0 &       0 \\
+        & BLACK   &       0 &       0 &       0 &      32 &       0 &       0 &       0 &       0 &       0 \\
+        & YELLOW  &       0 &       0 &       0 &       0 &      32 &       0 &       0 &       0 &       0 \\
+        & WHITE   &       0 &       0 &       0 &       0 &       0 &      31 &       0 &       0 &       0 \\
+        & BLUE    &       0 &       0 &       0 &       0 &       0 &       0 &      32 &       0 &       0 \\
+        & GREEN   &       0 &       0 &       0 &       0 &       0 &       0 &       0 &      32 &       0 \\
+        \multirow{-10}{*}{\rotatebox{90}{\textbf{Klassifizierte Farbe}}} & UNKNOWN &       0 &       0 &       0 &       0 &       0 &       0 &       0 &       0 &       0
+\end{tabular}
+\caption{Ergebnisse Klassifikation der Kugelfarben}
+\label{tab:klassifikation_resultate_confusion_matrix}
+\end{table}
+
+% Total accuracy: 0.966518
+% TODO: beschreiben
