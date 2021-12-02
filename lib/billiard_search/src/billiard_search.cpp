@@ -6,13 +6,14 @@
 #include <optional>
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
+#include <tuple>
 
 namespace billiard::search {
 
     #define PROCESSES 1
     #define SYNC_PERIOD_MS 100
-    #define BREAKS 2
-    #define BANK_INDIRECTION 0
+    #define BREAKS 1
+    #define BANK_INDIRECTION 3
     // TODO: find a good number
     #define FORWARD_SEARCHES 2
     // TODO: find a good number
@@ -28,6 +29,8 @@ namespace billiard::search {
     #define MAX_SEARCH_DEPTH 3
     // Maximum number of ball collisions to be considered in search of a path
     #define SEARCH_MAX_BALL_COLLISIONS 2
+    // Maximum number of rail collisions to be considered in search of a path
+    #define SEARCH_MAX_RAIL_COLLISIONS MAX_SEARCH_DEPTH * BANK_INDIRECTION
     #define PI 3.14159265358979323846 /* pi */
     // Maximum angle in which a ball can hit another ball (must be <= 90 degrees).
     #define MAX_POSSIBLE_HIT_ANGLE std::cos(PI/180.0f * 87.0f) // 87 degrees
@@ -132,6 +135,7 @@ namespace billiard::search {
     std::string logPath(const std::vector<const SearchNode *>& path);
     std::ostream& operator<<(std::ostream& os, const glm::vec4& vector);
     std::ostream& operator<<(std::ostream& os, const glm::vec2& vector);
+    std::ostream& operator<<(std::ostream& os, const glm::mat3& matrix);
     std::ostream& operator<<(std::ostream& os, const PhysicalEvent& event);
     std::ostream& operator<<(std::ostream& os, const std::vector<PhysicalEvent>& events);
     std::ostream& operator<<(std::ostream& os, const state::BallState& ball);
@@ -216,8 +220,9 @@ namespace billiard::search {
                         const std::shared_ptr<SearchState>& state);
     std::vector<std::shared_ptr<SearchNode>>
     expandSearchNodeByBankBall(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state,
-                             const std::shared_ptr<SearchNodeSearch>& searchInput, uint8_t depth,
-                             const std::pair<std::string, Ball>& ball);
+                             const std::shared_ptr<SearchNodeSearch>& searchInput,
+                               const std::pair<std::string, Ball>& ball, const glm::vec2& reflected,
+                               const std::vector<Rail>& combination);
 
     std::vector<std::shared_ptr<SearchNode>>
     expandSearchNode(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state) {
@@ -373,6 +378,20 @@ namespace billiard::search {
         return result;
     }
 
+    glm::vec2 elasticCollisionTargetPositionFromParent(const std::shared_ptr<SearchNodeSearch>& parent,
+                                                       const std::shared_ptr<SearchState>& state) {
+        static glm::vec2 zero{0, 0};
+        auto lastEvent = getLastEvent(parent);
+        auto secondLastEvent = getSecondLastEvent(parent);
+        assert(lastEvent);
+        assert(secondLastEvent);
+        glm::vec2 targetBallTargetVector = secondLastEvent->_targetPosition - lastEvent->_targetPosition;
+        assert(targetBallTargetVector != zero);
+        glm::vec2 targetBallTargetDirection = glm::normalize(targetBallTargetVector);
+        float ballRadius = state->_config._ball._radius;
+        return billiard::physics::elasticCollisionTargetPosition(lastEvent->_targetPosition, targetBallTargetDirection, ballRadius);
+    }
+
     std::shared_ptr<SearchNode> ballCollision(const std::shared_ptr<SearchNode>& parentNode,
             const std::shared_ptr<SearchState>& state,
             const std::shared_ptr<SearchNodeSearch>& parent,
@@ -380,9 +399,7 @@ namespace billiard::search {
         static glm::vec2 zero{0, 0};
 
         auto& ballPosition = ball._position;
-
         auto& targetBall = parent->_state.at(parent->_ballId);
-
         auto lastEvent = getLastEvent(parent);
         auto secondLastEvent = getSecondLastEvent(parent);
         assert(lastEvent);
@@ -595,6 +612,19 @@ namespace billiard::search {
                                     << " from: " << currentPosition
                                     << " to: " << targetPosition << std::endl);
 
+                        } else if (previousEvent->_type == PhysicalEventType::RAIL_COLLISION) {
+                            // Roll some distance between two points
+                            glm::vec2& currentPosition = event._targetPosition;
+                            glm::vec2& targetPosition = previousEvent->_targetPosition;
+                            glm::vec2 toTarget = targetPosition - currentPosition;
+                            float distance = glm::length(toTarget);
+                            minimalVelocity = billiard::physics::railCollisionReverse(minimalVelocity, toTarget);
+                            minimalVelocity = billiard::physics::startVelocity(minimalVelocity, distance);
+
+                            DEBUG(agent << " " << "Rail collision:"
+                                        << " distance: " << distance
+                                        << " from: " << currentPosition
+                                        << " to: " << targetPosition << std::endl);
                         } else {
 
                             // Roll some distance between two points
@@ -699,7 +729,7 @@ namespace billiard::search {
         std::vector<std::shared_ptr<SearchNode>> expanded;
         auto searchInput = input->asSearch();
 
-        for(int depth = 1; depth < BANK_INDIRECTION; depth++) {
+        for(int depth = 1; depth <= BANK_INDIRECTION; depth++) {
             auto expandedByBank = expandSearchNodeByBank(input, state, searchInput, depth);
             expanded.insert(expanded.end(), expandedByBank.begin(), expandedByBank.end());
         }
@@ -707,34 +737,267 @@ namespace billiard::search {
         return expanded;
     }
 
+    glm::vec2 operator>=(const glm::vec2& left, const glm::vec2& right) {
+        return glm::vec2{left.x >= right.x ? 1 : 0, left.y >= right.y ? 1 :0};
+    }
+
+    glm::vec2 reflect(const glm::vec2& position, const Rail& rail) {
+        return rail._reflectionMatrix * glm::vec3{position, 1.0f};
+    }
+
+    bool canReflect(const glm::vec2& position, const Rail& rail) {
+        auto moved = position - rail._start;
+        auto reflected = moved * rail._normal;
+        auto possible = reflected >= glm::vec2{0, 0};
+        return glm::dot(possible, possible) == 2 &&
+               (rail._normal.x == 0 || reflected.x > 0) &&
+               (rail._normal.y == 0 || reflected.y > 0);
+    }
+
+    std::vector<std::pair<std::vector<Rail>, glm::vec2>> railCombinations(uint8_t depth, const glm::vec2& target,
+                                                    const std::unordered_map<std::string, Rail>& rails) {
+        static std::string agent = "[railCombinations] ";
+        DEBUG(agent << "find reflections for target " << target << std::endl);
+        std::vector<std::tuple<std::vector<Rail>, glm::vec2, bool>> combinations;
+        std::unordered_set<std::string> railIds;
+        for (auto& rail : rails) {
+            if (rail.second._normal.x != 0.0f && rail.second._normal.y != 0.0f) {
+                DEBUG(agent << "ignore rail: " << rail.first << std::endl);
+                continue;
+            }
+            railIds.insert(rail.first);
+            DEBUG(agent << "append rail: " << rail.first << std::endl);
+            combinations.push_back(
+                    std::tuple<std::vector<Rail>, glm::vec2, bool>{
+                            std::vector<Rail>{rail.second},
+                            reflect(target, rail.second),
+                            canReflect(target, rail.second)});
+        }
+
+        for (uint8_t reflection = 1; reflection < depth; reflection++) {
+            uint8_t railIndex = 0;
+            for (auto& railId : railIds) {
+                auto rail = rails.at(railId);
+
+                DEBUG(agent << "calculate reflection at rail " << railId << std::endl);
+                if (std::get<2>(combinations[railIndex]) &&
+                    canReflect(std::get<1>(combinations[railIndex]), rail)) {
+                    DEBUG(agent << "append reflection at rail " << railId << std::endl);
+                    std::get<0>(combinations[railIndex]).emplace_back(rail);
+                    std::get<1>(combinations[railIndex]) = reflect(std::get<1>(combinations[railIndex]),
+                                                                   rail);
+                    DEBUG(agent << "next reflection point is: " << std::get<1>(combinations[railIndex]) << std::endl);
+                } else {
+                    std::get<2>(combinations[railIndex]) = false;
+                    DEBUG(agent << "cannot reflect at rail " << railId << std::endl);
+                }
+                railIndex++;
+            }
+        }
+
+        std::vector<std::pair<std::vector<Rail>, glm::vec2>> results;
+        for (auto combo : combinations) {
+            if (std::get<2>(combo)) {
+                DEBUG(agent << "reflections found for rail: " << std::get<0>(combo).at(0)._id << std::endl);
+                results.emplace_back(std::pair<std::vector<Rail>, glm::vec2>{std::get<0>(combo), std::get<1>(combo)});
+            } else {
+                DEBUG(agent << "cannot reflect " << target << " on rail " << std::get<0>(combo).at(0)._id << std::endl);
+            }
+        }
+
+        return results;
+    }
+
+    template<class value>
+    value pop(std::vector<value>& vector) {
+        auto val = vector.at(vector.size() - 1);
+        vector.erase(vector.end() - 1);
+        return val;
+    }
+
+    std::vector<std::pair<std::string, glm::vec2>> railTargets(const std::shared_ptr<SearchNodeSearch>& parent,
+                                       const std::shared_ptr<SearchState>& state,
+                                       const glm::vec2 startPosition, glm::vec2 reflected,
+                                       std::vector<Rail> combination, const std::string& startBallId,
+                                       const std::string& targetBallId) {
+        static std::string agent = "[railTargets] ";
+        std::vector<std::pair<std::string, glm::vec2>> targets;
+
+        auto& rails = state->_config._table._rails;
+
+        auto start = startPosition;
+        std::string excludedBallId = startBallId;
+
+        while (!combination.empty()) {
+            auto comboRail = pop<Rail>(combination);
+            DEBUG(agent << "calculate next target with reflected point " << reflected << " "
+                        << "from start" << start << " "
+                        << "at rail " << comboRail._id
+                        << std::endl);
+
+            static float inf = std::numeric_limits<float>::infinity();
+            glm::vec2 target{inf, inf};
+            std::string collidedRailId;
+            auto direction = reflected - start;
+            for (auto& rail : rails) {
+                auto railIntersection = billiard::physics::intersection::halfLineIntersectsLineSegment(start,
+                                                                                                   direction,
+                                                                                                   rail.second._shiftedStart,
+                                                                                                   rail.second._shiftedEnd);
+                if (railIntersection && railIntersection->first > 0) {
+                    target = start + railIntersection->first * direction;
+                    reflected = reflect(reflected, rail.second);
+                    collidedRailId = rail.first;
+                    DEBUG(agent << "found next target point at " << target << " "
+                                << "reflected at rail: " << rail.first << " " << rail.second._shiftedStart << " " << rail.second._shiftedEnd << " "
+                                << "start at " << start << " with direction " << direction << " and lambda " << railIntersection->first << " "
+                                << "results in reflection point: " << reflected
+                                << std::endl);
+                    break;
+                }
+            }
+            if (collidedRailId.empty()) {
+                DEBUG(agent << "no rail collision point found for start "
+                            << start << " to target " << reflected << " with direction " << direction << std::endl);
+                return std::vector<std::pair<std::string, glm::vec2>>{};
+            }
+
+            if (collidesOnTheWay(parent, state, Ball {start, "", excludedBallId}, "", target)) {
+                DEBUG(agent << "ball collides on the way, no solution!" << std::endl);
+                return std::vector<std::pair<std::string,glm::vec2>>{};
+            }
+            targets.push_back(std::pair<std::string, glm::vec2>{collidedRailId, target});
+            start = target;
+            excludedBallId = "";
+        }
+
+        glm::vec2 targetPosition;
+        // Only possible to hit ball from "behind"
+        if (parent->_action == SearchActionType::NONE) {
+            auto pocket = getPocketById(state, parent->_ballId);
+            targetPosition = pocket->_position;
+        } else {
+            auto& targetBall = parent->_state.at(parent->_ballId);
+            auto lastEvent = getLastEvent(parent);
+            auto secondLastEvent = getSecondLastEvent(parent);
+            assert(lastEvent);
+            assert(secondLastEvent);
+            glm::vec2 targetBallTargetVector = secondLastEvent->_targetPosition - lastEvent->_targetPosition;
+            assert(targetBallTargetVector != zero);
+            glm::vec2 targetBallTargetDirection = glm::normalize(targetBallTargetVector);
+            float ballRadius = state->_config._ball._radius;
+            targetPosition = billiard::physics::elasticCollisionTargetPosition(lastEvent->_targetPosition, targetBallTargetDirection, ballRadius);
+
+            auto ballToTarget = targetPosition - start;
+            assert(ballToTarget != zero);
+            float cosTheta = glm::dot(targetBallTargetDirection, glm::normalize(ballToTarget));
+            if (cosTheta <= MAX_POSSIBLE_HIT_ANGLE) {
+                DEBUG(agent << "maximum possible hit angle exceeded: "
+                            << "angle: " << (180.0f / PI * std::acos(cosTheta)) << " "
+                            << "max: " << (180.0f / PI * std::acos(MAX_POSSIBLE_HIT_ANGLE)) << " "
+                            << std::endl);
+                return std::vector<std::pair<std::string,glm::vec2>>{};
+            }
+        }
+
+        if (collidesOnTheWay(parent, state, Ball {start, "", targetBallId}, "", targetPosition)) {
+            DEBUG(agent << "ball collides on the way, no solution!" << std::endl);
+            return std::vector<std::pair<std::string,glm::vec2>>{};
+        }
+
+        DEBUG(agent << "found targets: " << targets.size() << std::endl);
+        return targets;
+    }
+
     std::vector<std::shared_ptr<SearchNode>>
     expandSearchNodeByBank(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state,
                          const std::shared_ptr<SearchNodeSearch>& searchInput, uint8_t depth) {
+        static std::string agent = "[expandSearchNodeByBank] ";
         std::vector<std::shared_ptr<SearchNode>> expanded;
 
-        for (auto& ball : searchInput->_unusedBalls) {
-            if (searchInput->_action != SearchActionType::NONE || (ball.first == searchInput->_search._id ||
-                std::count(searchInput->_search._types.begin(), searchInput->_search._types.end(), ball.second._type))) {
-                auto result = expandSearchNodeByBankBall(input, state, searchInput, depth, ball);
-                expanded.insert(expanded.end(), result.begin(), result.end());
+        auto target = searchInput->_action == SearchActionType::NONE ?
+                      getPocketById(state, searchInput->_ballId)->_position : // TODO: Pockets über unorderd_map speichern?
+                      elasticCollisionTargetPositionFromParent(searchInput, state);
+        DEBUG(agent << "selected target point: " << target << std::endl);
+
+        auto combinations = railCombinations(depth, target, state->_config._table._rails);
+        DEBUG(agent << "calculated all combinations: " << combinations.size() << std::endl);
+
+        for (auto& combination : combinations) {
+            for (auto& ball : searchInput->_unusedBalls) {
+                if (searchInput->_action != SearchActionType::NONE || (ball.first == searchInput->_search._id ||
+                                                                       std::count(searchInput->_search._types.begin(), searchInput->_search._types.end(), ball.second._type))) {
+                    auto result = expandSearchNodeByBankBall(input, state, searchInput, ball, combination.second, combination.first);
+                    expanded.insert(expanded.end(), result.begin(), result.end());
+                }
             }
         }
 
         return expanded;
     }
 
+    std::shared_ptr<SearchNode> expandByRailPositions(const std::shared_ptr<SearchNode>& input,
+                                                  const std::shared_ptr<SearchState>& state,
+                                                  const std::shared_ptr<SearchNodeSearch>& searchInput,
+                                                  const std::vector<std::pair<std::string, glm::vec2>>& railTargets,
+                                                  const std::pair<std::string, Ball>& ball) {
+        static std::string agent = "[expandByRailPositions] ";
+
+        if (railTargets.empty()) {
+            DEBUG(agent << "no rail positions given, therefore no solution is found!" << std::endl);
+            return nullptr;
+        }
+
+        auto& parent = searchInput;
+        auto result = SearchNode::search(input);
+        auto resultSearchNode = result->asSearch();
+
+        if (parent->_action == SearchActionType::NONE) {
+            DEBUG(agent << "target is pocket" << std::endl);
+
+            std::string& pocketId = parent->_ballId;
+            auto pocket = getPocketById(state, pocketId);
+            assert(pocket);
+
+            resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::POCKET_COLLISION, pocket->_position, pocket->_id });
+            DEBUG(agent << "pocket collision event added" << std::endl);
+        } else {
+            DEBUG(agent << "target is ball" << std::endl);
+            glm::vec2 targetPosition = elasticCollisionTargetPositionFromParent(parent, state);
+
+            auto& targetBall = parent->_state.at(parent->_ballId);
+            resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::BALL_COLLISION, targetPosition, targetBall._id });
+            DEBUG(agent << "ball collision event added" << std::endl);
+        }
+
+        DEBUG(agent << "add all rail collision events" << std::endl);
+        for (int i = railTargets.size() - 1; i >= 0; i--) {
+            resultSearchNode->_events.push_back(PhysicalEvent {PhysicalEventType::RAIL_COLLISION, railTargets[i].second, railTargets[i].first});
+            DEBUG(agent << "rail collision event added for rail " << railTargets[i].first << " at " << railTargets[i].second << std::endl);
+        }
+
+        resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::BALL_KICK, ball.second._position, "" });
+        DEBUG(agent << "ball kick event added" << std::endl);
+        return result;
+    }
+
     std::vector<std::shared_ptr<SearchNode>>
     expandSearchNodeByBankBall(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state,
-                               const std::shared_ptr<SearchNodeSearch>& searchInput, uint8_t depth,
-                               const std::pair<std::string, Ball>& ball) {
+                               const std::shared_ptr<SearchNodeSearch>& searchInput,
+                               const std::pair<std::string, Ball>& ball, const glm::vec2& reflected,
+                               const std::vector<Rail>& combination) {
+        static std::string agent = "[expandSearchNodeByBankBall] ";
         std::vector<std::shared_ptr<SearchNode>> expanded;
 
-        auto result = SearchNode::search(input); // TODO: Remove and try to get result by expansion of ball over bank by depth. Use the last entry in "_backwardSearch".
+        auto targets = railTargets(searchInput, state, ball.second._position, reflected, combination, ball.first,
+                                   searchInput->_ballId);
+        auto result = expandByRailPositions(input, state, searchInput, targets, ball);
 
         if (result) {
             auto resultSearchNode = result->asSearch();
+            resultSearchNode->_ballId = ball.first;
             resultSearchNode->_unusedBalls.erase(resultSearchNode->_unusedBalls.find(ball.first));
-            auto parentSearchNode = result->_parent? result->_parent->asSearch() : nullptr;
+            auto parentSearchNode = result->_parent ? result->_parent->asSearch() : nullptr;
             uint64_t searchStepCost = searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
             result->_cost = input->_cost + searchStepCost;
             result->_searchCost = input->_searchCost + searchStepCost;
@@ -743,6 +1006,7 @@ namespace billiard::search {
                 auto prepared = prepareForSimulation(result, ball.first, state);
                 expanded.insert(expanded.end(), prepared.begin(), prepared.end());
             } else {
+                DEBUG(agent << "append step for ball " << resultSearchNode->_ballId << std::endl);
                 expanded.push_back(result);
             }
         }
@@ -908,6 +1172,13 @@ namespace billiard::search {
 
 #ifdef BILLIARD_DEBUG
                 indirectionDebugOutput << " Ball collision -> indirection +" << std::to_string(step) << " ";
+#endif
+            } else if (event._type == PhysicalEventType::RAIL_COLLISION) {
+                double step = 1.0 / ((double) SEARCH_MAX_RAIL_COLLISIONS);
+                totalIndirectionCost += step;
+
+#ifdef BILLIARD_DEBUG
+                indirectionDebugOutput << " Rail collision -> indirection +" << std::to_string(step) << " ";
 #endif
             }
 
@@ -1652,6 +1923,15 @@ namespace billiard::search {
 
     std::ostream& operator<<(std::ostream& os, const glm::vec2& vector) {
         os << "(" << vector.x << ", " << vector.y << ")";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const glm::mat3& matrix) {
+        os << "{"
+           << "{" << matrix[0][0] << "," << matrix[1][0] << "," << matrix[2][0] << "},"
+           << "{" << matrix[0][1] << "," << matrix[1][1] << "," << matrix[2][1] << "},"
+           << "{" << matrix[0][2] << "," << matrix[1][2] << "," << matrix[2][2] << "}"
+           << "}";
         return os;
     }
 

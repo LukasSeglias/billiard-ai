@@ -127,6 +127,48 @@ TEST(BilliardSearchTest, three_balls_in_a_row_with_cueball_and_pocket) {
     showResults(state, search, solutions, config);
 }
 
+TEST(BilliardSearchTest, one_ball_and_cue_ball_and_pocket) {
+
+    float ballDiameter = 52.3;
+    glm::vec2 whitePosition {0, 0};
+    glm::vec2 red1 {-650, 0};
+
+    billiard::search::State state { {
+                                            billiard::search::Ball { whitePosition, "WHITE", "WHITE-1" },
+                                            billiard::search::Ball { red1, "RED", "RED-1" },
+                                    } };
+
+    billiard::search::Search search { "RED-1", {""} };
+    uint16_t solutions = 1000;
+    billiard::search::Configuration config {};
+    config._ball._radius = ballDiameter / 2.0f;
+    config._ball._diameter = ballDiameter;
+    config._ball._diameterSquared = ballDiameter * ballDiameter;
+    config._table._pockets = {
+            billiard::search::Pocket { "TOP RIGHT", billiard::search::PocketType::CORNER, glm::vec2{940.5, 471.5}, glm::vec2{-0.707107, -0.707107}, 50},
+            billiard::search::Pocket { "TOP LEFT", billiard::search::PocketType::CORNER, glm::vec2{-940.5, 471.5}, glm::vec2{0.707107, -0.707107}, 50},
+            billiard::search::Pocket { "TOP CENTER", billiard::search::PocketType::CENTER, glm::vec2{0, 491.5}, glm::vec2{0, -1}, 50},
+            billiard::search::Pocket { "BOTTOM RIGHT", billiard::search::PocketType::CORNER, glm::vec2{940.5, -471.5}, glm::vec2{-0.707107, 0.707107}, 50},
+            billiard::search::Pocket { "BOTTOM LEFT", billiard::search::PocketType::CORNER, glm::vec2{-940.5, -471.5}, glm::vec2{0.707107, 0.707107}, 50},
+            billiard::search::Pocket { "BOTTOM CENTER", billiard::search::PocketType::CENTER, glm::vec2{0, -491.5}, glm::vec2{0, 1}, 50}
+    };
+
+    config._table.minimalPocketVelocity = 10.0f;
+    auto innerTableLength = 1881;
+    auto innerTableWidth = 943;
+    config._table.diagonalLengthSquared = innerTableLength * innerTableLength + innerTableWidth * innerTableWidth;
+    config._table._rails = {
+            {"Left", billiard::search::Rail{"Left", glm::vec2{-940.5, 390}, glm::vec2{-940.5, -390}, config._ball._radius} },
+            {"Right", billiard::search::Rail{"Right", glm::vec2{940.5, -390}, glm::vec2{940.5, 390}, config._ball._radius} },
+            {"Bottom Left", billiard::search::Rail{"Bottom Left", glm::vec2{-862.5, -471.5}, glm::vec2{-57.5, -471.5}, config._ball._radius} },
+            {"Bottom Right", billiard::search::Rail{"Bottom Right", glm::vec2{57.5, -471.5}, glm::vec2{862.5, -471.5}, config._ball._radius} },
+            {"Top Left", billiard::search::Rail{"Top Left", glm::vec2{-55, 471.5}, glm::vec2{-860, 471.5}, config._ball._radius} },
+            {"Top Right", billiard::search::Rail{"Top Right", glm::vec2{860, 471.5}, glm::vec2{55, 471.5}, config._ball._radius} }
+    };
+
+    showResults(state, search, solutions, config);
+}
+
 TEST(BilliardSearchTest, visualizationOfManualCase) {
 
     billiard::search::State state { {} };

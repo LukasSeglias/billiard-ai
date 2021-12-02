@@ -102,6 +102,10 @@ glm::vec2 billiard::physics::elasticCollisionReverse(const glm::vec2& targetVelo
     return (glm::dot(targetVelocity, targetVelocity) / denom) * originVelocityNormalized * energyAdditionFactorBall;
 }
 
+glm::vec2 billiard::physics::railCollisionReverse(const glm::vec2& velocity, const glm::vec2& newDirection) {
+    return glm::normalize(newDirection) * glm::length(velocity * energyAdditionFactorRail);
+}
+
 glm::vec2 billiard::physics::constantTopspin(const glm::vec2& velocity, const glm::vec2& vt) {
     auto normalizedVelocity = normalize(velocity);
     auto topspinVelocity = topspinConstant * normalizedVelocity;

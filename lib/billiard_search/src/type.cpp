@@ -42,11 +42,21 @@ billiard::search::Rail::Rail(std::string id, const glm::vec2& start, const glm::
         _end(end),
         _normal(glm::normalize(billiard::physics::perp(end - start))),
         _shiftedStart(shift(start, ballRadius, _normal)),
-        _shiftedEnd(shift(end, ballRadius, _normal)) {
+        _shiftedEnd(shift(end, ballRadius, _normal)),
+        _reflectionMatrix(calculateReflectionMatrix(_shiftedStart, _normal)) {
 }
 
 glm::vec2 billiard::search::Rail::shift(glm::vec2 position, float ballRadius, const glm::vec2& normal) {
     return position + normal * ballRadius;
+}
+
+glm::mat3x3 billiard::search::Rail::calculateReflectionMatrix(const glm::vec2& start, const glm::vec2& normal) {
+    auto s = glm::abs(normal) * -2.0f + glm::vec2{1.0f, 1.0f};
+    return glm::mat3x3{
+            s.x, 0, 0,
+            0, s.y, 0,
+            start.x - s.x * start.x,start.y - s.y * start.y,1
+    };
 }
 
 billiard::search::event::BallCollision::BallCollision(std::string ball1, std::string ball2) :

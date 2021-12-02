@@ -69,6 +69,16 @@ namespace billiard::physics {
     EXPORT_BILLIARD_PHYSICS_LIB glm::vec2 elasticCollisionReverse(const glm::vec2& targetVelocity, const glm::vec2& originVelocity);
 
     /**
+     * Kugel kollidiert mit einer Bande.
+     * Berechnet die notwendige Geschwindigkeit der Kugel zum Zeitpunkt der Kollision, damit die Kugel nach Bandenkollision
+     * die gewünschte Geschwindigkeit hat.
+     * @param velocity Zielgeschwindigkeit der Kugel nach der Kollision.
+     * @param newDirection Geschwindigkeitsrichtung vor der Bandenkollision.
+     * @return Geschwindigkeit, die die Kugel zum Zeitpunkt der Kollision haben muss, um mit der gewünschten Geschwindigkeit weiter zu rollen.
+     */
+    EXPORT_BILLIARD_PHYSICS_LIB glm::vec2 railCollisionReverse(const glm::vec2& velocity, const glm::vec2& newDirection);
+
+    /**
      * Kugel A kollidiert mit Kugel B. Die Geschwindigkeitsvektoren beider Kugeln nach dem elastischen Stoss werden berechnet.
      * @param position1 Position der Kugel A zum Zeitpunkt der Kollision.
      * @param velocity1 Geschwindigkeit der Kugel A zum Zeitpunkt der Kollision.

@@ -69,9 +69,11 @@ namespace billiard::search {
         glm::vec2 _normal;
         glm::vec2 _shiftedStart; // Bandenstart um den Radius der Kugel zum Zentrum verschoben
         glm::vec2 _shiftedEnd; // Bandenende um den Radius der Kugel zum Zentrum verschoben
+        glm::mat3 _reflectionMatrix;
 
     private:
         glm::vec2 shift(glm::vec2 position, float ballRadius, const glm::vec2& normal);
+        glm::mat3x3 calculateReflectionMatrix(const glm::vec2& start, const glm::vec2& normal);
     };
 
     namespace event {
