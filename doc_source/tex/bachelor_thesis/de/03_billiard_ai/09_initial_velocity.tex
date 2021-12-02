@@ -65,3 +65,18 @@ Prozent, dann gilt für die Geschwindigkeit $\vec{v_1}$ der Kugel A bei der Koll
 
 Anschliessend kann die Startgeschwindigkeit der Kugel A an der Position A berechnet werden, weil die gewünschte
 Endgeschwindigkeit und der zurückzulegende Weg bekannt ist\footnote{siehe Kapitel \ref{ReibungsverlustUeberBahn}}.
+
+\section{Bandenkollision}
+
+Hierbei wird der Geschwindigkeitsvektor berechnet, der vor einer Bandenkollision gilt.
+Es wird von einer perfekten Spiegelung ausgegangen. Der an der Bande eingehende
+Geschwindigkeitsvektor $\vec{v_0}$ kann demnach berechnet werden, wenn die Bandennormale $\vec{N}$ sowie die
+gewünschte Engeschwindigkeit $\vec{v}$ bekannt ist.
+\begin{align}
+    \vec{v_0} = \vec{v} - 2 \cdot \vec{N} \cdot (\vec{v} \cdot \vec{N})
+\end{align}
+
+Der einkommende Geschwindigkeitsvektor $\vec{v_0}$ muss noch um den Energieverlust an der Bande vergrössert werden:
+\begin{align}
+    \vec{v_0} = \norm{\vec{v_0} \cdot \frac{1}{1 - E_v}} \cdot \hat{v_0}
+\end{align}

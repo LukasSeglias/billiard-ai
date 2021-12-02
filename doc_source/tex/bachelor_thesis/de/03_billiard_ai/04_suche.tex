@@ -148,55 +148,96 @@ Das Problem wird in Abbildung ~\ref{fig:bandenreflektion_kugelradius} veranschau
     \label{fig:bandenreflektion_kugelradius}
 \end{figure}
 Einerseits wird als Zielposition $C$ nicht die Kugelposition selbst, sondern ein um den Radius verschobener Punkt in
-Gegenrichtung zur gewünschten Laufrichtung $\vec{r}$ der Kugel $C$ definiert. Andererseits wird die Bande um den Radius
-der Kugel in Richtung des Zentrums verschoben. Die verschobene virtuelle Bande ist grün eingezeichnet.
+Gegenrichtung zur gewünschten Laufrichtung $\vec{r}$ der Kugel $C$ definiert. Andererseits wird die Bande, an welcher
+gespiegelt wird, um den Radius der Kugel in Richtung des Zentrums verschoben. Die verschobene virtuelle Bande ist grün eingezeichnet.
 
-Durch Studium mehrerer Beispiele wird ein allgemeiner Algorithmus hergeleitet, wobei die Mehrdimensionalität vernachlässigt
+Durch Studium des Beispiels eines Stosses über zwei Banden wird ein Algorithmus hergeleitet, wobei die Mehrdimensionalität vernachlässigt
 wird. Diese kann durch die genannten Positionskorrekturen erreicht werden und hat keinen direkten Einfluss auf
 den Algorithmus.
+
+In einem ersten Schritt werden die Banden definiert, über welche der Zielpunkt gespiegelt werden soll. Dies sind in
+diesem Beispiel die linke und die obere Bande, dementsprechend werden die grün markierten Spiegel zuerst links und
+dann oben angewendet. Es resultieren die Punkte $\bar{C_0}$ und $\bar{C_1}$. Die Abbildung \ref{fig:zweifaches_bandenspiel_a} zeigt die
+Situation mitsamt der gespiegelten Punkte.
 \begin{figure}[h!]
     \begin{center}
-        \includegraphics[width=1\linewidth]{../common/03_billiard_ai/resources/49_rail_reflection_3.png}
+        \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/50_rail_reflection_2_a.png}
+    \end{center}
+    \caption{Zweifaches Bandenspiel - A}
+    \label{fig:zweifaches_bandenspiel_a}
+\end{figure}
+
+Die Abbildung \ref{fig:zweifaches_bandenspiel_b} zeigt das Vorgehen, Nachdem die Spiegelungen durchgeführt wurden.
+Es wird der letzte Spiegelpunkt $\bar{C_n}$, in diesem Fall $\bar{C_1}$,
+beibehalten, die Vorherigen werden verworfen. Vom Startpunkt $B$ aus wird eine Verbindung zum Spiegelpunkt $\bar{C_1}$
+gezogen und alle Bandensegmente auf Schnittpunkte geprüft, was schliesslich im Punkt $A_0$ resultiert. Dies ist
+der erste Kollisionspunkt mit der Bande und kann der Resultatsmenge hinzugefügt werden. Anschliessend wird der Spiegelpunkt
+$\bar{C_1}$ an der Bande gespiegelt, an welcher der Kollisionspunkt liegt, in dem Fall an der Linken. Diese Spiegelung
+resultiert im Spiegelpunkt $\bar{C_0}$.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/51_rail_reflection_2_b.png}
+    \end{center}
+    \caption{Zweifaches Bandenspiel - B}
+    \label{fig:zweifaches_bandenspiel_b}
+\end{figure}
+
+In der Abbildung \ref{fig:zweifaches_bandenspiel_c} wird der darauffolgende Schritt gezeigt. Es gibt zum Vorhergehenden
+keine wesentlichen Unterschiede. Es wird wiederum nur der letzte Spiegelpunkt $\bar{C_0}$ beibehalten, zu welchem vom
+neuen Startpunkt $A_0$ eine Verbindung gezogen wird. Diese Halbgerade wird wiederum auf Schnittpunkte mit allen
+Bandensegmenten geprüft, was im Kollisionspunkt $A_1$ resultiert. Dieser Kollisionspunkt wird der Resultatsmenge
+hinzugefügt und der Punkt $\bar{C_0}$ wird an der Bande mit dem Kollisionspunkt gespiegelt, in dem Fall der Oberen.
+Diese Spiegelung überführt den Punkt $\bar{C_0}$ auf den ursprünglichen Punkt $C$, was auf das Ende des Algorithmus
+hindeutet.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/52_rail_reflection_2_c.png}
+    \end{center}
+    \caption{Zweifaches Bandenspiel - C}
+    \label{fig:zweifaches_bandenspiel_c}
+\end{figure}
+
+\newpage
+Die Abbildung \ref{fig:zweifaches_bandenspiel_d} zeigt das endgültige Resultat, wenn der letzte Kollisionspunkt $A_1$
+mit dem Zielpunkt $C$ verbunden wird.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/53_rail_reflection_2_d.png}
+    \end{center}
+    \caption{Zweifaches Bandenspiel - D}
+    \label{fig:zweifaches_bandenspiel_d}
+\end{figure}
+
+Dasselbe Prinzip kann auch auf ein Spiel über drei Banden angewendet werden. Die Abbildung \ref{fig:Dreifache Reflektion an Banden} veranschaulicht
+ein Solches. Es wird zuerst an der linken, dann an der oberen und anschliessend an der rechten Bande gespiegelt.
+Es wird ein einem Schritt wiederum der letze Spiegelpunkt und dessen Startposition betrachtet, mit welchen der Kollisionspunkt
+an einer Bande gefunden werden kann. Danach kann der Spiegelpunkt an dieser Bande gespiegelt werden und der nächste
+Schritt kann starten. Dies wird solange fortgesetzt, wie es Banden zum spiegeln hat.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=1\linewidth]{../common/03_billiard_ai/resources/54_rail_reflection_3.png}
     \end{center}
     \caption{Dreifache Reflektion an Banden}
     \label{fig:Dreifache Reflektion an Banden}
 \end{figure}
-In einem ersten Schritt wird ein Stoss über drei Banden betrachtet. Wie in der Abbildung ~\ref{fig:Dreifache Reflektion an Banden} erkannt werden kann,
-müssen zu Beginn alle Spiegelpunkte berechnet werden.
-Um einen Spiegelpunkt zu bestimmen, muss der Ursprung des Koordinatensystems bei einem der Eckpunkte an der zu
-spiegelnden Bande liegen.\\
-Um die Spiegelung durchzuführen, muss der Punkt mit der Transformationsmatrix $M$ multipliziert werden, wobei $\vec{s}$
+
+Eine Spiegelung kann durch die Anwendung der bandenspezifischen Transformationsmatrix $M$ erzielt werden, wobei $\vec{s}$
 für den Spiegelvektor steht\footnote{Für Herleitung, siehe Kapitel \ref{anhang:herleitung:bandenreflektion:zielpunkt}}.
+Hierbei steht der Punkt $C$ für den Zielpunkt, den es zu treffen gilt.
 \begin{align}
     M = \begin{pmatrix}s_x & 0 & R^1_x - s_x \cdot R^1_x \\ 0 & s_y & R^1_y - s_y \cdot R^1_y \\ 0 & 0 & 1\end{pmatrix}\\
     \bar{C} = M \cdot C
 \end{align}
 
-Die Abbildung \ref{fig:Zweifache Reflektion an Banden} zeigt einen Stoss über zwei Banden.
-Es wird ersichtlich, dass die alleinige Berechnung des Schnittpunkts $A_n$ mit der gespiegelten Bande
-nicht ausreicht. Dieser Schnittpunkt $A_n$ kann durchaus auch ausserhalb liegen und ist wichtig,
-um den Schnittpunkt mit der nächsten Bande zu bestimmen. Die Kugel kann aber bereits früher
-mit einer Bande kollidieren. Bei $m + 1$ vorhandenen Spiegelungen lässt sich dieser Schnittpunkt $A_n^E$ berechnen, indem
-die Schnittpunkte der Geraden definiert durch den Startpunkt $A_{n-1}^E$ und dem Richtungsvektor $\bar{C}_{m-n} - A_n$
-sowie aller Banden interpretiert als Liniensegment betrachtet werden. Dabei sind immer noch mehrere Schnittpunkte möglich, es wird aber nur derjenige Schnittpunkte
-als valid betrachtet, der nicht mit dem Startpunkt zusammenfällt.
-
-\begin{figure}[h!]
-    \begin{center}
-        \includegraphics[width=1\linewidth]{../common/03_billiard_ai/resources/50_rail_reflection_2.png}
-    \end{center}
-    \caption{Zweifache Reflektion an Banden}
-    \label{fig:Zweifache Reflektion an Banden}
-\end{figure}
-
-Es stellt sich weiterhin die Frage, an welcher Bande überhaupt gespiegelt werden darf. Dazu wurden Definitionsbereiche
+\newpage
+Weiterhin stellt sich die Frage, an welcher Bande überhaupt gespiegelt werden darf. Dazu wurden Definitionsbereiche
 für jede Bande erstellt, wie in Abbildung \ref{fig:Definitionsbereich_Bandenspiegelung} ersichtlich ist. Punkte auf
 der roten Seite liegen ausserhalb des Definitionsbereichs, Punkte im grünen Bereich sind spiegelbar. Des Weiteren
 ist die Bandennormale vorhanden, welche zum Ursprung des Koordinatensystems in der Tischmitte zeigt. Um für einen Punkt
 $C$ herauszufinden, ob dieser spiegelbar ist, muss demnach nur geprüft werden, ob er im Definitionsbereich liegt.
 Dazu wird der Ursprung des Koordinatensystems zum Start der Bande verschoben und es wird das Dot-Produkt des verschobenen Punktes $C'$
-mit der Bandennormale gebildet. Die Elemente des Vektors werden geprüft, ob sie grösser oder gleich dem Nullvektor sind,
-dies resultiert in einem Vektor, welcher eine $0$ speichert, wenn das Element kleiner und $1$ wenn es grösser ist.
+mit der Bandennormale gebildet. Die Elemente des Vektors werden geprüft, ob sie grösser oder gleich dem Nullvektor sind.
+Dies resultiert in einem Vektor, welcher eine $0$ speichert, wenn das Element kleiner und $1$ wenn es grösser ist.
 Abschliessend wird die quadrierte Länge des resultierenden Vektors gebildet, diese Länge muss $2$ entsprechen, in dem
 Fall liegt der Punkt im Definitionsbereich.
 \begin{align}
@@ -207,32 +248,36 @@ Fall liegt der Punkt im Definitionsbereich.
     p = l == 2
 \end{align}
 
+Wird ein Punkt geprüft, der auf derselben Höhe wie eine Bande liegt, muss zusätzlich die jeweilige Komponente des Punktes
+$\bar{C}$ grösser als $0$ sein, bei der die Komponente des Normalenvektors ungleich $0$ ist.
+
 \begin{figure}[h!]
     \begin{center}
-        \includegraphics[width=1\linewidth]{../common/03_billiard_ai/resources/51_definitionsbereich_spiegelung_bande.png}
+        \includegraphics[width=1\linewidth]{../common/03_billiard_ai/resources/49_definitionsbereich_spiegelung_bande.png}
     \end{center}
     \caption{Definitionsbereich einer Bandenspiegelung}
     \label{fig:Definitionsbereich_Bandenspiegelung}
 \end{figure}
 
+\newpage
 Algorithmus \ref{alg:stoss_ueber_bande_1} und \ref{alg:stoss_ueber_bande_2} zeigt, wie ein Stoss über die Bande gefunden werden kann.
-Dazu werden in einem ersten Schritt alle möglichen Kombinationen der Banden gebildet. Anschliessend werden die
-Kombinationen sukzessive berechnet. Zuerst werden alle Spiegelpunkte bestimmt, danach alle Kollisionspunkte mit den
-Banden, wobei auch geprüft wird, ob der Weg zwischen den Positionen passierbar ist. Sollte dies nicht der Fall sein,
-wird dieser Lösungskandidat verworfen.
+Dazu werden in einem ersten Schritt alle möglichen Kombinationen der Banden gebildet, was auch den letzten Spiegelpunkt
+$\bar{C_n}$ generiert. Danach können die Zielpositionen bestimmt werden, wobei auch geprüft wird, ob der Weg zwischen
+den Positionen passierbar ist. Sollte dies nicht der Fall sein, wird dieser Lösungskandidat verworfen.
 
 \begin{algorithm}[H]
     \DontPrintSemicolon
     \SetKwFunction{expandByRail}{expandByRail}
     \SetKwFunction{combos}{combos}
     \SetKwFunction{canReflect}{canReflect}
+    \SetKwFunction{reflect}{reflect}
     \SetKwProg{Fn}{Function}{}{}
     \Fn{\expandByRail{B: vec2, C: vec2, reflections: int, rails: Rail[]} $\longrightarrow$ Node[]}{
         nodes $\longleftarrow$ Node[]\\
-        combinations $\longleftarrow$ combos(reflections, rails)\\
+        combinations $\longleftarrow$ combos(reflections, C, rails)\\
         \For{combination in combinations}{
-            reflected $\longleftarrow$ reflect(C, combination)\\
-            targets $\longleftarrow$ target(B, reflected, rails, combination)\\
+            targets $\longleftarrow$ target(B, C, combination.second,rails, combination.first)\\
+
             \If{! empty(targets)}{
                 nodes $\longleftarrow$ append(physicalEvents(B, C, targets), nodes)
             }
@@ -240,17 +285,17 @@ wird dieser Lösungskandidat verworfen.
         \KwRet nodes
     }
     \;
-    \Fn{\combos{reflections: int, rails: Rail[]} $\longrightarrow$ Rail[][]}{
+    \Fn{\combos{reflections: int, target: vec2, rails: Rail[]} $\longrightarrow$ (Rail[], vec2)[]}{
         combinations: (Rail[], vec2, bool)[] $\longleftarrow$ []\\
         \For{rail in rails}{
-            combinations $\longleftarrow$ append(([rail] $(0, 0)$, true), combinations)
+            combinations $\longleftarrow$ append(([rail], reflect(target, rail), canReflect(target, rail)), combinations)
         }
-        \For{index = 0 < reflections}{
+        \For{index $\longleftarrow$ 1 < reflections}{
             \For{railIndex $\longleftarrow$ 0 < length(rails)}{
                 rail $\longleftarrow$ rails[railIndex]\\
                 \If{combinations[railIndex].third and canReflect(combinations[railIndex].second, rail)}{
                     combinations[railIndex].first $\longleftarrow$ append(rail, combinations[railIndex].first)\\
-                    combinations[railIndex].second $\longleftarrow$ reflect(combinations[railIndex].second, [rail])[0]
+                    combinations[railIndex].second $\longleftarrow$ reflect(combinations[railIndex].second, rail)
                 }
                 \Else{
                     combinations[railIndex].third $\longleftarrow$ false
@@ -261,7 +306,7 @@ wird dieser Lösungskandidat verworfen.
         results: Rail[][] $\longleftarrow$ []\\
         \For{railIndex $\longleftarrow$ 0 < length(rails)}{
             \If{combinations[railIndex].third}{
-                results $\longleftarrow$ append(combinations[railIndex].first, results)
+                results $\longleftarrow$ append((combinations[railIndex].first, combinations[railIndex].second), results)
             }
         }
 
@@ -274,39 +319,30 @@ wird dieser Lösungskandidat verworfen.
         possible $\longleftarrow$ reflected $\geq \vec{0}$\\
         \KwRet possible $\cdot$ possible $= 2$
     }
+    \;
+    \Fn{\reflect{C: vec2, rail: Rail} $\longrightarrow$ vec2}{
+        reflected: vec3 $\longleftarrow$ vec3(C, 1.0)\\
+        \KwRet vec2(rail.M $\cdot$ reflected)
+    }
     \caption{Algorithmus zur Berechnung eines Stosses über die Bande - Teil 1}
     \label{alg:stoss_ueber_bande_1}
 \end{algorithm}
 \newpage
 \begin{algorithm}[H]
     \DontPrintSemicolon
-    \SetKwFunction{reflect}{reflect}
     \SetKwFunction{target}{target}
     \SetKwProg{Fn}{Function}{}{}
-    \Fn{\reflect{C: vec2, rails: Rail[]} $\longrightarrow$ vec2[]}{
-        reflections $\longleftarrow$ vec2[]\\
-        target $\longleftarrow$ C\\
-        \For{rail in Rail}{
-            reflected $\longleftarrow$ target $\cdot$ rail.M\\
-            reflections $\longleftarrow$ append(reflected, reflections)\\
-            target $\longleftarrow$ reflected
-        }
-        \KwRet reflections
-    }
-    \;
-    \Fn{\target{B: vec2, reflected: vec2[], rails: Rail[], combo: Rail[]} $\longrightarrow$ vec2[]}{
+    \Fn{\target{B: vec2, C: vec2, reflected: vec2, rails: Rail[], combo: Rail[]} $\longrightarrow$ vec2[]}{
         targets $\longleftarrow$ vec2[]\\
         start $\longleftarrow$ B\\
-        startA $\longleftarrow$ B\\
-        \While{! empty(reflected)}{
-            reflection $\longleftarrow$ pop(reflected)\\
+        \While{! empty(combo)}{
             comboRail $\longleftarrow$ pop(combo)\\
-            targetA $\longleftarrow$ lineIntersection(startA, reflection, comboRail.start, comboRail.end)\\
             target $\longleftarrow$ $(\infty, \infty)$\\
             \For{rail in rails}{
-                railIntersection $\longleftarrow$ lineLineSegmentIntersection(start, (reflection - targetA), rail.start, rail.end)\\
+                railIntersection $\longleftarrow$ halfLineLineSegmentIntersection(start, (reflected - start), rail.start, rail.end)\\
                 \If{railIntersection and start <> railIntersection}{
                     target $\longleftarrow$ railIntersection\\
+                    reflected $\longleftarrow$ reflect(reflected, rail)\\
                     break
                 }
             }
@@ -315,7 +351,10 @@ wird dieser Lösungskandidat verworfen.
             }
             targets $\longleftarrow$ append(target, targets)\\
             start $\longleftarrow$ target\\
-            startA $\longleftarrow$ targetA
+        }
+
+        If{! shotPossible(start, C)}{
+            \KwRet {}
         }
         \KwRet targets
     }
@@ -363,7 +402,7 @@ expandiert worden sein. Daher muss dieser Fall nicht speziell behandelt werden.
 
 \begin{figure}[h!]
     \begin{center}
-        \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/37_platz_fuer_queue.png}
+        \includegraphics[width=0.3\linewidth]{../common/03_billiard_ai/resources/37_platz_fuer_queue.png}
     \end{center}
     \caption{Kugelexpansion - Platz für Queue}
     \label{fig:kugelexpansion_platz_fuer_queue}
@@ -412,7 +451,7 @@ der zweiten Kugel definiert.
 
 Um die beiden Grössen vergleichen zu können, müssen sie in dieselbe Grössenordnung gebracht werden. Aus diesem Grund
 werden sie durch die maximal möglichen Werte normiert\cite{qucosa:ein_billardroboter:1}. Für die Distanz ist dies die
-Diagonale über den Tisch, für den Winkel wird ein maximal möglicher Wert von $90^\circ$ gewählt, dies ist bereits bei
+Diagonale über den Tisch, für den Winkel wird ein maximal möglicher Wert von $87^\circ$ gewählt, dies ist bereits bei
 der Suche berücksichtigt. Es gilt die Annahme, dass je kürzer der Weg und je kleiner der Winkel,
 desto einfacher der Stoss.
 \begin{align}
@@ -458,8 +497,15 @@ Konstante dividiert. Dadurch werden die Kosten erhöht, je grösser der Indirekt
     K_{I,krit} = \frac{K_{I,n}}{K_{I,max}}
 \end{align}
 
+Das Kriterium der Indirektion über Banden wird ebenso übder einen maximal möglichen Wert gelöst.
+Es wird eine maximale Indirektion $K_{B,max}$ angegeben und die Anzahl der Vorkomnisse ${K_{B,n}}$ wird durch die
+Konstante dividiert. Dadurch werden die Kosten erhöht, je grösser der Indirektionsgrad ist.
+\begin{align}
+    K_{B,krit} = \frac{K_{B,n}}{K_{B,max}}
+\end{align}
+
 Die endgültigen Kosten werden über die Addition aller Kriterien gebildet.
 \begin{align}
-    K = d_{krit} + \alpha^G_{krit, y} + K_{I,krit}
+    K = d_{krit} + \alpha^G_{krit, y} + K_{I,krit} + K_{B,krit}
 \end{align}
 
