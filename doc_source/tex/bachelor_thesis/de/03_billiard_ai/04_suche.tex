@@ -304,7 +304,7 @@ den Positionen passierbar ist. Sollte dies nicht der Fall sein, wird dieser Lös
             }
         }
 
-        results: Rail[][] $\longleftarrow$ []\\
+        results: (Rail[], vec2)[] $\longleftarrow$ []\\
         \For{railIndex $\longleftarrow$ 0 < length(rails)}{
             \If{combinations[railIndex].third}{
                 results $\longleftarrow$ append((combinations[railIndex].first, combinations[railIndex].second), results)
