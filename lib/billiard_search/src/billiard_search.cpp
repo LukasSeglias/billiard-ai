@@ -883,6 +883,7 @@ namespace billiard::search {
             assert(lastEvent);
             assert(secondLastEvent);
             glm::vec2 targetBallTargetVector = secondLastEvent->_targetPosition - lastEvent->_targetPosition;
+            static glm::vec2 zero{0, 0};
             assert(targetBallTargetVector != zero);
             glm::vec2 targetBallTargetDirection = glm::normalize(targetBallTargetVector);
             float ballRadius = state->_config._ball._radius;
