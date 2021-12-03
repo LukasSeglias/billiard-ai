@@ -43,3 +43,15 @@ DetectionStats compare(const DetectionTestCase& testcase, const billiard::detect
 void drawBalls(cv::Mat& image, std::vector<billiard::detection::Ball>& balls);
 void drawTypes(cv::Mat& image, std::vector<billiard::detection::Ball>& balls);
 cv::Mat drawDetectedBallsGrid(const cv::Mat& input, const billiard::detection::State& pixelState, int tileSize, int tilesPerLine);
+
+// See: https://en.wikipedia.org/wiki/Five-number_summary
+struct FiveNumberSummary {
+    float min;
+    float lowerQuartile;
+    float median;
+    float upperQuartile;
+    float max;
+};
+
+FiveNumberSummary calculateFiveNumberSummary(const std::vector<float>& sortedValues);
+std::ostream& operator<<(std::ostream& os, const FiveNumberSummary& summary);

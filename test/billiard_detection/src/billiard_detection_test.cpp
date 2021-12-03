@@ -118,18 +118,6 @@ TEST(BallDetectionTests, detection_accuracy) {
     }
 }
 
-// See: https://en.wikipedia.org/wiki/Five-number_summary
-struct FiveNumberSummary {
-    float min;
-    float lowerQuartile;
-    float median;
-    float upperQuartile;
-    float max;
-};
-
-FiveNumberSummary calculateFiveNumberSummary(const std::vector<float>& sortedValues);
-std::ostream& operator<<(std::ostream& os, const FiveNumberSummary& summary);
-
 TEST(BallDetectionTests, stats) {
 
     std::vector<std::string> testcasesPaths = {
@@ -216,22 +204,3 @@ TEST(BallDetectionTests, stats) {
 
 }
 
-FiveNumberSummary calculateFiveNumberSummary(const std::vector<float>& sortedValues) {
-    assert(!sortedValues.empty());
-    FiveNumberSummary summary;
-    summary.min = sortedValues.at(0);
-    summary.lowerQuartile = sortedValues.at((int)((float)sortedValues.size() * 0.25f));
-    summary.median = sortedValues.at(sortedValues.size() / 2);
-    summary.upperQuartile = sortedValues.at((int)((float)sortedValues.size() * 0.75f));
-    summary.max = sortedValues.at(sortedValues.size() - 1);
-    return summary;
-}
-
-std::ostream& operator<<(std::ostream& os, const FiveNumberSummary& summary) {
-    os << "min=" << std::to_string(summary.min) << ", "
-       << "lower quartile=" << std::to_string(summary.lowerQuartile) << ", "
-       << "median=" << std::to_string(summary.median) << ", "
-       << "upper quartile=" << std::to_string(summary.upperQuartile) << ", "
-       << "max=" << std::to_string(summary.max) << " ";
-    return os;
-}
