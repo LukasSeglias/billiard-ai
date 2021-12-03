@@ -67,3 +67,27 @@ In Abschnitt \ref{kap:tracking} wurde beschrieben, dass in der Live-Detektion ei
 In diesem Kapitel wurden nur Bilder für den Vergleich zwischen Detektion und Realität verwendet, wodurch es sich um Momentaufnahmen handelt.
 Es kann sein, dass die Stabilisierung in gewissen Fällen die detektierten Positionen verbessert,
 weil Positionsfehler in einzelnen Bilder geglättet werden.
+
+Die implementierte Live-Detektion gilt es nachfolgend ebenfalls zu überprüfen.
+
+Ein Problem der Live-Detektion ist, dass wenn ein Spieler mit der Hand in das Bild greift, um u.a. einen Stoss
+durchzuführen, dann werden bei der Hand ebenfalls Kugeln detektiert, siehe Abbildung \ref{fig:detection_hand_problem}.
+Dies ist darauf zurückzuführen, dass die Detektion eine Segmentierung des HSV-Farbraumes durchführt\cite{project2:snooker_detection}
+und anschliessend darauf den Circle Hough transform\cite{wiki:circle_hough} ausführt.
+Dadurch werden Kleider oder Haut ebenfalls als Bereiche erkannt, wo eine Kugel sein könnte. Der Circle Hough transform
+findet anschliessend aufgrund von Kanten in diesen Bereichen Kreise, welche dann als detektierte Kugeln übernommen werden.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.8\linewidth]{../common/04_results/resources/detektierte_kugeln_auf_der_hand.png}
+    \end{center}
+    \caption{Fälschlicherweise detektierte Kugeln auf der Hand}
+    \label{fig:detection_hand_problem}
+\end{figure}
+
+Sofern die Arme und Hände des Spielers segmentiert werden könnten, wäre es möglich diese Fehler in der Detektion zu verhindern.
+Dazu würden die segmentierten Regionen, wo eine Hand oder ein Arm abgebildet ist, in der Detektion ignoriert.
+Diese Segmentation ist allerdings schwierig durchzuführen, da diese stark von Hautfarbe und Bekleidung abhängt.
+Es wäre hier denkbar, ein vortrainiertes neuronales Netzwerk zu verwenden, welches eine Handsegmentation oder -detektion machen kann.
+
+% TODO: resultate tracking?
