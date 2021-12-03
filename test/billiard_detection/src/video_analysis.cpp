@@ -155,18 +155,12 @@ void onMouseClick(int event, int x, int y, int flags, void *userdata) {
         long long frameDuration = second.frameIndex - first.frameIndex;
         float duration = ((float) frameDuration) / 30.0f; // assuming 30 fps
 
-        const float gravitationalAcceleration = 9.8 * 1000; // mm/s^2
-        const float frictionCoefficient = 0.0142435;
         float s = glm::length(modelVector);
-        float v0 = s/duration - (-0.5f * frictionCoefficient * gravitationalAcceleration) * duration;
-        glm::vec2 velocity = v0 * glm::normalize(modelVector);
 
         std::cout << "frames=" << frameDuration
                   << " duration=" << duration
                   << " vector=" << modelVector
                   << " s=" << s
-                  << " v0=" << v0
-                  << " velocity=" << velocity
                   << std::endl;
     }
 }

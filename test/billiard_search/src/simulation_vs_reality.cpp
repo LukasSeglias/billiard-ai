@@ -999,7 +999,6 @@ TEST(SimulationVsReality, null_grad_stoss_1_0003_0009) {
               <<std::endl;
 }
 
-
 TEST(SimulationVsReality, null_grad_stoss_1_0130_0135) {
 
     std::string name = "null_grad_stoss_1_0130_0135";
