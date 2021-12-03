@@ -777,35 +777,35 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0008_0011) {
     ASSERT_EQ(system._layers.size(), 5);
 
     Layer& startLayer = system._layers[0];
-    auto whiteMovingNode = getNodeOfBall(startLayer, white, NodeType::BALL_SHOT)->toBallShot();
+    auto whiteMovingNode = getNodeOfBall<BallShotNode, &Node::toBallShot>(startLayer, white);
     float whiteStartPositionError = checkPosition(whiteMovingNode->_ball, whiteStart);
     EXPECT_FLOAT_EQ(whiteStartPositionError, 0.0f);
 
-    auto redInRestNode = getNodeOfBall(startLayer, red, NodeType::BALL_IN_REST)->toInRest();
+    auto redInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(startLayer, red);
     float redStartPositionError = checkPosition(redInRestNode->_ball, redStart);
     EXPECT_FLOAT_EQ(redStartPositionError, 0.0f);
 
     Layer& collisionLayer = system._layers[1];
-    auto whiteCollisionNode = getNodeOfBall(collisionLayer, white, NodeType::BALL_COLLISION)->toBallCollision();
+    auto whiteCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, white);
     ASSERT_TRUE(whiteCollisionNode);
     float whiteCollisionPositionError = checkPosition(whiteCollisionNode->_after, whiteCollision);
 
-    auto redCollisionNode = getNodeOfBall(collisionLayer, red, NodeType::BALL_COLLISION)->toBallCollision();
+    auto redCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, red);
     ASSERT_TRUE(redCollisionNode);
     float redCollisionPositionError = checkPosition(redCollisionNode->_after, redCollision);
 
     Layer& whiteRollingLayer = system._layers[2];
-    auto whiteRollingNode = getNodeOfBall(whiteRollingLayer, white, NodeType::BALL_MOVING)->toBallMoving();
+    auto whiteRollingNode = getNodeOfBall<BallMovingNode, &Node::toBallMoving>(whiteRollingLayer, white);
     ASSERT_TRUE(whiteRollingNode);
     ASSERT_EQ(whiteRollingNode->_after._isRolling, true);
 
     Layer& redPottedLayer = system._layers[3];
-    auto redPottedNode = getNodeOfBall(redPottedLayer, red, NodeType::BALL_POTTING)->toPotted();
+    auto redPottedNode = getNodeOfBall<BallPottingNode, &Node::toPotted>(redPottedLayer, red);
     ASSERT_TRUE(redPottedNode);
     float redPottedTimeError = checkTime(redPottedLayer, redPottedTime);
 
     Layer& whiteInRestLayer = system._layers[4];
-    auto whiteInRestNode = getNodeOfBall(whiteInRestLayer, white, NodeType::BALL_IN_REST)->toInRest();
+    auto whiteInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(whiteInRestLayer, white);
     ASSERT_TRUE(whiteInRestNode);
     float whiteInRestPositionError = checkPosition(whiteInRestNode->_ball, whiteInRest);
     float whiteInRestTimeError = checkTime(whiteInRestLayer, whiteInRestTime);
@@ -900,40 +900,40 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0028_0032) {
     ASSERT_EQ(system._layers.size(), 6);
 
     Layer& startLayer = system._layers[0];
-    auto whiteMovingNode = getNodeOfBall(startLayer, white, NodeType::BALL_SHOT)->toBallShot();
+    auto whiteMovingNode = getNodeOfBall<BallShotNode, &Node::toBallShot>(startLayer, white);
     float whiteStartPositionError = checkPosition(whiteMovingNode->_ball, whiteStart);
     EXPECT_FLOAT_EQ(whiteStartPositionError, 0.0f);
 
-    auto redInRestNode = getNodeOfBall(startLayer, red, NodeType::BALL_IN_REST)->toInRest();
+    auto redInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(startLayer, red);
     float redStartPositionError = checkPosition(redInRestNode->_ball, redStart);
     EXPECT_FLOAT_EQ(redStartPositionError, 0.0f);
 
     Layer& whiteRollingLayer = system._layers[1];
-    auto whiteRollingNode = getNodeOfBall(whiteRollingLayer, white, NodeType::BALL_MOVING)->toBallMoving();
+    auto whiteRollingNode = getNodeOfBall<BallMovingNode, &Node::toBallMoving>(whiteRollingLayer, white);
     ASSERT_TRUE(whiteRollingNode);
     ASSERT_EQ(whiteRollingNode->_after._isRolling, true);
 
     Layer& collisionLayer = system._layers[2];
-    auto whiteCollisionNode = getNodeOfBall(collisionLayer, white, NodeType::BALL_COLLISION)->toBallCollision();
+    auto whiteCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, white);
     ASSERT_TRUE(whiteCollisionNode);
     float whiteCollisionPositionError = checkPosition(whiteCollisionNode->_after, whiteCollision);
 
-    auto redCollisionNode = getNodeOfBall(collisionLayer, red, NodeType::BALL_COLLISION)->toBallCollision();
+    auto redCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, red);
     ASSERT_TRUE(redCollisionNode);
     float redCollisionPositionError = checkPosition(redCollisionNode->_after, redCollision);
 
     Layer& redRollingLayer = system._layers[3];
-    auto redRollingNode = getNodeOfBall(redRollingLayer, red, NodeType::BALL_MOVING)->toBallMoving();
+    auto redRollingNode = getNodeOfBall<BallMovingNode, &Node::toBallMoving>(redRollingLayer, red);
     ASSERT_TRUE(redRollingNode);
     ASSERT_EQ(redRollingNode->_after._isRolling, true);
 
     Layer& redPottedLayer = system._layers[4];
-    auto redPottedNode = getNodeOfBall(redPottedLayer, red, NodeType::BALL_POTTING)->toPotted();
+    auto redPottedNode = getNodeOfBall<BallPottingNode, &Node::toPotted>(redPottedLayer, red);
     ASSERT_TRUE(redPottedNode);
     float redPottedTimeError = checkTime(redPottedLayer, redPottedTime);
 
     Layer& whiteInRestLayer = system._layers[5];
-    auto whiteInRestNode = getNodeOfBall(whiteInRestLayer, white, NodeType::BALL_IN_REST)->toInRest();
+    auto whiteInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(whiteInRestLayer, white);
     ASSERT_TRUE(whiteInRestNode);
     float whiteInRestPositionError = checkPosition(whiteInRestNode->_ball, whiteInRest);
     float whiteInRestTimeError = checkTime(whiteInRestLayer, whiteInRestTime);
@@ -1041,47 +1041,47 @@ TEST(SimulationVsReality, simulation_vs_reality_2_0119_0124) {
     ASSERT_EQ(system._layers.size(), 7);
 
     Layer& startLayer = system._layers[0];
-    auto whiteMovingNode = getNodeOfBall(startLayer, white, NodeType::BALL_SHOT)->toBallShot();
+    auto whiteMovingNode = getNodeOfBall<BallShotNode, &Node::toBallShot>(startLayer, white);
     float whiteStartPositionError = checkPosition(whiteMovingNode->_ball, whiteStart);
     EXPECT_FLOAT_EQ(whiteStartPositionError, 0.0f);
 
-    auto redInRestNode = getNodeOfBall(startLayer, red, NodeType::BALL_IN_REST)->toInRest();
+    auto redInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(startLayer, red);
     float redStartPositionError = checkPosition(redInRestNode->_ball, redStart);
     EXPECT_FLOAT_EQ(redStartPositionError, 0.0f);
 
     Layer& whiteRollingLayer = system._layers[1];
-    auto whiteRollingNode = getNodeOfBall(whiteRollingLayer, white, NodeType::BALL_MOVING)->toBallMoving();
+    auto whiteRollingNode = getNodeOfBall<BallMovingNode, &Node::toBallMoving>(whiteRollingLayer, white);
     ASSERT_TRUE(whiteRollingNode);
     ASSERT_EQ(whiteRollingNode->_after._isRolling, true);
 
     Layer& collisionLayer = system._layers[2];
-    auto whiteCollisionNode = getNodeOfBall(collisionLayer, white, NodeType::BALL_COLLISION)->toBallCollision();
+    auto whiteCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, white);
     ASSERT_TRUE(whiteCollisionNode);
     float whiteCollisionPositionError = checkPosition(whiteCollisionNode->_after, whiteCollision);
 
-    auto redCollisionNode = getNodeOfBall(collisionLayer, red, NodeType::BALL_COLLISION)->toBallCollision();
+    auto redCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, red);
     ASSERT_TRUE(redCollisionNode);
     float redCollisionPositionError = checkPosition(redCollisionNode->_after, redCollision);
 
     Layer& redRollingLayer = system._layers[3];
-    auto redRollingNode = getNodeOfBall(redRollingLayer, red, NodeType::BALL_MOVING)->toBallMoving();
+    auto redRollingNode = getNodeOfBall<BallMovingNode, &Node::toBallMoving>(redRollingLayer, red);
     ASSERT_TRUE(redRollingNode);
     ASSERT_EQ(redRollingNode->_after._isRolling, true);
 
     Layer& redPottedLayer = system._layers[4];
-    auto redPottedNode = getNodeOfBall(redPottedLayer, red, NodeType::BALL_POTTING)->toPotted();
+    auto redPottedNode = getNodeOfBall<BallPottingNode, &Node::toPotted>(redPottedLayer, red);
     ASSERT_TRUE(redPottedNode);
     float redPottedTimeError = checkTime(redPottedLayer, redPottedTime);
 
     Layer& whiteRailCollisionLayer = system._layers[5];
-    auto whiteRailCollisionNode = getNodeOfBall(whiteRailCollisionLayer, white, NodeType::BALL_RAIL_COLLISION)->toBallRailCollision();
+    auto whiteRailCollisionNode = getNodeOfBall<BallRailCollisionNode, &Node::toBallRailCollision>(whiteRailCollisionLayer, white);
     ASSERT_TRUE(whiteRailCollisionNode);
     float whiteRailCollisionPositionError = checkPosition(whiteRailCollisionNode->_after, whiteRailCollision);
     float whiteRailCollisionTimeError = checkTime(whiteRailCollisionLayer, whiteRailCollisionTime);
     float whiteRailCollisionDirectionError = checkDirection(whiteRailCollisionNode->_after._position - whiteCollisionNode->_after._position, whiteDirectionAfterCollision);
 
     Layer& whiteInRestLayer = system._layers[6];
-    auto whiteInRestNode = getNodeOfBall(whiteInRestLayer, white, NodeType::BALL_IN_REST)->toInRest();
+    auto whiteInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(whiteInRestLayer, white);
     ASSERT_TRUE(whiteInRestNode);
     float whiteInRestPositionError = checkPosition(whiteInRestNode->_ball, whiteInRest);
     float whiteInRestTimeError = checkTime(whiteInRestLayer, whiteInRestTime);
@@ -1191,31 +1191,31 @@ TEST(SimulationVsReality, simulation_vs_reality_2_0153_0200) {
     float whiteStartPositionError = checkPosition(whiteMovingNode->_ball, whiteStart);
     EXPECT_FLOAT_EQ(whiteStartPositionError, 0.0f);
 
-    auto redInRestNode = getNodeOfBall(startLayer, red, NodeType::BALL_IN_REST)->toInRest();
+    auto redInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(startLayer, red);
     float redStartPositionError = checkPosition(redInRestNode->_ball, redStart);
     EXPECT_FLOAT_EQ(redStartPositionError, 0.0f);
 
     Layer& whiteRollingLayer = system._layers[1];
-    auto whiteRollingNode = getNodeOfBall(whiteRollingLayer, white, NodeType::BALL_MOVING)->toBallMoving();
+    auto whiteRollingNode = getNodeOfBall<BallMovingNode, &Node::toBallMoving>(whiteRollingLayer, white);
     ASSERT_TRUE(whiteRollingNode);
     ASSERT_EQ(whiteRollingNode->_after._isRolling, true);
 
     Layer& collisionLayer = system._layers[2];
-    auto whiteCollisionNode = getNodeOfBall(collisionLayer, white, NodeType::BALL_COLLISION)->toBallCollision();
+    auto whiteCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, white);
     ASSERT_TRUE(whiteCollisionNode);
     float whiteCollisionPositionError = checkPosition(whiteCollisionNode->_after, whiteCollision);
 
-    auto redCollisionNode = getNodeOfBall(collisionLayer, red, NodeType::BALL_COLLISION)->toBallCollision();
+    auto redCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, red);
     ASSERT_TRUE(redCollisionNode);
     float redCollisionPositionError = checkPosition(redCollisionNode->_after, redCollision);
 
     Layer& redRollingLayer = system._layers[3];
-    auto redRollingNode = getNodeOfBall(redRollingLayer, red, NodeType::BALL_MOVING)->toBallMoving();
+    auto redRollingNode = getNodeOfBall<BallMovingNode, &Node::toBallMoving>(redRollingLayer, red);
     ASSERT_TRUE(redRollingNode);
     ASSERT_EQ(redRollingNode->_after._isRolling, true);
 
     Layer& redPottedLayer = system._layers[4];
-    auto redPottedNode = getNodeOfBall(redPottedLayer, red, NodeType::BALL_POTTING)->toPotted();
+    auto redPottedNode = getNodeOfBall<BallPottingNode, &Node::toPotted>(redPottedLayer, red);
     ASSERT_TRUE(redPottedNode);
     float redPottedTimeError = checkTime(redPottedLayer, redPottedTime);
 
@@ -1233,11 +1233,11 @@ TEST(SimulationVsReality, simulation_vs_reality_2_0153_0200) {
         simulationFoundRailCollision = true;
 
         Layer& whiteRailCollisionLayer = system._layers[5];
-        auto whiteRailCollisionNode = getNodeOfBall(whiteRailCollisionLayer, white, NodeType::BALL_RAIL_COLLISION)->toBallRailCollision();
+        auto whiteRailCollisionNode = getNodeOfBall<BallRailCollisionNode, &Node::toBallRailCollision>(whiteRailCollisionLayer, white);
         ASSERT_TRUE(whiteRailCollisionNode);
     }
 
-    auto whiteInRestNode = getNodeOfBall(whiteInRestLayer, white, NodeType::BALL_IN_REST)->toInRest();
+    auto whiteInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(whiteInRestLayer, white);
     ASSERT_TRUE(whiteInRestNode);
     float whiteInRestPositionError = checkPosition(whiteInRestNode->_ball, whiteInRest);
     float whiteInRestTimeError = checkTime(whiteInRestLayer, whiteInRestTime);
@@ -1353,49 +1353,49 @@ TEST(SimulationVsReality, simulation_vs_reality_2_0244_0251) {
     EXPECT_EQ(system._layers.size(), 7);
 
     Layer& startLayer = system._layers[0];
-    auto whiteMovingNode = getNodeOfBall(startLayer, white, NodeType::BALL_SHOT)->toBallShot();
+    auto whiteMovingNode = getNodeOfBall<BallShotNode, &Node::toBallShot>(startLayer, white);
     float whiteStartPositionError = checkPosition(whiteMovingNode->_ball, whiteStart);
     EXPECT_FLOAT_EQ(whiteStartPositionError, 0.0f);
 
-    auto redInRestNode = getNodeOfBall(startLayer, red, NodeType::BALL_IN_REST)->toInRest();
+    auto redInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(startLayer, red);
     float redStartPositionError = checkPosition(redInRestNode->_ball, redStart);
     EXPECT_FLOAT_EQ(redStartPositionError, 0.0f);
 
     Layer& collisionLayer = system._layers[1];
-    auto whiteCollisionNode = getNodeOfBall(collisionLayer, white, NodeType::BALL_COLLISION)->toBallCollision();
+    auto whiteCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, white);
     ASSERT_TRUE(whiteCollisionNode);
     float whiteCollisionPositionError = checkPosition(whiteCollisionNode->_after, whiteCollision);
 
-    auto redCollisionNode = getNodeOfBall(collisionLayer, red, NodeType::BALL_COLLISION)->toBallCollision();
+    auto redCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, red);
     ASSERT_TRUE(redCollisionNode);
     float redCollisionPositionError = checkPosition(redCollisionNode->_after, redCollision);
 
     Layer& redPottedLayer = system._layers[2];
-    auto redPottedNode = getNodeOfBall(redPottedLayer, red, NodeType::BALL_POTTING)->toPotted();
+    auto redPottedNode = getNodeOfBall<BallPottingNode, &Node::toPotted>(redPottedLayer, red);
     ASSERT_TRUE(redPottedNode);
     float redPottedTimeError = checkTime(redPottedLayer, redPottedTime);
 
     Layer& whiteRollingLayer = system._layers[3];
-    auto whiteRollingNode = getNodeOfBall(whiteRollingLayer, white, NodeType::BALL_MOVING)->toBallMoving();
+    auto whiteRollingNode = getNodeOfBall<BallMovingNode, &Node::toBallMoving>(whiteRollingLayer, white);
     ASSERT_TRUE(whiteRollingNode);
     ASSERT_EQ(whiteRollingNode->_after._isRolling, true);
 
     Layer& whiteRailRightCollisionLayer = system._layers[4];
-    auto whiteRailRightCollisionNode = getNodeOfBall(whiteRailRightCollisionLayer, white, NodeType::BALL_RAIL_COLLISION)->toBallRailCollision();
+    auto whiteRailRightCollisionNode = getNodeOfBall<BallRailCollisionNode, &Node::toBallRailCollision>(whiteRailRightCollisionLayer, white);
     ASSERT_TRUE(whiteRailRightCollisionNode);
     float whiteRailRightCollisionPositionError = checkPosition(whiteRailRightCollisionNode->_after, whiteRailRightCollision);
     float whiteRailRightCollisionTimeError = checkTime(whiteRailRightCollisionLayer, whiteRailRightCollisionTime);
     float whiteRailRightCollisionDirectionError = checkDirection(whiteRailRightCollisionNode->_after._position - whiteCollisionNode->_after._position, whiteDirectionAfterCollision);
 
     Layer& whiteRailBottomCollisionLayer = system._layers[5];
-    auto whiteRailBottomCollisionNode = getNodeOfBall(whiteRailBottomCollisionLayer, white, NodeType::BALL_RAIL_COLLISION)->toBallRailCollision();
+    auto whiteRailBottomCollisionNode = getNodeOfBall<BallRailCollisionNode, &Node::toBallRailCollision>(whiteRailBottomCollisionLayer, white);
     ASSERT_TRUE(whiteRailBottomCollisionNode);
     float whiteRailBottomCollisionPositionError = checkPosition(whiteRailBottomCollisionNode->_after, whiteRailBottomCollision);
     float whiteRailBottomCollisionTimeError = checkTime(whiteRailBottomCollisionLayer, whiteRailBottomCollisionTime);
     float whiteRailBottomCollisionDirectionError = checkDirection(whiteRailBottomCollisionNode->_after._position - whiteRailRightCollisionNode->_after._position, whiteDirectionAfterRailRightCollision);
 
     Layer& whiteInRestLayer = system._layers[6];
-    auto whiteInRestNode = getNodeOfBall(whiteInRestLayer, white, NodeType::BALL_IN_REST)->toInRest();
+    auto whiteInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(whiteInRestLayer, white);
     ASSERT_TRUE(whiteInRestNode);
     float whiteInRestPositionError = checkPosition(whiteInRestNode->_ball, whiteInRest);
     float whiteInRestTimeError = checkTime(whiteInRestLayer, whiteInRestTime);
@@ -1572,18 +1572,18 @@ TEST(SimulationVsReality, gleitreibungskoeffizient_0125_0132) {
     EXPECT_EQ(system._layers.size(), 3);
 
     Layer& startLayer = system._layers[0];
-    auto whiteMovingNode = getNodeOfBall(startLayer, white, NodeType::BALL_SHOT)->toBallShot();
+    auto whiteMovingNode = getNodeOfBall<BallShotNode, &Node::toBallShot>(startLayer, white);
     float whiteStartPositionError = checkPosition(whiteMovingNode->_ball, whiteStart);
     EXPECT_FLOAT_EQ(whiteStartPositionError, 0.0f);
 
     Layer& whiteRollingLayer = system._layers[1];
-    auto whiteRollingNode = getNodeOfBall(whiteRollingLayer, white, NodeType::BALL_MOVING)->toBallMoving();
-    EXPECT_TRUE(whiteRollingNode);
+    auto whiteRollingNode = getNodeOfBall<BallMovingNode, &Node::toBallMoving>(whiteRollingLayer, white);
+    ASSERT_TRUE(whiteRollingNode);
     EXPECT_EQ(whiteRollingNode->_after._isRolling, true);
 
     Layer& whiteInRestLayer = system._layers[2];
-    auto whiteInRestNode = getNodeOfBall(whiteInRestLayer, white, NodeType::BALL_IN_REST)->toInRest();
-    EXPECT_TRUE(whiteInRestNode);
+    auto whiteInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(whiteInRestLayer, white);
+    ASSERT_TRUE(whiteInRestNode);
     float whiteInRestPositionError = checkPosition(whiteInRestNode->_ball, whiteInRest);
     float whiteInRestTimeError = checkTime(whiteInRestLayer, whiteInRestTime);
 
