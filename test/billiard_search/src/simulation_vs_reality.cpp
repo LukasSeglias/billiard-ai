@@ -973,14 +973,12 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0028_0032) {
               << std::endl;
 }
 
-// TODO: simulation_vs_reality_2_0004_0012? können wir überspringen
-// TODO: simulation_vs_reality_2_0042_0046? können wir überspringen
-
 TEST(SimulationVsReality, simulation_vs_reality_2_0119_0124) {
 
     std::string name = "simulation_vs_reality_2_0119_0124";
     /*
-    Ablauf: Die weisse Kugel spielt die rote Kugel ins obere mittlere Loch, kollidiert mit der rechten Bande und rollt kurz danach aus.
+    Ablauf: Die weisse Kugel spielt die rote Kugel ins obere mittlere Loch,
+    kollidiert mit der rechten Bande und rollt kurz danach aus.
 
     WHITE, WHITE, -300.597, 165.475
     RED, RED, -62.0387, 309.445
@@ -1447,13 +1445,304 @@ TEST(SimulationVsReality, simulation_vs_reality_2_0244_0251) {
               << std::endl;
 }
 
-// TODO: simulation_vs_reality_3_0101_0104
-// TODO: simulation_vs_reality_3_0138_0143
+TEST(SimulationVsReality, simulation_vs_reality_3_0101_0104) {
 
-// TODO: simulation_vs_reality_3_0244_0248
-// TODO: simulation_vs_reality_3_0356_0400
-// TODO: simulation_vs_reality_3_0424_0430
-// Unbrauchbar: simulation_vs_reality_3_0312_0317
+    std::string name = "simulation_vs_reality_3_0101_0104";
+    /*
+    Ablauf: Die weisse Kugel spielt die rote Kugel ins obere rechte Loch,
+    kollidiert mit der rechten Bande und rollt kurz danach aus.
+
+    WHITE, WHITE, -19.1887, 104.063
+    RED, RED, 856.584, 380.79
+    V,
+
+    WHITE from start to collision:
+    WHITE at start: pixel=(618, 300) model=(-19.1887, 104.063) frame=4
+    WHITE at collision: pixel=(1101, 159) model=(803.269, 341.682) frame=43
+    -> frames=39 duration=1.3 vector=(822.457, 237.619) s=856.095
+
+    RED from collision to pocket:
+    RED at collision: pixel=(1132, 136) model=(856.584, 380.79) frame=43
+    RED in pocket: pixel=(1166, 107) model=(915.102, 430.136) frame=51
+    -> frames=8 duration=0.266667 vector=(58.5179, 49.346) s=76.5465
+
+    WHITE from collision to rail collision:
+    WHITE at collision: pixel=(1108, 157) model=(815.313, 345.088) frame=44
+    WHITE at rail collision: pixel=(1168, 183) model=(918.89, 300.96) frame=58
+    -> frames=14 duration=0.466667 vector=(103.577, -44.1279) s=112.585
+
+    WHITE from rail collision to in rest:
+    WHITE at rail collision: pixel=(1168, 182) model=(918.885, 302.661) frame=58
+    WHITE in rest: pixel=(1156, 190) model=(898.195, 289.047) frame=71
+    -> frames=13 duration=0.433333 vector=(-20.6901, -13.6141) s=24.7674
+    */
+    const glm::vec2& whiteStart = glm::vec2{-19.1887, 104.063};
+    const glm::vec2& redStart = glm::vec2 {856.584, 380.79};
+    const glm::vec2& whiteCollision = glm::vec2{803.269, 341.682};
+    const glm::vec2& whiteRailCollision = glm::vec2{918.89, 300.96};
+    const glm::vec2& redCollision = glm::vec2 {856.584, 380.79};
+    const glm::vec2& whiteInRest = glm::vec2 {898.195, 289.047};
+    const glm::vec2& whiteDirectionAfterCollision = whiteRailCollision - whiteCollision;
+    const glm::vec2& whiteDirectionAfterRailCollision = whiteInRest - whiteRailCollision;
+    const float collisionTime = 1.3f;
+    const float redPottedTime = 0.266667f + collisionTime; // since beginning
+    const float whiteRailCollisionTime = 0.466667f + collisionTime; // since beginning
+    const float whiteInRestTime = 0.433333f + whiteRailCollisionTime; // since beginning
+    glm::vec2 velocity = calculateInitialVelocity(whiteCollision - whiteStart, 39);
+
+    std::stringstream simulationInput;
+    simulationInput << "WHITE, WHITE, " << whiteStart.x << ", " << whiteStart.y << std::endl
+                    << "RED, RED, " << redStart.x << ", " << redStart.y << std::endl
+                    << "V, " << velocity.x << ", " << velocity.y;
+
+    std::cout << "Simulation input:" << std::endl << simulationInput.str();
+
+    std::string white = "WHITE-1";
+    std::string red = "RED-1";
+    billiard::search::State state({
+                                          billiard::search::Ball { whiteStart, "WHITE", white},
+                                          billiard::search::Ball { redStart, "RED", red},
+                                  });
+
+    billiard::search::Configuration config = loadConfig("./resources/configuration.json");
+
+    std::optional<System> systemOpt = billiard::search::simulate(state, velocity, config);
+    if (!systemOpt) {
+        std::cout << "No result" << std::endl;
+        return;
+    }
+    System system = systemOpt.value();
+
+    std::cout << "Layers: " << std::to_string(system._layers.size()) << std::endl;
+    ASSERT_EQ(system._layers.size(), 7);
+
+    Layer& startLayer = system._layers[0];
+    auto whiteMovingNode = getNodeOfBall<BallShotNode, &Node::toBallShot>(startLayer, white);
+    float whiteStartPositionError = checkPosition(whiteMovingNode->_ball, whiteStart);
+    EXPECT_FLOAT_EQ(whiteStartPositionError, 0.0f);
+
+    auto redInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(startLayer, red);
+    float redStartPositionError = checkPosition(redInRestNode->_ball, redStart);
+    EXPECT_FLOAT_EQ(redStartPositionError, 0.0f);
+
+    Layer& whiteRollingLayer = system._layers[1];
+    auto whiteRollingNode = getNodeOfBall<BallMovingNode, &Node::toBallMoving>(whiteRollingLayer, white);
+    ASSERT_TRUE(whiteRollingNode);
+    ASSERT_EQ(whiteRollingNode->_after._isRolling, true);
+
+    Layer& collisionLayer = system._layers[2];
+    auto whiteCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, white);
+    ASSERT_TRUE(whiteCollisionNode);
+    float whiteCollisionPositionError = checkPosition(whiteCollisionNode->_after, whiteCollision);
+
+    auto redCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, red);
+    ASSERT_TRUE(redCollisionNode);
+    float redCollisionPositionError = checkPosition(redCollisionNode->_after, redCollision);
+
+    Layer& redRollingLayer = system._layers[3];
+    auto redRollingNode = getNodeOfBall<BallMovingNode, &Node::toBallMoving>(redRollingLayer, red);
+    ASSERT_TRUE(redRollingNode);
+    ASSERT_EQ(redRollingNode->_after._isRolling, true);
+
+    Layer& redPottedLayer = system._layers[4];
+    auto redPottedNode = getNodeOfBall<BallPottingNode, &Node::toPotted>(redPottedLayer, red);
+    ASSERT_TRUE(redPottedNode);
+    float redPottedTimeError = checkTime(redPottedLayer, redPottedTime);
+
+    Layer& whiteRailCollisionLayer = system._layers[5];
+    auto whiteRailCollisionNode = getNodeOfBall<BallRailCollisionNode, &Node::toBallRailCollision>(whiteRailCollisionLayer, white);
+    ASSERT_TRUE(whiteRailCollisionNode);
+    float whiteRailCollisionPositionError = checkPosition(whiteRailCollisionNode->_after, whiteRailCollision);
+    float whiteRailCollisionTimeError = checkTime(whiteRailCollisionLayer, whiteRailCollisionTime);
+    float whiteRailCollisionDirectionError = checkDirection(whiteRailCollisionNode->_after._position - whiteCollisionNode->_after._position, whiteDirectionAfterCollision);
+
+    Layer& whiteInRestLayer = system._layers[6];
+    auto whiteInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(whiteInRestLayer, white);
+    ASSERT_TRUE(whiteInRestNode);
+    float whiteInRestPositionError = checkPosition(whiteInRestNode->_ball, whiteInRest);
+    float whiteInRestTimeError = checkTime(whiteInRestLayer, whiteInRestTime);
+    float whiteInRestDirectionError = checkDirection(whiteInRestNode->_ball._position - whiteRailCollisionNode->_after._position, whiteDirectionAfterRailCollision);
+
+    std::cout << "Test " << name << " "
+              //        << "start pos ["
+              //        << "white=" << std::to_string(whiteStartPositionError) << " "
+              //        << "red=" << std::to_string(redStartPositionError)
+              //        << "]" << " "
+              //        << std::endl
+              << std::endl
+              << "Simulation input:"
+              << std::endl
+              << simulationInput.str()
+              << std::endl
+              << "collision pos ["
+              << "white=" << std::to_string(whiteCollisionPositionError) << " "
+              << "red=" << std::to_string(redCollisionPositionError)
+              << "]" << " "
+              << std::endl
+              << "red potted ["
+              << "time=" << std::to_string(redPottedTimeError) << " "
+              << "]" << " "
+              << std::endl
+              << "white rail collision ["
+              << "pos=" << std::to_string(whiteRailCollisionPositionError) << " "
+              << "time=" << std::to_string(whiteRailCollisionTimeError) << " "
+              << "dir=" << std::to_string(whiteRailCollisionDirectionError) << " "
+              << "]" << " "
+              << std::endl
+              << "white in rest ["
+              << "pos=" << std::to_string(whiteInRestPositionError) << " "
+              << "time=" << std::to_string(whiteInRestTimeError) << " "
+              << "dir=" << std::to_string(whiteInRestDirectionError) << " "
+              << "]" << " "
+              << std::endl;
+}
+
+TEST(SimulationVsReality, simulation_vs_reality_3_0138_0143) {
+
+    std::string name = "simulation_vs_reality_3_0138_0143";
+    /*
+    Ablauf: Die weisse Kugel spielt die rote Kugel ins obere rechte Loch,
+    kollidiert mit der rechten Bande und rollt danach aus.
+
+    WHITE, WHITE, -19.2893, 102.747
+    RED, RED, 855.018, 379.262
+    V,
+
+    WHITE from start to collision:
+    WHITE at start: pixel=(618, 301) model=(-19.2893, 102.747) frame=5
+    WHITE at collision: pixel=(1107, 157) model=(813.719, 345.261) frame=22
+    -> frames=17 duration=0.566667 vector=(833.009, 242.514) s=867.593
+
+    RED from collision to pocket:
+    RED at collision: pixel=(1131, 137) model=(855.018, 379.262) frame=22
+    RED in pocket: pixel=(1172, 104) model=(925.642, 435.422) frame=25
+    -> frames=3 duration=0.1 vector=(70.6241, 56.16) s=90.2314
+
+    WHITE from collision to rail collision:
+    WHITE at collision: pixel=(1107, 157) model=(813.719, 345.261) frame=22
+    WHITE at rail collision: pixel=(1165, 188) model=(913.852, 292.585) frame=28
+    -> frames=6 duration=0.2 vector=(100.132, -52.676) s=113.142
+
+    WHITE from rail collision to in rest:
+    WHITE at rail collision: pixel=(1165, 188) model=(913.852, 292.585) frame=28
+    WHITE in rest: pixel=(1025, 256) model=(672.861, 177.202) frame=91
+    -> frames=63 duration=2.1 vector=(-240.991, -115.384) s=267.189
+    */
+    const glm::vec2& whiteStart = glm::vec2{-19.2893, 102.747};
+    const glm::vec2& redStart = glm::vec2 {855.018, 379.262};
+    const glm::vec2& whiteCollision = glm::vec2{813.719, 345.261};
+    const glm::vec2& whiteRailCollision = glm::vec2{913.852, 292.585};
+    const glm::vec2& redCollision = glm::vec2 {855.018, 379.262};
+    const glm::vec2& whiteInRest = glm::vec2 {672.861, 177.202};
+    const glm::vec2& whiteDirectionAfterCollision = whiteRailCollision - whiteCollision;
+    const glm::vec2& whiteDirectionAfterRailCollision = whiteInRest - whiteRailCollision;
+    const float collisionTime = 0.566667f;
+    const float redPottedTime = 0.1f + collisionTime; // since beginning
+    const float whiteRailCollisionTime = 0.2f + collisionTime; // since beginning
+    const float whiteInRestTime = 2.1f + whiteRailCollisionTime; // since beginning
+    glm::vec2 velocity = calculateInitialVelocity(whiteCollision - whiteStart, 17);
+
+    std::stringstream simulationInput;
+    simulationInput << "WHITE, WHITE, " << whiteStart.x << ", " << whiteStart.y << std::endl
+                    << "RED, RED, " << redStart.x << ", " << redStart.y << std::endl
+                    << "V, " << velocity.x << ", " << velocity.y;
+
+    std::cout << "Simulation input:" << std::endl << simulationInput.str();
+
+    std::string white = "WHITE-1";
+    std::string red = "RED-1";
+    billiard::search::State state({
+                                          billiard::search::Ball { whiteStart, "WHITE", white},
+                                          billiard::search::Ball { redStart, "RED", red},
+                                  });
+
+    billiard::search::Configuration config = loadConfig("./resources/configuration.json");
+
+    std::optional<System> systemOpt = billiard::search::simulate(state, velocity, config);
+    if (!systemOpt) {
+        std::cout << "No result" << std::endl;
+        return;
+    }
+    System system = systemOpt.value();
+
+    std::cout << "Layers: " << std::to_string(system._layers.size()) << std::endl;
+    EXPECT_EQ(system._layers.size(), 6);
+
+    Layer& startLayer = system._layers[0];
+    auto whiteMovingNode = getNodeOfBall<BallShotNode, &Node::toBallShot>(startLayer, white);
+    float whiteStartPositionError = checkPosition(whiteMovingNode->_ball, whiteStart);
+    EXPECT_FLOAT_EQ(whiteStartPositionError, 0.0f);
+
+    auto redInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(startLayer, red);
+    float redStartPositionError = checkPosition(redInRestNode->_ball, redStart);
+    EXPECT_FLOAT_EQ(redStartPositionError, 0.0f);
+
+    Layer& whiteRollingLayer = system._layers[1];
+    auto whiteRollingNode = getNodeOfBall<BallMovingNode, &Node::toBallMoving>(whiteRollingLayer, white);
+    ASSERT_TRUE(whiteRollingNode);
+    ASSERT_EQ(whiteRollingNode->_after._isRolling, true);
+
+    Layer& collisionLayer = system._layers[2];
+    auto whiteCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, white);
+    ASSERT_TRUE(whiteCollisionNode);
+    float whiteCollisionPositionError = checkPosition(whiteCollisionNode->_after, whiteCollision);
+
+    auto redCollisionNode = getNodeOfBall<BallCollisionNode, &Node::toBallCollision>(collisionLayer, red);
+    ASSERT_TRUE(redCollisionNode);
+    float redCollisionPositionError = checkPosition(redCollisionNode->_after, redCollision);
+
+    Layer& redPottedLayer = system._layers[3];
+    auto redPottedNode = getNodeOfBall<BallPottingNode, &Node::toPotted>(redPottedLayer, red);
+    ASSERT_TRUE(redPottedNode);
+    float redPottedTimeError = checkTime(redPottedLayer, redPottedTime);
+
+    Layer& whiteRailCollisionLayer = system._layers[4];
+    auto whiteRailCollisionNode = getNodeOfBall<BallRailCollisionNode, &Node::toBallRailCollision>(whiteRailCollisionLayer, white);
+    ASSERT_TRUE(whiteRailCollisionNode);
+    float whiteRailCollisionPositionError = checkPosition(whiteRailCollisionNode->_after, whiteRailCollision);
+    float whiteRailCollisionTimeError = checkTime(whiteRailCollisionLayer, whiteRailCollisionTime);
+    float whiteRailCollisionDirectionError = checkDirection(whiteRailCollisionNode->_after._position - whiteCollisionNode->_after._position, whiteDirectionAfterCollision);
+
+    Layer& whiteInRestLayer = system._layers[5];
+    auto whiteInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(whiteInRestLayer, white);
+    ASSERT_TRUE(whiteInRestNode);
+    float whiteInRestPositionError = checkPosition(whiteInRestNode->_ball, whiteInRest);
+    float whiteInRestTimeError = checkTime(whiteInRestLayer, whiteInRestTime);
+    float whiteInRestDirectionError = checkDirection(whiteInRestNode->_ball._position - whiteRailCollisionNode->_after._position, whiteDirectionAfterRailCollision);
+
+    std::cout << "Test " << name << " "
+              //        << "start pos ["
+              //        << "white=" << std::to_string(whiteStartPositionError) << " "
+              //        << "red=" << std::to_string(redStartPositionError)
+              //        << "]" << " "
+              //        << std::endl
+              << std::endl
+              << "Simulation input:"
+              << std::endl
+              << simulationInput.str()
+              << std::endl
+              << "collision pos ["
+              << "white=" << std::to_string(whiteCollisionPositionError) << " "
+              << "red=" << std::to_string(redCollisionPositionError)
+              << "]" << " "
+              << std::endl
+              << "red potted ["
+              << "time=" << std::to_string(redPottedTimeError) << " "
+              << "]" << " "
+              << std::endl
+              << "white rail collision ["
+              << "pos=" << std::to_string(whiteRailCollisionPositionError) << " "
+              << "time=" << std::to_string(whiteRailCollisionTimeError) << " "
+              << "dir=" << std::to_string(whiteRailCollisionDirectionError) << " "
+              << "]" << " "
+              << std::endl
+              << "white in rest ["
+              << "pos=" << std::to_string(whiteInRestPositionError) << " "
+              << "time=" << std::to_string(whiteInRestTimeError) << " "
+              << "dir=" << std::to_string(whiteInRestDirectionError) << " "
+              << "]" << " "
+              << std::endl;
+}
 
 TEST(SimulationVsReality, gleitreibungskoeffizient_0000_0005) {
 
