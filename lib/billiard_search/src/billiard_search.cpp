@@ -798,8 +798,22 @@ namespace billiard::search {
         std::vector<std::pair<std::vector<Rail>, glm::vec2>> results;
         for (auto combo : combinations) {
             if (std::get<2>(combo)) {
-                DEBUG(agent << "reflections found for rail: " << std::get<0>(combo).at(0)._id << std::endl);
-                results.emplace_back(std::pair<std::vector<Rail>, glm::vec2>{std::get<0>(combo), std::get<1>(combo)});
+                auto nextTarget = std::get<1>(combo);
+                bool targetAlreadyInResult = false;
+                for (auto& result : results) {
+                    static float epsilon = 0.0001;
+                    if (std::abs(result.second.x - nextTarget.x) <= epsilon &&
+                        std::abs(result.second.y - nextTarget.y) <= epsilon) {
+                        targetAlreadyInResult = true;
+                        break;
+                    }
+                }
+                if (!targetAlreadyInResult) {
+                    DEBUG(agent << "reflections found for rail: " << std::get<0>(combo).at(0)._id << std::endl);
+                    results.emplace_back(std::pair<std::vector<Rail>, glm::vec2>{std::get<0>(combo), nextTarget});
+                } else {
+                    DEBUG(agent << "reflection point already in result: " << nextTarget << std::endl);
+                }
             } else {
                 DEBUG(agent << "cannot reflect " << target << " on rail " << std::get<0>(combo).at(0)._id << std::endl);
             }
