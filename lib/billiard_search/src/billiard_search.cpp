@@ -12,19 +12,23 @@ namespace billiard::search {
 
     #define PROCESSES 1
     #define SYNC_PERIOD_MS 100
-    #define BREAKS 1
+    #define BREAKS 3
     #define BANK_INDIRECTION 3
     // TODO: find a good number
     #define FORWARD_SEARCHES 2
     // TODO: find a good number
     #define MAX_VELOCITY_TO_ADD 2000.0f
-    // TODO: find a good number
-    #define MAX_VELOCITY_SQUARED 10000.0f * 10000.0f
+    #define MAX_VELOCITY_SQUARED 5000.0f * 5000.0f
     #define MAX_EVENTS 30
     #define VELOCITY_STEP (MAX_VELOCITY_TO_ADD / FORWARD_SEARCHES)
     #define COST_FLOAT_TO_INT_FACTOR 100000
     // 1.0 => simulation and search cost are both equally weighted. 0.5 => simulation cost is weighted half the search cost.
     #define SIMULATION_COST_FRACTION_OF_SEARCH_COST 1.0
+    // Weight of the start velocity in the simulation cost
+    #define SIMULATION_COST_VELOCITY_WEIGHT 0.5
+    // Weight of the potted balls cost in the simulation cost
+    #define SIMULATION_COST_POTTING_WEIGHT 0.5
+    static_assert(SIMULATION_COST_VELOCITY_WEIGHT + SIMULATION_COST_POTTING_WEIGHT <= 1.0);
     // Maximum search depth allowed before cutoff
     #define MAX_SEARCH_DEPTH 3
     // Maximum number of ball collisions to be considered in search of a path
@@ -1364,7 +1368,7 @@ namespace billiard::search {
 
         std::string agent = "[simulationCost " + std::to_string(system._id) + "] ";
 
-        double totalScore = 0.0;
+        double pottingScore = 0.0;
         for (auto& node : system.lastLayer()._nodes) {
             if (node.second._type == billiard::search::node::NodeType::BALL_POTTING) {
                 auto& ballType = node.second._ballType;
@@ -1374,17 +1378,41 @@ namespace billiard::search {
                             << "(" << ballType << ")" << " "
                             << "scoring: " << std::to_string(score) << " "
                             << std::endl);
-                totalScore += score;
+                pottingScore += score;
             }
         }
 
-        double totalCost = 1.0 - std::min(totalScore, 1.0);
+        double velocityCost = 0.0;
+        for (auto& node : system.firstLayer()._nodes) {
+            if (node.second._type == billiard::search::node::NodeType::BALL_SHOT) {
+                // Prefer smaller start velocities
+                auto cueBall = node.second.after();
+                auto& velocity = cueBall->_velocity;
+                float velocitySquared = glm::dot(velocity, velocity);
+                velocityCost = velocitySquared / (MAX_VELOCITY_SQUARED);
+                DEBUG(agent << "Ball-shot "
+                            << node.first << " "
+                            << "velocity: " << velocity << " "
+                            << "cost: " << std::to_string(velocityCost) << " "
+                            << std::endl);
+                break;
+            }
+        }
+
+        double pottingCost = 1.0 - std::min(pottingScore, 1.0);
+        double weightedPottingCost = SIMULATION_COST_POTTING_WEIGHT * pottingCost;
+        double weightedVelocityCost = SIMULATION_COST_VELOCITY_WEIGHT * velocityCost;
+        double totalCost = std::min(weightedPottingCost + weightedVelocityCost, 1.0);
 
         double simulationCostCap = SIMULATION_COST_FRACTION_OF_SEARCH_COST * (double) searchCost;
         uint64_t weightedTotalCostInt = totalCost * simulationCostCap;
 
         DEBUG(agent << "Result: "
-                    << "totalScore=" << std::to_string(totalScore) << " "
+                    << "pottingScore=" << std::to_string(pottingScore) << " "
+                    << "pottingCost=" << std::to_string(pottingCost) << " "
+                    << "velocityCost=" << std::to_string(velocityCost) << " "
+                    << "weightedPottingCost=" << std::to_string(weightedPottingCost) << " "
+                    << "weightedVelocityCost=" << std::to_string(weightedVelocityCost) << " "
                     << "totalCost=" << std::to_string(totalCost) << " "
                     << "searchCost=" << std::to_string(searchCost) << " "
                     << std::endl);

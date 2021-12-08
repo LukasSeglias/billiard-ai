@@ -388,26 +388,43 @@ auch bekannt, dass die Kugel nach der Kollision mit der Bande sofort zu rollen b
 
 \subsubsection{Bewertungsfunktion}
 Wie auch die Suche nach einem guten Lösungskandidaten muss das Endresultat der Simulation bewertet werden.
-In dem Fall geht es um die Bestimmung der Belohnung eines Stosses oder umgekehrt die Bestrafung in Form von Kosten
-für eine geringe Ausbeute. In einem ersten Schritt wird die Belohnung berechnet.
-Diese richtet sich an der Anzahl und dem Typen der eingelochten Kugeln. Es gibt die Schwarze (7), Pinke (6), Blaue (5),
-Braune (4), Grüne (3), Gelbe (2) und Rote (1) Kugel. Die Punkte sind jeweils hinter dem Typen aufgeführt.
-In einem Stoss wird eine maximal mögliche Punktzahl von $7$ definiert. Sollten mehr Punkte erzielt werden, wird dies im
-Weiteren keinen Einfluss mehr haben, dazu später mehr. Dieser Score $S$ wird durch eine Normierung der erzielten Punkte $p$ anhand der
+In dem Fall geht es um die Bestimmung der Belohnung eines Stosses oder umgekehrt die Bestrafung in Form von Kosten.
+In einem ersten Schritt wird die Belohnung berechnet, welche sich an der Anzahl und dem Typen der eingelochten Kugeln richtet.
+Es gibt die Schwarze (7), Pinke (6), Blaue (5), Braune (4), Grüne (3), Gelbe (2) und Rote (1) Kugel.
+Die Punkte sind jeweils hinter dem Typen aufgeführt.
+In einem Stoss wird eine maximal mögliche Punktzahl von $7$ definiert.
+Sollten mehr Punkte erzielt werden, wird dies im Weiteren keinen Einfluss mehr haben, dazu später mehr.
+Dieser Score $S$ wird durch eine Normierung der erzielten Punkte $p$ anhand der
 maximal möglichen Punkte $p_{max}$ verkleinert. Zumeist wird er zwischen $0$ und $1$ liegen, er kann aber auch grösser werden.
 \begin{align}
-    S = \frac{p}{p_{max}}
+    S{p} = \frac{p}{p_{max}}
 \end{align}
 
 Anschliessend wird der Score auf eine Bestrafung/Kosten umgerechnet. Hierbei wird ignoriert, dass mehr Punkte wie die maximal
 möglichen erzielt wurden. Dies geschieht, in dem das Minimum von $1$ und dem Score $S$ genommen wird.
 \begin{align}
-    K = 1 - \min{(S, 1)}
+    K_{p} = 1 - \min{(S, 1)}
 \end{align}
 
-Dieser so erhaltene Wert ist noch nicht aussagekräftig genug. Er soll in Relation zu der Schwierigkeit des Stosses, also
-den Suchkosten, angegeben werden können. Die Belohnung soll zum Beispiel nur $50 \%$ Gewicht haben. Um dies zu erreichen,
-werden die definitiven Kosten über eine solche Normierung erreicht, wobei $K$ die nicht normierten Kosten zwischen $0$ und
+Des weiteren soll die Stossstärke, gemessen an der Startgeschwindigkeit des Spielballs, in die Bewertung einfliessen.
+Der Grund ist, dass bei stärkeren Stössen ein Präzisionsfehler wahrscheinlicher ist und daher schwachere Stösse zu bevorzugen sind.
+Die Kosten der Stossstärke werden wie folgt mithilfe der Stossgeschwindigkeit $v$ und einer
+Maximalgeschwindigkeit von $V_{max} = 5\frac{m}{s}$ in einem Wert zwischen $0$ und $1$ ausgedrückt.
+\begin{align}
+    K_{v} = \frac{v}{V_{max}}
+\end{align}
+
+Die Gesamtkosten bildet anschliessend die gewichtete Summe beider Kosten $K_p$ und $K_v$.
+Das Gewicht wurde als $\alpha = \frac{1}{2}$ definiert.
+\begin{align}
+    K = \alpha \cdot K_p + (1 - \alpha) \cdot K_v
+\end{align}
+
+Dieser so erhaltene Wert ist noch nicht aussagekräftig genug.
+Er soll in Relation zu der Schwierigkeit des Stosses, also den Suchkosten, angegeben werden können.
+Die Belohnung soll zum Beispiel nur $50 \%$ Gewicht haben.
+Um dies zu erreichen, werden die definitiven Kosten über eine solche Normierung erreicht,
+wobei $K$ die nicht normierten Kosten zwischen $0$ und
 $1$, $g$ die Gewichtung in Prozent gegenüber der Schwierigkeit und $K_{s}$ die Suchkosten sind.
 \begin{align}
     K_{norm} = K \cdot g \cdot K_{s}

@@ -391,6 +391,10 @@ billiard::search::node::System::System() :
     _layers() {
 }
 
+const billiard::search::node::Layer& billiard::search::node::System::firstLayer() const {
+    return _layers.at(0);
+}
+
 const billiard::search::node::Layer& billiard::search::node::System::lastLayer() const {
     return _layers.at(_layers.size() - 1);
 }

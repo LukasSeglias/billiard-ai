@@ -278,6 +278,7 @@ namespace billiard::search {
         struct EXPORT_BILLIARD_SEARCH_LIB System {
             System();
 
+            [[nodiscard]] const Layer& firstLayer() const;
             [[nodiscard]] const Layer& lastLayer() const;
             [[nodiscard]] bool empty() const;
             [[nodiscard]] bool final() const;

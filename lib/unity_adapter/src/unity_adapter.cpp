@@ -14,8 +14,6 @@
 
 Debugger _debugger;
 
-
-
 int solutions = 10;
 bool WRITE_LOG_FILE = true;
 bool LIVE = false;
