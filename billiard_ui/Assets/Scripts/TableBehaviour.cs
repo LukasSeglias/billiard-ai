@@ -27,6 +27,7 @@ public class TableBehaviour : MonoBehaviour
 	public GameObject dotsParentGameObject;
 	public StabilizationController stabilizationController;
 
+	private const float FAST_RESULT_DISPLAY_TIME = 2.0f;
 	private RootState state = new RootState();
 	private Animator animator;
 	private AnimationPlayer animationPlayer;
@@ -38,6 +39,9 @@ public class TableBehaviour : MonoBehaviour
 	private bool isLive = true;
 	private bool isDebug = false;
 	private bool showBallHalos = true;
+	private bool displayResultsFast = false;
+	private float timeForOneResult = 0.0f;
+	private float timeSinceLastResult = 0.0f;
 
 	// Start is called before the first frame update
     void Start()
@@ -119,6 +123,13 @@ public class TableBehaviour : MonoBehaviour
             searchSolution(search);
 		} else if (Input.GetKeyDown(KeyCode.Y)) {
 			AnimationService.toggleSearch();
+		} else if (Input.GetKeyDown(KeyCode.X)) {
+			showBallHalos = false;
+			isPlaying = false;
+			displayResultsFast = true;
+			timeForOneResult = FAST_RESULT_DISPLAY_TIME / animationPlayer.animations();
+			timeSinceLastResult = 0.0f;
+			animationPlayer.showFirst();
 		}
 
 		if (statePresenter != null) {
@@ -128,6 +139,19 @@ public class TableBehaviour : MonoBehaviour
 
 		if (isPlaying) {
 			animate(Time.deltaTime);
+		}
+		
+		if (displayResultsFast) {
+			if (animationPlayer.hasNext()) {
+				if (timeSinceLastResult >= timeForOneResult) {
+					timeSinceLastResult = 0;
+					animationPlayer.next();
+				} else {
+					timeSinceLastResult += Time.deltaTime;
+				}
+			} else {
+				displayResultsFast = false;
+			}
 		}
     }
 
@@ -206,6 +230,20 @@ public class TableBehaviour : MonoBehaviour
             animationIndex = (animationIndex + 1) % animations.Length;
             switchToAnimation(animationIndex);
 	    }
+		
+		public bool hasNext() {
+			AnimationModel[] animations = root.animations;
+			return animationIndex < animations.Length - 1;
+		}
+		
+		public void showFirst() {
+			this.animationIndex = 0;
+	        switchToAnimation(animationIndex);
+		}
+		
+		public int animations() {
+			return root.animations.Length;
+		}
 
         public void previous() {
             AnimationModel[] animations = root.animations;
