@@ -29,7 +29,7 @@ public class TableBehaviour : MonoBehaviour
 
 	private const float FAST_RESULT_DISPLAY_TIME = 2.0f;
 	private RootState state = new RootState();
-	private Animator animator;
+	private AnimatorState animator;
 	private AnimationPlayer animationPlayer;
 	private StatePresenter statePresenter;
 	private BallDottedPaths dottedPaths;
@@ -69,7 +69,7 @@ public class TableBehaviour : MonoBehaviour
 
 		dottedPaths = new BallDottedPaths(dotMaterial, dotsParentGameObject);
 
-		animator = new Animator(mappedMaterials, transparent, config, Queue);
+		animator = new AnimatorState(mappedMaterials, transparent, config, Queue);
 		animationPlayer = new AnimationPlayer(animator);
     }
 
@@ -215,9 +215,9 @@ public class TableBehaviour : MonoBehaviour
 
 	    private int animationIndex = 0;
 	    private RootObject root;
-	    private Animator animator;
+	    private AnimatorState animator;
 
-	    public AnimationPlayer(Animator animator) {
+	    public AnimationPlayer(AnimatorState animator) {
 	        this.animator = animator;
 	    }
 
@@ -419,29 +419,28 @@ public class TableBehaviour : MonoBehaviour
         FILLED,
         INVISIBLE
     }
-
-	private class Animator {
-
-		private static readonly float QUEUE_DIST = 0.1f; // 10 cm
-		private static readonly float QUEUE_DISPLAY_TIME = 1f; // 2s
-
-        private Configuration config;
-		private KeyFrame[] frames;
+	
+	private class AnimatorState {
+		
+		private static readonly double WAIT_BEFORE_BREAK = 2.0f; // seconds
+		private static readonly double WAIT_AFTER_BREAK = 2.0f; // seconds
+		
+		private readonly Configuration config;
 		private readonly Dictionary<string, GameObject> ballObjects = new Dictionary<string, GameObject>();
 		private readonly List<GameObject> lines = new List<GameObject>();
 		private readonly GameObject queue;
 		private readonly Dictionary<string, Material> mappedMaterials;
 		private readonly Material transparent;
-
+		
+		private KeyFrame[] frames;
+		private State currentState;
 		private int startFrameIndex;
-		private bool animateQueue;
-		private double time;
-		private double endTime;
-		private double windowStartTime;
 		private int currentAnimationWindow;
 		private BallMaterial material = BallMaterial.CIRCLE;
-
-		public Animator(Dictionary<string, Material> mappedMaterials, Material transparent,
+		private double globalTime;
+		private bool repeatFirstBreak;
+		
+		public AnimatorState(Dictionary<string, Material> mappedMaterials, Material transparent,
 		    Configuration config, GameObject queue) {
 		    this.config = config;
 			this.queue = queue;
@@ -450,7 +449,7 @@ public class TableBehaviour : MonoBehaviour
 		}
 
 		public void setAnimation(KeyFrame[] frames) {
-            this.frames = frames;
+			this.frames = frames;
             float scale = StretchingUtility.get().scale;
 
             destroyBallObjects();
@@ -486,116 +485,40 @@ public class TableBehaviour : MonoBehaviour
             }
 
             reset();
-        }
-
-		public void drawLines() {
-		    destroyLines();
-
-			int windowCount = -1;
-			for (int i = 0; i < this.frames.Length - 1; i+=2) {
-				var start = this.frames[i];
-				if (start.firstFrame) {
-					windowCount++;
-				}
-
-				if (windowCount == currentAnimationWindow) {
-					var end = this.frames[i + 1];
-
-					foreach (var startBall in start.balls) {
-						var endBall = findBall(startBall.id, end);
-						if (endBall != null && startBall.position != endBall.position) {
-							GameObject lineObject = new GameObject(string.Format("Line{0}", startBall.id));
-							LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
-							lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-							lRend.material.color = Color.white;
-							lRend.startWidth = 0.02f;
-							lRend.endWidth = 0.02f;
-							lRend.SetPosition(0, StretchingUtility.get().position(convert(startBall.position, -0.01f)));
-							lRend.SetPosition(1, StretchingUtility.get().position(convert(endBall.position, -0.01f)));
-							lines.Add(lineObject);
-						}
-					}
-				} else if (windowCount > currentAnimationWindow) {
-					break;
-				}
-			}
 		}
-
+		
+		private void setState(State state) {
+			Debug.Log("Change from " + (currentState != null ? currentState.name() : "") + " to " + state.name());
+			currentState = state;
+			currentState.init();
+		}
+		
 		public void reset() {
-			this.time = 0;
+            queue.SetActive(false);
 			this.startFrameIndex = 0;
 			this.currentAnimationWindow = 0;
-			this.windowStartTime = 0;
-			this.animateQueue = true;
-
+			this.globalTime = 0;
+			this.repeatFirstBreak = false;
+			
 			if (this.frames.Length > 0) {
                 KeyFrame start = this.frames[this.startFrameIndex];
                 KeyFrame end = this.frames[this.startFrameIndex + 1];
                 updateBalls(start, end, 0);
             }
-            queue.SetActive(false);
-
-			drawLines();
+			
+			setState(new LineDrawState(this));
 		}
-
-        private void destroyBallObjects() {
-            foreach (var ballObject in ballObjects.Values) {
-                Destroy(ballObject);
-            }
-            ballObjects.Clear();
-        }
-
-        private void destroyLines() {
-            foreach (var line in lines) {
-                Destroy(line);
-            }
-            lines.Clear();
-        }
-
-		public void delete() {
-		    destroyBallObjects();
-		    destroyLines();
-		}
-
+		
 		public void update(double timeDelta) {
-		    if (frames == null || frames.Length == 0) {
-		        return;
-		    }
-
-			double newTime = this.time + timeDelta;
-			this.time = Math.Min(Math.Max(0, newTime), this.endTime);
-
-			KeyFrame start = this.frames[this.startFrameIndex];
-
-			if (animateQueue) {
-				queue.SetActive(true);
-				double queueEndTime = calculateQueueEndTime(start);
-				this.endTime = queueEndTime + this.windowStartTime;
-				animateQueue = doAnimateQueue(this.time - this.windowStartTime, queueEndTime, start);
-				if (!animateQueue) {
-					this.time = this.windowStartTime;
-					this.endTime = frames[frames.Length - 1].time;
-				}
-			} else {
-				mayUpdateAnimationWindow(time, this.frames);
-				if (!isFinished()) {
-					start = this.frames[this.startFrameIndex];
-					KeyFrame end = this.frames[this.startFrameIndex + 1];
-					if (this.time >= (QUEUE_DISPLAY_TIME + this.windowStartTime)) {
-						queue.SetActive(false);
-					}
-					updateBalls(start, end, time);
-				} else {
-					KeyFrame end = this.frames[this.startFrameIndex + 1];
-					foreach (var ball in end.balls) {
-						var ballObject = ballObjects[ball.id];
-						ballObject.SetActive(ball.visible);
-					}
-					queue.SetActive(false);
-				}
+			if (currentState != null) {
+				currentState.update(timeDelta);
 			}
 		}
-
+		
+		public void appendLine(GameObject lineObject) {
+			lines.Add(lineObject);
+		}
+		
 		public void toggleBalls() {
 			switch(material) {
 			    case BallMaterial.CIRCLE:
@@ -614,6 +537,29 @@ public class TableBehaviour : MonoBehaviour
 		    this.material = material;
 		    applyMaterial(material);
 		}
+		
+		public void delete() {
+		    destroyBallObjects();
+		    destroyLines();
+		}
+		
+		public bool isFinished() {
+			return false;
+		}
+		
+		private void destroyBallObjects() {
+            foreach (var ballObject in ballObjects.Values) {
+                Destroy(ballObject);
+            }
+            ballObjects.Clear();
+        }
+
+        private void destroyLines() {
+            foreach (var line in lines) {
+                Destroy(line);
+            }
+            lines.Clear();
+        }
 
 		private void applyMaterial(BallMaterial material) {
 		    foreach (var ballObject in ballObjects.Values) {
@@ -632,11 +578,25 @@ public class TableBehaviour : MonoBehaviour
                 }
             }
 		}
-
-		public bool isFinished() {
-			return this.time == this.endTime;
+		
+		private Ball findCueBall(Ball[] balls) {
+		    foreach (var ball in balls) {
+                if (ball.type == "WHITE" && (ball.velocity.x != 0.0 || ball.velocity.y != 0.0)) {
+                    return ball;
+                }
+            }
+            return null;
 		}
-
+		
+		private Ball findBall(string id, KeyFrame frame) {
+			foreach (var ball in frame.balls) {
+				if (ball.id == id) {
+					return ball;
+				}
+			}
+			return null;
+		}
+		
 		private void updateBalls(KeyFrame start, KeyFrame end, double time) {
 			double duration = end.time - start.time;
 			double timeDeltaInAnimationWindow = time - start.time;
@@ -648,7 +608,7 @@ public class TableBehaviour : MonoBehaviour
 					var endBall = findBall(startBall.id, end);
 
 					if (material != BallMaterial.INVISIBLE) {
-					    ballObject.SetActive(true);
+						ballObject.SetActive(true);
 					}
 					updatePosition(startBall, endBall, ballObject, duration, timeDeltaInAnimationWindow);
 				} else {
@@ -661,114 +621,343 @@ public class TableBehaviour : MonoBehaviour
 				var ballObject = ballObjects[id];
 				ballObject.SetActive(false);
 			}
-		}
-
-		private double calculateQueueEndTime(KeyFrame start) {
-			Ball whiteBall = findCueBall(start.balls);
-			if (whiteBall == null) {
-				return 0.0;
-			}
-
-			var endSpeed = convert(whiteBall.velocity, 0);
-			var direction = Vector3.Normalize(endSpeed);
-			float scale = StretchingUtility.get().scale;
-			float radius = (ballObjects[whiteBall.id].transform.localScale.x / scale) / 2;
-
-			var startDirection = direction * (QUEUE_DIST + radius);
-			direction = direction * (QUEUE_DIST);
-			var startPos = convert(whiteBall.position, 0) - startDirection;
-			var endPos = startPos + direction;
-
-			// endPos = a/2 * t^2 + startPos
-			// endPos = (endSpeed / t)/2 * t^2 + startPos
-			// endPos = (endSpeed / 2*t) * t^2 + startPos
-			// endPos = (endSpeed / 2) * t + startPos
-			// endPos - startPos = (endSpeed / 2) * t
-			// (endPos - startPos)/(endSpeed / 2) = t
-			return Math.Abs((endPos - startPos).magnitude / (endSpeed / 2.0f).magnitude);
-		}
-
-		private bool doAnimateQueue(double time, double totalTime, KeyFrame start) {
-			Ball whiteBall = findCueBall(start.balls);
-			if (whiteBall == null) {
-				return false;
-			}
-
-			var endSpeed = convert(whiteBall.velocity, 0);
-			var direction = Vector3.Normalize(endSpeed);
-			float scale = StretchingUtility.get().scale;
-			float radius = (ballObjects[whiteBall.id].transform.localScale.x / scale) / 2;
-
-			var startDirection = direction * (QUEUE_DIST + radius);
-			var startPos = convert(whiteBall.position, 0) - startDirection;
-
-			var a = endSpeed / (float)totalTime;
-			time = Math.Min(time, totalTime);
-			var currentPos = a / 2 * (float)(time * time) + startPos;
-
-			float degrees = (float)(180 / Math.PI) * (float) Math.Acos(Vector3.Dot(new Vector3(0, -1, 0), endSpeed) / (endSpeed.magnitude));
-			queue.transform.eulerAngles = new Vector3(0, 0, endSpeed.x > 0 ? degrees : -degrees);
-
-			float lengthToMove = queue.transform.localScale.y;
-			var toMove = Vector3.Normalize(endSpeed) * lengthToMove;
-			queue.transform.position = StretchingUtility.get().position(currentPos) - toMove;
-
-			bool isFinished = time == totalTime;
-
-			return !isFinished;
-		}
-
-		private Ball findCueBall(Ball[] balls) {
-		    foreach (var ball in balls) {
-                if (ball.type == "WHITE" && (ball.velocity.x != 0.0 || ball.velocity.y != 0.0)) {
-                    return ball;
-                }
-            }
-            return null;
-		}
-
-		private void mayUpdateAnimationWindow(double time, KeyFrame[] frames) {
-			KeyFrame currentEndFrame = frames[this.startFrameIndex + 1];
-			KeyFrame currentStartFrame = frames[this.startFrameIndex];
-			if (currentEndFrame.time < time) {
-				this.startFrameIndex += 2;
-				if (frames[this.startFrameIndex].firstFrame) {
-					this.currentAnimationWindow++;
-					this.animateQueue = true;
-					this.windowStartTime = frames[this.startFrameIndex].time;
-					drawLines();
-				}
-			} else if (currentStartFrame.time > time && time >= 0) {
-				this.startFrameIndex -= 2;
-				if (this.startFrameIndex < frames.Length - 1) {
-					if (frames[this.startFrameIndex + 2].firstFrame) {
-						this.currentAnimationWindow--;
-						for (int i = startFrameIndex; i >= 0; i--) {
-							if (frames[i].firstFrame) {
-								this.windowStartTime = frames[i].time;
-								break;
-							}
-						}
-						drawLines();
+			
+			if (timeDeltaInAnimationWindow == duration) {
+				foreach (var endBall in end.balls) {
+					var ballObject = ballObjects[endBall.id];
+					if (!endBall.visible) {
+						ballObject.SetActive(false);
 					}
 				}
 			}
 		}
-
-		private Ball findBall(string id, KeyFrame frame) {
-			foreach (var ball in frame.balls) {
-				if (ball.id == id) {
-					return ball;
-				}
-			}
-			return null;
-		}
-
+			
 		private void updatePosition(Ball start, Ball end, GameObject gameObject, double duration, double timeDelta) {
 			Vector3 startVelocity = convert(start.velocity,0.0f);
 			Vector3 endVelocity = convert(end.velocity,0.0f);
 			Vector3 a = duration == 0.0f ? new Vector3(0.0f, 0.0f, 0.0f) : (endVelocity - startVelocity) * (float)(1/duration);
 			gameObject.transform.position = StretchingUtility.get().position(0.5f * a * (float)(timeDelta * timeDelta) + startVelocity * (float)timeDelta + convert(start.position, 0));
+		}
+		
+		private abstract class State {
+			protected readonly AnimatorState machine;
+			
+			public State(AnimatorState machine) {
+				this.machine = machine;
+			}
+			
+			public virtual void init() {
+				update(0);
+			}
+			
+			public abstract string name();
+			
+			public abstract void update(double timeDelta);
+		}
+		
+		private class LineDrawState : State {
+			public LineDrawState(AnimatorState machine) : base(machine) {}
+			
+			public override void init() {
+				machine.updateBalls(machine.frames[machine.startFrameIndex], machine.frames[machine.startFrameIndex+1], machine.globalTime);
+				drawLines(machine.currentAnimationWindow);
+				base.init();
+			}
+			
+			public override string name() {
+				return "LineDrawState";
+			}
+			
+			public override void update(double timeDelta) {
+				machine.setState(new WaitStateBeforeBrake(machine));
+			}
+			
+			private void drawLines(int currentAnimationWindow) {
+				machine.destroyLines();
+
+				int windowCount = -1;
+				for (int i = 0; i < machine.frames.Length - 1; i+=2) {
+					var start = machine.frames[i];
+					if (start.firstFrame) {
+						windowCount++;
+					}
+
+					if (windowCount == currentAnimationWindow) {
+						var end = machine.frames[i + 1];
+
+						foreach (var startBall in start.balls) {
+							var endBall = machine.findBall(startBall.id, end);
+							if (endBall != null && startBall.position != endBall.position) {
+								GameObject lineObject = new GameObject(string.Format("Line{0}", startBall.id));
+								LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
+								lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
+								lRend.material.color = Color.white;
+								lRend.startWidth = 0.02f;
+								lRend.endWidth = 0.02f;
+								lRend.SetPosition(0, StretchingUtility.get().position(convert(startBall.position, -0.01f)));
+								lRend.SetPosition(1, StretchingUtility.get().position(convert(endBall.position, -0.01f)));
+								machine.appendLine(lineObject);
+							}
+						}
+					} else if (windowCount > currentAnimationWindow) {
+						break;
+					}
+				}
+			}
+		}
+		
+		private class WaitStateBeforeBrake : State {
+			
+			private double waitTime = AnimatorState.WAIT_BEFORE_BREAK;
+			
+			public WaitStateBeforeBrake(AnimatorState machine) : base(machine) {}
+			
+			public override string name() {
+				return "WaitStateBeforeBrake";
+			}
+			
+			public override void update(double timeDelta) {
+				if (timeDelta < 0) {
+					machine.setState(new BreakState(machine)); // Zurückspulen
+					return;
+				}
+				
+				waitTime -= timeDelta;
+				if (waitTime <= 0) {
+					machine.setState(new QueueState(machine));
+				}
+			}
+		}
+		
+		private class QueueState : State {
+			
+			private static readonly float QUEUE_DIST = 0.1f; // 10 cm
+			private static readonly float QUEUE_DISPLAY_TIME = 1f; // 2s
+			
+			private double endTime;
+			private KeyFrame startFrame;
+			private double currentTime = 0;
+			
+			public QueueState(AnimatorState machine) : base(machine) {}
+			
+			public override string name() {
+				return "QueueState";
+			}
+			
+			public override void init() {
+				startFrame = findStartFrame(machine.currentAnimationWindow);
+				endTime = calculateQueueEndTime(startFrame);
+				machine.queue.SetActive(true);
+				base.init();
+			}
+			
+			public override void update(double timeDelta) {
+				
+				currentTime = Math.Min(currentTime + timeDelta, this.endTime);
+				doAnimateQueue(currentTime, endTime, startFrame);
+				
+				if (currentTime >= endTime) {
+					machine.setState(new BreakState(machine));
+				}
+			}
+			
+			private KeyFrame findStartFrame(int currentAnimationWindow) {
+				
+				int windowCount = -1;
+				for (int i = 0; i < machine.frames.Length - 1; i+=2) {
+					var start = machine.frames[i];
+					if (start.firstFrame) {
+						windowCount++;
+						
+						if (windowCount == currentAnimationWindow) {
+							return start;
+						}
+					}
+				}
+				return null;
+			}
+			
+			private double calculateQueueEndTime(KeyFrame start) {
+				Ball whiteBall = machine.findCueBall(start.balls);
+				if (whiteBall == null) {
+					return 0.0;
+				}
+
+				var endSpeed = convert(whiteBall.velocity, 0);
+				var direction = Vector3.Normalize(endSpeed);
+				float scale = StretchingUtility.get().scale;
+				float radius = (machine.ballObjects[whiteBall.id].transform.localScale.x / scale) / 2;
+
+				var startDirection = direction * (QUEUE_DIST + radius);
+				direction = direction * (QUEUE_DIST);
+				var startPos = convert(whiteBall.position, 0) - startDirection;
+				var endPos = startPos + direction;
+
+				// endPos = a/2 * t^2 + startPos
+				// endPos = (endSpeed / t)/2 * t^2 + startPos
+				// endPos = (endSpeed / 2*t) * t^2 + startPos
+				// endPos = (endSpeed / 2) * t + startPos
+				// endPos - startPos = (endSpeed / 2) * t
+				// (endPos - startPos)/(endSpeed / 2) = t
+				return Math.Abs((endPos - startPos).magnitude / (endSpeed / 2.0f).magnitude);
+			}
+			
+			private bool doAnimateQueue(double time, double totalTime, KeyFrame start) {
+				Ball whiteBall = machine.findCueBall(start.balls);
+				if (whiteBall == null) {
+					return false;
+				}
+
+				var endSpeed = convert(whiteBall.velocity, 0);
+				var direction = Vector3.Normalize(endSpeed);
+				float scale = StretchingUtility.get().scale;
+				float radius = (machine.ballObjects[whiteBall.id].transform.localScale.x / scale) / 2;
+
+				var startDirection = direction * (QUEUE_DIST + radius);
+				var startPos = convert(whiteBall.position, 0) - startDirection;
+
+				var a = endSpeed / (float)totalTime;
+				time = Math.Min(time, totalTime);
+				var currentPos = a / 2 * (float)(time * time) + startPos;
+
+				float degrees = (float)(180 / Math.PI) * (float) Math.Acos(Vector3.Dot(new Vector3(0, -1, 0), endSpeed) / (endSpeed.magnitude));
+				machine.queue.transform.eulerAngles = new Vector3(0, 0, endSpeed.x > 0 ? degrees : -degrees);
+
+				float lengthToMove = machine.queue.transform.localScale.y;
+				var toMove = Vector3.Normalize(endSpeed) * lengthToMove;
+				machine.queue.transform.position = StretchingUtility.get().position(currentPos) - toMove;
+
+				bool isFinished = time == totalTime;
+
+				return !isFinished;
+			}
+		}
+		
+		private class BreakState : State {
+			
+			private readonly double QUEUE_DISPLAY_TIME = 1.5;
+			
+			private double localTime = 0;
+			
+			public BreakState(AnimatorState machine) : base(machine) {}
+			
+			public override string name() {
+				return "BreakState";
+			}
+			
+			public override void update(double timeDelta) {
+				
+				localTime += timeDelta;
+				if (localTime >= QUEUE_DISPLAY_TIME) {
+					machine.queue.SetActive(false);
+				}
+				
+				machine.globalTime = machine.globalTime + timeDelta;
+				double endTime = machine.frames[machine.frames.Length - 1].time;
+				if (machine.startFrameIndex == 0) {
+					machine.globalTime = Math.Max(0, machine.globalTime);
+				} else if (machine.startFrameIndex == machine.frames.Length - 2) {
+					machine.globalTime = Math.Min(endTime, machine.globalTime);
+				}
+				var change = mayUpdateKeyFrames(machine.globalTime, machine.frames);
+				
+				if (change == Change.NONE) {
+					machine.updateBalls(machine.frames[machine.startFrameIndex], machine.frames[machine.startFrameIndex+1], machine.globalTime);
+				} else {
+					machine.queue.SetActive(false);
+					machine.globalTime = machine.frames[machine.startFrameIndex].time;
+					
+					if (machine.repeatFirstBreak) {
+						machine.setState(new BreakWaitRepeatState(machine));
+					} else {
+						machine.setState(new BreakWaitState(machine));
+					}
+				}
+				
+				if (machine.globalTime >= endTime) {
+					machine.setState(new BreakWaitRepeatState(machine)); // Repeat first state
+				}
+			}
+			
+			private enum Change {
+				NONE,
+				FORWARD,
+				BACKWARD
+			}
+			
+			private Change mayUpdateKeyFrames(double time, KeyFrame[] frames) {
+				KeyFrame currentEndFrame = frames[machine.startFrameIndex + 1];
+				KeyFrame currentStartFrame = frames[machine.startFrameIndex];
+				if (currentEndFrame.time < time) {
+					machine.startFrameIndex += 2;
+					
+					if (frames[machine.startFrameIndex].firstFrame) {
+						machine.currentAnimationWindow++;
+						return Change.FORWARD;
+					}
+				} else if (currentStartFrame.time > time && time >= 0) {
+					machine.startFrameIndex -= 2;
+					if (machine.startFrameIndex < frames.Length - 1) {
+						if (frames[machine.startFrameIndex + 2].firstFrame) {
+							machine.currentAnimationWindow--;
+							return Change.BACKWARD;
+						}
+					}
+				}
+				return Change.NONE;
+			}
+		}
+		
+		private class BreakWaitState : State {
+			
+			private double waitTime = AnimatorState.WAIT_AFTER_BREAK;
+			
+			public BreakWaitState(AnimatorState machine) : base(machine) {}
+			
+			public override string name() {
+				return "BreakWaitState";
+			}
+			
+			public override void update(double timeDelta) {
+				if (timeDelta < 0) {
+					machine.setState(new LineDrawState(machine)); // Zurückspulen
+					return;
+				}
+				
+				waitTime -= timeDelta;
+				if (waitTime <= 0) {
+					machine.setState(new LineDrawState(machine));
+				}
+			}
+		}
+		
+		private class BreakWaitRepeatState : State {
+			private double waitTime = AnimatorState.WAIT_AFTER_BREAK;
+			
+			public BreakWaitRepeatState(AnimatorState machine) : base(machine) {}
+			
+			public override string name() {
+				return "BreakWaitResetState";
+			}
+			
+			public override void update(double timeDelta) {
+				if (timeDelta < 0) {
+					machine.setState(new LineDrawState(machine)); // Zurückspulen
+					return;
+				}
+				
+				waitTime -= timeDelta;
+				if (waitTime <= 0) {
+					machine.repeatFirstBreak = true;
+					machine.globalTime = 0;
+					machine.startFrameIndex = 0;
+					machine.currentAnimationWindow = 0;
+					KeyFrame start = machine.frames[machine.startFrameIndex];
+					KeyFrame end = machine.frames[machine.startFrameIndex + 1];
+					machine.setState(new LineDrawState(machine));
+				}
+			}
+			
 		}
 	}
 
