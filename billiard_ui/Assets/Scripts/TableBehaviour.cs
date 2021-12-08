@@ -98,7 +98,9 @@ public class TableBehaviour : MonoBehaviour
 		} else if (Input.GetKeyDown(KeyCode.K)) {
 			isPlaying = false;
             animator.toggleBalls();
-		} else if (Input.GetKeyDown(KeyCode.T)) {
+		} else if (Input.GetKeyDown(KeyCode.O)) {
+            statePresenter.toggleMaterial();
+        } else if (Input.GetKeyDown(KeyCode.T)) {
 			visuals.toggleTableAndRailsAndTargets();
 		} else if (Input.GetKeyDown(KeyCode.D)) {
 			this.isDebug = !isDebug;
@@ -177,7 +179,7 @@ public class TableBehaviour : MonoBehaviour
 	private void stateChanged(RootState state) {
 		if (this.statePresenter == null) {
 		    Material background = Background.GetComponent<MeshRenderer>().material;
-			statePresenter = new StatePresenter(transparent, background, config);
+			statePresenter = new StatePresenter(transparent, background, mappedMaterials, config);
 		}
 
 		statePresenter.update(state);
@@ -267,7 +269,8 @@ public class TableBehaviour : MonoBehaviour
 
 	public enum StateMaterial {
 	    TRANSPARENT,
-	    COVER
+	    COVER,
+	    FILLED
 	}
 
 	private class StatePresenter {
@@ -275,12 +278,14 @@ public class TableBehaviour : MonoBehaviour
 		private readonly Configuration config;
 		private readonly Material transparent;
 		private readonly Material background;
+		private readonly Dictionary<string, Material> mappedMaterials;
 		private StateMaterial material;
 
-		public StatePresenter(Material transparent, Material background, Configuration config) {
+		public StatePresenter(Material transparent, Material background, Dictionary<string, Material> mappedMaterials, Configuration config) {
 			this.config = config;
 			this.transparent = transparent;
 			this.background = background;
+			this.mappedMaterials = mappedMaterials;
 			this.material = StateMaterial.COVER;
 		}
 
@@ -306,13 +311,8 @@ public class TableBehaviour : MonoBehaviour
 			ballInfo.type = ball.type;
 			ballInfo.selectable = true;
 			ballObject.transform.position = StretchingUtility.get().position(convert(ball.position, -0.01f));
-			float radius = config.radius;
-			ballObject.transform.localScale = new Vector3(radius, radius, radius) * 2 * StretchingUtility.get().scale;
 
-			if (material == StateMaterial.COVER) {
-			    // In order to cover ball display from animator
-			    ballObject.transform.localScale *= 1.25f;
-			}
+            scaleBall(ballObject);
 
 			updateLocationText(ball.id, ball.type, ball.trackingCount, ballObject);
 		}
@@ -334,6 +334,20 @@ public class TableBehaviour : MonoBehaviour
 			ballObjects.Add(ballObject);
 		}
 
+        public void toggleMaterial() {
+			switch(this.material) {
+			    case StateMaterial.TRANSPARENT:
+                    setMaterial(StateMaterial.COVER);
+                    break;
+			    case StateMaterial.COVER:
+			        setMaterial(StateMaterial.FILLED);
+                    break;
+                case StateMaterial.FILLED:
+                    setMaterial(StateMaterial.TRANSPARENT);
+                    break;
+			}
+		}
+
 		public void setMaterial(StateMaterial material) {
 		    this.material = material;
 		    applyMaterial(material);
@@ -353,7 +367,11 @@ public class TableBehaviour : MonoBehaviour
                 case StateMaterial.COVER:
                     ballObject.GetComponent<MeshRenderer>().material = background;
                     break;
+                case StateMaterial.FILLED:
+                    ballObject.GetComponent<MeshRenderer>().material = getMaterialForBall(ballObject);
+                    break;
             }
+            scaleBall(ballObject);
         }
 
 		public void enableDebug(bool debug) {
@@ -372,6 +390,21 @@ public class TableBehaviour : MonoBehaviour
 				}
 			}
 		}
+
+		private Material getMaterialForBall(GameObject ballObject) {
+            BallObjectInformation ballInfo = ballObject.GetComponent<BallObjectInformation>();
+            return mappedMaterials[ballInfo.type];
+        }
+
+        private void scaleBall(GameObject ballObject) {
+            float radius = config.radius;
+            ballObject.transform.localScale = new Vector3(radius, radius, radius) * 2 * StretchingUtility.get().scale;
+
+            if (material == StateMaterial.COVER) {
+                // In order to cover ball display from animator
+                ballObject.transform.localScale *= 1.25f;
+            }
+        }
 
 		private void updateLocationText(string id, string type, int trackingCount, GameObject ball) {
 			var textObject = ball.transform.Find("Text").gameObject;
