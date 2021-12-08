@@ -14,6 +14,8 @@
 
 Debugger _debugger;
 
+
+
 int solutions = 10;
 bool WRITE_LOG_FILE = true;
 bool LIVE = false;
@@ -362,6 +364,7 @@ inline billiard::search::Configuration toSearchConfig(const Configuration& confi
                 id,
                 glm::vec2{config.segments[i].start.x, config.segments[i].start.y},
                 glm::vec2{config.segments[i].end.x, config.segments[i].end.y},
+                glm::vec2{config.segments[i].shiftDirection.x, config.segments[i].shiftDirection.y},
                 billiardSearchConfig._ball._radius
         }));
     }

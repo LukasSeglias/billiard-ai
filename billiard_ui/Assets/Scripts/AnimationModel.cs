@@ -74,12 +74,14 @@ public class Ball
 public class RailSegment {
 	public Vec2 start;
 	public Vec2 end;
+	public Vec2 shiftDirection;
 	public string id;
 
 	public static RailSegment operator /(RailSegment segment, float value) => new RailSegment{
 		id = segment.id,
 		start = segment.start / value,
-		end = segment.end / value
+		end = segment.end / value,
+		shiftDirection = segment.shiftDirection
 	};
 
 	public Vec2 normal() {

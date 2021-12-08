@@ -51,6 +51,7 @@ billiard::search::Configuration config(nlohmann::json& json) {
             id,
             glm::vec2{rail["start"]["x"], rail["start"]["y"]},
             glm::vec2{rail["end"]["x"], rail["end"]["y"]},
+            glm::vec2{rail["shiftDirection"]["x"], rail["shiftDirection"]["y"]},
             ballRadius
         }));
     }

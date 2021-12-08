@@ -192,6 +192,7 @@ public class AnimationService : MonoBehaviour
 		public string id;
 		public Vec2_t start;
 		public Vec2_t end;
+		public Vec2_t shiftDirection;
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
@@ -386,7 +387,12 @@ public class AnimationService : MonoBehaviour
 	}
 	
 	private static RailSegment_t map(RailSegment from) {
-		return new RailSegment_t{id = from.id, start = map(from.start), end = map(from.end)};
+		return new RailSegment_t{
+		    id = from.id,
+		    start = map(from.start),
+		    end = map(from.end),
+		    shiftDirection = map(from.shiftDirection)
+		};
 	}
 	
 	private static Circle_t[] map(Circle[] from) {

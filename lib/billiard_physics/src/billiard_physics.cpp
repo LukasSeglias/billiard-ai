@@ -198,17 +198,7 @@ std::optional<float> billiard::physics::timeToCollisionWithRail(const glm::vec2&
         // Got intersection, intersection point is the position where the ball is when the collision occurs.
         lambda = shiftedSegmentIntersection->first;
     } else {
-        // If there is no intersection, then the collision may still be possible since the ball may hit the rail at the very end of the rail segment.
-        // Therefore, check intersection without shifting the rail points.
-        auto segmentIntersection = billiard::physics::intersection::halfLineIntersectsLineSegment(ballPosition, ballVelocity, railPoint1, railPoint2);
-        if (segmentIntersection) {
-            // Now intersect with the shifted rail points in order to get the position where the ball is when the collision occurs.
-            auto intersection = billiard::physics::intersection::lineIntersectsLine(ballPosition, ballVelocity, shiftedRailPoint1, shiftedRailPoint2 - shiftedRailPoint1);
-            assert(intersection);
-            lambda = intersection->first;
-        } else {
-            return std::nullopt;
-        }
+        return std::nullopt;
     }
 
     if (lambda < 0.0f) {

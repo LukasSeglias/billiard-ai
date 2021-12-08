@@ -61,7 +61,7 @@ namespace billiard::search {
     };
 
     struct EXPORT_BILLIARD_SEARCH_LIB Rail {
-        Rail(std::string id, const glm::vec2& start, const glm::vec2& end, float ballRadius);
+        Rail(std::string id, const glm::vec2& start, const glm::vec2& end, const glm::vec2& shiftDirection, float ballRadius);
 
         std::string _id;
         glm::vec2 _start;

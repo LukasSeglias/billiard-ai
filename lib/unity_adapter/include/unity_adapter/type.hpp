@@ -23,6 +23,7 @@ extern "C" {
         char* id;
         Vec2 start;
         Vec2 end;
+        Vec2 shiftDirection;
     };
 
     enum PocketType {

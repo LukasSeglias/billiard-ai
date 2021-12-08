@@ -35,19 +35,22 @@ billiard::search::Pocket::Pocket(std::string id, PocketType type, glm::vec2 posi
         _radius(radius) {
 }
 
-billiard::search::Rail::Rail(std::string id, const glm::vec2& start, const glm::vec2& end,
+billiard::search::Rail::Rail(std::string id,
+                             const glm::vec2& start,
+                             const glm::vec2& end,
+                             const glm::vec2& shiftDirection,
                              float ballRadius) :
         _id(std::move(id)),
         _start(start),
         _end(end),
         _normal(glm::normalize(billiard::physics::perp(end - start))),
-        _shiftedStart(shift(start, ballRadius, _normal)),
-        _shiftedEnd(shift(end, ballRadius, _normal)),
+        _shiftedStart(shift(start, ballRadius, shiftDirection)),
+        _shiftedEnd(shift(end, ballRadius, shiftDirection)),
         _reflectionMatrix(calculateReflectionMatrix(_shiftedStart, _normal)) {
 }
 
-glm::vec2 billiard::search::Rail::shift(glm::vec2 position, float ballRadius, const glm::vec2& normal) {
-    return position + normal * ballRadius;
+glm::vec2 billiard::search::Rail::shift(glm::vec2 position, float ballRadius, const glm::vec2& shiftDirection) {
+    return position + shiftDirection * ballRadius;
 }
 
 glm::mat3x3 billiard::search::Rail::calculateReflectionMatrix(const glm::vec2& start, const glm::vec2& normal) {

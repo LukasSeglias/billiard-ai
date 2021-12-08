@@ -827,6 +827,7 @@ namespace billiard::search {
 
         auto start = startPosition;
         std::string excludedBallId = startBallId;
+        std::string previousCollidedRailId;
 
         while (!combination.empty()) {
             auto comboRail = pop<Rail>(combination);
@@ -844,10 +845,12 @@ namespace billiard::search {
                                                                                                    direction,
                                                                                                    rail.second._shiftedStart,
                                                                                                    rail.second._shiftedEnd);
-                if (railIntersection && railIntersection->first > 0) {
+                // Intersection has to be found and should not intersect twice in a row with the same rail
+                if (railIntersection && previousCollidedRailId != rail.first) {
                     target = start + railIntersection->first * direction;
                     reflected = reflect(reflected, rail.second);
                     collidedRailId = rail.first;
+                    previousCollidedRailId = collidedRailId;
                     DEBUG(agent << "found next target point at " << target << " "
                                 << "reflected at rail: " << rail.first << " " << rail.second._shiftedStart << " " << rail.second._shiftedEnd << " "
                                 << "start at " << start << " with direction " << direction << " and lambda " << railIntersection->first << " "
