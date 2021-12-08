@@ -51,84 +51,7 @@ namespace billiard::search {
     addPocketsAsInitialTargets(const State& state, const Search& search, const Configuration& config);
     node::Layer toInputLayer(const std::shared_ptr<SearchNode>& input, const std::string& cueBallId, const glm::vec2 force, float accelerationLength,
                              float slideAccelerationLength);
-}
-
-std::future<std::vector<std::vector<billiard::search::node::System>>> EXPORT_BILLIARD_SEARCH_LIB
-billiard::search::search(const billiard::search::State& state, const billiard::search::Search& search,
-                         uint16_t solutions, const Configuration& config) {
-    static process::ProcessManager<std::shared_ptr<SearchNode>, SearchState, std::vector<node::System>> processManager {
-            PROCESSES,
-            SYNC_PERIOD_MS,
-            expand,
-            mapToSolution};
-
-    auto searchState = std::make_shared<SearchState>(SearchState{config});
-    searchState->_ball._accelerationLength = billiard::physics::accelerationLength();
-    searchState->_ball._slideAccelerationLength = billiard::physics::slideAccelerationLength();
-
-    return processManager.process(addPocketsAsInitialTargets(state, search, config), solutions,searchState);
-}
-
-std::future<std::vector<std::shared_ptr<billiard::search::SearchNode>>> EXPORT_BILLIARD_SEARCH_LIB
-billiard::search::searchOnly(const billiard::search::State& state, const billiard::search::Search& search,
-                             uint16_t solutions, const Configuration& config) {
-    static process::ProcessManager<std::shared_ptr<SearchNode>, SearchState, std::shared_ptr<SearchNode>> processManager {
-            1,
-            SYNC_PERIOD_MS,
-            expand,
-            [](std::shared_ptr<SearchNode> searchNode) {
-                return searchNode;
-    }};
-
-    auto searchState = std::make_shared<SearchState>(SearchState{config});
-    searchState->_ball._accelerationLength = billiard::physics::accelerationLength();
-    searchState->_ball._slideAccelerationLength = billiard::physics::slideAccelerationLength();
-
-    return processManager.process(addPocketsAsInitialTargets(state, search, config), solutions,
-                                  std::make_shared<SearchState>(SearchState{config}));
-}
-
-std::optional<billiard::search::node::System>
-billiard::search::simulate(const State& state, const glm::vec2& velocity, const Configuration& config) {
-
-    std::unordered_map<std::string, Ball> ballState;
-    std::string cueBallId;
-    for (auto& ball : state._balls) {
-        ballState.insert({ball._id, ball});
-
-        if (ball._type == "WHITE") {
-            cueBallId = ball._id;
-        }
-    }
-
-    auto stateNode = SearchNode::search();
-    auto stateNodeSearch = stateNode->asSearch();
-    stateNodeSearch->_state = ballState;
-
-    auto layer = toInputLayer(stateNode, cueBallId, velocity, billiard::physics::accelerationLength(),
-                              billiard::physics::slideAccelerationLength());
-    auto simulationNode = SearchNode::simulation(stateNode);
-    auto simulationSearchNode = simulationNode->asSimulation();
-    simulationSearchNode->_simulation.append(layer);
-
-    auto searchState = std::make_shared<SearchState>(SearchState{config});
-    searchState->_ball._accelerationLength = billiard::physics::accelerationLength();
-    searchState->_ball._slideAccelerationLength = billiard::physics::slideAccelerationLength();
-
-    auto simulations = simulate(simulationNode, searchState, false);
-
-    if (!simulations.empty()) {
-        return simulations.at(0)->asSimulation()->_simulation;
-    }
-
-    return std::nullopt;
-}
-
-///////////////////////////////////////////////////////////////////////
-//// PRIVATE IMPLEMENTATION
-///////////////////////////////////////////////////////////////////////
-
-namespace billiard::search {
+    bool isValidSearch(const billiard::search::State& state, const billiard::search::Search& search);
 
 #ifdef BILLIARD_DEBUG
     std::string readable(const PhysicalEventType& eventType);
@@ -145,9 +68,120 @@ namespace billiard::search {
     std::ostream& operator<<(std::ostream& os, const state::BallState& ball);
     std::ostream& operator<<(std::ostream& os, const node::Node& node);
     std::ostream& operator<<(std::ostream& os, const std::set<std::string>& set);
+    std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& vector);
     std::ostream& operator<<(std::ostream& os, const std::optional<event::Event>& event);
     std::ostream& operator<<(std::ostream& os, const node::Layer& layer);
 #endif
+
+    std::future<std::vector<std::vector<billiard::search::node::System>>> EXPORT_BILLIARD_SEARCH_LIB
+    search(const billiard::search::State& state,
+                             const billiard::search::Search& search,
+                             uint16_t solutions, const Configuration& config) {
+
+        if (!isValidSearch(state, search)) {
+            DEBUG("[search] Invalid search: types=" << search._types << ", id=\"" << search._id << "\"" << std::endl);
+            std::vector<std::vector<billiard::search::node::System>> result {};
+            std::promise<std::vector<std::vector<billiard::search::node::System>>> promise;
+            promise.set_value(result);
+            return promise.get_future();
+        }
+
+        static process::ProcessManager<std::shared_ptr<SearchNode>, SearchState, std::vector<node::System>> processManager {
+                PROCESSES,
+                SYNC_PERIOD_MS,
+                expand,
+                mapToSolution};
+
+        auto searchState = std::make_shared<SearchState>(SearchState{config});
+        searchState->_ball._accelerationLength = billiard::physics::accelerationLength();
+        searchState->_ball._slideAccelerationLength = billiard::physics::slideAccelerationLength();
+
+        return processManager.process(addPocketsAsInitialTargets(state, search, config), solutions,searchState);
+    }
+
+    bool isValidSearch(const billiard::search::State& state, const billiard::search::Search& search) {
+
+        std::string cueBallType = "WHITE";
+
+        auto& types = search._types;
+        if (!types.empty() && std::find(types.begin(), types.end(), cueBallType) != types.end()) {
+            return false;
+        }
+
+        if (!search._id.empty()) {
+            for (auto& ball : state._balls) {
+                if (ball._id == search._id) {
+                    if (ball._type == cueBallType) {
+                        return false;
+                    }
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+
+    std::future<std::vector<std::shared_ptr<billiard::search::SearchNode>>> EXPORT_BILLIARD_SEARCH_LIB
+    searchOnly(const billiard::search::State& state, const billiard::search::Search& search,
+                                 uint16_t solutions, const Configuration& config) {
+        static process::ProcessManager<std::shared_ptr<SearchNode>, SearchState, std::shared_ptr<SearchNode>> processManager {
+                1,
+                SYNC_PERIOD_MS,
+                expand,
+                [](std::shared_ptr<SearchNode> searchNode) {
+                    return searchNode;
+        }};
+
+        auto searchState = std::make_shared<SearchState>(SearchState{config});
+        searchState->_ball._accelerationLength = billiard::physics::accelerationLength();
+        searchState->_ball._slideAccelerationLength = billiard::physics::slideAccelerationLength();
+
+        return processManager.process(addPocketsAsInitialTargets(state, search, config), solutions,
+                                      std::make_shared<SearchState>(SearchState{config}));
+    }
+
+    std::optional<billiard::search::node::System>
+    simulate(const State& state, const glm::vec2& velocity, const Configuration& config) {
+
+        std::unordered_map<std::string, Ball> ballState;
+        std::string cueBallId;
+        for (auto& ball : state._balls) {
+            ballState.insert({ball._id, ball});
+
+            if (ball._type == "WHITE") {
+                cueBallId = ball._id;
+            }
+        }
+
+        auto stateNode = SearchNode::search();
+        auto stateNodeSearch = stateNode->asSearch();
+        stateNodeSearch->_state = ballState;
+
+        auto layer = toInputLayer(stateNode, cueBallId, velocity, billiard::physics::accelerationLength(),
+                                  billiard::physics::slideAccelerationLength());
+        auto simulationNode = SearchNode::simulation(stateNode);
+        auto simulationSearchNode = simulationNode->asSimulation();
+        simulationSearchNode->_simulation.append(layer);
+
+        auto searchState = std::make_shared<SearchState>(SearchState{config});
+        searchState->_ball._accelerationLength = billiard::physics::accelerationLength();
+        searchState->_ball._slideAccelerationLength = billiard::physics::slideAccelerationLength();
+
+        auto simulations = simulate(simulationNode, searchState, false);
+
+        if (!simulations.empty()) {
+            return simulations.at(0)->asSimulation()->_simulation;
+        }
+
+        return std::nullopt;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////
+//// PRIVATE IMPLEMENTATION
+///////////////////////////////////////////////////////////////////////
+
+namespace billiard::search {
 
     std::vector<node::System> mapToSolution(const std::shared_ptr<SearchNode>& solution) {
         return solution->allSimulations();
@@ -2038,6 +2072,20 @@ namespace billiard::search {
             index++;
         }
         os << " }";
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& vector) {
+        os << "[ ";
+        uint32_t index = 0;
+        for(auto& value : vector) {
+            os << value;
+            if (index < vector.size() - 1) {
+                os << ", ";
+            }
+            index++;
+        }
+        os << " ]";
         return os;
     }
 
