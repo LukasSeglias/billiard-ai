@@ -84,6 +84,19 @@ TEST(SimulationVsReality, video_analysis) {
             cv::resize(frame, frame, imageSize);
             cv::imshow("Frame", frame);
 
+            if (context.captures.size() >= 2) {
+                cv::Mat drawn = frame.clone();
+                for (int i = 0; i < context.captures.size() - 1; i++) {
+                    auto& currentCapture = context.captures[i];
+                    auto& nextCapture = context.captures[i+1];
+
+                    cv::Point start = cv::Point { (int)currentCapture.pixelPosition.x, (int)currentCapture.pixelPosition.y };
+                    cv::Point end = cv::Point { (int)nextCapture.pixelPosition.x, (int)nextCapture.pixelPosition.y };
+                    cv::line(drawn, start, end, cv::Scalar { 255, 0, 0});
+                }
+                cv::imshow("drawn", drawn);
+            }
+
 //            billiard::detection::State pixelState = billiard::snooker::detect(billiard::detection::State(), frame);
 //            billiard::detection::State state = billiard::detection::pixelToModelCoordinates(*detectionConfig, pixelState);
 //

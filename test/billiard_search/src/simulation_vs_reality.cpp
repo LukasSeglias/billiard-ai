@@ -33,6 +33,7 @@ std::optional<Node> getNodeOfBall(const billiard::search::node::Layer& layer,
 TEST(SimulationVsReality, video_1_0233_0240) {
 
     std::string name = "video_1_0233_0240";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     Weak impact, WHITE collides with RED, RED goes into pocket, WHITE stops.
 
@@ -164,6 +165,7 @@ TEST(DISABLED_SimulationVsReality, video_9_0056_0101) {
 
     // NOTE: die weisse kugel scheint nach der Kollision mit der roten noch spin zu haben. Dieser Test ist demnach nicht zwingend verlässlich.
     std::string name = "video_9_0056_0101";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     Strong impact, WHITE collides with RED, RED goes into pocket, WHITE collides with rail and stops.
 
@@ -313,6 +315,7 @@ TEST(DISABLED_SimulationVsReality, video_12_0130_0140) {
 
     // NOTE: ist dieser Testfall verlässlich? Die Kugel könnte womöglich side-spin bei der Kollision mit der Bande haben.
     std::string name = "video_12_0130_0140";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
 
     WHITE, WHITE, 510.032, 76.0798
@@ -463,6 +466,7 @@ TEST(DISABLED_SimulationVsReality, video_12_0130_0140) {
 TEST(SimulationVsReality, video_12_0205_0208) {
 
     std::string name = "video_12_0205_0208";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     WHITE, WHITE, 504.88, 77.68
     RED, RED, 630.137, -152.789
@@ -597,6 +601,7 @@ TEST(SimulationVsReality, video_12_0205_0208) {
 TEST(SimulationVsReality, video_13_0030_0034) {
 
     std::string name = "video_13_0030_0034";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     WHITE, WHITE, 631.828, -149.426
     RED, RED, 771.566, -295.777
@@ -725,35 +730,36 @@ TEST(SimulationVsReality, video_13_0030_0034) {
 TEST(SimulationVsReality, simulation_vs_reality_1_0008_0011) {
 
     std::string name = "simulation_vs_reality_1_0008_0011";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
-    WHITE, WHITE, 8.39385, -157.524
+    WHITE, WHITE, 8.38658, -159.215
     RED, RED, 5.9238, -338.65
     V,
 
     WHITE from start to collision:
-    WHITE at start: pixel=(635, 455) model=(8.39385, -157.524) frame=28
-    WHITE at collision: pixel=(636, 532) model=(9.52292, -287.843) frame=30
-    -> frames=2 duration=0.0666667 vector=(1.12907, -130.319) s=130.324
+    WHITE at start: pixel=(635, 456) model=(8.38658, -159.215) frame=28
+    WHITE at collision: pixel=(635, 531) model=(7.84033, -286.134) frame=30
+    -> frames=2 duration=0.0666667 vector=(-0.546242, -126.92) s=126.921
 
     WHITE from collision to in rest:
-    WHITE at collision: pixel=(634, 532) model=(6.14325, -287.813) frame=30
-    WHITE in rest: pixel=(634, 533) model=(6.13594, -289.507) frame=31
-    -> frames=1 duration=0.0333333 vector=(-0.0073123, -1.69394) s=1.69395
+    WHITE at collision: pixel=(635, 530) model=(7.84763, -284.44) frame=30
+    WHITE in rest: pixel=(636, 530) model=(9.53746, -284.455) frame=34
+    -> frames=4 duration=0.133333 vector=(1.68984, -0.014679) s=1.6899
 
     RED from collision to pocket:
-    RED at collision: pixel=(634, 562) model=(5.9238, -338.65) frame=30
-    RED in pocket: pixel=(631, 640) model=(0.276503, -470.954) frame=32
-    -> frames=2 duration=0.0666667 vector=(-5.64729, -132.303) s=132.424
+    RED at collision: pixel=(633, 561) model=(4.24078, -336.939) frame=30
+    RED in pocket: pixel=(631, 669) model=(0.0618791, -520.23) frame=32
+    -> frames=2 duration=0.0666667 vector=(-4.1789, -183.29) s=183.338
     */
-    const glm::vec2& whiteStart = glm::vec2{8.39385, -157.524};
-    const glm::vec2& redStart = glm::vec2 {5.9238, -338.65};
-    const glm::vec2& whiteCollision = glm::vec2{9.52292, -287.843};
-    const glm::vec2& redCollision = glm::vec2 {5.9238, -338.65};
-    const glm::vec2& whiteInRest = glm::vec2 {6.13594, -289.507};
+    const glm::vec2& whiteStart = glm::vec2{8.38658, -159.215};
+    const glm::vec2& redStart = glm::vec2 {4.24078, -336.939};
+    const glm::vec2& whiteCollision = glm::vec2{7.84763, -284.44};
+    const glm::vec2& redCollision = glm::vec2 {4.24078, -336.939};
+    const glm::vec2& whiteInRest = glm::vec2 {9.53746, -284.455};
     const glm::vec2& whiteDirectionAfterCollision = whiteInRest - whiteCollision;
     const float collisionTime = 0.0666667f;
     const float redPottedTime = 0.0666667f + collisionTime; // since collision
-    const float whiteInRestTime = 0.0333333f + collisionTime; // since beginning
+    const float whiteInRestTime = 0.133333f + collisionTime; // since beginning
     glm::vec2 velocity = calculateInitialVelocity(whiteCollision - whiteStart, 2);
 
     std::stringstream simulationInput;
@@ -848,6 +854,7 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0008_0011) {
 TEST(SimulationVsReality, simulation_vs_reality_1_0028_0032) {
 
     std::string name = "simulation_vs_reality_1_0028_0032";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     WHITE, WHITE, 9.99188, -157.766
     RED, RED, 5.8054, -342.29
@@ -975,7 +982,8 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0028_0032) {
 
 TEST(SimulationVsReality, simulation_vs_reality_1_0049_0053) {
 
-    std::string name = "null_grad_stoss_1_0049_0053";
+    std::string name = "simulation_vs_reality_1_0049_0053";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
 
 
@@ -1014,6 +1022,13 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0049_0053) {
     float theta = radiansToDegrees(std::acos(glm::dot(glm::normalize(whiteVelocityAtCollision), glm::normalize(redVelocityAfterCollision))));
     float velocityLoss = calculateEnergyLoss(whiteVelocityAtCollision, redVelocityAfterCollision);
     float velocityLossFactor = velocityLoss / glm::length(whiteVelocityAtCollision);
+
+    std::stringstream simulationInput;
+    simulationInput << "WHITE, WHITE, " << whiteStart.x << ", " << whiteStart.y << std::endl
+                    << "RED, RED, " << redStart.x << ", " << redStart.y << std::endl
+                    << "V, " << velocity.x << ", " << velocity.y;
+
+    std::cout << "Simulation input:" << std::endl << simulationInput.str();
 
     std::string white = "WHITE-1";
     std::string red = "RED-1";
@@ -1090,9 +1105,10 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0049_0053) {
               //        << "red=" << std::to_string(redStartPositionError)
               //        << "]" << " "
               //        << std::endl
-              << "initial velocity ["
-              << "white=" << velocity
-              << "]" << " "
+              << std::endl
+              << "Simulation input:"
+              << std::endl
+              << simulationInput.str()
               << std::endl
               << "collision pos ["
               << "white=" << std::to_string(whiteCollisionPositionError) << " "
@@ -1122,13 +1138,13 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0049_0053) {
 
 TEST(SimulationVsReality, simulation_vs_reality_1_0104_0108) {
 
-    std::string name = "null_grad_stoss_1_0104_0108";
+    std::string name = "simulation_vs_reality_1_0104_0108";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
-
 
     WHITE, WHITE, 8.36433, -159.076
     RED, RED, 4.22106, -335.121
-    V, 44.1819, -890.199
+    V,
 
     WHITE from start to collision:
     WHITE at start: pixel=(635, 456) model=(8.36433, -159.076) frame=14
@@ -1171,6 +1187,13 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0104_0108) {
     float theta = radiansToDegrees(std::acos(glm::dot(glm::normalize(whiteVelocityAtCollision), glm::normalize(redVelocityAfterCollision))));
     float velocityLoss = calculateEnergyLoss(whiteVelocityAtCollision, redVelocityAfterCollision);
     float velocityLossFactor = velocityLoss / glm::length(whiteVelocityAtCollision);
+
+    std::stringstream simulationInput;
+    simulationInput << "WHITE, WHITE, " << whiteStart.x << ", " << whiteStart.y << std::endl
+                    << "RED, RED, " << redStart.x << ", " << redStart.y << std::endl
+                    << "V, " << velocity.x << ", " << velocity.y;
+
+    std::cout << "Simulation input:" << std::endl << simulationInput.str();
 
     std::string white = "WHITE-1";
     std::string red = "RED-1";
@@ -1263,9 +1286,10 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0104_0108) {
               //        << "red=" << std::to_string(redStartPositionError)
               //        << "]" << " "
               //        << std::endl
-              << "initial velocity ["
-              << "white=" << velocity
-              << "]" << " "
+              << std::endl
+              << "Simulation input:"
+              << std::endl
+              << simulationInput.str()
               << std::endl
               << "collision pos ["
               << "white=" << std::to_string(whiteCollisionPositionError) << " "
@@ -1298,9 +1322,11 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0104_0108) {
               << std::endl;
 }
 
-TEST(SimulationVsReality, simulation_vs_reality_2_0119_0124) {
+// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+TEST(DISABLED_SimulationVsReality, simulation_vs_reality_2_0119_0124) {
 
     std::string name = "simulation_vs_reality_2_0119_0124";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     Ablauf: Die weisse Kugel spielt die rote Kugel ins obere mittlere Loch,
     kollidiert mit der rechten Bande und rollt kurz danach aus.
@@ -1453,6 +1479,7 @@ TEST(SimulationVsReality, simulation_vs_reality_2_0119_0124) {
 TEST(SimulationVsReality, simulation_vs_reality_2_0153_0200) {
 
     std::string name = "simulation_vs_reality_2_0153_0200";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     Ablauf: Die weisse Kugel spielt die rote Kugel ins obere mittlere Loch und rollt bis kurz vor die rechte Bande.
 
@@ -1602,9 +1629,11 @@ TEST(SimulationVsReality, simulation_vs_reality_2_0153_0200) {
               << std::endl;
 }
 
-TEST(SimulationVsReality, simulation_vs_reality_2_0244_0251) {
+// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+TEST(DISABLED_SimulationVsReality, simulation_vs_reality_2_0244_0251) {
 
     std::string name = "simulation_vs_reality_2_0244_0251";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     Ablauf: Die weisse Kugel spielt die rote Kugel ins obere mittlere Loch,
             kollidiert mit der rechten Bande, kollidiert mit der unteren Bande und rollt kurz danach aus.
@@ -1770,9 +1799,11 @@ TEST(SimulationVsReality, simulation_vs_reality_2_0244_0251) {
               << std::endl;
 }
 
-TEST(SimulationVsReality, simulation_vs_reality_3_0101_0104) {
+// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0101_0104) {
 
     std::string name = "simulation_vs_reality_3_0101_0104";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     Ablauf: Die weisse Kugel spielt die rote Kugel ins obere rechte Loch,
     kollidiert mit der rechten Bande und rollt kurz danach aus.
@@ -1922,9 +1953,11 @@ TEST(SimulationVsReality, simulation_vs_reality_3_0101_0104) {
               << std::endl;
 }
 
-TEST(SimulationVsReality, simulation_vs_reality_3_0138_0143) {
+// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0138_0143) {
 
     std::string name = "simulation_vs_reality_3_0138_0143";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     Ablauf: Die weisse Kugel spielt die rote Kugel ins obere rechte Loch,
     kollidiert mit der rechten Bande und rollt danach aus.
@@ -2069,9 +2102,11 @@ TEST(SimulationVsReality, simulation_vs_reality_3_0138_0143) {
               << std::endl;
 }
 
-TEST(SimulationVsReality, simulation_vs_reality_3_0244_0248) {
+// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0244_0248) {
 
     std::string name = "simulation_vs_reality_3_0244_0248";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     Ablauf: Die weisse Kugel spielt die rote Kugel ins obere rechte Loch,
             kollidiert mit der rechten Bande und rollt kurz danach aus.
@@ -2217,9 +2252,12 @@ TEST(SimulationVsReality, simulation_vs_reality_3_0244_0248) {
               << std::endl;
 }
 
-TEST(SimulationVsReality, simulation_vs_reality_3_0356_0400) {
+// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0356_0400) {
 
+    // TODO: Die Startgeschwindigkeit der Simulation wirkt zu langsam im Vergleich zum Video
     std::string name = "simulation_vs_reality_3_0356_0400";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     Ablauf: Die weisse Kugel spielt die rote Kugel ins obere rechte Loch,
             kollidiert mit der rechten Bande und rollt kurz danach aus.
@@ -2365,9 +2403,11 @@ TEST(SimulationVsReality, simulation_vs_reality_3_0356_0400) {
               << std::endl;
 }
 
-TEST(SimulationVsReality, simulation_vs_reality_3_0424_0430) {
+// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0424_0430) {
 
     std::string name = "simulation_vs_reality_3_0424_0430";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     Ablauf: Die weisse Kugel spielt die rote Kugel ins obere rechte Loch,
             kollidiert mit der rechten Bande und rollt kurz danach aus.
@@ -2516,6 +2556,7 @@ TEST(SimulationVsReality, simulation_vs_reality_3_0424_0430) {
 TEST(SimulationVsReality, gleitreibungskoeffizient_0000_0005) {
 
     std::string name = "gleitreibungskoeffizient_0000_0005";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     WHITE rolls not far
 
@@ -2596,6 +2637,7 @@ TEST(SimulationVsReality, gleitreibungskoeffizient_0000_0005) {
 TEST(SimulationVsReality, gleitreibungskoeffizient_0125_0132) {
 
     std::string name = "gleitreibungskoeffizient_0125_0132";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
     WHITE rolls far
 
@@ -2676,6 +2718,7 @@ TEST(SimulationVsReality, gleitreibungskoeffizient_0125_0132) {
 TEST(SimulationVsReality, null_grad_stoss_1_0003_0009) {
 
     std::string name = "null_grad_stoss_1_0003_0009";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
 
 
@@ -2826,6 +2869,7 @@ TEST(SimulationVsReality, null_grad_stoss_1_0003_0009) {
 TEST(SimulationVsReality, null_grad_stoss_1_0130_0135) {
 
     std::string name = "null_grad_stoss_1_0130_0135";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
     /*
 
     WHITE, WHITE, 612.563, 24.2252
@@ -2968,6 +3012,108 @@ TEST(SimulationVsReality, null_grad_stoss_1_0130_0135) {
               << "angle=" << std::to_string(theta) << " "
               << "velocity loss=" << std::to_string(velocityLoss) << ", " << std::to_string(velocityLossFactor) << " "
               << "delta=" << (whiteVelocityAtCollision - redVelocityAfterCollision) << " "
+              << "]" << " "
+              << std::endl;
+}
+
+// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+TEST(DISABLED_SimulationVsReality, banden_1_0408_0416) {
+
+    std::string name = "banden_1_0408_0416";
+    std::cout << "Testcase: " << name << std::endl << "-------------------------------------------------------------" << std::endl;
+    /*
+    Ablauf: Weisse Kugel wird an obere Bande gespielt und läuft anschliessend nach langem Weg aus.
+
+    WHITE, WHITE, 811.36, 258.383
+    V,
+
+    WHITE from start to rail collision:
+    WHITE at start: pixel=(1105, 206) model=(811.355, 261.784) frame=31
+    WHITE at rail collision: pixel=(987, 101) model=(608.589, 439.694) frame=40
+    -> frames=9 duration=0.3 vector=(-202.766, 177.91) s=269.752
+
+    WHITE from rail collision to in rest:
+    WHITE at rail collision: pixel=(987, 101) model=(608.589, 439.694) frame=40
+    WHITE in rest: pixel=(230, 451) model=(-667.883, -146.266) frame=178
+    -> frames=138 duration=4.6 vector=(-1276.47, -585.96) s=1404.54
+    */
+    const glm::vec2& whiteStart = glm::vec2{811.355, 261.784};
+    const glm::vec2& whiteRailCollision = glm::vec2{608.589, 439.694};
+    const glm::vec2& whiteInRest = glm::vec2 {-667.883, -146.266};
+    const glm::vec2& whiteDirectionAfterRailCollision = whiteInRest - whiteRailCollision;
+    const float whiteRailCollisionTime = 0.3f; // since beginning
+    const float whiteInRestTime = 4.6f + whiteRailCollisionTime; // since beginning
+    glm::vec2 velocity = calculateInitialVelocity(whiteRailCollision - whiteStart, 9);
+    glm::vec2 velocityAfterRailCollision = calculateInitialVelocity(whiteInRest - whiteRailCollision, 138);
+
+    std::stringstream simulationInput;
+    simulationInput << "WHITE, WHITE, " << whiteStart.x << ", " << whiteStart.y << std::endl
+                    << "V, " << velocity.x << ", " << velocity.y;
+
+    std::cout << "Simulation input:" << std::endl << simulationInput.str();
+
+    std::string white = "WHITE-1";
+    billiard::search::State state({
+                                          billiard::search::Ball { whiteStart, "WHITE", white}
+                                  });
+
+    billiard::search::Configuration config = loadConfig("./resources/configuration.json");
+
+    std::optional<System> systemOpt = billiard::search::simulate(state, velocity, config);
+    if (!systemOpt) {
+        std::cout << "No result" << std::endl;
+        return;
+    }
+    System system = systemOpt.value();
+
+    std::cout << "Layers: " << std::to_string(system._layers.size()) << std::endl;
+    EXPECT_EQ(system._layers.size(), 4);
+
+    Layer& startLayer = system._layers[0];
+    auto whiteMovingNode = getNodeOfBall<BallShotNode, &Node::toBallShot>(startLayer, white);
+    float whiteStartPositionError = checkPosition(whiteMovingNode->_ball, whiteStart);
+    EXPECT_FLOAT_EQ(whiteStartPositionError, 0.0f);
+
+    Layer& whiteRollingLayer = system._layers[1];
+    auto whiteRollingNode = getNodeOfBall<BallMovingNode, &Node::toBallMoving>(whiteRollingLayer, white);
+    ASSERT_TRUE(whiteRollingNode);
+    ASSERT_EQ(whiteRollingNode->_after._isRolling, true);
+
+    Layer& whiteRailCollisionLayer = system._layers[2];
+    auto whiteRailCollisionNode = getNodeOfBall<BallRailCollisionNode, &Node::toBallRailCollision>(whiteRailCollisionLayer, white);
+    ASSERT_TRUE(whiteRailCollisionNode);
+    float whiteRailCollisionPositionError = checkPosition(whiteRailCollisionNode->_after, whiteRailCollision);
+    float whiteRailCollisionTimeError = checkTime(whiteRailCollisionLayer, whiteRailCollisionTime);
+
+    Layer& whiteInRestLayer = system._layers[3];
+    auto whiteInRestNode = getNodeOfBall<BallInRestNode, &Node::toInRest>(whiteInRestLayer, white);
+    ASSERT_TRUE(whiteInRestNode);
+    float whiteInRestPositionError = checkPosition(whiteInRestNode->_ball, whiteInRest);
+    float whiteInRestTimeError = checkTime(whiteInRestLayer, whiteInRestTime);
+    float whiteInRestDirectionError = checkDirection(whiteInRestNode->_ball._position - whiteRailCollisionNode->_after._position, whiteDirectionAfterRailCollision);
+
+    std::cout << "Test " << name << " "
+              //        << "start pos ["
+              //        << "white=" << std::to_string(whiteStartPositionError) << " "
+              //        << "red=" << std::to_string(redStartPositionError)
+              //        << "]" << " "
+              //        << std::endl
+              << std::endl
+              << "Simulation input:"
+              << std::endl
+              << simulationInput.str()
+              << std::endl
+              << "velocity after rail collision=" << velocityAfterRailCollision << " "
+              << std::endl
+              << "white rail collision ["
+              << "pos=" << std::to_string(whiteRailCollisionPositionError) << " "
+              << "time=" << std::to_string(whiteRailCollisionTimeError) << " "
+              << "]" << " "
+              << std::endl
+              << "white in rest ["
+              << "pos=" << std::to_string(whiteInRestPositionError) << " "
+              << "time=" << std::to_string(whiteInRestTimeError) << " "
+              << "dir=" << std::to_string(whiteInRestDirectionError) << " "
               << "]" << " "
               << std::endl;
 }
