@@ -61,6 +61,22 @@ public class Vec3 {
 }
 
 [Serializable]
+public enum EventType {
+	BALL_MOVING,
+    BALL_COLLISION,
+    BALL_RAIL_COLLISION,
+    BALL_POTTING,
+    BALL_SHOT,
+    BALL_IN_REST
+}
+
+[Serializable]
+public class Event {
+	public EventType eventType;
+	public string involvedBallId;
+}
+
+[Serializable]
 public class Ball
 {
     public string type;
@@ -68,6 +84,7 @@ public class Ball
     public Vec2 position;
     public Vec2 velocity;
 	public bool visible;
+	public Event events;
 }
 
 [Serializable]

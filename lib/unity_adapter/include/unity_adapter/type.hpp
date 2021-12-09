@@ -121,9 +121,30 @@ extern "C" {
         int solutions;
     };
 
-    struct EXPORT_UNITY_ADAPTER_LIB  Ball {
+    enum EventType {
+        BALL_MOVING,
+        BALL_COLLISION,
+        BALL_RAIL_COLLISION,
+        BALL_POTTING,
+        BALL_SHOT,
+        BALL_IN_REST
+    };
+
+    struct EXPORT_UNITY_ADAPTER_LIB Event {
+        Event();
+        Event(EventType eventType, const char* involvedBallId);
+        Event(Event&& other) noexcept;
+        Event(const Event& other) noexcept;
+        Event& operator=(Event&& other) noexcept;
+        Event& operator=(const Event& other) noexcept;
+
+        EventType eventType;
+        char* involvedBallId;
+    };
+
+    struct EXPORT_UNITY_ADAPTER_LIB Ball {
         Ball();
-        Ball(const char* type, const char* id, Vec2 position, Vec2 velocity, bool visible);
+        Ball(const char* type, const char* id, Vec2 position, Vec2 velocity, bool visible, Event events);
         Ball(Ball&& other) noexcept;
         Ball(const Ball& other) noexcept;
         Ball& operator=(Ball&& other) noexcept;
@@ -135,6 +156,7 @@ extern "C" {
         Vec2 position;
         Vec2 velocity;
         bool visible;
+        Event events;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB KeyFrame {

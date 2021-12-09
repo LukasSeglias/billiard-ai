@@ -317,6 +317,40 @@ std::optional<billiard::search::state::BallState> billiard::search::node::Node::
     return std::nullopt;
 }
 
+std::string billiard::search::node::Node::getInvolvedId() const {
+    auto inRest = toInRest();
+    if (inRest) {
+        return "";
+    }
+
+    auto potted = toPotted();
+    if(potted) {
+        return "";
+    }
+
+    auto ballCollision = toBallCollision();
+    if(ballCollision) {
+        return ballCollision->_cause._ball2;
+    }
+
+    auto ballRailCollision = toBallRailCollision();
+    if(ballRailCollision) {
+        return "";
+    }
+
+    auto ballMoving = toBallMoving();
+    if(ballMoving) {
+        return "";
+    }
+
+    auto ballShot = toBallShot();
+    if(ballShot) {
+        return "";
+    }
+
+    return "";
+}
+
 bool billiard::search::node::Node::isStatic() const {
     return _type == NodeType::BALL_IN_REST || _type == NodeType::BALL_POTTING;
 }

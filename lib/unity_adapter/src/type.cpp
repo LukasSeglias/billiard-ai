@@ -4,13 +4,50 @@ bool Vec2::operator!=(const Vec2& other) const {
     return x != other.x || y != other.y;
 }
 
-Ball::Ball() : type(), id(), position(), velocity(), visible() {}
+Event::Event() : eventType(), involvedBallId() {}
 
-Ball::Ball(const char* type, const char* id, Vec2 position, Vec2 velocity, bool visible) :
+Event::Event(EventType eventType, const char* involvedBallId) :
+    eventType(eventType),
+    involvedBallId(_strdup(involvedBallId)) {
+}
+
+Event::Event(Event&& other) noexcept :
+    eventType(other.eventType),
+    involvedBallId(other.involvedBallId) {
+    other.involvedBallId = nullptr;
+}
+
+Event::Event(const Event& other) noexcept :
+    eventType(other.eventType),
+    involvedBallId(_strdup(other.involvedBallId)) {
+}
+
+Event& Event::operator=(Event&& other) noexcept {
+    eventType = other.eventType;
+    involvedBallId = other.involvedBallId;
+    other.involvedBallId = nullptr;
+    return *this;
+}
+
+Event& Event::operator=(const Event& other) noexcept {
+    if (&other == this) {
+        return *this;
+    }
+
+    eventType = other.eventType;
+    involvedBallId = _strdup(other.involvedBallId);
+    return *this;
+}
+
+Ball::Ball() : type(), id(), position(), velocity(), visible(), events() {}
+
+Ball::Ball(const char* type, const char* id, Vec2 position, Vec2 velocity, bool visible, Event events) :
                                                                         type(_strdup(type)),
                                                                         id(_strdup(id)),
                                                                          position(position),
-                                                                         velocity(velocity), visible(visible) {
+                                                                         velocity(velocity),
+                                                                         visible(visible),
+                                                                         events(std::move(events)) {
 }
 
 Ball::Ball(Ball&& other) noexcept :
@@ -18,7 +55,8 @@ Ball::Ball(Ball&& other) noexcept :
         id(other.id),
         position(other.position),
         velocity(other.velocity),
-        visible(other.visible) {
+        visible(other.visible),
+        events(std::move(other.events)) {
     other.type = nullptr;
     other.id = nullptr;
 }
@@ -28,7 +66,8 @@ Ball::Ball(const Ball& other) noexcept:
         id(_strdup(other.id)),
         position(other.position),
         velocity(other.velocity),
-        visible(other.visible) {
+        visible(other.visible),
+        events(other.events) {
 }
 
 Ball& Ball::operator=(Ball&& other) noexcept {
@@ -37,6 +76,7 @@ Ball& Ball::operator=(Ball&& other) noexcept {
     position = other.position;
     velocity = other.velocity;
     visible = other.visible;
+    events = std::move(other.events);
     other.type = nullptr;
     other.id = nullptr;
     return *this;
@@ -51,6 +91,7 @@ Ball& Ball::operator=(const Ball& other) noexcept {
     position = other.position;
     velocity = other.velocity;
     visible = other.visible;
+    events = other.events;
     return *this;
 }
 Ball::~Ball() {

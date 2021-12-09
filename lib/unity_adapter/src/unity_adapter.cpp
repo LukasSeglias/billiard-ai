@@ -551,6 +551,24 @@ std::shared_ptr<RootObject> mayMap(std::future<std::vector<std::vector<billiard:
     return map(simulations.get());
 }
 
+EventType toEventType(billiard::search::node::NodeType nodeType) {
+    switch(nodeType) {
+        case billiard::search::node::NodeType::BALL_POTTING:
+            return EventType::BALL_POTTING;
+        case billiard::search::node::NodeType::BALL_IN_REST:
+            return EventType::BALL_IN_REST;
+        case billiard::search::node::NodeType::BALL_SHOT:
+            return EventType::BALL_SHOT;
+        case billiard::search::node::NodeType::BALL_COLLISION:
+            return EventType::BALL_COLLISION;
+        case billiard::search::node::NodeType::BALL_RAIL_COLLISION:
+            return EventType::BALL_RAIL_COLLISION;
+        case billiard::search::node::NodeType::BALL_MOVING:
+        default:
+            return EventType::BALL_MOVING;
+    }
+}
+
 Ball nodeToBall(const std::pair<std::string, billiard::search::node::Node>& node, bool before) {
 
     auto state = before ? node.second.before() : node.second.after();
@@ -561,7 +579,8 @@ Ball nodeToBall(const std::pair<std::string, billiard::search::node::Node>& node
                 node.first.c_str(),
                 Vec2 {state->_position.x, state->_position.y},
                 Vec2 {state->_velocity.x, state->_velocity.y},
-                node.second._type != billiard::search::node::NodeType::BALL_POTTING
+                node.second._type != billiard::search::node::NodeType::BALL_POTTING,
+                Event {toEventType(node.second._type), node.second.getInvolvedId().c_str()}
         };
     }
 
@@ -570,7 +589,8 @@ Ball nodeToBall(const std::pair<std::string, billiard::search::node::Node>& node
         "ERROR",
         Vec2 {0, 0},
         Vec2 {0, 0},
-        true
+        true,
+        Event {EventType::BALL_IN_REST, ""}
     };
 }
 
@@ -674,6 +694,13 @@ std::shared_ptr<RootObject> map(const std::vector<std::vector<billiard::search::
         return os;
     }
 
+    std::ostream& operator<<(std::ostream& os, const Event& event) {
+        os << "{" << " "
+            << "\"eventType\":" << event.eventType << ", "
+            << "\"involvedBallId\": \"" << event.involvedBallId << "\" "
+            << " " << "}";
+        return os;
+    }
 
     std::ostream& operator<<(std::ostream& os, const Ball& ball) {
         os << "{" << " "
@@ -681,7 +708,8 @@ std::shared_ptr<RootObject> map(const std::vector<std::vector<billiard::search::
            << "\"type\": \"" << ball.type << "\", "
            << "\"position\": " << ball.position << ", "
            << "\"velocity\": " << ball.velocity << ", "
-           << "\"visible\": " << ball.visible << " "
+           << "\"visible\": " << ball.visible << ", "
+           << "\"events\": " << ball.events << " "
            << " " << "}";
         return os;
     }

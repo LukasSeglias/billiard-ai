@@ -178,14 +178,29 @@ public class AnimationService : MonoBehaviour
 		public TableStatus status;
 	}
 
+	enum EventType_t {
+		BALL_MOVING,
+		BALL_COLLISION,
+		BALL_RAIL_COLLISION,
+		BALL_POTTING,
+		BALL_SHOT,
+		BALL_IN_REST
+	}
+	
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-	struct Ball_t
-	{
+	struct Event_t {
+		public EventType_t eventType;
+		public string involvedBallId;
+	}
+
+	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+	struct Ball_t {
 		public string type;
 		public string id;
 		public Vec2_t position;
 		public Vec2_t velocity;
 		[MarshalAs(UnmanagedType.I1)] public bool visible;
+		public Event_t events;
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
@@ -514,8 +529,33 @@ public class AnimationService : MonoBehaviour
 		result.position = map(from.position) / 1000;
 		result.velocity = map(from.velocity) / 1000;
 		result.visible = from.visible;
-			
+		result.events = map(from.events);
 		return result;
+	}
+	
+	private static Event map(Event_t from) {
+		Event result = new Event();
+		result.involvedBallId = from.involvedBallId;
+		result.eventType = map(from.eventType);
+		return result;
+	}
+	
+	private static EventType map(EventType_t eventType) {
+		switch(eventType) {
+			case EventType_t.BALL_COLLISION:
+				return EventType.BALL_COLLISION;
+			case EventType_t.BALL_RAIL_COLLISION:
+				return EventType.BALL_RAIL_COLLISION;
+			case EventType_t.BALL_POTTING:
+				return EventType.BALL_POTTING;
+			case EventType_t.BALL_SHOT:
+				return EventType.BALL_SHOT;
+			case EventType_t.BALL_IN_REST:
+				return EventType.BALL_IN_REST;
+			case EventType_t.BALL_MOVING:
+			default:
+				return EventType.BALL_MOVING;
+		}
 	}
 	
 	private static Search_t map(Search search) {

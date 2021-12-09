@@ -20,6 +20,7 @@ public class TableBehaviour : MonoBehaviour
 	public List<GameObjectMap> Materials;
 	public Material transparent;
 	public Material dotMaterial;
+	public Material dottedLineMaterial;
 	public TextMeshPro infoText;
 	public TextMeshPro stabilizationStatusInfoText;
 	public TableVisuals visuals;
@@ -71,7 +72,7 @@ public class TableBehaviour : MonoBehaviour
 
 		dottedPaths = new BallDottedPaths(dotMaterial, dotsParentGameObject);
 
-		animator = new AnimatorState(mappedMaterials, transparent, config, Queue);
+		animator = new AnimatorState(mappedMaterials, transparent, config, Queue, dottedLineMaterial);
 		animationPlayer = new AnimationPlayer(animator);
     }
 
@@ -461,6 +462,7 @@ public class TableBehaviour : MonoBehaviour
 		private readonly GameObject queue;
 		private readonly Dictionary<string, Material> mappedMaterials;
 		private readonly Material transparent;
+		private readonly Material dottedLineMaterial;
 		
 		private KeyFrame[] frames;
 		private State currentState;
@@ -471,11 +473,12 @@ public class TableBehaviour : MonoBehaviour
 		private bool repeatFirstBreak;
 		
 		public AnimatorState(Dictionary<string, Material> mappedMaterials, Material transparent,
-		    Configuration config, GameObject queue) {
+		    Configuration config, GameObject queue, Material dottedLineMaterial) {
 		    this.config = config;
 			this.queue = queue;
 			this.mappedMaterials = mappedMaterials;
 			this.transparent = transparent;
+			this.dottedLineMaterial = dottedLineMaterial;
 		}
 
 		public void setAnimation(KeyFrame[] frames) {
@@ -706,6 +709,7 @@ public class TableBehaviour : MonoBehaviour
 				machine.destroyLines();
 
 				int windowCount = -1;
+				string impulsId = null; 
 				for (int i = 0; i < machine.frames.Length - 1; i+=2) {
 					var start = machine.frames[i];
 					if (start.firstFrame) {
@@ -714,14 +718,27 @@ public class TableBehaviour : MonoBehaviour
 
 					if (windowCount == currentAnimationWindow) {
 						var end = machine.frames[i + 1];
+						
+						foreach (var startBall in start.balls) {
+							if (startBall.events.eventType == EventType.BALL_SHOT) {
+								impulsId = startBall.id;
+							} else if (startBall.id == impulsId && startBall.events.eventType == EventType.BALL_COLLISION) {
+								impulsId = startBall.events.involvedBallId;
+							}
+						}
 
 						foreach (var startBall in start.balls) {
 							var endBall = machine.findBall(startBall.id, end);
 							if (endBall != null && startBall.position != endBall.position) {
 								GameObject lineObject = new GameObject(string.Format("Line{0}", startBall.id));
 								LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
-								lRend.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-								lRend.material.color = Color.white;
+								
+								if (impulsId == startBall.id) {
+									strikeThrough(ref lRend);
+								} else {
+									dotted(ref lRend);
+								}
+								
 								lRend.startWidth = 0.02f;
 								lRend.endWidth = 0.02f;
 								lRend.SetPosition(0, StretchingUtility.get().position(convert(startBall.position, -0.01f)));
@@ -733,6 +750,17 @@ public class TableBehaviour : MonoBehaviour
 						break;
 					}
 				}
+			}
+			
+			private void strikeThrough(ref LineRenderer renderer) {
+				renderer.material = new Material(Shader.Find("Hidden/Internal-Colored"));
+				renderer.material.color = Color.white;
+			}
+			
+			private void dotted(ref LineRenderer renderer) {
+				renderer.material = machine.dottedLineMaterial;
+				renderer.textureMode = LineTextureMode.Tile;
+				renderer.material.SetTextureScale("_MainTex", new Vector2(10, 10));
 			}
 		}
 		

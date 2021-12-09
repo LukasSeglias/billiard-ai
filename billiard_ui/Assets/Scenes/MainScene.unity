@@ -356,6 +356,7 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: d7818f7eb54398a4d8c1d5de20429cbf, type: 2}
   transparent: {fileID: 2100000, guid: 4655613da7739f949b2f5dbfd0a95f01, type: 2}
   dotMaterial: {fileID: 2100000, guid: f321caeafc22e624f9db4c1da9a0682c, type: 2}
+  dottedLineMaterial: {fileID: 2100000, guid: 8e505d42e4971a34e81336748451e10b, type: 2}
   infoText: {fileID: 960878234}
   stabilizationStatusInfoText: {fileID: 1595561836}
   visuals: {fileID: 487807131}
