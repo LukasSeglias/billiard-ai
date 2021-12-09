@@ -134,14 +134,15 @@ extern "C" {
 
     struct EXPORT_UNITY_ADAPTER_LIB Event {
         Event();
-        Event(EventType eventType, const char* involvedBallId);
+        Event(EventType eventType, const char* involvedBallId1, const char* involvedBallId2);
         Event(Event&& other) noexcept;
         Event(const Event& other) noexcept;
         Event& operator=(Event&& other) noexcept;
         Event& operator=(const Event& other) noexcept;
 
         EventType eventType;
-        char* involvedBallId;
+        char* involvedBallId1;
+        char* involvedBallId2;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB Ball {
