@@ -82,6 +82,11 @@ Anschliessend kann der Faktor $f$ verwendet werden, um die geglättete Position 
 
 Für Kugeln, welche nicht getrackt werden konnten, wird die im aktuellen Frame detektierte Position verwendet.
 
+Das Tracking von bewegten Kugeln bedingt, dass sich die Kugeln zwischen zwei aufeinanderfolgenden Frames nicht zu weit
+bewegen, um noch immer als dieselbe Kugel identifiziert zu werden.
+Dies ist bei kleinen Geschwindigkeiten unproblematisch, allerdings treten bei höheren Geschwindigkeiten
+\emph{motion blur} auf und die Kugeln "teleportieren" von einem Ort zum anderen.
+
 Damit ist eine Rauschunterdrückung in der Anzeige der detektierten Positionen aller Kugeln ereicht, ohne dabei eine
 sichtbare Latenz zu verursachen.
 Es gilt zu beachten, dass das hier vorgestellte Tracking lediglich zum Zweck hat, die dargestellten Positionen zu stabilisieren
