@@ -495,7 +495,7 @@ public class TableBehaviour : MonoBehaviour
                     ballInfo.id = ball.id;
                     ballInfo.type = ball.type;
                     ballInfo.selectable = false;
-                    ballObject.transform.position = StretchingUtility.get().position(convert(ball.position, -0.01f));
+                    ballObject.transform.position = StretchingUtility.get().position(convert(ball.position, -0.02f));
                     float radius = config.radius;
                     ballObject.transform.localScale = new Vector3(radius, radius, radius) * 2 * scale;
 
@@ -669,7 +669,7 @@ public class TableBehaviour : MonoBehaviour
 			Vector3 startVelocity = convert(start.velocity,0.0f);
 			Vector3 endVelocity = convert(end.velocity,0.0f);
 			Vector3 a = duration == 0.0f ? new Vector3(0.0f, 0.0f, 0.0f) : (endVelocity - startVelocity) * (float)(1/duration);
-			gameObject.transform.position = StretchingUtility.get().position(0.5f * a * (float)(timeDelta * timeDelta) + startVelocity * (float)timeDelta + convert(start.position, 0));
+			gameObject.transform.position = StretchingUtility.get().position(0.5f * a * (float)(timeDelta * timeDelta) + startVelocity * (float)timeDelta + convert(start.position, -0.02f));
 		}
 		
 		private abstract class State {
