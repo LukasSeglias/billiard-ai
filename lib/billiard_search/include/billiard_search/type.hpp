@@ -43,22 +43,28 @@ namespace billiard::search {
         CENTER
     };
 
-    struct EXPORT_BILLIARD_SEARCH_LIB PocketPottingPoint { // TODO: LAST: use or remove
-        PocketPottingPoint(glm::vec2 position);
-
-        glm::vec2 _position;
-    };
-
     struct EXPORT_BILLIARD_SEARCH_LIB Pocket {
-        Pocket(std::string id, PocketType type, glm::vec2 position, glm::vec2 normal, float radius);
+        Pocket(std::string id, PocketType type, glm::vec2 position, std::vector<glm::vec2> pottingPoints, glm::vec2 normal, float radius);
 
         std::string _id;
         PocketType _type;
         glm::vec2 _position;
         glm::vec2 _normal;
         float _radius;
-        //std::vector<PocketPottingPoint> _pottingPoints; // TODO: LAST: use or remove
+        std::vector<glm::vec2> _pottingPoints;
     };
+
+    struct EXPORT_BILLIARD_SEARCH_LIB SearchPocket {
+        SearchPocket(std::string id, PocketType type, glm::vec2 pottingPoint, glm::vec2 normal, float radius);
+
+        std::string _id;
+        PocketType _type;
+        glm::vec2 _pottingPoint;
+        glm::vec2 _normal;
+        float _radius;
+    };
+
+    std::vector<SearchPocket> EXPORT_BILLIARD_SEARCH_LIB buildSearchPocketsOfPockets(const std::vector<Pocket>& pockets);
 
     struct EXPORT_BILLIARD_SEARCH_LIB Rail {
         Rail(std::string id, const glm::vec2& start, const glm::vec2& end, const glm::vec2& shiftDirection, float ballRadius);
@@ -312,6 +318,8 @@ namespace billiard::search {
             // Quadrierte diagonale Länge des Spielfelds
             float diagonalLengthSquared;
         } _table;
+
+        std::vector<SearchPocket> _searchPockets;
 
         struct {
             std::function<Search (const State&, const std::vector<std::string>&)> _nextSearch =

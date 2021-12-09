@@ -368,14 +368,24 @@ inline billiard::search::Configuration toSearchConfig(const Configuration& confi
     }
 
     for(int i = 0; i < config.targetSize; i++) {
-        billiardSearchConfig._table._pockets.emplace_back(billiard::search::Pocket {
-           std::string(config.targets[i].id),
-           map(config.targets[i].pocketType),
-           glm::vec2{config.targets[i].position.x, config.targets[i].position.y},
-           glm::vec2{config.targets[i].normal.x, config.targets[i].normal.y},
-           config.targets[i].radius
-        });
+
+        auto& target = config.targets[i];
+        std:: string id = std::string(target.id);
+        auto pocketType = map(target.pocketType);
+        glm::vec2 position {target.position.x, target.position.y };
+        std::vector<glm::vec2> pottingPoints;
+        for (int j = 0; j < target.pottingPointsSize; j++) {
+            auto& pottingPoint = target.pottingPoints[j];
+            pottingPoints.emplace_back(pottingPoint.x, pottingPoint.y);
+        }
+        glm::vec2 normal {target.normal.x, target.normal.y };
+        float radius = target.radius;
+        billiard::search::Pocket pocket { id, pocketType, position, pottingPoints, normal, radius };
+
+        billiardSearchConfig._table._pockets.emplace_back(pocket);
     }
+
+    billiardSearchConfig._searchPockets = billiard::search::buildSearchPocketsOfPockets(billiardSearchConfig._table._pockets);
 
     billiardSearchConfig._rules._nextSearch = billiard::snooker::nextSearch;
     billiardSearchConfig._rules._modifyState = billiard::snooker::stateAfterBreak;

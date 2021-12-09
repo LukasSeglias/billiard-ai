@@ -37,6 +37,8 @@ extern "C" {
         Vec2 position;
         Vec2 normal;
         PocketType pocketType;
+        Vec2* pottingPoints;
+        int pottingPointsSize;
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB Spot {

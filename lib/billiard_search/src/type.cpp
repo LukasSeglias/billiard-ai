@@ -23,16 +23,34 @@ billiard::search::State::State(std::vector<Ball> balls) :
     _balls(std::move(balls)) {
 }
 
-billiard::search::PocketPottingPoint::PocketPottingPoint(glm::vec2 position) :
-    _position(position) {
-}
-
-billiard::search::Pocket::Pocket(std::string id, PocketType type, glm::vec2 position, glm::vec2 normal, float radius) :
+billiard::search::Pocket::Pocket(std::string id, PocketType type, glm::vec2 position, std::vector<glm::vec2> pottingPoints, glm::vec2 normal, float radius) :
         _id(std::move(id)),
         _type(type),
         _position(position),
+        _pottingPoints(pottingPoints),
         _normal(normal),
         _radius(radius) {
+}
+
+billiard::search::SearchPocket::SearchPocket(std::string id, PocketType type, glm::vec2 pottingPoint, glm::vec2 normal, float radius) :
+        _id(std::move(id)),
+        _type(type),
+        _pottingPoint(pottingPoint),
+        _normal(normal),
+        _radius(radius) {
+}
+
+std::vector<billiard::search::SearchPocket> billiard::search::buildSearchPocketsOfPockets(const std::vector<Pocket>& pockets) {
+    std::vector<SearchPocket> result;
+
+    for (auto& pocket : pockets) {
+        int number = 1;
+        for (auto& pottingPoint : pocket._pottingPoints) {
+            result.emplace_back(pocket._id + std::to_string(number++), pocket._type, pottingPoint, pocket._normal, pocket._radius);
+        }
+    }
+
+    return result;
 }
 
 billiard::search::Rail::Rail(std::string id,

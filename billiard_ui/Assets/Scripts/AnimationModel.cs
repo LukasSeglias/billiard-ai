@@ -119,13 +119,15 @@ public class Circle {
 	public Vec2 position;
 	public Vec2 normal;
 	public PocketType pocketType;
+	public Vec2[] pottingPoints;
 	
 	public static Circle operator /(Circle circle, float value) => new Circle{
 	    id = circle.id,
 		radius = circle.radius / value,
 		position = circle.position / value,
 		normal = circle.normal,
-		pocketType = circle.pocketType
+		pocketType = circle.pocketType,
+		pottingPoints = circle.pottingPoints.Select(pottingPoint => pottingPoint / value).ToArray(),
 	};
 }
 	

@@ -212,12 +212,28 @@ public class AnimationService : MonoBehaviour
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
-	struct Circle_t {
+	class Circle_t {
 	    public string id;
 		public float radius;
 		public Vec2_t position;
 		public Vec2_t normal;
 		public PocketType pocketType;
+		public IntPtr pottingPoints;
+		public int pottingPointsSize;
+
+		public Circle_t(string id, float radius, Vec2_t position, Vec2_t normal, PocketType pocketType, Vec2_t[] pottingPoints) {
+            this.id = id;
+            this.radius = radius;
+            this.position = position;
+            this.normal = normal;
+            this.pocketType = pocketType;
+            this.pottingPoints = allocate(pottingPoints);
+            this.pottingPointsSize = pottingPoints.Length;
+        }
+
+        ~Circle_t() {
+            Marshal.FreeHGlobal(pottingPoints);
+        }
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
@@ -420,9 +436,17 @@ public class AnimationService : MonoBehaviour
 		}
 		return circles;
 	}
+
+	private static Vec2_t[] map(Vec2[] from) {
+        Vec2_t[] vecs = new Vec2_t[from.Length];
+        for (int i = 0; i < vecs.Length; i++) {
+            vecs[i] = map(from[i]);
+        }
+        return vecs;
+    }
 	
 	private static Circle_t map(Circle from) {
-		return new Circle_t{id = from.id, radius = from.radius, position = map(from.position), normal = map(from.normal), pocketType = from.pocketType};
+		return new Circle_t(from.id, from.radius, map(from.position), map(from.normal), from.pocketType, map(from.pottingPoints));
 	}
 	
 	private static Spot_t[] map(Spot[] from) {

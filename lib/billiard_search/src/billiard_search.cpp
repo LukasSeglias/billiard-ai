@@ -218,7 +218,7 @@ namespace billiard::search {
             ballState.insert({ball._id, ball});
         }
 
-        for (auto& pocket : config._table._pockets) {
+        for (auto& pocket : config._searchPockets) {
             auto node = SearchNode::search();
             auto nodeSearch = node->asSearch();
 
@@ -228,7 +228,7 @@ namespace billiard::search {
             nodeSearch->_ballId = pocket._id;
             nodeSearch->_unusedBalls = ballState;
 
-            DEBUG("[addPocketsAsInitialTargets] Place pocket " << pocket._id << " at " << pocket._position << std::endl);
+            DEBUG("[addPocketsAsInitialTargets] Place pocket " << pocket._id << " at " << pocket._pottingPoint << std::endl);
 
             expanded.emplace_back(node);
         }
@@ -313,7 +313,17 @@ namespace billiard::search {
         return expanded;
     }
 
-    std::optional<Pocket> getPocketById(const std::shared_ptr<SearchState>& state, const std::string& id) {
+    std::optional<SearchPocket> getSearchPocketById(const std::shared_ptr<SearchState>& state, const std::string& id) {
+
+        for (auto& pocket : state->_config._searchPockets) {
+            if (pocket._id == id) {
+                return std::make_optional(pocket);
+            }
+        }
+        return std::nullopt;
+    }
+
+    std::optional<Pocket> getSimulationPocketById(const std::shared_ptr<SearchState>& state, const std::string& id) {
 
         for (auto& pocket : state->_config._table._pockets) {
             if (pocket._id == id) {
@@ -394,23 +404,51 @@ namespace billiard::search {
         return false;
     }
 
+    bool collidesWithRailOnTheWay(const std::shared_ptr<SearchNodeSearch>& parent,
+                          const std::shared_ptr<SearchState>& state,
+                          const Ball& ball,
+                          const glm::vec2& targetPosition) {
+
+        for (auto& rail : state->_config._table._rails) {
+
+            auto& startPosition = ball._position;
+            glm::vec2 direction = targetPosition - startPosition;
+            auto intersection = billiard::physics::intersection::halfLineIntersectsLineSegment(startPosition, direction, rail.second._shiftedStart, rail.second._shiftedEnd);
+            if (intersection) {
+
+                DEBUG("Ball " << ball._id
+                              << " collides on the way to " << targetPosition
+                              << " with rail " << rail.first
+                              << std::endl);
+                return true;
+            }
+        }
+        return false;
+    }
+
     std::shared_ptr<SearchNode> pocketCollision(const std::shared_ptr<SearchNode>& parentNode,
                                                 const std::shared_ptr<SearchState>& state,
                                                 const std::shared_ptr<SearchNodeSearch>& parent,
                                                 const Ball& ball) {
 
         std::string& pocketId = parent->_ballId;
-        auto pocket = getPocketById(state, pocketId);
+        auto pocket = getSearchPocketById(state, pocketId);
         assert(pocket);
+        auto& targetPoint = pocket->_pottingPoint;
 
         // Only possible to hit ball if no other ball is on the way
-        if (collidesOnTheWay(parent, state, ball, "", pocket->_position)) {
+        if (collidesOnTheWay(parent, state, ball, "", targetPoint)) {
+            return nullptr;
+        }
+
+        // Only possible to hit ball if no rail is in the way
+        if (collidesWithRailOnTheWay(parent, state, ball, targetPoint)) {
             return nullptr;
         }
 
         auto result = SearchNode::search(parentNode);
         auto resultSearchNode = result->asSearch();
-        resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::POCKET_COLLISION, pocket->_position, pocket->_id });
+        resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::POCKET_COLLISION, targetPoint, pocket->_id });
         resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::BALL_KICK, ball._position, "" });
 
         return result;
@@ -929,8 +967,8 @@ namespace billiard::search {
         glm::vec2 targetPosition;
         // Only possible to hit ball from "behind"
         if (parent->_action == SearchActionType::NONE) {
-            auto pocket = getPocketById(state, parent->_ballId);
-            targetPosition = pocket->_position;
+            auto pocket = getSearchPocketById(state, parent->_ballId);
+            targetPosition = pocket->_pottingPoint;
         } else {
             auto& targetBall = parent->_state.at(parent->_ballId);
             auto lastEvent = getLastEvent(parent);
@@ -972,7 +1010,7 @@ namespace billiard::search {
         std::vector<std::shared_ptr<SearchNode>> expanded;
 
         auto target = searchInput->_action == SearchActionType::NONE ?
-                      getPocketById(state, searchInput->_ballId)->_position : // TODO: Pockets über unorderd_map speichern?
+                      getSearchPocketById(state, searchInput->_ballId)->_pottingPoint : // TODO: Pockets über unorderd_map speichern?
                       elasticCollisionTargetPositionFromParent(searchInput, state);
         DEBUG(agent << "selected target point: " << target << std::endl);
 
@@ -1012,10 +1050,10 @@ namespace billiard::search {
             DEBUG(agent << "target is pocket" << std::endl);
 
             std::string& pocketId = parent->_ballId;
-            auto pocket = getPocketById(state, pocketId);
+            auto pocket = getSearchPocketById(state, pocketId);
             assert(pocket);
 
-            resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::POCKET_COLLISION, pocket->_position, pocket->_id });
+            resultSearchNode->_events.push_back(PhysicalEvent { PhysicalEventType::POCKET_COLLISION, pocket->_pottingPoint, pocket->_id });
             DEBUG(agent << "pocket collision event added" << std::endl);
         } else {
             DEBUG(agent << "target is ball" << std::endl);
@@ -1151,7 +1189,7 @@ namespace billiard::search {
             if (event._type == PhysicalEventType::POCKET_COLLISION) {
 
                 auto& pocketId = event.id;
-                auto pocket = getPocketById(state, pocketId);
+                auto pocket = getSearchPocketById(state, pocketId);
                 assert(pocket);
 
                 glm::vec2& pocketNormal = pocket->_normal;
