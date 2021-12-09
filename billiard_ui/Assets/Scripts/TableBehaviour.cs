@@ -709,45 +709,65 @@ public class TableBehaviour : MonoBehaviour
 				machine.destroyLines();
 
 				int windowCount = -1;
-				string impulsId = null; 
-				for (int i = 0; i < machine.frames.Length - 1; i+=2) {
-					var start = machine.frames[i];
-					if (start.firstFrame) {
+				List<KeyFrame> keyFrames = new List<KeyFrame>();
+				for (int i = 0; i <= machine.frames.Length - 1; i++) {
+					var frame = machine.frames[i];
+					if (frame.firstFrame) {
 						windowCount++;
 					}
 
 					if (windowCount == currentAnimationWindow) {
-						var end = machine.frames[i + 1];
-						
-						foreach (var startBall in start.balls) {
-							if (startBall.events.eventType == EventType.BALL_SHOT) {
-								impulsId = startBall.id;
-							} else if (startBall.id == impulsId && startBall.events.eventType == EventType.BALL_COLLISION) {
-								impulsId = startBall.events.involvedBallId;
-							}
-						}
-
-						foreach (var startBall in start.balls) {
-							var endBall = machine.findBall(startBall.id, end);
-							if (endBall != null && startBall.position != endBall.position) {
-								GameObject lineObject = new GameObject(string.Format("Line{0}", startBall.id));
-								LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
-								
-								if (impulsId == startBall.id) {
-									strikeThrough(ref lRend);
-								} else {
-									dotted(ref lRend);
-								}
-								
-								lRend.startWidth = 0.02f;
-								lRend.endWidth = 0.02f;
-								lRend.SetPosition(0, StretchingUtility.get().position(convert(startBall.position, -0.01f)));
-								lRend.SetPosition(1, StretchingUtility.get().position(convert(endBall.position, -0.01f)));
-								machine.appendLine(lineObject);
-							}
-						}
+						keyFrames.Add(frame);
 					} else if (windowCount > currentAnimationWindow) {
 						break;
+					}
+				}
+				
+				HashSet<string> impulsIds = new HashSet<string>(); 
+				for (int i = keyFrames.Count - 1; i > 0; i-=2) {
+					var end = keyFrames[i];
+					var start = keyFrames[i-1];
+
+					HashSet<string> alreadyHandled = new HashSet<string>();
+					foreach (var endBall in end.balls) {
+						var startBall = machine.findBall(endBall.id, start);
+						if (endBall.events.eventType == EventType.BALL_POTTING) {
+							impulsIds.Add(endBall.id);
+						} else if (impulsIds.Contains(endBall.id) && endBall.events.eventType == EventType.BALL_COLLISION && startBall.events.eventType == EventType.BALL_IN_REST) {
+							var involvedBallId = endBall.events.involvedBallId1 != endBall.id ? endBall.events.involvedBallId1 : endBall.events.involvedBallId2;
+							if (!alreadyHandled.Contains(involvedBallId)) {
+								
+								if (impulsIds.Contains(endBall.id) && impulsIds.Contains(involvedBallId)) {
+									continue;
+								}
+								
+								impulsIds.Remove(endBall.id);
+								impulsIds.Add(involvedBallId);
+								
+								alreadyHandled.Add(involvedBallId);
+								alreadyHandled.Add(endBall.id);
+							}
+						}
+					}
+
+					foreach (var startBall in start.balls) {
+						var endBall = machine.findBall(startBall.id, end);
+						if (endBall != null && startBall.position != endBall.position) {
+							GameObject lineObject = new GameObject(string.Format("Line{0}", startBall.id));
+							LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
+								
+							if (impulsIds.Contains(startBall.id)) {
+								strikeThrough(ref lRend);
+							} else {
+								dotted(ref lRend);
+							}
+								
+							lRend.startWidth = 0.02f;
+							lRend.endWidth = 0.02f;
+							lRend.SetPosition(0, StretchingUtility.get().position(convert(startBall.position, -0.01f)));
+							lRend.SetPosition(1, StretchingUtility.get().position(convert(endBall.position, -0.01f)));
+							machine.appendLine(lineObject);
+						}
 					}
 				}
 			}
@@ -922,6 +942,11 @@ public class TableBehaviour : MonoBehaviour
 				if (change == Change.NONE) {
 					machine.updateBalls(machine.frames[machine.startFrameIndex], machine.frames[machine.startFrameIndex+1], machine.globalTime);
 				} else {
+					if (change == Change.FORWARD) {
+						machine.updateBalls(machine.frames[machine.startFrameIndex-2], machine.frames[machine.startFrameIndex-1], machine.frames[machine.startFrameIndex-1].time);
+					} else if (change == Change.BACKWARD) {
+						machine.updateBalls(machine.frames[machine.startFrameIndex+2], machine.frames[machine.startFrameIndex+3], machine.frames[machine.startFrameIndex+2].time);
+					}
 					machine.queue.SetActive(false);
 					machine.globalTime = machine.frames[machine.startFrameIndex].time;
 					

@@ -584,13 +584,14 @@ Ball nodeToBall(const std::pair<std::string, billiard::search::node::Node>& node
     auto state = before ? node.second.before() : node.second.after();
 
     if (state) {
+        auto involvedBalls = node.second.getInvolvedId();
         return Ball {
                 node.second._ballType.c_str(),
                 node.first.c_str(),
                 Vec2 {state->_position.x, state->_position.y},
                 Vec2 {state->_velocity.x, state->_velocity.y},
                 node.second._type != billiard::search::node::NodeType::BALL_POTTING,
-                Event {toEventType(node.second._type), node.second.getInvolvedId().c_str()}
+                Event {toEventType(node.second._type), involvedBalls.first.c_str(), involvedBalls.second.c_str()}
         };
     }
 
@@ -600,7 +601,7 @@ Ball nodeToBall(const std::pair<std::string, billiard::search::node::Node>& node
         Vec2 {0, 0},
         Vec2 {0, 0},
         true,
-        Event {EventType::BALL_IN_REST, ""}
+        Event {EventType::BALL_IN_REST, "", ""}
     };
 }
 
@@ -707,7 +708,8 @@ std::shared_ptr<RootObject> map(const std::vector<std::vector<billiard::search::
     std::ostream& operator<<(std::ostream& os, const Event& event) {
         os << "{" << " "
             << "\"eventType\":" << event.eventType << ", "
-            << "\"involvedBallId\": \"" << event.involvedBallId << "\" "
+            << "\"involvedBallId1\": \"" << event.involvedBallId1 << "\", "
+            << "\"involvedBallId2\": \"" << event.involvedBallId2 << "\" "
             << " " << "}";
         return os;
     }

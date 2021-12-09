@@ -4,28 +4,34 @@ bool Vec2::operator!=(const Vec2& other) const {
     return x != other.x || y != other.y;
 }
 
-Event::Event() : eventType(), involvedBallId() {}
+Event::Event() : eventType(), involvedBallId1(), involvedBallId2() {}
 
-Event::Event(EventType eventType, const char* involvedBallId) :
+Event::Event(EventType eventType, const char* involvedBallId1, const char* involvedBallId2) :
     eventType(eventType),
-    involvedBallId(_strdup(involvedBallId)) {
+    involvedBallId1(_strdup(involvedBallId1)),
+    involvedBallId2(_strdup(involvedBallId2)) {
 }
 
 Event::Event(Event&& other) noexcept :
     eventType(other.eventType),
-    involvedBallId(other.involvedBallId) {
-    other.involvedBallId = nullptr;
+    involvedBallId1(other.involvedBallId1),
+    involvedBallId2(other.involvedBallId2) {
+    other.involvedBallId1 = nullptr;
+    other.involvedBallId2 = nullptr;
 }
 
 Event::Event(const Event& other) noexcept :
     eventType(other.eventType),
-    involvedBallId(_strdup(other.involvedBallId)) {
+    involvedBallId1(_strdup(other.involvedBallId1)),
+    involvedBallId2(_strdup(other.involvedBallId2)) {
 }
 
 Event& Event::operator=(Event&& other) noexcept {
     eventType = other.eventType;
-    involvedBallId = other.involvedBallId;
-    other.involvedBallId = nullptr;
+    involvedBallId1 = other.involvedBallId1;
+    involvedBallId2 = other.involvedBallId2;
+    other.involvedBallId1 = nullptr;
+    other.involvedBallId2 = nullptr;
     return *this;
 }
 
@@ -35,7 +41,8 @@ Event& Event::operator=(const Event& other) noexcept {
     }
 
     eventType = other.eventType;
-    involvedBallId = _strdup(other.involvedBallId);
+    involvedBallId1 = _strdup(other.involvedBallId1);
+    involvedBallId2 = _strdup(other.involvedBallId2);
     return *this;
 }
 

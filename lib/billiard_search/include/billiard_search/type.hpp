@@ -252,7 +252,7 @@ namespace billiard::search {
 
             [[nodiscard]] std::optional<state::BallState> before() const;
             [[nodiscard]] std::optional<state::BallState> after() const;
-            [[nodiscard]] std::string getInvolvedId() const;
+            [[nodiscard]] std::pair<std::string, std::string> getInvolvedId() const;
 
             [[nodiscard]] bool isStatic() const;
 

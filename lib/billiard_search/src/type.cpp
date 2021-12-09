@@ -335,38 +335,38 @@ std::optional<billiard::search::state::BallState> billiard::search::node::Node::
     return std::nullopt;
 }
 
-std::string billiard::search::node::Node::getInvolvedId() const {
+std::pair<std::string, std::string> billiard::search::node::Node::getInvolvedId() const {
     auto inRest = toInRest();
     if (inRest) {
-        return "";
+        return std::pair<std::string, std::string>{"", ""};
     }
 
     auto potted = toPotted();
     if(potted) {
-        return "";
+        return std::pair<std::string, std::string>{"", ""};
     }
 
     auto ballCollision = toBallCollision();
     if(ballCollision) {
-        return ballCollision->_cause._ball2;
+        return std::pair<std::string, std::string>{ballCollision->_cause._ball1, ballCollision->_cause._ball2};
     }
 
     auto ballRailCollision = toBallRailCollision();
     if(ballRailCollision) {
-        return "";
+        return std::pair<std::string, std::string>{"", ""};
     }
 
     auto ballMoving = toBallMoving();
     if(ballMoving) {
-        return "";
+        return std::pair<std::string, std::string>{"", ""};
     }
 
     auto ballShot = toBallShot();
     if(ballShot) {
-        return "";
+        return std::pair<std::string, std::string>{"", ""};
     }
 
-    return "";
+    return std::pair<std::string, std::string>{"", ""};
 }
 
 bool billiard::search::node::Node::isStatic() const {

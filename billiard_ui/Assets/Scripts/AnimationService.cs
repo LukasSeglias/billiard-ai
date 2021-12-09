@@ -190,7 +190,8 @@ public class AnimationService : MonoBehaviour
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
 	struct Event_t {
 		public EventType_t eventType;
-		public string involvedBallId;
+		public string involvedBallId1;
+		public string involvedBallId2;
 	}
 
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -559,7 +560,8 @@ public class AnimationService : MonoBehaviour
 	
 	private static Event map(Event_t from) {
 		Event result = new Event();
-		result.involvedBallId = from.involvedBallId;
+		result.involvedBallId1 = from.involvedBallId1;
+		result.involvedBallId2 = from.involvedBallId2;
 		result.eventType = map(from.eventType);
 		return result;
 	}

@@ -73,7 +73,8 @@ public enum EventType {
 [Serializable]
 public class Event {
 	public EventType eventType;
-	public string involvedBallId;
+	public string involvedBallId1;
+	public string involvedBallId2;
 }
 
 [Serializable]
