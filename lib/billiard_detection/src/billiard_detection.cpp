@@ -19,8 +19,24 @@
 #endif
 
 // TODO: remove this
-//#undef BILLIARD_DETECTION_DEBUG_VISUAL
-//#undef BILLIARD_DETECTION_DEBUG_PRINT
+//#define BILLIARD_DETECTION_DEBUG_VISUAL 1
+#undef BILLIARD_DETECTION_DEBUG_VISUAL
+//#define BILLIARD_DETECTION_DEBUG_PRINT 1
+#undef BILLIARD_DETECTION_DEBUG_PRINT
+//#define BILLIARD_TRACKING_DEBUG_PRINT 1
+#undef BILLIARD_TRACKING_DEBUG_PRINT
+
+#ifdef BILLIARD_DETECTION_DEBUG_PRINT
+#define DETECTION_DEBUG(x) DEBUG(x)
+#else
+#define DETECTION_DEBUG(x) do {} while (0)
+#endif
+
+#ifdef BILLIARD_TRACKING_DEBUG_PRINT
+#define TRACKING_DEBUG(x) DEBUG(x)
+#else
+#define TRACKING_DEBUG(x) do {} while (0)
+#endif
 
 billiard::detection::StateTracker::StateTracker(const std::function<capture::CameraFrames ()>& capture,
                                                 const std::shared_ptr<billiard::detection::DetectionConfig>& config,
@@ -64,28 +80,41 @@ struct TrackedBall {
     }
 };
 
-void addPosition(billiard::detection::BallStats& stats, const glm::vec2& position) {
+template<int n, typename T>
+void addValue(billiard::detection::CircularBuffer<n, T>& buffer, const T& value) {
 
-    stats.positions[stats.currentIndex++] = position;
-    if (stats.currentIndex == AVERAGE_OVER_N_FRAMES) {
-        // History full, overwrite oldest entries
-        stats.currentIndex = 0;
+    buffer.values[buffer.index++] = value;
+    if (buffer.index == n) {
+        // Buffer full, overwrite oldest entries
+        buffer.index = 0;
     }
-    if (stats.size < AVERAGE_OVER_N_FRAMES) {
-        // History not full yet
-        stats.size++;
+    if (buffer.count < n) {
+        // Buffer not full yet
+        buffer.count++;
     }
+}
+
+template<int n, typename T>
+glm::vec2 calculateAverage(const billiard::detection::CircularBuffer<n, T>& buffer, T total) {
+    for (int i = 0 ; i < buffer.count; i++) {
+        total += buffer.values[i];
+    }
+    return total / ((float) buffer.count);
 }
 
 glm::vec2 calculateAveragePosition(const billiard::detection::BallStats& stats) {
-    glm::vec2 totalPosition = glm::vec2{0, 0};
-    for (int i = 0 ; i < stats.size; i++) {
-        totalPosition += stats.positions[i];
-    }
-    return totalPosition / ((float) stats.size);
+    return calculateAverage(stats.positions, glm::vec2{0, 0});
 }
 
-int findNearestBall(const glm::vec2& currentPosition, bool* skip, const billiard::detection::State& state, float maxTrackingDistanceSquared) {
+glm::vec2 calculateAverageMovement(const billiard::detection::BallStats& stats) {
+    return calculateAverage(stats.movement, glm::vec2{0, 0});
+}
+
+int findNearestBall(const glm::vec2& position,
+                    const bool* skip,
+                    const billiard::detection::State& state,
+                    float maxTrackingDistanceSquared) {
+
     float minDistanceSquared = 2.0f * maxTrackingDistanceSquared; // just some number bigger than any distance considered
     int bestMatchIndex = -1;
 
@@ -95,7 +124,7 @@ int findNearestBall(const glm::vec2& currentPosition, bool* skip, const billiard
         }
 
         auto& ball = state._balls[index];
-        glm::vec2 distance = currentPosition - ball._position;
+        glm::vec2 distance = position - ball._position;
         float distanceSquared = glm::dot(distance, distance);
 
         if (distanceSquared < maxTrackingDistanceSquared) {
@@ -109,12 +138,175 @@ int findNearestBall(const glm::vec2& currentPosition, bool* skip, const billiard
     return bestMatchIndex;
 }
 
+float calculatePositionMixingFactor(const glm::vec2& currentPosition,
+                                    const glm::vec2& averagePosition,
+                                    float maxDistanceSquared) {
+
+    glm::vec2 delta = averagePosition - currentPosition;
+    float distanceSquared = glm::dot(delta, delta);
+    // Factor is 1.0 if distance is high -> use current position
+    // Factor is 0.0 if distance is low -> use average position
+    return std::min(distanceSquared / maxDistanceSquared, 1.0f);
+}
+
+glm::vec2 calculateNewPosition(const glm::vec2& currentPosition,
+                               const glm::vec2& averagePosition,
+                               float maxDistanceSquared) {
+
+    float factor = calculatePositionMixingFactor(currentPosition, averagePosition, maxDistanceSquared);
+
+    // Mix current position and average position based on factor
+    return factor * currentPosition + (1.0f - factor) * averagePosition;
+}
+
+std::string readable(const billiard::detection::TableStatus& status) {
+    using billiard::detection::TableStatus;
+    switch (status) {
+        case TableStatus::UNKNOWN:
+            return "UNKNOWN";
+        case TableStatus::STABLE:
+            return "STABLE";
+        case TableStatus::UNSTABLE:
+            return "UNSTABLE";
+    }
+
+    return "No TableStatus found";
+}
+
+std::string readable(const billiard::detection::CueBallStatus& status) {
+    using billiard::detection::CueBallStatus;
+    switch (status) {
+        case CueBallStatus::UNKNOWN:
+            return "UNKNOWN";
+        case CueBallStatus::FOUND:
+            return "FOUND";
+        case CueBallStatus::LOST:
+            return "LOST";
+    }
+
+    return "No CueBallStatus found";
+}
+
+std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& values) {
+    os << "[ ";
+    for (auto& value : values) {
+        os << value << " ";
+    }
+    os << "]";
+    return os;
+}
+
+void trackCueBall(billiard::detection::Tracking& tracking,
+                  const billiard::detection::State& previousState,
+                  const billiard::detection::State& currentState,
+                  float maxCueBallTrackingSquaredDistance,
+                  float maxStableAverageMovementSquared) {
+
+    std::string agent = "[trackCueBall] ";
+    std::stringstream debugOutput;
+
+    int previousCueBallIndex = tracking.cueBallIndex;
+    int cueBallIndex = -1;
+    int whiteBallCount = 0;
+    auto oldStatus = tracking.cueBallStatus;
+    auto newStatus = billiard::detection::CueBallStatus::UNKNOWN;
+
+    bool* skip = new bool[currentState._balls.size()];
+
+    for (int i = 0; i < currentState._balls.size(); i++) {
+        auto& ball = currentState._balls[i];
+
+        if (ball._type == "WHITE") {
+
+            whiteBallCount++;
+
+            if (cueBallIndex == -1) {
+
+                // One cue ball found
+                cueBallIndex = i;
+                newStatus = billiard::detection::CueBallStatus::FOUND;
+                debugOutput << "At least one white ball found." << " ";
+
+            } else if (previousCueBallIndex >= 0) {
+                // Multiple white balls found, try finding it around the previous position
+
+                for (int j = 0; j < currentState._balls.size(); j++) {
+                    skip[j] = currentState._balls[j]._type != "WHITE";
+                }
+
+                auto& previousCueBallPosition = previousState._balls[previousCueBallIndex]._position;
+                cueBallIndex = findNearestBall(previousCueBallPosition, skip, currentState, maxCueBallTrackingSquaredDistance);
+
+                if (cueBallIndex >= 0) {
+                    // Cue ball found
+                    newStatus = billiard::detection::CueBallStatus::FOUND;
+                    debugOutput << "Multiple white balls, found one using previous position." << " ";
+                } else {
+                    // Cue ball could not be found around previous position
+                    newStatus = billiard::detection::CueBallStatus::LOST;
+                    debugOutput << "Multiple white balls, but could not decide based on previous position." << " ";
+                }
+                break;
+
+            } else {
+                // Multiple white balls found, but no previous position known
+                cueBallIndex = -1;
+                newStatus = billiard::detection::CueBallStatus::LOST;
+                debugOutput << "Multiple white balls, no previous position known." << " ";
+                break;
+            }
+        }
+    }
+
+    if (whiteBallCount == 0) {
+        // If no white ball was found do not change status:
+        // State probably is UNSTABLE because in order for the cueball to go missing, there had to be movement of any kind.
+        // Once the cue ball is put back or is detected again, the state will begin to stabilize.
+        newStatus = oldStatus;
+        debugOutput << "No white ball found." << " ";
+    }
+
+    tracking.previousCueBallIndex = previousCueBallIndex;
+    tracking.cueBallIndex = cueBallIndex;
+    tracking.cueBallStatus = newStatus;
+
+    TRACKING_DEBUG(agent
+                  << "cue ball: " << cueBallIndex  << " "
+                  << "status: " << readable(newStatus) << " "
+                  << debugOutput.str()
+                  << std::endl);
+}
+
+int countLostBalls(const billiard::detection::State& state, const bool tracked[], int minTrackedDurationBeforeLost) {
+
+    int lostCount = 0;
+    for (int i = 0; i < state._balls.size(); i++) {
+        if (!tracked[i]) {
+            // Ball may have been lost
+            auto& ball = state._balls[i];
+            if (ball._trackingCount > minTrackedDurationBeforeLost) {
+                // Ball was tracked long enough to be considered a lost ball
+                // (Balls not tracked long enough may just be detection errors)
+                lostCount++;
+            }
+        }
+    }
+    return lostCount;
+}
+
 billiard::detection::State track(billiard::detection::Tracking& tracking,
-                                       const billiard::detection::State& previousState,
-                                       const billiard::detection::State& currentState,
-                                       float maxTrackingDistanceSquared) {
+                                 const billiard::detection::State& previousState,
+                                 const billiard::detection::State& currentState,
+                                 float maxTrackingDistanceSquared,
+                                 int minTrackingCountBeforeStable,
+                                 int minTrackedDurationBeforeLost,
+                                 int minTrackedDurationBeforeMoving,
+                                 float maxStableAverageMovementSquared) {
 
     std::string agent = "[track] ";
+
+    int previousStableTrackings = tracking.stableTrackings;
+    tracking.reset();
 
     billiard::detection::State result;
     result._balls.reserve(currentState._balls.size());
@@ -126,89 +318,123 @@ billiard::detection::State track(billiard::detection::Tracking& tracking,
     alreadyAssignedIds.reserve(currentState._balls.size());
 
     int previousBallCount = previousState._balls.size();
-    bool* assigned = new bool[previousBallCount];
+    bool* tracked = new bool[previousBallCount];
     for (int previousBallIndex = 0; previousBallIndex < previousBallCount; previousBallIndex++) {
-        assigned[previousBallIndex] = false;
+        tracked[previousBallIndex] = false;
     }
     std::list<int> untrackedBallIndices;
     std::set<std::string> trackedIds;
 
+    trackCueBall(tracking, previousState, currentState, maxTrackingDistanceSquared, maxStableAverageMovementSquared);
+
     for (int currentBallIndex = 0; currentBallIndex < currentState._balls.size(); currentBallIndex++) {
+
         auto& currentBall = currentState._balls[currentBallIndex];
         glm::vec2 currentPosition = currentBall._position;
-        int bestMatchIndex = findNearestBall(currentPosition, assigned, previousState, maxTrackingDistanceSquared);
+
+        int bestMatchIndex = -1;
+        if (currentBallIndex == tracking.cueBallIndex) {
+            bestMatchIndex = tracking.previousCueBallIndex;
+        } else {
+            bestMatchIndex = findNearestBall(currentPosition, tracked, previousState, maxTrackingDistanceSquared);
+        }
 
         if (bestMatchIndex >= 0) {
             // Successful tracking
-            assigned[bestMatchIndex] = true;
+            tracked[bestMatchIndex] = true;
             int previousBallIndex = bestMatchIndex;
 
-            auto& id = previousState._balls[previousBallIndex]._id;
+            auto& previousBall = previousState._balls[previousBallIndex];
+            auto& id = previousBall._id;
             alreadyAssignedIds.push_back(id);
             trackedIds.insert(id);
 
             auto& detectedPosition = currentBall._position;
 
             billiard::detection::BallStats& stats = tracking.stats[id];
-            addPosition(stats, detectedPosition);
+            addValue(stats.positions, detectedPosition);
 
             glm::vec2 newPosition;
 
-            if (stats.size >= WARMED_UP_LIMIT) {
+            std::stringstream debugOutput;
+
+            if (stats.positions.count >= WARMED_UP_LIMIT) {
                 // History is warmed up, use average position from history
                 glm::vec2 averagePosition = calculateAveragePosition(stats);
+                newPosition = calculateNewPosition(currentPosition, averagePosition, maxTrackingDistanceSquared);
 
-                float maxDistanceSquared = maxTrackingDistanceSquared;
-                glm::vec2 delta = averagePosition - currentPosition;
-                float distanceSquared = glm::dot(delta, delta);
-                // Factor is 1.0 if distance is high -> use current position
-                // Factor is 0.0 if distance is low -> use average position
-                float factor = std::min(distanceSquared / maxDistanceSquared, 1.0f);
-
-                // Mix current position and average position based on factor
-                newPosition = factor * currentPosition + (1.0f - factor) * averagePosition;
-
-#if 0
-                std::cout << agent
-                          << "Successful " << id << ", "
-                          << "avg: (" << averagePosition.x << ", " << averagePosition.y << ") "
-                          << "current: (" << currentBall._position.x << ", " << currentBall._position.y << ") "
-                          << "new: (" << newPosition.x << ", " << newPosition.y << ") "
-                          << "factor: " << factor << " "
-                          << "moved: " << glm::length(previousState._balls[previousBallIndex]._position - currentBall._position) << " "
-                          << "history: " << stats.size << ", " << stats.currentIndex
-                          << std::endl;
-#endif
+                float mixingFactor = calculatePositionMixingFactor(currentPosition, averagePosition, maxTrackingDistanceSquared);
+                debugOutput
+                      << "Successful " << id << ", "
+                      << "avg: (" << averagePosition.x << ", " << averagePosition.y << ") "
+                      << "current: (" << currentBall._position.x << ", " << currentBall._position.y << ") "
+                      << "factor: " << mixingFactor << " "
+                      << "new: (" << newPosition.x << ", " << newPosition.y << ") "
+                      << "moved: " << glm::length(previousState._balls[previousBallIndex]._position - currentBall._position) << " ";
             } else {
                 // History is not warmed up yet, use detected position
                 newPosition = detectedPosition;
 
-#if 0
-                std::cout << agent
-                          << "Successful " << id << ", " << "but history not warmed-up yet" << " "
-                          << "new: (" << newPosition.x << ", " << newPosition.y << ") "
-                          << "moved: " << glm::length(previousState._balls[previousBallIndex]._position - currentBall._position)
-                          << "history: " << stats.size << ", " << stats.currentIndex
-                          << std::endl;
-#endif
+                debugOutput
+                      << "Successful " << id << ", " << "but history not warmed-up yet" << ", "
+                      << "new: (" << newPosition.x << ", " << newPosition.y << ") "
+                      << "moved: " << glm::length(previousState._balls[previousBallIndex]._position - currentBall._position);
+            }
+
+            glm::vec2 movement = newPosition - previousBall._position;
+            addValue(stats.movement, movement);
+
+            int trackingCount = previousBall._trackingCount + 1;
+
+            tracking.trackedCount++;
+            if (trackingCount >= minTrackingCountBeforeStable) {
+                tracking.stableTrackings++;
+            } else {
+                tracking.unstableTrackings++;
+            }
+
+            if (stats.movement.count >= WARMED_UP_LIMIT) {
+                // History is warmed up, use average movement from history
+                glm::vec2 averageMovement = calculateAverageMovement(stats);
+
+                if (glm::dot(averageMovement, averageMovement) >= 0.1f * 0.1f) {
+                    debugOutput << "avg movement: (" << averageMovement.x << ", " << averageMovement.y << ") ";
+                }
+
+                bool moving = glm::dot(averageMovement, averageMovement) >= maxStableAverageMovementSquared;
+                if (trackingCount > minTrackedDurationBeforeMoving && moving) {
+                    // Moved too much, the ball must be moving
+                    tracking.movingCount++;
+                    tracking.moving.push_back(id);
+                }
             }
 
             billiard::detection::Ball ball;
             ball._id = id;
             ball._type = currentBall._type;
             ball._position = newPosition;
-
+            ball._trackingCount = trackingCount;
             result._balls.push_back(ball);
+
+            TRACKING_DEBUG(agent << debugOutput.str() << std::endl);
+
         } else {
             // Could not track ball
             untrackedBallIndices.push_back(currentBallIndex);
+            tracking.untrackedCount++;
         }
     }
 
+    tracking.lostCount = countLostBalls(previousState, tracked, minTrackedDurationBeforeLost);
+
+    int stableTrackingsChange = tracking.stableTrackings - previousStableTrackings;
+    // Consider positive values only, because lost balls are already handled with a different metric
+    tracking.addedCount = std::max(stableTrackingsChange, 0);
+
     // Cleanup tracking history of lost balls
-    for (auto& tracked : tracking.tracked) {
-        if (std::find(trackedIds.begin(), trackedIds.end(), tracked) == trackedIds.end()) {
-            tracking.stats.erase(tracked);
+    for (auto& t : tracking.tracked) {
+        if (std::find(trackedIds.begin(), trackedIds.end(), t) == trackedIds.end()) {
+            tracking.stats.erase(t);
         }
     }
     tracking.tracked = trackedIds;
@@ -219,7 +445,7 @@ billiard::detection::State track(billiard::detection::Tracking& tracking,
         auto& currentBall = currentState._balls[ballIndex];
 
         std::string id = currentBall._type + "-" + std::to_string(number++);
-        while(std::find(alreadyAssignedIds.begin(), alreadyAssignedIds.end(), id) != alreadyAssignedIds.end()) {
+        while (std::find(alreadyAssignedIds.begin(), alreadyAssignedIds.end(), id) != alreadyAssignedIds.end()) {
             id = currentBall._type + "-" + std::to_string(number++);
         }
 
@@ -227,48 +453,128 @@ billiard::detection::State track(billiard::detection::Tracking& tracking,
         ball._id = id;
         ball._type = currentBall._type;
         ball._position = currentBall._position;
-
-#if 0
-        std::cout << agent
-                  << "Failed " << id << " "
-                  << "new: (" << currentBall._position.x << ", " << currentBall._position.y << ") "
-                  << std::endl;
-#endif
-
+        ball._trackingCount = 0;
         result._balls.push_back(ball);
+
+        TRACKING_DEBUG(agent
+              << "Failed " << id << " "
+              << "new: (" << currentBall._position.x << ", " << currentBall._position.y << ") "
+              << std::endl);
     }
 
-#if 0
-    std::cout << agent << "Tracked: ";
-    std::cout << tracking.tracked.size() << " ";
-    std::cout << "[ ";
+    TRACKING_DEBUG(agent
+          << "Tracked: " << tracking.tracked.size() << " "
+          << "[ ");
     for (auto& tracked : tracking.tracked) {
-        std::cout << tracked << ", ";
+        TRACKING_DEBUG(tracked << ", ");
     }
-    std::cout << "]";
-    std::cout << std::endl;
-#endif
+    TRACKING_DEBUG("]" << std::endl);
 
-    delete[] assigned;
+    delete[] tracked;
     return result;
 }
 
-void drawHoughResult(cv::Mat& image, std::vector<cv::Vec3f>& circles, int radius = 0) {
-    for(auto c : circles) {
-        cv::Point center = cv::Point(c[0], c[1]);
-        int R = radius > 0 ? radius : c[2];
-        cv::Rect roi(center.x - R, center.y - R, R * 2, R * 2);
-        if (roi.x >= 0 && roi.y >= 0 && roi.width <= image.cols && roi.height <= image.rows) {
+billiard::detection::TableStatus determineTableStatus(const billiard::detection::Tracking& tracking,
+                                                      const billiard::detection::TableStatus& currentStatus,
+                                                      const billiard::detection::State& previousState,
+                                                      const billiard::detection::State& trackedState) {
 
-            // circle center
-            cv::circle(image, center, 1, cv::Scalar(0, 100, 100), 3, cv::LINE_AA);
-            // circle outline
-            cv::circle(image, center, R, cv::Scalar(255, 0, 255), 1, cv::LINE_AA);
+    using billiard::detection::CueBallStatus;
+    using billiard::detection::TableStatus;
+
+    std::string agent = "[determineTableStatus] ";
+
+    if (tracking.cueBallStatus == CueBallStatus::UNKNOWN) {
+        return TableStatus::UNKNOWN;
+    }
+
+    int currentBallCount = trackedState._balls.size();
+    bool cueBallFound = tracking.cueBallStatus == CueBallStatus::FOUND;
+
+    if (cueBallFound && tracking.movingCount == 0 && tracking.lostCount == 0 && tracking.addedCount == 0) {
+
+        if (currentBallCount == tracking.stableTrackings) {
+            TRACKING_DEBUG(agent << "STABLE" << " "
+                       << "Cue ball: " << readable(tracking.cueBallStatus) << " "
+                       << "tracked: " << std::to_string(tracking.trackedCount) << " untracked: " << std::to_string(tracking.untrackedCount) << " "
+                       << "stable trackings: " << std::to_string(tracking.stableTrackings) << " "
+                       << "added: " << std::to_string(tracking.addedCount) << " "
+                       << "lost: " << std::to_string(tracking.lostCount) << " "
+                       << "moving: " << std::to_string(tracking.movingCount) << " "
+                       << "" << tracking.moving << " "
+                       << std::endl);
+            return TableStatus::STABLE;
+        } else {
+            // Do not change status because not all balls have stabilized,
+            // that may be because of ghost balls appearing in a stable state, in which case we do not want to change to UNSTABLE,
+            // or it may be because some ball is moving and could not be tracked and is therefore classified as a ghost in an unstable state, in which case we do not want to change to STABLE.
+            TRACKING_DEBUG(agent  << "INDECISIVE" << " "
+                       << "Cue ball: " << readable(tracking.cueBallStatus) << " "
+                       << "tracked: " << std::to_string(tracking.trackedCount) << " untracked: " << std::to_string(tracking.untrackedCount) << " "
+                       << "stable trackings: " << std::to_string(tracking.stableTrackings) << " "
+                       << "added: " << std::to_string(tracking.addedCount) << " "
+                       << "lost: " << std::to_string(tracking.lostCount) << " "
+                       << "moving: " << std::to_string(tracking.movingCount) << " "
+                       << "" << tracking.moving << " "
+                       << std::endl);
+            return currentStatus;
         }
+    } else {
+        TRACKING_DEBUG(agent << "UNSTABLE" << " "
+                   << "Cue ball: " << readable(tracking.cueBallStatus) << " "
+                   << "tracked: " << std::to_string(tracking.trackedCount) << " untracked: " << std::to_string(tracking.untrackedCount) << " "
+                   << "stable trackings: " << std::to_string(tracking.stableTrackings) << " "
+                   << "added: " << std::to_string(tracking.addedCount) << " "
+                   << "lost: " << std::to_string(tracking.lostCount) << " "
+                   << "moving: " << std::to_string(tracking.movingCount) << " "
+                   << "" << tracking.moving << " "
+                   << std::endl);
+        return TableStatus::UNSTABLE;
+    }
+}
+
+billiard::detection::TableStatus trackTableState(billiard::detection::Tracking& tracking,
+                                                 const billiard::detection::TableStatus& currentStatus,
+                                                 const billiard::detection::State& previousState,
+                                                 const billiard::detection::State& trackedState,
+                                                 int minStableStateCount) {
+
+    using billiard::detection::TableStatus;
+
+    TableStatus status = determineTableStatus(tracking, currentStatus, previousState, trackedState);
+
+    if (status == TableStatus::STABLE) {
+        tracking.stableStateCount++;
+        if (tracking.stableStateCount >= minStableStateCount) {
+            // Pretty sure that state is STABLE now
+            return TableStatus::STABLE;
+        } else {
+            // Not sure yet whether state is really STABLE
+            return currentStatus;
+        }
+    } else {
+        tracking.stableStateCount = 0;
+        return status;
     }
 }
 
 const float MAX_TRACKING_DISTANCE_SQUARED = 20.f * 20.0f;
+const float MAX_BALL_STABLE_AVERAGE_MOVEMENT_SQUARED = 0.5f * 0.5f;
+
+// Minimal duration that a ball has to be tracked successfully before
+// being counted as a ball in the total of balls present on the table
+const int MIN_TRACKING_COUNT_BEFORE_STABLE = 30;
+
+// Minimal duration that a ball has to be tracked successfully before
+// being considered lost, when tracking fails
+const int MIN_TRACKING_COUNT_BEFORE_LOST = 30;
+
+// Minimal duration that a ball has to be tracked successfully before
+// being considered moving, when motion is detected
+const int MIN_TRACKING_COUNT_BEFORE_MOVING = 30;
+
+// Minimal number of times the state has to be classified as STABLE consecutively before changing state to STABLE
+const int MIN_STABLE_STATE_COUNT = 10;
 
 void billiard::detection::StateTracker::work(std::future<void> exitSignal,
           std::mutex& lock,
@@ -278,8 +584,13 @@ void billiard::detection::StateTracker::work(std::future<void> exitSignal,
           const std::function<void (const State& previousState, State& currentState, const cv::Mat&)>& classify,
           std::queue<std::promise<State>>& waiting) {
     Tracking tracking;
+    TableStatus previousStatus = TableStatus::UNKNOWN;
     State previousPixelState;
     State previousModelState;
+    std::string currentDisplayText = "";
+    std::string previousDisplayText = "";
+    std::chrono::system_clock::time_point showSearchingUntil;
+
     while (exitSignal.wait_for(std::chrono::nanoseconds(10)) == std::future_status::timeout) {
         auto image = capture();
         if (image.color.empty()) {
@@ -291,9 +602,12 @@ void billiard::detection::StateTracker::work(std::future<void> exitSignal,
         // Convert state to internal coordinates
         auto modelState = pixelToModelCoordinates(*config, pixelState);
         // Track balls and smoothen the detected positions over time
-        auto trackedState = track(tracking, previousModelState, modelState, MAX_TRACKING_DISTANCE_SQUARED);
+        auto trackedState = track(tracking, previousModelState, modelState, MAX_TRACKING_DISTANCE_SQUARED, MIN_TRACKING_COUNT_BEFORE_STABLE, MIN_TRACKING_COUNT_BEFORE_LOST, MIN_TRACKING_COUNT_BEFORE_MOVING, MAX_BALL_STABLE_AVERAGE_MOVEMENT_SQUARED);
+        TableStatus status = trackTableState(tracking, previousStatus, previousModelState, trackedState, MIN_STABLE_STATE_COUNT);
+        trackedState.status = status;
 
-#if 0
+#if BILLIARD_DETECTION_DEBUG_VISUAL
+//#if 1
         std::vector<cv::Point2d> modelPoints;
         for (billiard::detection::Ball& ball : trackedState._balls) {
             modelPoints.emplace_back(ball._position.x, ball._position.y);
@@ -308,12 +622,38 @@ void billiard::detection::StateTracker::work(std::future<void> exitSignal,
             cv::circle(trackedResult, center, 1, cv::Scalar(0, 100, 100), 3, cv::LINE_AA);
             cv::circle(trackedResult, center, config->ballRadiusInPixel, cv::Scalar(255, 0, 255), 1, cv::LINE_AA);
         }
+
+        if (status != previousStatus) {
+            previousDisplayText = currentDisplayText;
+
+            if (status == TableStatus::STABLE) {
+                TRACKING_DEBUG("[work] " << "State stabilized, search" << std::endl);
+                showSearchingUntil = std::chrono::system_clock::now() + std::chrono::milliseconds(500);
+            }
+        }
+
+
+        std::string displayText = readable(status)
+                + " - "
+                + "Cue: " + readable(tracking.cueBallStatus) + " "
+                + "lost: " + std::to_string(tracking.lostCount) + " "
+                + "moving: " + std::to_string(tracking.movingCount) + " "
+                + "added: " + std::to_string(tracking.addedCount) + " ";
+        currentDisplayText = displayText;
+
+        cv::rectangle(trackedResult, cv::Rect {0, trackedResult.rows - 75, (int)(trackedResult.cols * 0.5), 75}, cv::Scalar{255, 255, 255}, cv::FILLED);
+        cv::putText(trackedResult, displayText, cv::Point {25, trackedResult.rows - 25}, cv::FONT_HERSHEY_PLAIN, 1.0, cv::Scalar {255, 0, 0});
+        cv::putText(trackedResult, previousDisplayText, cv::Point {25, trackedResult.rows - 50}, cv::FONT_HERSHEY_PLAIN, 1.0, cv::Scalar {255, 0, 0});
+        if (showSearchingUntil > std::chrono::system_clock::now()) {
+            cv::putText(trackedResult, "Searching", cv::Point {trackedResult.cols/2 - 100, trackedResult.rows/2}, cv::FONT_HERSHEY_PLAIN, 4.0, cv::Scalar {255, 0, 0});
+        }
         cv::imshow("Tracked", trackedResult);
         cv::waitKey(1);
 #endif
 
         previousPixelState = pixelState;
         previousModelState = trackedState;
+        previousStatus = status;
 
         lock.lock();
         if (!waiting.empty()) {
@@ -413,15 +753,19 @@ namespace billiard::detection {
                 double fy = intrinsics.cameraMatrix.at<double>(1, 1);
                 config.focalLength = fx * intrinsics.sensorSize.x;
 
-#ifdef BILLIARD_DETECTION_DEBUG_PRINT
-                std::cout << "cameraInWorldCoordinatesHomogeneous: " << cameraInWorldCoordinatesHomogeneous
-                          << std::endl;
-                std::cout << "cameraInWorldCoordinatesMat: " << cameraInWorldCoordinatesMat << std::endl;
-                std::cout << "Camera is at " << config.cameraPosInWorldCoordinates << " in the real world" << std::endl;
-                std::cout << "f: " << std::to_string(config.focalLength) << " fx: " << std::to_string(fx) << " fy: "
-                          << std::to_string(fy) << " s: " << intrinsics.sensorSize << " c: " << config.principalPoint
-                          << std::endl;
-#endif
+                DETECTION_DEBUG("camerToWorld:configure"
+                      << "cameraInWorldCoordinatesHomogeneous: " << cameraInWorldCoordinatesHomogeneous
+                      << std::endl
+                      << "cameraInWorldCoordinatesMat: " << cameraInWorldCoordinatesMat
+                      << std::endl
+                      << "Camera is at " << config.cameraPosInWorldCoordinates << " in the real world"
+                      << std::endl
+                      << "f: " << std::to_string(config.focalLength)
+                      << " fx: " << std::to_string(fx)
+                      << " fy: " << std::to_string(fy)
+                      << " s: " << intrinsics.sensorSize
+                      << " c: " << config.principalPoint
+                      << std::endl);
 
                 return config;
             }
@@ -471,10 +815,11 @@ namespace billiard::detection {
 
         cv::Point3d worldPoint(linePoint + (lambda * lineDirection));
 
-#ifdef BILLIARD_DETECTION_DEBUG_PRINT
-        std::cout << "Line: " << linePoint << " + " << std::to_string(lambda) << " * " << lineDirection << std::endl;
-        std::cout << "Plane: (p - " << planePoint << ") * " << planeNormal << " = 0" << std::endl;
-#endif
+        DETECTION_DEBUG("[linePlaneIntersection] "
+                  << "Line: " << linePoint << " + " << std::to_string(lambda) << " * " << lineDirection
+                  << std::endl
+                  << "Plane: (p - " << planePoint << ") * " << planeNormal << " = 0"
+                  << std::endl);
 
         return worldPoint;
     }
@@ -505,10 +850,11 @@ namespace billiard::detection {
 
             cv::Point3d worldPoint = linePlaneIntersection(linePoint, lineDirection, plane.point, plane.normal);
 
-#ifdef BILLIARD_DETECTION_DEBUG_PRINT
-            std::cout << "image: " << imagePoint << " camera: " << imagePointInCameraCoordinatesHomogenous << " world: "
-                      << imagePointInWorldCoordinates << std::endl;
-#endif
+            DETECTION_DEBUG("[imagePointsToWorldPoints] "
+                  << "image: " << imagePoint << " "
+                  << "camera: " << imagePointInCameraCoordinatesHomogenous << " "
+                  << "world: " << imagePointInWorldCoordinates << " "
+                  << std::endl);
 
             worldPoints.push_back(worldPoint);
         }
@@ -661,26 +1007,25 @@ namespace billiard::detection {
         return board;
     }
 
-#ifdef BILLIARD_DETECTION_DEBUG_PRINT
     void printCoordinates(const std::string& context,
                           const std::vector<cv::Point2d>& imagePoints,
                           const std::vector<cv::Point3d>& worldPoints,
                           const std::vector<cv::Point2d>& modelPoints) {
 
+#ifdef BILLIARD_DETECTION_DEBUG_PRINT
         for(int i = 0; i < imagePoints.size(); i++) {
             auto& imagePoint = imagePoints[i];
             auto& worldPoint = worldPoints[i];
             auto& modelPoint = modelPoints[i];
-            std::cout << "[" << context << "]"
-                      << " image point: " << imagePoint
-                      << " world point: " << worldPoint
-                      << " model point: " << modelPoint
-                      << std::endl;
+            DETECTION_DEBUG("[" << context << "] "
+                  << " image point: " << imagePoint
+                  << " world point: " << worldPoint
+                  << " model point: " << modelPoint
+                  << std::endl);
         }
-    }
 #endif
+    }
 
-#ifdef BILLIARD_DETECTION_DEBUG_VISUAL
     inline void drawRailRectLines(cv::Mat& output, const std::vector<cv::Point2d>& points) {
 
         cv::Scalar color(0, 0, 255);
@@ -699,22 +1044,6 @@ namespace billiard::detection {
             cv::line(output, lines[i-1], lines[i], color, thickness);
         }
     }
-
-    void drawHoughResult(cv::Mat& image, std::vector<cv::Vec3f>& circles) {
-        for(auto c : circles) {
-            cv::Point center = cv::Point(c[0], c[1]);
-            uint8_t radius = c[2];
-            cv::Rect roi(center.x - radius, center.y - radius, radius * 2, radius * 2);
-            if (roi.x >= 0 && roi.y >= 0 && roi.width <= image.cols && roi.height <= image.rows) {
-
-                // circle center
-                cv::circle(image, center, 1, cv::Scalar(0, 100, 100), 3, cv::LINE_AA);
-                // circle outline
-                cv::circle(image, center, radius, cv::Scalar(255, 0, 255), 1, cv::LINE_AA);
-            }
-        }
-    }
-#endif
 
     DetectionConfig configure(const cv::Mat& original,
                               const Table& table,
@@ -757,10 +1086,7 @@ namespace billiard::detection {
             cv::fillConvexPoly(railMask, toIntPoints(imagePoints), cv::Scalar(255));
             railMask.copyTo(innerTableMask);
 
-#ifdef BILLIARD_DETECTION_DEBUG_PRINT
-            std::cout << "------------------ RAIL-RECT ------------------" << std::endl;
             printCoordinates("Rail-Rect", imagePoints, worldPoints, modelPoints);
-#endif
 #ifdef BILLIARD_DETECTION_DEBUG_VISUAL
             cv::Mat railOutput = original.clone();
             drawRailRectLines(railOutput, imagePoints);
@@ -778,14 +1104,13 @@ namespace billiard::detection {
             double tableWidth = table.innerTableWidth;
             double pixelsPerMillimeterY = resolutionY / tableWidth;
 
-#ifdef BILLIARD_DETECTION_DEBUG_PRINT
-            std::cout << " resolutionX: " << resolutionX
-                      << " tableLength: " << tableLength
-                      << " resolutionY: " << resolutionY
-                      << " tableWidth: " << tableWidth
-                      << " pixels per millimeter in X/Y: " << pixelsPerMillimeterX << "/" << pixelsPerMillimeterY
-                      << std::endl;
-#endif
+            DETECTION_DEBUG("[detection:configure] "
+                  << " resolutionX: " << resolutionX
+                  << " tableLength: " << tableLength
+                  << " resolutionY: " << resolutionY
+                  << " tableWidth: " << tableWidth
+                  << " pixels per millimeter in X/Y: " << pixelsPerMillimeterX << "/" << pixelsPerMillimeterY
+                  << std::endl);
 
             pixelsPerMillimeter = pixelsPerMillimeterX; // Take X because that's the longer axis
             config.ballRadiusInPixel = ceil((table.ballDiameter / 2.0) * pixelsPerMillimeter);
@@ -878,12 +1203,11 @@ namespace billiard::detection {
         std::vector<cv::Point3d> worldPoints = billiard::detection::imagePointsToWorldPoints(config.cameraToWorld, config.ballPlane, imagePoints);
         std::vector<cv::Point2d> modelPoints = billiard::detection::worldPointsToModelPoints(config.worldToModel, worldPoints);
 
-#ifdef BILLIARD_DETECTION_DEBUG_PRINT
-        std::cout << "------------------ CIRCLES ------------------" << std::endl;
         printCoordinates("Circles", imagePoints, worldPoints, modelPoints);
-#endif
 
         State state;
+        state._balls.reserve(modelPoints.size());
+
         for (int i = 0; i < modelPoints.size(); i++) {
             auto& inputBall = input._balls[i];
             auto& point = modelPoints[i];
@@ -891,6 +1215,7 @@ namespace billiard::detection {
             ball._id = inputBall._id;
             ball._type = inputBall._type;
             ball._position = glm::vec2 {point.x, point.y};
+            ball._trackingCount = inputBall._trackingCount;
             state._balls.push_back(ball);
         }
         return state;

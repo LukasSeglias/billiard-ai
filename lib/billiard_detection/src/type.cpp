@@ -8,5 +8,5 @@ bool billiard::detection::Ball::operator==(const Ball& other) const {
 }
 
 bool billiard::detection::State::operator==(const State& other) const {
-    return this->_balls == other._balls;
+    return this->_balls == other._balls && this->status == other.status;
 }

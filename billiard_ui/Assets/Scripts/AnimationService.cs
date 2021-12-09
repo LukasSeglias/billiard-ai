@@ -53,10 +53,10 @@ public class AnimationService : MonoBehaviour
 	public static void setConfiguration(Configuration config) {
 		configuration(map(config));
 	}
-	
+
 	public static void setState(List<BallState> balls, Vec2 velocity) {
 		BallState_t[] ballStates = map(balls);
-		BilliardState_t billiardState = new BilliardState_t(ballStates, velocity);
+		BilliardState_t billiardState = new BilliardState_t(ballStates, TableStatus.UNKNOWN, velocity);
 		billiardState.ballSize = ballStates.Length;
 		state(billiardState);
 	}
@@ -175,6 +175,7 @@ public class AnimationService : MonoBehaviour
 	public class RootState_t {
 		public IntPtr balls;
 		public int ballSize;
+		public TableStatus status;
 	}
 
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -319,9 +320,10 @@ public class AnimationService : MonoBehaviour
 
 	[StructLayout(LayoutKind.Sequential)]
 	class BilliardState_t {
-		public BilliardState_t(BallState_t[] ballStates, Vec2 velocity) {
+		public BilliardState_t(BallState_t[] ballStates, TableStatus status, Vec2 velocity) {
 			this.balls = allocate(ballStates);
 			this.ballSize = ballStates.Length;
+			this.status = status;
 			this.velocity = velocity != null ? map(velocity) : new Vec2_t{x = 0, y = 0};
 			this.fromUnity = true;
 		}
@@ -332,6 +334,7 @@ public class AnimationService : MonoBehaviour
 		
 		public IntPtr balls;
 		public int ballSize;
+		public TableStatus status;
 		public Vec2_t velocity;
 		[MarshalAs(UnmanagedType.I1)] public bool fromUnity;
 	}
@@ -560,6 +563,7 @@ public class AnimationService : MonoBehaviour
 	
 	private static RootState map(RootState_t from) {
 		RootState result = new RootState();
+		result.status = from.status;
 		result.balls = new BallState[from.ballSize];
 		BallState_t[] balls = GetNativeArray<BallState_t>(from.balls, from.ballSize);
 		

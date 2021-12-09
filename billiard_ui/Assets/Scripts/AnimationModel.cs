@@ -257,9 +257,16 @@ public class Search
 	public string[] types = new string[0];
 }
 
+public enum TableStatus {
+    UNKNOWN,
+    STABLE,
+    UNSTABLE
+}
+
 [Serializable]
 public class RootState {
 	public BallState[] balls = new BallState[0];
+	public TableStatus status = TableStatus.UNKNOWN;
 }
 
 [Serializable]

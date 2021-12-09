@@ -18,10 +18,17 @@ namespace billiard::detection {
         int _trackingCount = 0;
     };
 
+    enum EXPORT_BILLIARD_DETECTION_LIB TableStatus {
+        UNKNOWN,
+        STABLE,
+        UNSTABLE
+    };
+
     struct EXPORT_BILLIARD_DETECTION_LIB State {
         bool operator==(const State& other) const;
 
         std::vector<Ball> _balls;
+        TableStatus status = TableStatus::UNKNOWN;
     };
 
     struct EXPORT_BILLIARD_DETECTION_LIB Pocket {

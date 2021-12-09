@@ -78,6 +78,7 @@ public class StabilizationController : MonoBehaviour {
             Debug.Log("Stabilization changed from " + previousStatus + " to " + status + ", deltaTime=" + deltaTime);
             OnStateStabilizationChange?.Invoke(new StabilizationChange { previous = previousStatus, current = status });
         }
+
     }
 
     public StabilizationStatus stateChanged(List<BallState> balls, float deltaTime) {

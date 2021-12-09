@@ -42,6 +42,8 @@ public class TableBehaviour : MonoBehaviour
 	private bool displayResultsFast = false;
 	private float timeForOneResult = 0.0f;
 	private float timeSinceLastResult = 0.0f;
+	private bool infinityModeActive = false;
+	private TableStatus previousTableStatus = TableStatus.UNKNOWN;
 
 	// Start is called before the first frame update
     void Start()
@@ -112,8 +114,10 @@ public class TableBehaviour : MonoBehaviour
 		} else if (Input.GetKeyDown(KeyCode.H)) {
 			showBallHalos = !showBallHalos;
 		} else if (Input.GetKeyDown(KeyCode.M)) {
-            stabilizationController.track = !stabilizationController.track;
-            stabilizationStatusInfoText.SetText("");
+		    // TODO: Remove once StabilizationController is obsolete
+//             stabilizationController.track = !stabilizationController.track;
+//             stabilizationStatusInfoText.SetText("");
+            infinityModeActive = !infinityModeActive;
         } else if (Input.GetKeyDown(KeyCode.Return)) {
 			AnimationService.captureState();
 		} else if (Input.GetKeyDown(KeyCode.R)) {
@@ -184,10 +188,36 @@ public class TableBehaviour : MonoBehaviour
 
 		statePresenter.update(state);
 		dottedPaths.stateChanged(state);
+
+		if (infinityModeActive) {
+		    updateInfinityMode(previousTableStatus, state.status);
+		    previousTableStatus = state.status;
+		}
+	}
+
+	private void updateInfinityMode(TableStatus previousState, TableStatus currentState) {
+
+	    if (previousState != currentState) {
+            // Status changed
+
+            if (currentState == TableStatus.STABLE) {
+                // -> STABLE
+
+                this.animationPlayer.setAnimation(new RootObject());
+
+                Search search = new Search();
+                search.types = config.infinityModeSearchTypes;
+
+                Debug.Log("[Infinity-mode] STABLE: Search for solution: " + string.Join(", ", search.types));
+                searchSolution(search);
+            }
+
+            stabilizationStatusInfoText.SetText("" + currentState);
+        }
 	}
 
 	private void stabilizationChanged(StabilizationChange change) {
-
+        // TODO: Remove once StabilizationController is obsolete
         if (change.current == StabilizationStatus.STABLE) {
             // -> STABLE
 

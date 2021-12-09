@@ -280,13 +280,15 @@ BallState::~BallState() {
 State::State() :
     balls(nullptr),
     ballSize(0),
+    status(TableStatus::UNKNOWN),
     velocity({0, 0}),
     fromUnity(false) {
 }
 
-State::State(BallState* balls, int ballSize, Vec2 velocity, bool fromUnity) :
+State::State(BallState* balls, int ballSize, TableStatus status, Vec2 velocity, bool fromUnity) :
     balls(balls),
     ballSize(ballSize),
+    status(status),
     velocity(velocity),
     fromUnity(fromUnity) {
 }
@@ -294,6 +296,7 @@ State::State(BallState* balls, int ballSize, Vec2 velocity, bool fromUnity) :
 State::State(State&& other) noexcept :
     balls(other.balls),
     ballSize(other.ballSize),
+    status(other.status),
     velocity(other.velocity),
     fromUnity(other.fromUnity) {
     other.balls = nullptr;
@@ -303,6 +306,7 @@ State::State(State&& other) noexcept :
 State::State(const State& other) noexcept :
     balls(new BallState[other.ballSize]),
     ballSize(other.ballSize),
+    status(other.status),
     velocity(other.velocity),
     fromUnity(other.fromUnity) {
     for(int i = 0; i < ballSize; i++) {
@@ -313,6 +317,7 @@ State::State(const State& other) noexcept :
 State& State::operator=(State&& other) noexcept {
     balls = other.balls;
     ballSize = other.ballSize;
+    status = other.status;
     velocity = other.velocity;
     fromUnity = other.fromUnity;
     other.balls = nullptr;
@@ -327,6 +332,7 @@ State& State::operator=(const State& other) noexcept {
     }
 
     ballSize = other.ballSize;
+    status = other.status;
     velocity = other.velocity;
     fromUnity = other.fromUnity;
     this->balls = new BallState[ballSize];

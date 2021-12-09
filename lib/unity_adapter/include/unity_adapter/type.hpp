@@ -193,9 +193,15 @@ extern "C" {
         bool fromUnity;
     };
 
+    enum EXPORT_UNITY_ADAPTER_LIB TableStatus {
+            UNKNOWN,
+            STABLE,
+            UNSTABLE
+    };
+
     struct EXPORT_UNITY_ADAPTER_LIB State {
         State();
-        State(BallState* balls, int ballSize, Vec2 velocity, bool fromUnity = true);
+        State(BallState* balls, int ballSize, TableStatus status, Vec2 velocity, bool fromUnity = true);
         State(State&& other) noexcept;
         State(const State& other) noexcept;
         State& operator=(State&& other) noexcept;
@@ -204,6 +210,7 @@ extern "C" {
 
         BallState* balls;
         int ballSize;
+        TableStatus status;
         Vec2 velocity;
         bool fromUnity;
     };

@@ -520,9 +520,10 @@ void state(State state) {
 ///////////////////////////////////////////////////////
 
 BallState* map(const std::vector<billiard::detection::Ball>& ballStates);
+TableStatus map(const billiard::detection::TableStatus& status);
 
 std::shared_ptr<State> map(const billiard::detection::State& state) {
-    return std::make_shared<State>(map(state._balls), static_cast<int>(state._balls.size()), Vec2{0, 0}, false);
+    return std::make_shared<State>(map(state._balls), static_cast<int>(state._balls.size()), map(state.status), Vec2{0, 0}, false);
 }
 
 BallState* map(const std::vector<billiard::detection::Ball>& ballStates) {
@@ -535,6 +536,10 @@ BallState* map(const std::vector<billiard::detection::Ball>& ballStates) {
     }
 
     return balls;
+}
+
+TableStatus map(const billiard::detection::TableStatus& status) {
+    return (TableStatus) status;
 }
 
 std::shared_ptr<RootObject> mayMap(std::future<std::vector<std::vector<billiard::search::node::System>>>& simulations) {

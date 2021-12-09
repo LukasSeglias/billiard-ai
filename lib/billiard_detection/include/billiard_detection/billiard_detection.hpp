@@ -127,21 +127,66 @@ namespace billiard::detection {
     EXPORT_BILLIARD_DETECTION_LIB State detect(const State& previousState, const cv::Mat& image);
 
     // Average ball's position over the last N frames in which the ball could be tracked
-    #define AVERAGE_OVER_N_FRAMES 20
+    #define AVERAGE_POSITION_OVER_N_FRAMES 20
+    // Average ball's movement over the last N frames in which the ball could be tracked
+    #define AVERAGE_MOVEMENT_OVER_N_FRAMES 30
     // After N successful trackings, the balls detected position is averaged, before it was tracked N times,
     // the position is the detected position
     #define WARMED_UP_LIMIT 10
-    static_assert(AVERAGE_OVER_N_FRAMES >= WARMED_UP_LIMIT);
+    static_assert(AVERAGE_POSITION_OVER_N_FRAMES >= WARMED_UP_LIMIT);
+
+    template<int n, typename T>
+    struct EXPORT_BILLIARD_DETECTION_LIB CircularBuffer {
+        T values[n];
+        short index = 0;
+        short count = 0;
+    };
 
     struct EXPORT_BILLIARD_DETECTION_LIB BallStats {
-        glm::vec2 positions[AVERAGE_OVER_N_FRAMES];
-        short currentIndex = 0;
-        short size = 0;
+        CircularBuffer<AVERAGE_POSITION_OVER_N_FRAMES, glm::vec2> positions;
+        CircularBuffer<AVERAGE_MOVEMENT_OVER_N_FRAMES, glm::vec2> movement;
+    };
+
+    enum class EXPORT_BILLIARD_DETECTION_LIB CueBallStatus {
+        UNKNOWN,
+        FOUND,
+        LOST
     };
 
     struct EXPORT_BILLIARD_DETECTION_LIB Tracking {
         std::set<std::string> tracked;
         std::unordered_map<std::string, BallStats> stats;
+
+        // Count how many times the state was classified as STABLE consecutively
+        int stableStateCount = 0;
+        // Index of the cue ball in the current state.
+        int cueBallIndex = -1;
+        // Index of the cue ball in the previous state.
+        int previousCueBallIndex = -1;
+        // Current cue ball status
+        CueBallStatus cueBallStatus = CueBallStatus::UNKNOWN;
+
+        // Per frame stats:
+
+        int trackedCount = 0;
+        int untrackedCount = 0;
+        int stableTrackings = 0;
+        int unstableTrackings = 0;
+        int lostCount = 0;
+        int addedCount = 0;
+        int movingCount = 0;
+        std::vector<std::string> moving;
+
+        void reset() {
+            trackedCount = 0;
+            untrackedCount = 0;
+            stableTrackings = 0;
+            unstableTrackings = 0;
+            lostCount = 0;
+            addedCount = 0;
+            movingCount = 0;
+            moving.clear();
+        }
     };
 
     class EXPORT_BILLIARD_DETECTION_LIB StateTracker {
