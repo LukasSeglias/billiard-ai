@@ -86,8 +86,9 @@ TEST(BilliardSearchTest, three_balls_in_a_row_with_cueball_and_pocket_manually_s
     config._ball._diameter = ballDiameter;
     config._ball._diameterSquared = ballDiameter * ballDiameter;
     config._table._pockets = {
-            billiard::search::Pocket { "BOTTOM-LEFT", billiard::search::PocketType::CORNER, glm::vec2 {-915.5, -456.5}, pocketNormal, 52}
+            billiard::search::Pocket { "BOTTOM-LEFT", billiard::search::PocketType::CORNER, glm::vec2 {-915.5, -456.5}, { glm::vec2 {-915.5, -456.5} }, pocketNormal, 52}
     };
+    config._searchPockets = billiard::search::buildSearchPocketsOfPockets(config._table._pockets);
     config._table.minimalPocketVelocity = 10.0f;
 
     showResults(state, search, solutions, config);
@@ -120,8 +121,9 @@ TEST(BilliardSearchTest, three_balls_in_a_row_with_cueball_and_pocket) {
     config._ball._diameter = ballDiameter;
     config._ball._diameterSquared = ballDiameter * ballDiameter;
     config._table._pockets = {
-            billiard::search::Pocket { "BOTTOM-LEFT", billiard::search::PocketType::CORNER, pocketPosition, pocketNormal, 52}
+            billiard::search::Pocket { "BOTTOM-LEFT", billiard::search::PocketType::CORNER, pocketPosition, { pocketPosition }, pocketNormal, 52}
     };
+    config._searchPockets = billiard::search::buildSearchPocketsOfPockets(config._table._pockets);
     config._table.minimalPocketVelocity = 10.0f;
 
     showResults(state, search, solutions, config);
@@ -145,13 +147,14 @@ TEST(BilliardSearchTest, one_ball_and_cue_ball_and_pocket) {
     config._ball._diameter = ballDiameter;
     config._ball._diameterSquared = ballDiameter * ballDiameter;
     config._table._pockets = {
-            billiard::search::Pocket { "TOP RIGHT", billiard::search::PocketType::CORNER, glm::vec2{940.5, 471.5}, glm::vec2{-0.707107, -0.707107}, 50},
-            billiard::search::Pocket { "TOP LEFT", billiard::search::PocketType::CORNER, glm::vec2{-940.5, 471.5}, glm::vec2{0.707107, -0.707107}, 50},
-            billiard::search::Pocket { "TOP CENTER", billiard::search::PocketType::CENTER, glm::vec2{0, 491.5}, glm::vec2{0, -1}, 50},
-            billiard::search::Pocket { "BOTTOM RIGHT", billiard::search::PocketType::CORNER, glm::vec2{940.5, -471.5}, glm::vec2{-0.707107, 0.707107}, 50},
-            billiard::search::Pocket { "BOTTOM LEFT", billiard::search::PocketType::CORNER, glm::vec2{-940.5, -471.5}, glm::vec2{0.707107, 0.707107}, 50},
-            billiard::search::Pocket { "BOTTOM CENTER", billiard::search::PocketType::CENTER, glm::vec2{0, -491.5}, glm::vec2{0, 1}, 50}
+            billiard::search::Pocket { "TOP RIGHT", billiard::search::PocketType::CORNER, glm::vec2{940.5, 471.5}, { glm::vec2{940.5, 471.5} }, glm::vec2{-0.707107, -0.707107}, 50},
+            billiard::search::Pocket { "TOP LEFT", billiard::search::PocketType::CORNER, glm::vec2{-940.5, 471.5}, { glm::vec2{-940.5, 471.5} }, glm::vec2{0.707107, -0.707107}, 50},
+            billiard::search::Pocket { "TOP CENTER", billiard::search::PocketType::CENTER, glm::vec2{0, 491.5}, { glm::vec2{0, 491.5} }, glm::vec2{0, -1}, 50},
+            billiard::search::Pocket { "BOTTOM RIGHT", billiard::search::PocketType::CORNER, glm::vec2{940.5, -471.5}, { glm::vec2{940.5, -471.5} }, glm::vec2{-0.707107, 0.707107}, 50},
+            billiard::search::Pocket { "BOTTOM LEFT", billiard::search::PocketType::CORNER, glm::vec2{-940.5, -471.5}, { glm::vec2{-940.5, -471.5} }, glm::vec2{0.707107, 0.707107}, 50},
+            billiard::search::Pocket { "BOTTOM CENTER", billiard::search::PocketType::CENTER, glm::vec2{0, -491.5}, { glm::vec2{0, -491.5} }, glm::vec2{0, 1}, 50}
     };
+    config._searchPockets = billiard::search::buildSearchPocketsOfPockets(config._table._pockets);
 
     config._table.minimalPocketVelocity = 10.0f;
     auto innerTableLength = 1881;

@@ -35,10 +35,17 @@ billiard::search::Configuration config(nlohmann::json& json) {
 
     std::vector<Pocket> pockets;
     for (auto& pocket : json["pockets"]) {
+
+        std::vector<glm::vec2> pottingPoints;
+        for (auto& pottingPoint : pocket["pottingPoints"]) {
+            pottingPoints.push_back(glm::vec2 { pottingPoint["x"], pottingPoint["y"]});
+        }
+
         pockets.emplace_back(Pocket{pocket["id"],
                                     pocket["type"],
                                     glm::vec2{pocket["position"]["x"],
                                               pocket["position"]["y"]},
+                                    pottingPoints,
                                     glm::vec2{pocket["normal"]["x"],
                                               pocket["normal"]["y"]},
                                     pocket["radius"]});

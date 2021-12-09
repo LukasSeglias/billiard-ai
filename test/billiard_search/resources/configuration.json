@@ -3,12 +3,12 @@
     "radius": 26.15
   },
   "pockets": [
-    { "id": "BOTTOM-LEFT",   "position": {"x": -940.5, "y": -471.5}, "radius": 50, "normal":  { "x":  0.707107, "y":  0.707107 }, "type": 0 },
-    { "id": "TOP-LEFT",      "position": {"x": -940.5, "y": 471.5},  "radius": 50, "normal":  { "x":  0.707107, "y": -0.707107 }, "type": 0 },
-    { "id": "TOP-CENTER",    "position": {"x": 0, "y": 491.5},     "radius": 50, "normal":  { "x":  0.0,      "y": -1.0 },      "type": 1 },
-    { "id": "TOP-RIGHT",     "position": {"x": 940.5, "y": 471.5},   "radius": 50, "normal":  { "x": -0.707107, "y": -0.707107 }, "type": 0 },
-    { "id": "BOTTOM-RIGHT",  "position": {"x": 940.5, "y": -471.5},  "radius": 50, "normal":  { "x": -0.707107, "y":  0.707107 }, "type": 0 },
-    { "id": "BOTTOM-CENTER", "position": {"x": 0, "y": -491.5},    "radius": 50, "normal":  { "x":  0.0,      "y":  1.0 },      "type": 1 }
+    { "id": "BOTTOM-LEFT",    "position": {"x": -940.5, "y": -471.5},  "pottingPoints": [ {"x": -940.5, "y": -471.5} ],  "radius": 50,  "normal": { "x":  0.707107, "y":  0.707107 },  "type": 0 },
+    { "id": "TOP-LEFT",       "position": {"x": -940.5, "y": 471.5},   "pottingPoints": [ {"x": -940.5, "y": 471.5} ],   "radius": 50,  "normal": { "x":  0.707107, "y": -0.707107 },  "type": 0 },
+    { "id": "TOP-CENTER",     "position": {"x": 0, "y": 491.5},        "pottingPoints": [ {"x": 0, "y": 491.5} ],        "radius": 50,  "normal": { "x":  0.0,      "y": -1.0 },       "type": 1 },
+    { "id": "TOP-RIGHT",      "position": {"x": 940.5, "y": 471.5},    "pottingPoints": [ {"x": 940.5, "y": 471.5} ],    "radius": 50,  "normal": { "x": -0.707107, "y": -0.707107 },  "type": 0 },
+    { "id": "BOTTOM-RIGHT",   "position": {"x": 940.5, "y": -471.5},   "pottingPoints": [ {"x": 940.5, "y": -471.5} ], "COMMENT": [{"x": 940.5, "y": -431.5}, {"x": 900.5, "y": -471.5}],   "radius": 50,  "normal": { "x": -0.707107, "y":  0.707107 },  "type": 0 },
+    { "id": "BOTTOM-CENTER",  "position": {"x": 0, "y": -491.5},       "pottingPoints": [ {"x": 0, "y": -491.5} ],       "radius": 50,  "normal": { "x":  0.0,      "y":  1.0 },       "type": 1 }
   ],
   "banks": [
     {
