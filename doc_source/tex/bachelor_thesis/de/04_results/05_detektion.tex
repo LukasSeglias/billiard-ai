@@ -141,6 +141,18 @@ detektierten Kugelpositionen deutlich verringern konnte.
 % ohne stabilisierung: Total delta movement: 7654.91mm, 148 frames, lost: 0
 % mit  stabilisierung: Total delta movement: 588.849mm, 148 frames, lost: 0
 
-% TODO: evtl. zwei box-plot-diagramme zeichnen?
+In Abbildung \ref{fig:detektion_resultate_tracking_boxplot} sind die Daten aus Tabelle \ref{tab:detektion_resultate_tracking_stats}
+in zwei Box-Plot-Diagrammen visualisiert.
 
-
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{../common/04_results/resources/stabilisierung_boxplot.png}
+    \end{center}
+    \caption{
+        Box-Plot-Diagramme zu der Bewegung der Kugelpositionen mit und ohne Stabilisierung
+        gemäss Tabelle \ref{tab:detektion_resultate_tracking_stats}.
+        Der Wertebereich der Y-Achse wurde auf 5 beschränkt, damit das rechte Diagramm ersichtlich ist.
+        Die Antenne des linken Diagrammes geht bis zum Maximum von 13.59mm.
+    }
+    \label{fig:detektion_resultate_tracking_boxplot}
+\end{figure}
