@@ -139,6 +139,7 @@ extern "C" {
         Event(const Event& other) noexcept;
         Event& operator=(Event&& other) noexcept;
         Event& operator=(const Event& other) noexcept;
+        ~Event();
 
         EventType eventType;
         char* involvedBallId1;

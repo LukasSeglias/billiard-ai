@@ -537,9 +537,8 @@ public class TableBehaviour : MonoBehaviour
                 KeyFrame start = this.frames[this.startFrameIndex];
                 KeyFrame end = this.frames[this.startFrameIndex + 1];
                 updateBalls(start, end, 0);
+				setState(new LineDrawState(this));
             }
-			
-			setState(new LineDrawState(this));
 		}
 		
 		public void update(double timeDelta) {

@@ -46,6 +46,13 @@ Event& Event::operator=(const Event& other) noexcept {
     return *this;
 }
 
+Event::~Event() {
+    delete involvedBallId1;
+    involvedBallId1 = nullptr;
+    delete involvedBallId2;
+    involvedBallId2 = nullptr;
+}
+
 Ball::Ball() : type(), id(), position(), velocity(), visible(), events() {}
 
 Ball::Ball(const char* type, const char* id, Vec2 position, Vec2 velocity, bool visible, Event events) :
