@@ -18,7 +18,7 @@ namespace billiard::search {
     #define FORWARD_SEARCHES 2
     // TODO: find a good number
     #define MAX_VELOCITY_TO_ADD 2000.0f
-    #define MAX_VELOCITY_SQUARED 5000.0f * 5000.0f
+    #define MAX_VELOCITY_SQUARED (5000.0f * 5000.0f)
     #define MAX_EVENTS 30
     #define VELOCITY_STEP (MAX_VELOCITY_TO_ADD / FORWARD_SEARCHES)
     #define COST_FLOAT_TO_INT_FACTOR 100000
@@ -323,16 +323,6 @@ namespace billiard::search {
         return std::nullopt;
     }
 
-    std::optional<Pocket> getSimulationPocketById(const std::shared_ptr<SearchState>& state, const std::string& id) {
-
-        for (auto& pocket : state->_config._table._pockets) {
-            if (pocket._id == id) {
-                return std::make_optional(pocket);
-            }
-        }
-        return std::nullopt;
-    }
-
     std::optional<Rail> getRailById(const std::shared_ptr<SearchState>& state, const std::string& id) {
         if (state->_config._table._rails.count(id)) {
             return state->_config._table._rails.at(id);
@@ -442,9 +432,9 @@ namespace billiard::search {
         }
 
         // Only possible to hit ball if no rail is in the way
-        if (collidesWithRailOnTheWay(parent, state, ball, targetPoint)) {
-            return nullptr;
-        }
+//        if (collidesWithRailOnTheWay(parent, state, ball, targetPoint)) {
+//            return nullptr;
+//        }
 
         auto result = SearchNode::search(parentNode);
         auto resultSearchNode = result->asSearch();
@@ -830,14 +820,20 @@ namespace billiard::search {
                (rail._normal.y == 0 || reflected.y > 0);
     }
 
-    std::vector<std::pair<std::vector<Rail>, glm::vec2>> railCombinations(uint8_t depth, const glm::vec2& target,
-                                                    const std::unordered_map<std::string, Rail>& rails) {
+    bool ignoreRailInSearch(const Rail& rail) {
+        // Ignore small rails
+        return rail._normal.x != 0.0f && rail._normal.y != 0.0f;
+    }
+
+    std::vector<std::pair<std::vector<Rail>, glm::vec2>> railCombinations(uint8_t depth,
+                                                                          const glm::vec2& target,
+                                                                          const std::unordered_map<std::string, Rail>& rails) {
         static std::string agent = "[railCombinations] ";
         DEBUG(agent << "find reflections for target " << target << std::endl);
         std::vector<std::tuple<std::vector<Rail>, glm::vec2, bool>> combinations;
         std::unordered_set<std::string> railIds;
         for (auto& rail : rails) {
-            if (rail.second._normal.x != 0.0f && rail.second._normal.y != 0.0f) {
+            if (ignoreRailInSearch(rail.second)) {
                 DEBUG(agent << "ignore rail: " << rail.first << std::endl);
                 continue;
             }
@@ -931,6 +927,11 @@ namespace billiard::search {
             std::string collidedRailId;
             auto direction = reflected - start;
             for (auto& rail : rails) {
+
+                if (ignoreRailInSearch(rail.second)) {
+                    continue;
+                }
+
                 auto railIntersection = billiard::physics::intersection::halfLineIntersectsLineSegment(start,
                                                                                                    direction,
                                                                                                    rail.second._shiftedStart,
@@ -968,6 +969,7 @@ namespace billiard::search {
         // Only possible to hit ball from "behind"
         if (parent->_action == SearchActionType::NONE) {
             auto pocket = getSearchPocketById(state, parent->_ballId);
+            assert(pocket);
             targetPosition = pocket->_pottingPoint;
         } else {
             auto& targetBall = parent->_state.at(parent->_ballId);
@@ -1009,9 +1011,14 @@ namespace billiard::search {
         static std::string agent = "[expandSearchNodeByBank] ";
         std::vector<std::shared_ptr<SearchNode>> expanded;
 
-        auto target = searchInput->_action == SearchActionType::NONE ?
-                      getSearchPocketById(state, searchInput->_ballId)->_pottingPoint : // TODO: Pockets über unorderd_map speichern?
-                      elasticCollisionTargetPositionFromParent(searchInput, state);
+        glm::vec2 target;
+        if (searchInput->_action == SearchActionType::NONE) {
+            auto pocket = getSearchPocketById(state, searchInput->_ballId); // TODO: Pockets über unorderd_map speichern?
+            assert(pocket);
+            target = pocket->_pottingPoint;
+        } else {
+            target = elasticCollisionTargetPositionFromParent(searchInput, state);
+        }
         DEBUG(agent << "selected target point: " << target << std::endl);
 
         auto combinations = railCombinations(depth, target, state->_config._table._rails);
