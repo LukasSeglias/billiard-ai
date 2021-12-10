@@ -9,12 +9,77 @@ auf jedem Bild abgebildet sind. Dies führt dazu, dass es mehr Testdaten für di
 In den Testbildern sind keine Kugeln mit der Klasse \emph{unknown} vorhanden.
 
 Aus der Wahrheitsmatrix ist ersichtlich, dass braune und rote Kugeln teilweise verwechselt werden.
-Tatsächlich führt
-% TODO: Bild mit Beispiel von braunen Kugeln, die wie rote aussehen
-% TODO: weiter beschreiben
+In Abbildung \ref{fig:classification_results_failed_examples} sind einige dieser falsch klassifizierte Kugeln abgebildet.
+
+\begin{figure}[h!]
+        \centering
+        \begin{subfigure}[b]{0.2\textwidth}
+                \centering
+                \includegraphics[width=1.0\linewidth]{../common/04_results/resources/classification/failed_classification_BROWN_RED_5_original.png}
+                \caption{Rote Kugel klassifiziert als braune Kugel}
+                \label{fig:classification_results_failed_classification_BROWN_RED_5_original}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.2\textwidth}
+                \raggedright
+                \includegraphics[width=1.0\linewidth]{../common/04_results/resources/classification/failed_classification_BROWN_RED_11_original.png}
+                \caption{Rote Kugel klassifiziert als braune Kugel}
+                \label{fig:classification_results_failed_classification_BROWN_RED_11_original}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.2\textwidth}
+                \raggedright
+                \includegraphics[width=1.0\linewidth]{../common/04_results/resources/classification/failed_classification_RED_BROWN_1_original.png}
+                \caption{Braune Kugel klassifiziert als rote Kugel}
+                \label{fig:classification_results_failed_classification_RED_BROWN_1_original}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.2\textwidth}
+                \raggedright
+                \includegraphics[width=1.0\linewidth]{../common/04_results/resources/classification/failed_classification_RED_BROWN_3_original.png}
+                \caption{Braune Kugel klassifiziert als rote Kugel}
+                \label{fig:classification_results_failed_classification_RED_BROWN_3_original}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.2\textwidth}
+                \centering
+                \includegraphics[width=1.0\linewidth]{../common/04_results/resources/classification/failed_classification_BROWN_RED_5_roi.png}
+                \caption{Bildausschnitt für Abbildung \ref{fig:classification_results_failed_classification_BROWN_RED_5_original}}
+                \label{fig:classification_results_failed_classification_BROWN_RED_5_roi}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.2\textwidth}
+                \raggedright
+                \includegraphics[width=1.0\linewidth]{../common/04_results/resources/classification/failed_classification_BROWN_RED_11_roi.png}
+                \caption{Bildausschnitt für Abbildung \ref{fig:classification_results_failed_classification_BROWN_RED_11_original}}
+                \label{fig:classification_results_failed_classification_BROWN_RED_11_roi}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.2\textwidth}
+                \raggedright
+                \includegraphics[width=1.0\linewidth]{../common/04_results/resources/classification/failed_classification_RED_BROWN_1_roi.png}
+                \caption{Bildausschnitt für Abbildung \ref{fig:classification_results_failed_classification_RED_BROWN_1_original}}
+                \label{fig:classification_results_failed_classification_RED_BROWN_1_roi}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.2\textwidth}
+                \raggedright
+                \includegraphics[width=1.0\linewidth]{../common/04_results/resources/classification/failed_classification_RED_BROWN_3_roi.png}
+                \caption{Bildausschnitt für Abbildung \ref{fig:classification_results_failed_classification_RED_BROWN_3_original}}
+                \label{fig:classification_results_failed_classification_RED_BROWN_3_roi}
+        \end{subfigure}
+        \caption{
+                Auswahl aus den falsch klassifizierten Kugeln.
+                Oben sind die vollständigen Bilder der Kugeln, unten die für die Klassifikation verwendeten Bildausschnitte.
+        }
+        \label{fig:classification_results_failed_examples}
+\end{figure}
+
 Die restlichen Kugelfarben werden sehr gut klassifiziert, lediglich ein Bild des Spielballs wird mit einer pinken Kugel verwechselt.
 Keiner der Kugeln wurde die Klasse \emph{unknown} zugewiesen.
+Die Vertrauenswahrscheinlichkeit\cite{wiki:beurteilung_binärer_klassifikator} (engl. accuracy) beträgt 96.6518\%.
 
+% Total accuracy: 0.966518
 \begin{table}[ht]
 \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
 \begin{tabular}{ ccccccccccc }
@@ -35,5 +100,4 @@ Keiner der Kugeln wurde die Klasse \emph{unknown} zugewiesen.
 \label{tab:klassifikation_resultate_confusion_matrix}
 \end{table}
 
-% Total accuracy: 0.966518
 % TODO: beschreiben

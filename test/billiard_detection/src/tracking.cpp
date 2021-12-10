@@ -7,7 +7,7 @@
 TEST(DetectionTest, tracking) {
 
     bool paused = false;
-    std::string videoPath = "./resources/infinity_modus_1.avi";
+    std::string videoPath = "./resources/infinity_modus_2.avi";
 
     cv::Size imageSize = getImageSize();
     billiard::detection::Table table = getTable();

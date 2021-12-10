@@ -384,6 +384,7 @@ TEST(SnookerClassificationTests, snooker_classify_visualization) {
 
 TEST(SnookerClassificationTests, snooker_classify_single_balls) {
 
+    bool writeFailedClassifications = true;
     std::string configurationImage = "./resources/test_detection/with_projector_on/with_halo/1.png";
     std::vector<std::string> classificationFolders = {
 //            "./resources/test_classification/with_projector_off/",
@@ -415,6 +416,8 @@ TEST(SnookerClassificationTests, snooker_classify_single_balls) {
         std::cout << "Unable to configure" << std::endl;
         return;
     }
+
+    int failedClassificationNumber = 1;
 
     for (auto& classificationFolder : classificationFolders) {
 
@@ -459,6 +462,11 @@ TEST(SnookerClassificationTests, snooker_classify_single_balls) {
                 if (predictedLabelIndex != trueLabelIndex) {
                     std::cout << "---> INCORRECT CLASSIFICATION" << std::endl;
                     std::cout << "test: " << confusionMatrix.rows << ", " << confusionMatrix.cols << ", " << trueLabelIndex << ", " << predictedLabelIndex << std::endl;
+                    if (writeFailedClassifications) {
+                        cv::imwrite("failed_classification_" + predictedLabel + "_" + trueLabel + "_" + std::to_string(failedClassificationNumber) + "_original.png", original);
+                        cv::imwrite("failed_classification_" + predictedLabel + "_" + trueLabel + "_" + std::to_string(failedClassificationNumber) + "_roi.png", frame);
+                        failedClassificationNumber++;
+                    }
                 }
             }
         }
