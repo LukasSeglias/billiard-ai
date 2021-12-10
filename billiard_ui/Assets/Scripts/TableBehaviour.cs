@@ -521,9 +521,11 @@ public class TableBehaviour : MonoBehaviour
 		}
 		
 		private void setState(State state) {
-			Debug.Log("Change from " + (currentState != null ? currentState.name() : "") + " to " + state.name());
+			Debug.Log("Change from " + (currentState != null ? currentState.name() : "") + " to " + (state != null ? state.name() : ""));
 			currentState = state;
-			currentState.init();
+			if (currentState != null) {
+				currentState.init();
+			}
 		}
 		
 		public void reset() {
@@ -538,7 +540,9 @@ public class TableBehaviour : MonoBehaviour
                 KeyFrame end = this.frames[this.startFrameIndex + 1];
                 updateBalls(start, end, 0);
 				setState(new LineDrawState(this));
-            }
+            } else {
+				setState(new NoResultState(this));
+			}
 		}
 		
 		public void update(double timeDelta) {
@@ -685,6 +689,23 @@ public class TableBehaviour : MonoBehaviour
 			public abstract string name();
 			
 			public abstract void update(double timeDelta);
+		}
+		
+		private class NoResultState : State {
+			public NoResultState(AnimatorState machine) : base(machine) {}
+			
+			public override void init() {
+				machine.destroyLines();
+				base.init();
+			}
+			
+			public override string name() {
+				return "NoResultState";
+			}
+			
+			public override void update(double timeDelta) {
+				// NOOP
+			}
 		}
 		
 		private class LineDrawState : State {
