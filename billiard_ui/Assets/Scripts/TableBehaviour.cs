@@ -28,6 +28,7 @@ public class TableBehaviour : MonoBehaviour
 	public GameObject dotsParentGameObject;
 	public StabilizationController stabilizationController;
 
+	private static int screenshotIndex = 0;
 	private const float FAST_RESULT_DISPLAY_TIME = 2.0f;
 	private RootState state = new RootState();
 	private AnimatorState animator;
@@ -137,6 +138,8 @@ public class TableBehaviour : MonoBehaviour
 			timeForOneResult = FAST_RESULT_DISPLAY_TIME / animationPlayer.animations();
 			timeSinceLastResult = 0.0f;
 			animationPlayer.showFirst();
+		} else if (Input.GetKeyDown(KeyCode.W)) {
+			ScreenCapture.CaptureScreenshot("unity-screenshot-" + (screenshotIndex++) + ".png");
 		}
 
 		if (statePresenter != null) {
