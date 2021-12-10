@@ -298,6 +298,11 @@ std::optional<billiard::search::state::BallState> billiard::search::node::Node::
         return ballMoving->_before;
     }
 
+    auto ballShot = toBallShot();
+    if(ballShot) {
+        return ballShot->_ball;
+    }
+
     return std::nullopt;
 }
 
@@ -483,6 +488,7 @@ void billiard::search::node::System::append(Layer layer) {
 
             // Wenn Kugel nicht rollt, dann gleitet sie bei einer Kollision.
             auto after = node.second.after();
+            assert(after);
             static glm::vec2 zero {0, 0};
             if (!after->_isRolling && after->_velocity != zero) {
                 _nextRolling.erase(node.first);
@@ -493,6 +499,7 @@ void billiard::search::node::System::append(Layer layer) {
         } else if (node.second._type == NodeType::BALL_SHOT) {
             // Kugel wurde mit cue stick angestossen, sie gleitet zuerst und wechselt nach einer gewissen Zeit zu rollen.
             auto after = node.second.after();
+            assert(after);
             _nextRolling.erase(node.first);
             _nextRolling.insert({node.first, billiard::physics::timeToRolling(after->_velocity)});
         } else if (node.second._type == NodeType::BALL_IN_REST) {
@@ -503,6 +510,7 @@ void billiard::search::node::System::append(Layer layer) {
             _nextRolling.erase(node.first);
         } else if (node.second._type == NodeType::BALL_MOVING) {
             auto after = node.second.after();
+            assert(after);
             if (after->_isRolling) {
                 // Kugel rollt bereits, sie kann nicht mehr von gleiten zu rollen wechseln.
                 _nextRolling.erase(node.first);

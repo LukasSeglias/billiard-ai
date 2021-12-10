@@ -1542,7 +1542,7 @@ namespace billiard::search {
             nextEvent = min(nextPocketCollision(ball, state->_config._table._pockets), nextEvent);
         }
 
-        return nextEvent ? std::make_optional<event::Event>(*nextEvent) : std::nullopt;
+        return nextEvent;
     }
 
     std::optional<event::Event> nextRolling(const std::pair<std::string, node::Node>& ball,
@@ -1688,20 +1688,21 @@ namespace billiard::search {
                                  float time,
                                  const node::Node& previousNode,
                                  const std::shared_ptr<SearchState>& state) {
-        auto previousState = *previousNode.after();
-        auto position = billiard::physics::position(previousState._acceleration,
-                                                    previousState._velocity,
+        auto previousState = previousNode.after();
+        assert(previousState);
+        auto position = billiard::physics::position(previousState->_acceleration,
+                                                    previousState->_velocity,
                                                     time,
-                                                    previousState._position);
-        auto velocityAtPotting = billiard::physics::accelerate(previousState._acceleration,
-                                                               previousState._velocity,
+                                                    previousState->_position);
+        auto velocityAtPotting = billiard::physics::accelerate(previousState->_acceleration,
+                                                               previousState->_velocity,
                                                                time);
         state::BallState newState1 {
                 position,
                 velocityAtPotting,
                 state->_ball._accelerationLength,
                 state->_ball._slideAccelerationLength,
-                previousState._isRolling
+                previousState->_isRolling
         };
 
         state::BallState newState2 {
@@ -1719,13 +1720,14 @@ namespace billiard::search {
                                  float time,
                                  const node::Node& previousNode,
                                  const std::shared_ptr<SearchState>& state) {
-        auto previousState = *previousNode.after();
-        auto position = billiard::physics::position(previousState._acceleration,
-                                                    previousState._velocity,
+        auto previousState = previousNode.after();
+        assert(previousState);
+        auto position = billiard::physics::position(previousState->_acceleration,
+                                                    previousState->_velocity,
                                                     time,
-                                                    previousState._position);
-        auto velocityBeforeCollision = billiard::physics::accelerate(previousState._acceleration,
-                                                                      previousState._velocity,
+                                                    previousState->_position);
+        auto velocityBeforeCollision = billiard::physics::accelerate(previousState->_acceleration,
+                                                                      previousState->_velocity,
                                                                       time);
 
         assert(state->_config._table._rails.count(event._rail));
@@ -1739,7 +1741,7 @@ namespace billiard::search {
                 velocityBeforeCollision,
                 state->_ball._accelerationLength,
                 state->_ball._slideAccelerationLength,
-                previousNode.before()->_isRolling
+                previousState->_isRolling
         };
 
         state::BallState newState2 {
@@ -1757,11 +1759,12 @@ namespace billiard::search {
                                  float time,
                                  const node::Node& previousNode,
                                  const std::shared_ptr<SearchState>& state) {
-        auto previousState = *previousNode.after();
-        auto position = billiard::physics::position(previousState._acceleration,
-                                                    previousState._velocity,
+        auto previousState = previousNode.after();
+        assert(previousState);
+        auto position = billiard::physics::position(previousState->_acceleration,
+                                                    previousState->_velocity,
                                                     time,
-                                                    previousState._position);
+                                                    previousState->_position);
         state::BallState newState {
                 position,
                 glm::vec2{0, 0},
@@ -1777,12 +1780,13 @@ namespace billiard::search {
                                 float time,
                                 const node::Node& previousNode,
                                 const std::shared_ptr<SearchState>& state) {
-        auto previousState = *previousNode.after();
-        auto position = billiard::physics::position(previousState._acceleration,
-                                                    previousState._velocity,
+        auto previousState = previousNode.after();
+        assert(previousState);
+        auto position = billiard::physics::position(previousState->_acceleration,
+                                                    previousState->_velocity,
                                                     time,
-                                                    previousState._position);
-        auto velocity = billiard::physics::accelerate(previousState._acceleration, previousState._velocity, time);
+                                                    previousState->_position);
+        auto velocity = billiard::physics::accelerate(previousState->_acceleration, previousState->_velocity, time);
 
         state::BallState beforeState {
                 position,
@@ -1836,7 +1840,9 @@ namespace billiard::search {
                                  const std::shared_ptr<SearchState>& state) {
 
         auto previousState1 = previousNode1.after();
+        assert(previousState1);
         auto previousState2 = previousNode2.after();
+        assert(previousState2);
 
         auto positionBeforeCollision1 = billiard::physics::position(previousState1->_acceleration,
                                                                     previousState1->_velocity,
