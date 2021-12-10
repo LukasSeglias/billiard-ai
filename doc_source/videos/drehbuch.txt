@@ -1,17 +1,30 @@
 Drehbuch:
 
-TODO: Einleitung
+[Piano-Musik spielt]
+"Billard ist die hohe Kunst des Vorausdenkens, eine Kunst die den Kopf eines Schachspielers
+ und die ruhige Hand eines Konzertpianisten erfordert"
+    - Albert Einstein
+[Piano-Musik fadeout]
+Das soll Albert Einstein über Billard gesagt haben.
+Tatsächlich kann Billard für Anfänger schwierig sein, weil der Spieler aufgrund einer Spielsituation
+einen Stoss wählen und korrekt ausführen muss.
+[Bild von Spielstand ohne Augmentationen]
+Wäre es nicht ideal, wenn der Spieler dabei unterstützt würde?
+
+Damit war die Idee zu Billiard-AI geboren, ein System zu entwickeln, das dem Spieler bei der Planung und Ausführung von
+Stössen hilft.
+[Glühbirne]
 
 Dazu wurden eine Kamera und ein Projektor über einem Billardtisch montiert.
 [Bild/Illustration des Setups]
+Über den Projektor können dem Spieler Informationen auf dem Tisch angezeigt werden.
+[Bild von projizierten Linien?]
 Mithilfe der Kamera wird die aktuelle Spielsituation aufgenommen und die platzierten Kugeln detektiert.
 [Bild aus Sicht der Kamera]
 Die Position jeder Kugel wird mithilfe von Methoden der Computer Vision gefunden und die Farbe jeder Kugel wird erkannt.
 [Video von live-detektion, evtl. mit Debug-Texten mit Klasse]
 
-TODO: überleitung
-
-Der Spieler muss bei dieser Spielsituation einen geeigneten Stoss wählen.
+Angenommen, der Spieler hat die folgende Spielsituation vor sich und muss einen geeigneten Stoss wählen.
 [Bild von Spielstand ohne Augmentationen]
 Er könnte diese Kugel in dieses Loch spielen ...
 [Bild mit eingezeichneten Linien]
@@ -52,5 +65,4 @@ Und der Spieler kann vom System lernen und dieses strategische Denken wie auch d
 Zusätzlich bietet das System die Möglichkeit, automatisch zu erkennen, wann ein Spieler einen neuen Vorschlag benötigt.
 [Video infinity-modus]
 Der Spieler kann so sorgenlos spielen und üben.
-
-
+[Daumen hoch/Smiley]
