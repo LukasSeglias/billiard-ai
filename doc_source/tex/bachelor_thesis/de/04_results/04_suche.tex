@@ -1,9 +1,22 @@
 \section{Suche}
+Dieses Kapitel beinhaltet die Beschreibung und Diskussion der vorgeschlagenen Suchresultate. Diese werden aufgeteilt
+in einzelne Funktionsumfänge, da die Interpretation ansonsten zu komplex wird. Die Funktionsumfänge beschreiben die Suche
+über einen einzelnen Stoss, über die Möglichkeit einer oder mehrerer Bandeninteraktionen, die Berücksichtigung verschiedener
+Startgeschwindigkeiten und der vorausschauende Blick in die Tiefe.
+Ein Suchresultat wird wiederum aufgrund vier verschiedener
+Kriterien beurteilt. So spielt die Distanz des zurückzulegenden Weges, der Kollisionswinkel einzelner Kugeln, die Nähe
+zum Loch einer einzulochenden Kugel und die benötigte Startgeschwindigkeit eine Rolle.
+
+In einem ersten Teil wird sich nur der Suche über einen Stoss ohne Bandeninteraktion und ohne
+verfielfältigter Startgeschwindigkeit gewidmet. Der zweite Teil beinhaltet zusätzlich verschiedene Startgeschwindigkeiten.
+Im dritten Teil werden verschiedene Startgeschwindigkeiten wiederum ignoriert, aber dafür Bandeninteraktionen berücksichtigt.
+Der vierte Teil beinhaltet den kompletten Funktionsumfang.
 
 Um die Resultate der Suche zu bewerten werden nachfolgend Situationen aufgestellt und die von der Suche
-vorgeschlagenen Stösse untersucht.
+vorgeschlagenen Stösse untersucht auf Basis der Kriterien und berücksichtigten Funktionsumfänge untersucht.
 
-Die erste Situation ist in Abbildung \ref{fig:search_situation_1} ersichtlich.
+\subsection{Die einfache Suche}\label{kap:suche:die_einfache_suche}
+Die Situation zur einfachen Suche ist in Abbildung \ref{fig:search_situation_1} ersichtlich.
 Der Spielball ist auf der linken Seite des Tisches und es liegen einige rote Kugeln auf dem Tisch verstreut.
 Die Kugeln 1, 2 und 3 sind nahe bei den Löchern unten-links, oben-rechts resp. oben-zentral.
 Kugel 4 ist in der Nähe des Spielballs, die Kugel 5 ist nahe dem Tischzenturm aufgestellt.
@@ -40,9 +53,8 @@ Mit den ersichtlichen weissen Linien auf jeder Abbildung ist der Pfad jeder Kuge
 Diese voraussichtlichen Pfade werden nach der Suche mithilfe der Simulation des gefundenen Stosses eingezeichnet.
 
 % TODO: bilder ersetzen, sobald die simulation final ist, damit der Pfad der weissen Kugel etwa stimmt.
-\begin{figure}
+\begin{figure}[h!]
     \centering
-    % TODO: in abbildung zu stoss 1 den queue entfernen
     \begin{subfigure}[b]{0.3\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_1.PNG}
@@ -83,12 +95,18 @@ Diese voraussichtlichen Pfade werden nach der Suche mithilfe der Simulation des 
         \caption{Stoss 6}
         \label{fig:situation_1_solution_6}
     \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_7.PNG}
+        \caption{Stoss 7}
+        \label{fig:situation_1_solution_7}
+    \end{subfigure}
     \caption{Gefundene Stösse zu Situation 1 nach bewerteter Schwierigkeit aufsteigend}
     \label{fig:situation_1_solutions}
 \end{figure}
 
-% TODO: Stoss "Kugel 5 ins Loch unten-rechts." ist nicht in den obigen Abbildungen enthalten, trotzdem schreiben wir "Die zuvor beschriebenen denkbaren Stösse wurden tatsächlich gefunden."
-Die Meisten der zuvor beschriebenen denkbaren Stösse wurden tatsächlich gefunden.
+Die zuvor beschriebenen denkbaren Stösse wurden tatsächlich gefunden.
 Der Stoss 1 wurde als der einfachste Stoss bewertet, weil die gesamte zurückzulegende Distanz klein ist,
 der Pfad der beteiligten Kugeln insgesamt sehr geradlinig ist und weil die Kugel 1 sehr nahe am Loch unten-links liegt.
 Der zweiteinfachste Stoss 2 zeigt eine grössere Distanz, welche der Spielball zurücklegen muss und daher erfordert
@@ -110,26 +128,220 @@ Im Gegensatz dazu ist die Distanz der Kugel zum Loch sehr klein und die Gesamtdi
 wiederum einfacher macht. Trotzdem hat in diesem Fall der Winkel die Bewertung so stark reduziert, dass Stoss 4 trotzdem
 als einfacher eingestuft wird.
 
-Stoss 6 zeigt die Idee, Kugel 5 ins Loch unten-zentral zu spielen.
+Der Stoss 6 versenkt die Kugel 2 indirekt über die Kugel 5. Dieser Stoss wird dennoch einfacher bewertet als der
+nachfolgende Stoss 7, der keine Indirektion beinhaltet, da der Auftrittswinkel nicht so gross ist und die weisse Kugel
+nicht so stark angespielt werden muss.
+
+Stoss 7 zeigt die Idee, Kugel 5 ins Loch unten-zentral zu spielen.
 Dazu muss diese in einem sehr grossen Winkel angespielt werden, was die Treffgenauigkeit reduziert und eine
 erhöhte Startgeschwindigkeit des Spielballs erfordert.
-Die weiteren weissen Linien zeigen den weiteren Verlauf der weissen Kugel, welche noch weitere Kugeln anstösst und
-eine weitere rote Kugel ins Loch spielt, wodurch 2 Punkte statt einem Punkt gemacht werden.
-Es wirkt unwahrscheinlich, dass die zweite rote Kugel tatsächlich ins Loch gespielt werden kann, da der Pfad der weissen Kugel
-sehr lange ist und zwei Bandenkollisionen und zwei Kugelkollisionen enthält, bevor diese ins Loch rollt.
-Allerdings sorgt der grosse Winkel, in dem die Kugel 5 angespielt werden muss dafür, dass dieser Stoss als sehr schwierig
-bewertet wird, was den Nutzen von einem zusätzlichen Punkt überwiegt.
 
 Aus den obigen Resultaten ist ersichtlich, dass die Suche diejenigen Stösse vorschlägt, welche nach Studium des Spielstandes
-möglich erscheinen. Zudem berücksichtigt die Bewertung der Schwierigkeit eines Stosses die gesamte Distanz, die Winkel und die Nähe
-der einzulochenden Kugel zum Loch.
+möglich erscheinen. Zudem berücksichtigt die Bewertung der Schwierigkeit eines Stosses die gesamte Distanz, die Winkel, die Nähe
+der einzulochenden Kugel zum Loch und die erforderliche Startgeschwindigkeit.
+\newpage
 
-% TODO: fall beschreiben, wo ein stoss nicht möglich ist, weil eine andere kugel im weg liegt
+\subsection{Die einfache Suche - mit verfielfältigter Startgeschwindigkeit}
+Es wird wiederum die Situation wie in Kapitel \ref{kap:suche:die_einfache_suche} betrachtet. Diesmal wird aber die Verfielfältigung der Startgeschwindigkeiten
+zugelassen, insgesamt werden jeweils drei verschieden starke Stargeschwindigkeiten berücksichtigt.
+Als Resultat wird in etwa dieselbe Abfolge der Suchresultate wie in Kapitel \ref{kap:suche:die_einfache_suche} erwartet, es kann aber durchaus
+sein, dass gewisse Stösse mit geringer Distanz und kleinem Winkel durch die hohe Startgeschwindigkeit schlechter bewertet werden
+als solche mit grösserer Distanz und grösserem Winkel.
 
-% TODO: resultate der suche indirekter stösse beschreiben, sofern umgesetzt
+In Abbildung \ref{fig:situation_1_solutions_startgeschwindigkeit} sind die von der Suche gefundenen Stösse in aufsteigender Schwierigkeit abgebildet.
+Insgesamt wurden 21 Lösungen gefunden, davon werden nur die zehn besten diskutiert.
 
+% TODO: bilder ersetzen, sobald die simulation final ist, damit der Pfad der weissen Kugel etwa stimmt.
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_velocity_1.PNG}
+        \caption{Stoss 1}
+        \label{fig:situation_velocity_1_solution_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_velocity_2.PNG}
+        \caption{Stoss 2}
+        \label{fig:situation_velocity_1_solution_2}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_velocity_3.PNG}
+        \caption{Stoss 3}
+        \label{fig:situation_velocity_1_solution_3}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_velocity_4.PNG}
+        \caption{Stoss 4}
+        \label{fig:situation_velocity_1_solution_4}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_velocity_5.PNG}
+        \caption{Stoss 5}
+        \label{fig:situation_velocity_1_solution_5}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_velocity_6.PNG}
+        \caption{Stoss 6}
+        \label{fig:situation_velocity_1_solution_6}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_velocity_7.PNG}
+        \caption{Stoss 7}
+        \label{fig:situation_velocity_1_solution_7}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_velocity_8.PNG}
+        \caption{Stoss 8}
+        \label{fig:situation_velocity_1_solution_8}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_velocity_9.PNG}
+        \caption{Stoss 9}
+        \label{fig:situation_velocity_1_solution_9}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_velocity_10.PNG}
+        \caption{Stoss 10}
+        \label{fig:situation_velocity_1_solution_10}
+    \end{subfigure}
+    \caption{Gefundene Stösse zu Situation 1 nach bewerteter Schwierigkeit aufsteigend mit verschiedenen Startgeschwindigkeiten}
+    \label{fig:situation_1_solutions_startgeschwindigkeit}
+\end{figure}
+
+Wie zu erwarten sieht die Abfolge der Suchresultate nicht wesentlich anders aus wie vorhin. Was auffällt ist die Tatsache,
+dass eine erhöhte Geschwindigkeit durchaus dazu führen kann, dass ein Stoss, der einen grösseren Weg und/oder Winkel aufweist,
+besser gewertet werden kann. Dies ist z.B. bei Stoss 3 ersichtlich, der besser gewertet wird als Stoss 4 oder bei
+Stoss 8, der schwieriger als Stoss 6 und 7 ist. Bei Stoss 8 könnte argumentiert werden, dass die Stärke
+in dem Fall keinen grossen Unterschied macht, da die Kugel 2 mit grosser Wahrscheinlichkeit eingelocht werden kann,
+jedoch ist generell ein sanftes Billardspiel zu bevorzugen, weswegen die Bewertung in dem Sinne durchaus gerechtfertigt
+sein kann.
+
+\newpage
+
+\subsection{Die einfache Suche - mit Bandenkollisionen}
+In diesem Fall werden verschiedene Startgeschwindigkeiten nicht berücksichtigt, jedoch wird das Bandenspiel zugelassen.
+Auch hier sollten sich die Resultate nicht wesentlich zur einfachen Suche in Kapitel \ref{kap:suche:die_einfache_suche} ändern.
+Ein Unterschied ist vor allem gegen Ende bei Stoss 6 und 7 zu erwarten, so wird eventuell eher ein Spiel über eine Bande berücksichtigt,
+als der starke Stoss 7 oder der indirekte Stoss 6.
+
+In Abbildung \ref{fig:situation_1_solutions_bande} sind die Resultate in aufsteigender Schwierigkeit gegeben.
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_rail_1.PNG}
+        \caption{Stoss 1}
+        \label{fig:situation_rail_1_solution_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_rail_2.PNG}
+        \caption{Stoss 2}
+        \label{fig:situation_rail_1_solution_2}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_rail_3.PNG}
+        \caption{Stoss 3}
+        \label{fig:situation_rail_1_solution_3}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_rail_4.PNG}
+        \caption{Stoss 4}
+        \label{fig:situation_rail_1_solution_4}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_rail_5.PNG}
+        \caption{Stoss 5}
+        \label{fig:situation_rail_1_solution_5}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_rail_6.PNG}
+        \caption{Stoss 6}
+        \label{fig:situation_rail_1_solution_6}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_rail_7.PNG}
+        \caption{Stoss 7}
+        \label{fig:situation_rail_1_solution_7}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_rail_8.PNG}
+        \caption{Stoss 8}
+        \label{fig:situation_rail_1_solution_8}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_rail_9.PNG}
+        \caption{Stoss 9}
+        \label{fig:situation_rail_1_solution_9}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/simple_search/situation_diverse_solution_rail_10.PNG}
+        \caption{Stoss 10}
+        \label{fig:situation_rail_1_solution_10}
+    \end{subfigure}
+    \caption{Gefundene Stösse zu Situation 1 nach bewerteter Schwierigkeit aufsteigend mit Berücksichtigung der Banden}
+    \label{fig:situation_1_solutions_bande}
+\end{figure}
+
+Bis zu Stoss 5 gibt es keine Änderungen der Vorschläge. Bei Stoss 6 wird
+anstelle des indirekten Stoss auf Kugel 2 in Kapitel \ref{kap:suche:die_einfache_suche} jedoch eine Lösung über
+die untere Bande auf Kugel 3 empfohlen. Dies macht durchaus Sinn, da das Spiel über
+die untere Bande einerseits direkter ist und andererseits eine ähnliche Distanz
+mit kleineren Winkeln vorliegt. Zudem liegt die Kugel 3 näher am Loch als die Kugel 2.
+
+Stoss 7 schlägt eine ähnliche Lösung wie Stoss 6 vor, jedoch über die obere Bande auf die Kugel 5, die im
+mittleren unteren Loch versenkt wird. Auch dies ist eine direktere Lösung mit kleineren Distanzen
+als der Stoss 6 aus Kapitel \ref{kap:suche:die_einfache_suche}, er wird aber auch schlechter als Stoss 6 dieses Kapitels
+gewertet, da die Kugel 5 einen längeren Weg zum Loch zurücklegen muss, was die Wahrscheinlichkeit
+eines akkumulierten Fehlers erhöht.
+
+Stoss 8 entspricht nun dem Stoss 6 aus Kapitel \ref{kap:suche:die_einfache_suche}. Dieser reiht sich vor
+dem Stoss 9 dieses Kapitels ein, wo es ebenfalls um das Versenken der Kugel 2 geht. Da die Distanzen
+zwischen den Kugeln kleiner sind und die Winkel ungefähr gleich gross, wird der indirekte Stoss
+über eine Kugel bevorzugt.
+
+Abschliessend zeigt Stoss 10 das direkte Versenken der Kugel 5 im mittleren unteren Loch.
+Da der Winkel und die Startgeschwindigkeit sehr gross sind, ist das Resultat durchaus nachzuvollziehen.
+
+\newpage
 % TODO: resultate der suche über mehrere stösse beschreiben, sofern umgesetzt
-
 
 % TODO: maybe describe, otherwise delete images
 %

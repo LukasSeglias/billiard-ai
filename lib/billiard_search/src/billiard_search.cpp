@@ -34,7 +34,7 @@ namespace billiard::search {
     // Maximum number of ball collisions to be considered in search of a path
     #define SEARCH_MAX_BALL_COLLISIONS 2
     // Maximum number of rail collisions to be considered in search of a path
-    #define SEARCH_MAX_RAIL_COLLISIONS MAX_SEARCH_DEPTH * BANK_INDIRECTION
+    #define SEARCH_RAIL_COLLISION_WEIGHT 2
     #define PI 3.14159265358979323846 /* pi */
     // Maximum angle in which a ball can hit another ball (must be <= 90 degrees).
     #define MAX_POSSIBLE_HIT_ANGLE std::cos(PI/180.0f * 87.0f) // 87 degrees
@@ -1263,7 +1263,7 @@ namespace billiard::search {
                 indirectionDebugOutput << " Ball collision -> indirection +" << std::to_string(step) << " ";
 #endif
             } else if (event._type == PhysicalEventType::RAIL_COLLISION) {
-                double step = 1.0 / ((double) SEARCH_MAX_RAIL_COLLISIONS);
+                double step = 1.0 / ((double) BANK_INDIRECTION) * SEARCH_RAIL_COLLISION_WEIGHT;
                 totalIndirectionCost += step;
 
 #ifdef BILLIARD_DEBUG
