@@ -1006,8 +1006,10 @@ namespace billiard::search {
     }
 
     std::vector<std::shared_ptr<SearchNode>>
-    expandSearchNodeByBank(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state,
-                         const std::shared_ptr<SearchNodeSearch>& searchInput, uint8_t depth) {
+    expandSearchNodeByBank(const std::shared_ptr<SearchNode>& input,
+                           const std::shared_ptr<SearchState>& state,
+                           const std::shared_ptr<SearchNodeSearch>& searchInput,
+                           uint8_t depth) {
         static std::string agent = "[expandSearchNodeByBank] ";
         std::vector<std::shared_ptr<SearchNode>> expanded;
 
@@ -1113,20 +1115,6 @@ namespace billiard::search {
         }
 
         return expanded;
-    }
-
-    double weightedDistance(double distanceSquared,
-                            double optimalDistanceSquared,
-                            double optimalDistanceCost,
-                            double maxDistanceSquared) {
-
-        if (distanceSquared < optimalDistanceSquared) {
-            // Line starting at x=0, y=1 going to x=optimalDistanceSquared, y=optimalDistanceCost
-            return (optimalDistanceCost-1)/optimalDistanceSquared * distanceSquared + 1;
-        } else {
-            // Line starting at x=optimalDistanceSquared, y=optimalDistanceCost going to x=maxDistanceSquared, y=1
-            return (1-optimalDistanceCost)/(maxDistanceSquared-optimalDistanceSquared) * distanceSquared;
-        }
     }
 
     uint64_t searchCost(const std::vector<PhysicalEvent>& events,
@@ -1360,8 +1348,7 @@ namespace billiard::search {
 #endif
 
                 if (layer.final()) {
-                    auto searchedTypes = getTypeOf(parentSearchInput->_search,
-                                                parentSearchInput->_state);
+                    auto searchedTypes = getTypeOf(parentSearchInput->_search, parentSearchInput->_state);
                     if (mustBeValid && !state->_config._rules._isValidEndState(searchedTypes, layer)) {
                         DEBUG(agent << "End state is not valid" << std::endl);
                         return expanded;
@@ -1547,10 +1534,12 @@ namespace billiard::search {
 
     std::optional<event::Event> nextRolling(const std::pair<std::string, node::Node>& ball,
                                             const std::unordered_map<std::string, float>& nextRollingEvents) {
-        if (nextRollingEvents.find(ball.first) != nextRollingEvents.end()) {
+
+        auto found = nextRollingEvents.find(ball.first);
+        if (found != nextRollingEvents.end()) {
             event::Event event {
                 event::EventType::BALL_ROLLING,
-                nextRollingEvents.find(ball.first)->second,
+                found->second,
                 event::EventVariant{event::BallRolling{ball.first}}};
             DEBUG("[nextBallRolling]: " << event << std::endl);
             return event;
