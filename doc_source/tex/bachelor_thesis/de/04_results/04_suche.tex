@@ -1,8 +1,8 @@
 \section{Suche}
-Dieses Kapitel beinhaltet die Beschreibung und Diskussion der vorgeschlagenen Suchresultate. Diese werden aufgeteilt
+Dieses Kapitel beinhaltet die Beschreibung und Diskussion der vorgeschlagenen Suchresultaten. Diese werden aufgeteilt
 in einzelne Funktionsumfänge, da die Interpretation ansonsten zu komplex wird. Die Funktionsumfänge beschreiben die Suche
 über einen einzelnen Stoss, über die Möglichkeit einer oder mehrerer Bandeninteraktionen, die Berücksichtigung verschiedener
-Startgeschwindigkeiten und der vorausschauende Blick in die Tiefe.
+Startgeschwindigkeiten und der vorausschauende Blick über mehrere Stösse.
 Ein Suchresultat wird wiederum aufgrund vier verschiedener
 Kriterien beurteilt. So spielt die Distanz des zurückzulegenden Weges, der Kollisionswinkel einzelner Kugeln, die Nähe
 zum Loch einer einzulochenden Kugel und die benötigte Startgeschwindigkeit eine Rolle.
@@ -338,11 +338,11 @@ zwischen den Kugeln kleiner sind und die Winkel ungefähr gleich gross, wird der
 über eine Kugel bevorzugt.
 
 Abschliessend zeigt Stoss 10 das direkte Versenken der Kugel 5 im mittleren unteren Loch.
-Da der Winkel und die Startgeschwindigkeit sehr gross sind, ist das Resultat durchaus nachzuvollziehen.
+Da der Winkel und die Startgeschwindigkeit sehr gross sind, ist die hohe Schwierigkeit durchaus nachzuvollziehen.
 
 \newpage
 \subsection{Die Suche über mehrere Stösse}
-Um die Resultate der Suche über mehrere Stösse zu vergleichen, wird die die Anzahl der Sösse, die in die Tiefe
+Um die Resultate der Suche über mehrere Stösse zu vergleichen, wird die Anzahl der Stösse, die in der Suche
 berücksichtigt werden, auf zwei begrenzt. Es wird grundsätzlich das vorherige Szenario, zu finden in Abbildung
 \ref{fig:search_situation_2}, verwendet, jedoch wird die
 Kugel 3 mit einer Gelben\footnote{Die Kugel muss Gelb sein, da es noch weitere rote Kugeln auf dem Tisch hat. Die
@@ -367,7 +367,7 @@ einen Einfluss auf die Vorschläge haben. Zudem ist die Berücksichtigung mehrer
 \end{figure}
 
 In Abbildung \ref{fig:situation_2_solutions} sind die Resultate in aufsteigender Schwierigkeit gegeben. Es wird
-jeweils in der linken Spale der erste Stoss und in der rechen der darauf basierende zweite Stoss angegeben.
+jeweils in der linken Spalte der erste Stoss und in der Rechten der darauf basierende zweite Stoss angegeben.
 
 \begin{figure}[h!]
     \centering
@@ -452,18 +452,18 @@ wo die Kugel 3 ins mittlere obere Loch versenkt wird.
 Der nächstbeste Stoss ist die Kugel 1 ins untere linke Loch zu versenken und
 daraufhin direkt auf die Kugel 3 zu spielen, um sie ebenso wie beim Stoss 1-B im mittleren oberen Loch zu versenken.
 
-Darauffolgend wird in Stoss 3-A das Versenken der Kugel 4 im linken oberen Loch vorgeschlagen, und in Stoss 4-B ein
-direktes Versenken der Kugel 3 im mittleren oberen Loch.
-
-Stoss 4-A und 3-A sin äquivalent, jedoch unterscheiden sich die darauf basierenden Stösse. Stoss 4-B schlägt vor, die
-Kugel 3 im mittleren oberen Loch über die untere Bande zu versenken. Dies ist klar schwerer als der direkte Weg in Stoss
-3-B.
+In den Stössen 3-A und 4-A wird derselbe Stoss vorgeschlagen, die Kugel 4 im linken oberen Loch zu versenken.
+Lediglich die darauf basierenden Stösse 3-B und 4-B unterscheiden sich.
+Stoss 3-B spielt die Kugel 3 direkt ins mittlere obere Loch, während Stoss 4-B die Kugel über die untere Bande in dasselbe Loch spielt.
+Damit ist Stoss 4-B schwieriger, weil dieser eine Bandeninteraktion enthält und die Distanz grösser ist.
 
 Abschliessend wird das Versenken der Kugel 2 im oberen rechten Loch vorgeschlagen.
 Der Stoss 5-B wird über die untere Bande anstelle eines Direkttreffers bevorzugt.
-Dies wird mit dem sehr grossen Winkel zusammenhängen, der nötig wäre, um die Kugel 3 im
-mittleren oberen Loch zu versenken. Ein solch grosser Winkel erfordert eine sehr hohe
-Anfangsgeschwindigket, was die Treffgenauigkeit stark verschlechtert und daher zu vermeiden ist.
+Ein direkter Stoss auf die Kugel 3 würde einen Winkel von praktisch $90\textdegree$ erfordern, was unmöglich wäre.
+
+Mit diesem Kapitel wurde die Vorschläge der Suche von Stösse exemplarisch anhand eines Spielstands erläutert und bewertet.
+Eine komplette Analyse weiterer Spielstände unter Berücksichtigung aller Funktionalitäten,
+insbesondere der Suche über mehr als zwei Stösse, würde den Rahmen dieses Dokuments sprengen.
 
 % TODO: maybe describe, otherwise delete images
 %
