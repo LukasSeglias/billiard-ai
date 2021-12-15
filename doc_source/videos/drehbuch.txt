@@ -19,10 +19,10 @@ Dazu wurden eine Kamera und ein Projektor über einem Billardtisch montiert.
 [Bild/Illustration des Setups]
 Über den Projektor können dem Spieler Informationen auf dem Tisch angezeigt werden.
 [Bild von projizierten Linien?]
-Mithilfe der Kamera wird die aktuelle Spielsituation aufgenommen und die platzierten Kugeln detektiert.
+Mithilfe der Kamera wird die aktuelle Spielsituation aufgenommen.
 [Bild aus Sicht der Kamera]
-Die Position jeder Kugel wird mithilfe von Methoden der Computer Vision gefunden und die Farbe jeder Kugel wird erkannt.
-[Video von live-detektion, evtl. mit Debug-Texten mit Klasse]
+Die Position und Farbe jeder Kugel werden mithilfe von Methoden der Bildverarbeitung und -analyse erkannt und angezeigt.
+[Video von live-detektion, evtl. mit Debug-Texten (nur) mit Klasse, bestenfalls mit einer bewegten Kugel, die verfolgt wird]
 
 Angenommen, der Spieler hat die folgende Spielsituation vor sich und muss einen geeigneten Stoss wählen.
 [Bild von Spielstand ohne Augmentationen]
@@ -33,6 +33,11 @@ Er könnte diese Kugel in dieses Loch spielen ...
 Damit sich der Spieler nicht den Kopf zerbrechen muss, unterstützt in Billiard-AI bei der Suche.
 Das System sucht nach möglichen Stössen, die der Spieler in der vorliegenden Situation ausführen könnte.
 [Video mit den verschiedenen Suchresultaten nacheinander]
+Gefunden werden direkte Stösse ...
+[Bild von direktem Stoss, evtl. sogar Video mit erfolgreichem Einlochen]
+... sowie Stösse über die Banden.
+[Bild von Stoss über eine Bande, evtl. sogar Video mit erfolgreichem Einlochen]
+
 Die gefundenen Stösse werden nach deren Schwierigkeit bewertet. 
 [Bild eines Stosses]
 In die Bewertung fliessen verschiedene Faktoren ein, wie etwa die Distanz, welche die Kugeln zurücklegen müssen ...
@@ -63,6 +68,8 @@ Und der Spieler kann vom System lernen und dieses strategische Denken wie auch d
 [Video, wie ein Spieler tatsächlich zwei Stösse nacheinander erfolgreich einlocht]
 
 Zusätzlich bietet das System die Möglichkeit, automatisch zu erkennen, wann ein Spieler einen neuen Vorschlag benötigt.
-[Video infinity-modus]
+[Video infinity-modus, idealerweise mit erfolgreichen Stössen]
 Der Spieler kann so sorgenlos spielen und üben.
 [Daumen hoch/Smiley]
+[Piano-Musik spielt]
+[Abspann]
