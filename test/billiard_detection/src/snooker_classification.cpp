@@ -328,7 +328,8 @@ TEST(SnookerClassificationTests, snooker_classify_visualization) {
 
             cv::Mat original = imread(imagePath, cv::IMREAD_COLOR);
 
-            float radius = original.rows / 2 * config.roiRadiusFactor;
+//            float radius = original.rows / 2 * config.roiRadiusFactor;
+            float radius = 16.0 /*pixel*/ * config.roiRadiusFactor;
 
             const cv::Rect& roi = cv::Rect{
                     (int) (original.cols / 2 - radius),
@@ -439,7 +440,7 @@ TEST(SnookerClassificationTests, snooker_classify_single_balls) {
 
                 cv::Mat original = imread(imagePath, cv::IMREAD_COLOR);
 
-                double radius = original.rows / 2 * classificationConfig.roiRadiusFactor;
+                double radius = detectionConfig->ballRadiusInPixel * classificationConfig.roiRadiusFactor;
 
                 const cv::Rect& roi = cv::Rect{
                         (int) ((double) original.cols / 2 - radius),
@@ -448,6 +449,26 @@ TEST(SnookerClassificationTests, snooker_classify_single_balls) {
                         (int) (2 * radius)
                 };
                 cv::Mat frame = original(roi);
+
+//                {
+//                    double radius = detectionConfig->ballRadiusInPixel;
+//
+//                    const cv::Rect& roi = cv::Rect{
+//                            (int) ((double) original.cols / 2 - radius),
+//                            (int) ((double) original.rows / 2 - radius),
+//                            (int) (2 * radius),
+//                            (int) (2 * radius)
+//                    };
+//                    cv::Mat test = original(roi);
+//                    cv::imshow("test", test);
+//                    cv::imwrite("radius_full.png", test);
+//                    cv::imshow("frame", frame);
+//                    cv::imwrite("radius_reduced.png", frame);
+//                    cv::waitKey();
+//                }
+
+//                cv::imshow("frame", frame);
+//                cv::waitKey();
 
                 billiard::detection::Ball ball {};
                 ball._id = imagePath;
