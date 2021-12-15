@@ -140,6 +140,8 @@ public class TableBehaviour : MonoBehaviour
 			animationPlayer.showFirst();
 		} else if (Input.GetKeyDown(KeyCode.W)) {
 			ScreenCapture.CaptureScreenshot("unity-screenshot-" + (screenshotIndex++) + ".png");
+		} else if (Input.GetKeyDown(KeyCode.Q)) {
+			animator.toggleDottedLines();
 		}
 
 		if (statePresenter != null) {
@@ -474,6 +476,7 @@ public class TableBehaviour : MonoBehaviour
 		private BallMaterial material = BallMaterial.CIRCLE;
 		private double globalTime;
 		private bool repeatFirstBreak;
+		private bool showDottedLines;
 		
 		public AnimatorState(Dictionary<string, Material> mappedMaterials, Material transparent,
 		    Configuration config, GameObject queue, Material dottedLineMaterial) {
@@ -482,6 +485,7 @@ public class TableBehaviour : MonoBehaviour
 			this.mappedMaterials = mappedMaterials;
 			this.transparent = transparent;
 			this.dottedLineMaterial = dottedLineMaterial;
+			this.showDottedLines = true;
 		}
 
 		public void setAnimation(KeyFrame[] frames) {
@@ -570,6 +574,10 @@ public class TableBehaviour : MonoBehaviour
 			        setMaterial(BallMaterial.CIRCLE);
                     break;
 			}
+		}
+		
+		public void toggleDottedLines() {
+			this.showDottedLines = !this.showDottedLines;
 		}
 
 		public void setMaterial(BallMaterial material) {
@@ -754,10 +762,11 @@ public class TableBehaviour : MonoBehaviour
 					HashSet<string> alreadyHandled = new HashSet<string>();
 					foreach (var endBall in end.balls) {
 						var startBall = machine.findBall(endBall.id, start);
+						var involvedBallId = endBall.events.involvedBallId1 != endBall.id ? endBall.events.involvedBallId1 : endBall.events.involvedBallId2;
+						Ball involvedStartBall = machine.findBall(involvedBallId, start);
 						if (endBall.events.eventType == EventType.BALL_POTTING) {
 							impulsIds.Add(endBall.id);
-						} else if (impulsIds.Contains(endBall.id) && endBall.events.eventType == EventType.BALL_COLLISION && startBall.events.eventType == EventType.BALL_IN_REST) {
-							var involvedBallId = endBall.events.involvedBallId1 != endBall.id ? endBall.events.involvedBallId1 : endBall.events.involvedBallId2;
+						} else if (impulsIds.Contains(endBall.id) && endBall.events.eventType == EventType.BALL_COLLISION && (startBall.events.eventType != EventType.BALL_IN_REST && involvedStartBall.events.eventType != EventType.BALL_IN_REST || startBall.events.eventType == EventType.BALL_IN_REST)) {
 							if (!alreadyHandled.Contains(involvedBallId)) {
 								
 								if (impulsIds.Contains(endBall.id) && impulsIds.Contains(involvedBallId)) {
@@ -776,6 +785,10 @@ public class TableBehaviour : MonoBehaviour
 					foreach (var startBall in start.balls) {
 						var endBall = machine.findBall(startBall.id, end);
 						if (endBall != null && startBall.position != endBall.position) {
+							if (!impulsIds.Contains(startBall.id) && !machine.showDottedLines) {
+								continue;
+							}
+							
 							GameObject lineObject = new GameObject(string.Format("Line{0}", startBall.id));
 							LineRenderer lRend = lineObject.AddComponent<LineRenderer>();
 								
