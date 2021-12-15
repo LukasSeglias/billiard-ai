@@ -12,19 +12,12 @@ In den 50 Referenzbildern sind insgesamt 835 Kugelpositionen hinterlegt, in Tabe
 sind einige statistische Kennzahlen aus diesem Vergleich aufgeführt. Der Median liegt bei ca. 2.33mm und 50\% der Detektionen
 haben einen Positionsfehler zwischen ca. 0mm - 3.7mm. Die maximale Abweichung zwischen Referenzdaten und Detektion liegt bei 8.35mm.
 
-% TODO: evtl. einige Bilder als beispiele zeigen?
-
 \begin{table}[ht]
     \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
-    \begin{tabular}{ lr }
+    \begin{tabular}{ rrrrrr }
         \rowcolor{\seccolor!50}
-        Bezeichnung & Wert\\
-        Anzahl Kugeln & 835\\
-        Minimum & 0.000004mm\\
-        Unteres Quartil & 0.000601mm\\
-        Median & 2.329217mm\\
-        Oberes Quartil & 3.680264mm\\
-        Maximum & 8.3566mm
+        Anzahl Kugeln & Minimum & Unteres Quartil & Median & Oberes Quartil & Maximum\\
+        835 & 0.000004mm & 0.000601mm & 2.329217mm & 3.680264mm & 8.3566mm
     \end{tabular}
     \caption{Statistische Zahlen zu den Distanzen zwischen den Kugelpositionen der Referenzdaten und den detektierten Kugelpositionen.}
     \label{tab:detektion_resultate_distanzen_stats}
@@ -33,7 +26,56 @@ haben einen Positionsfehler zwischen ca. 0mm - 3.7mm. Die maximale Abweichung zw
 % Pixel distance: count=624, min=0.000000, lower quartile=1.000000, median=1.414214, upper quartile=2.236068, max=5.099020
 % Model distance: count=835, min=0.000004, lower quartile=0.000601, median=2.329217, upper quartile=3.680264, max=8.356600
 
-Diese Vergleichsmethode enthält an sich bereits einen Fehlerbereich, welcher der Auflösung des Bildes geschuldet ist.
+In Abbildung \ref{fig:detection_results_bad_detections} sind die beiden grössten Detektionsfehler abgebildet.
+Dabei handelt es sich um Fälle, wo die detektierte Pixelposition um bis zu 5 Pixel Abweichung gegenüber den Referenzdaten aufweist.
+Aus diesen Abweichungen in Pixeln sind Abweichungen bis maximal 8.35mm entstanden.
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[t]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/bad_detection_4_8.356600_5.099020.png}
+        \caption{Detektionsfehler einer roten Kugel von 5 Pixel und 8.35mm}
+        \label{fig:detection_results_bad_detection_1}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.3\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../common/04_results/resources/bad_detection_5_7.727108_4.472136.png}
+        \caption{Detektionsfehler einer pinken Kugel von 4.47 Pixel und 7.72mm}
+        \label{fig:detection_results_bad_detection_2}
+    \end{subfigure}
+    \caption{
+        Die grössten festgestellten Fehler in der Positionsdetektion. Gelb ist die detektierte Kugelposition, türkis die Position aus den Referenzdaten.
+        Ein gewisser Fehler in den Referenzdaten ist bei diesen Positionen ist nicht ausgeschlossen.
+    }
+    \label{fig:detection_results_bad_detections}
+\end{figure}
+
+In Tabelle \ref{tab:detektion_resultate_distanzen_stats_pro_kugelfarbe} wurden die Positionsfehler der Detektion
+gegenüber den Referenzdaten pro Kugelfarbe ausgewertet.
+Es wurden lediglich 32 der 50 Referenzbilder verwendet, da bei den Anderen die korrekten Farben der Kugeln nicht hinterlegt wurden.
+Es gibt bei den meisten Kugelfarben keine grossen Unterschiede zu den Zahlen in Tabelle \ref{tab:detektion_resultate_distanzen_stats}.
+Lediglich bei den Kugelfarben gelb und grün liegt der Median tiefer als bei allen anderen Kugelfarben.
+
+\begin{table}[ht]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{ lrrrrrrr }
+        \rowcolor{\seccolor!50}
+        Kugelfarbe & Anzahl Kugeln & Minimum & Unteres Quartil & Median & Oberes Quartil & Maximum\\
+        BROWN & 32 & 0.000153mm & 1.682379mm & 2.454655mm & 3.740010mm & 5.395337mm \\
+        PINK & 32 & 0.000076mm & 1.678389mm & 2.338619mm & 3.422637mm & 7.727108mm \\
+        RED & 224 & 0.000004mm & 1.672397mm & 2.358258mm & 3.659417mm & 8.356600mm \\
+        BLACK & 32 & 0.000218mm & 1.685366mm & 2.377796mm & 3.794632mm & 4.688987mm \\
+        YELLOW & 32 & 0.000011mm & 1.685552mm & 1.716131mm & 3.393303mm & 5.378226mm \\
+        WHITE & 32 & 0.000086mm & 1.677719mm & 2.357014mm & 3.775538mm & 5.394620mm \\
+        BLUE & 32 & 0.000071mm & 1.684771mm & 2.351218mm & 3.419713mm & 5.391995mm \\
+        GREEN & 32 & 0.000041mm & 0.000356mm & 1.707863mm & 3.703774mm & 7.039578mm
+    \end{tabular}
+    \caption{Statistische Zahlen zu den Distanzen zwischen den Kugelpositionen der Referenzdaten und den detektierten Kugelpositionen pro Kugelfarbe.}
+    \label{tab:detektion_resultate_distanzen_stats_pro_kugelfarbe}
+\end{table}
+
+Die verwendete Vergleichsmethode enthält an sich bereits einen Fehlerbereich, welcher der Auflösung des Bildes geschuldet ist.
 Eine genaue Beschreibung ist in \cite{project2:fehler_grundwahrheit} enthalten, hier werden die wichtigsten Erkenntnisse
 erneut aufgeführt.
 Die Ausmasse des Spielbereichs des Billardtisches betragen 1881mm mal 943mm, die Auflösung des Bildes beträgt 1280x720 Pixel.
