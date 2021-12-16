@@ -129,6 +129,11 @@ public class TableBehaviour : MonoBehaviour
             search.types = config.coloredSearchTypes;
             Debug.Log("[TableBehaviour] Search with colored balls: " + string.Join(", ", search.types));
             searchSolution(search);
+		} else if (Input.GetKeyDown(KeyCode.A)) {
+		    Search search = new Search();
+            search.types = config.infinityModeSearchTypes;
+            Debug.Log("[TableBehaviour] Search with all balls: " + string.Join(", ", search.types));
+            searchSolution(search);
 		} else if (Input.GetKeyDown(KeyCode.Y)) {
 			AnimationService.toggleSearch();
 		} else if (Input.GetKeyDown(KeyCode.X)) {
@@ -446,7 +451,7 @@ public class TableBehaviour : MonoBehaviour
 			var textObject = ball.transform.Find("Text").gameObject;
 			var pos = new Vec2{x = ball.transform.position.x, y = ball.transform.position.y};
 			var invPos = StretchingUtility.get().invPosition(pos);
-			textObject.GetComponent<TMPro.TextMeshPro>().SetText(string.Format("[{0:F4}; {1:F4}]\n{2} {3}", invPos.x, invPos.y, id, trackingCount));
+			textObject.GetComponent<TMPro.TextMeshPro>().SetText(string.Format("[{0:F4}; {1:F4}]\n{2} {3}", invPos.x, invPos.y, type, trackingCount));
 		}
 	}
 
