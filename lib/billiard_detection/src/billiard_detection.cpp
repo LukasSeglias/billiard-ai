@@ -325,6 +325,8 @@ billiard::detection::State track(billiard::detection::Tracking& tracking,
     std::list<int> untrackedBallIndices;
     std::set<std::string> trackedIds;
 
+    int newCurrentCueBallIndex = -1;
+
     trackCueBall(tracking, previousState, currentState, maxTrackingDistanceSquared, maxStableAverageMovementSquared);
 
     for (int currentBallIndex = 0; currentBallIndex < currentState._balls.size(); currentBallIndex++) {
@@ -416,6 +418,12 @@ billiard::detection::State track(billiard::detection::Tracking& tracking,
             ball._trackingCount = trackingCount;
             result._balls.push_back(ball);
 
+            if (currentBallIndex == tracking.cueBallIndex) {
+                // Patch cueBallIndex since the order of the balls in the result changed
+                // in order to have the correct index for the next frame, see previousCueBallIndex.
+                newCurrentCueBallIndex = result._balls.size() - 1;
+            }
+
             TRACKING_DEBUG(agent << debugOutput.str() << std::endl);
 
         } else {
@@ -424,6 +432,10 @@ billiard::detection::State track(billiard::detection::Tracking& tracking,
             tracking.untrackedCount++;
         }
     }
+
+    // Patch cueBallIndex since the order of the balls in the result changed
+    // in order to have the correct index for the next frame, see previousCueBallIndex.
+    tracking.cueBallIndex = newCurrentCueBallIndex;
 
     tracking.lostCount = countLostBalls(previousState, tracked, minTrackedDurationBeforeLost);
 
@@ -448,6 +460,7 @@ billiard::detection::State track(billiard::detection::Tracking& tracking,
         while (std::find(alreadyAssignedIds.begin(), alreadyAssignedIds.end(), id) != alreadyAssignedIds.end()) {
             id = currentBall._type + "-" + std::to_string(number++);
         }
+        alreadyAssignedIds.push_back(id);
 
         billiard::detection::Ball ball;
         ball._id = id;
