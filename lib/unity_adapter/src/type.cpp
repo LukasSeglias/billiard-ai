@@ -363,7 +363,7 @@ State::State(const State& other) noexcept :
     ballSize(other.ballSize),
     status(other.status),
     velocity(other.velocity),
-    fromUnity(other.fromUnity) {
+    fromUnity(false) {
     for(int i = 0; i < ballSize; i++) {
         this->balls[i] = BallState{other.balls[i]};
     }
@@ -389,7 +389,7 @@ State& State::operator=(const State& other) noexcept {
     ballSize = other.ballSize;
     status = other.status;
     velocity = other.velocity;
-    fromUnity = other.fromUnity;
+    fromUnity = false;
     this->balls = new BallState[ballSize];
     for(int i = 0; i < ballSize; i++) {
         this->balls[i] = BallState{other.balls[i]};

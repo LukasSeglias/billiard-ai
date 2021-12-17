@@ -242,13 +242,6 @@ extern "C" {
     };
 
     struct EXPORT_UNITY_ADAPTER_LIB Text {
-        Text();
-        Text(const char* text);
-        Text(Text&& other) noexcept;
-        Text(const Text& other) noexcept;
-        Text& operator=(Text&& other) noexcept;
-        Text& operator=(const Text& other) noexcept;
-        ~Text();
 
         char* text;
     };

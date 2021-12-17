@@ -10,7 +10,12 @@
 #include <billiard_search/billiard_search.hpp>
 #include <billiard_debug/billiard_debug.hpp>
 #include <billiard_physics/billiard_physics.hpp>
-#include <cstring>
+
+#ifdef BILLIARD_DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
 
 Debugger _debugger;
 
@@ -68,12 +73,40 @@ void onStart() {
 #endif
 }
 
+#ifdef BILLIARD_DEBUG
+// https://forums.codeguru.com/showthread.php?323852-convert-FILE*-to-HFILE
+#include <io.h>
+#include <windows.h>
+
+HANDLE handle_from_fd(FILE* pFile) {
+    return (HANDLE) _get_osfhandle(_fileno(pFile));
+}
+#endif
+
 void onTearDown() {
+    const static std::string agent = "[onTearDown] ";
     delete _animationChangedEventQueue;
     _animationChangedEventQueue = nullptr;
 
     delete _stateChangedEventQueue;
     _stateChangedEventQueue = nullptr;
+
+    #ifdef BILLIARD_DEBUG
+    auto* _memoryLeakReportFile = fopen("memoryLeakReportFile.txt", "ab+"); // Mode: Read and write, create if not existing
+    auto handle = handle_from_fd(_memoryLeakReportFile);
+    _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_WARN, handle );
+    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_ERROR, handle );
+    _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_ASSERT, handle );
+    if(_CrtDumpMemoryLeaks()) {
+        DEBUG(agent << "memory leaks detected! - see reporting file" << std::endl);
+    } else {
+        DEBUG(agent << "no memory leaks detected!" << std::endl);
+    }
+    fclose(_memoryLeakReportFile);
+    #endif
 }
 
 void processEvents() {
