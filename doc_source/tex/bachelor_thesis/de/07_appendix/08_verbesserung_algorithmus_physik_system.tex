@@ -79,7 +79,7 @@ mit am vorherigen Ereignis unbeteiligten Kugeln ergänzt, sollte es solche geben
                 \For{anEvent in pair.second}{
                     \If{anEvent.partner == event.me or anEvent.partner == event.partner}{
                         cleaned $\longleftarrow$ drop(anEvent.partner, pair.second)\\
-                        events $\longleftarrow$ replace(pair.first, cleaned, events)
+                        events[pair.first] $\longleftarrow$ cleaned
                     }
                 }
             }
@@ -91,10 +91,15 @@ mit am vorherigen Ereignis unbeteiligten Kugeln ergänzt, sollte es solche geben
         nextEvents: [float, Event[]] $\longleftarrow$ [$\infty$, []]\\
         \For{pair in events}{
             \For{event in pair.second} {
-                nextEvents $\longleftarrow$ min(nextEvents.first, event)
+                \If{event.timestamp < nextEvents.first}{
+                    nextEvents $\longleftarrow$ [event.timestamp, [event]]
+                }
+                \ElseIf{event.timestamp == nextEvents.first}{
+                    nextEvents $\longleftarrow$ append(event, nextEvents.second)
+                }
             }
         }
-        \KwRet nextEvent.second
+        \KwRet nextEvent
     }
     \;
     \Fn{\subtractTime{events: Map[string, Event[]], time: float} $\longrightarrow$ Map[string, Event[]]}{
