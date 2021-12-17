@@ -96,8 +96,75 @@ Kugelradius $r$ berechnet.
     \label{fig:kugelexpansion}
 \end{figure}
 
-Eine Kugel kann ebenso über eine oder mehrere Banden expandiert werden. Dies geschieht über einen
-geometrischen Ansatz durch eine Spiegelung\cite{math.stackexchange:1}
+\label{kandidatensuche:bandenkollisionstheorie}
+Eine Kugel kann ebenso über eine oder mehrere Banden expandiert werden. Dazu muss bekannt sein, wie der Verlauf einer
+Kugel nach einer Bandenkollision aussieht. Um diese Frage beantworten zu können, wurden zwei Arbeiten betrachtet.
+Nach diesen Quellen gilt für den Stoss einer Kugel über die Bande, dass im Falle eines nicht vorhandenen Spins
+der Ausfallswinkel dem Einfallswinkel entspricht. Dieses Verhalten wurde von den Autoren des Papers \glqq A theoretical analysis of billiard ball dynamics under cushion impacts\grqq{}
+untersucht\cite{10.1243/09544062JMES1964}. Der Abschnitt \glqq b\grqq{} der Abbildung \ref{fig:rail_rebound_angle_no_spin} veranschaulicht die
+funktionale fast lineare Abhängigkeit des Ausfallswinkel vom Einfallswinkel. Diese Werte wurden anhand verschiedener
+Geschwindigkeiten in praktischen Experimenten ermittelt\cite{10.1243/09544062JMES1964}.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/55_rail_rebound_angle_no_spin.png}
+    \end{center}
+    \caption{Geschwindigkeits- und Ausfallswinkelabhängigkeiten zum Einfallswinkel einer Kugel ohne Spin an einer Bande.
+    Entnommen aus der Arbeit \cite{10.1243/09544062JMES1964} des Kapitels \glqq Results and Discussion\grqq. }
+    \label{fig:rail_rebound_angle_no_spin}
+\end{figure}
+
+Eine weitere Bestätigung und eine ebenso ausführliche Behandlung des Themas findet sich im Buch \glqq The illustrated principles
+of pool and billiards\grqq. Auch dieser Arbeit liegen praktische
+\href{https://billiards.colostate.edu/high-speed-video/}{Experimente} zugrunde, die die Theorie bestätigen.
+Grundsätzlich gilt das Prinzip 6.1 \glqq Bank shot geometry\grqq, welches besagt, dass
+der Ausfallswinkel dem Einfallswinkel entspricht, dies ist
+jedoch bei schwachen und starken wie auch bei Stössen der Bande sehr nahe liegenden Kugeln nicht korrekt\cite{book:the_ilustrated_principles_of_pool_and_billiards}.
+So besagt das Prinzip 6.6 \glqq Rail throwback at high speed\grqq, dass der Ausfallswinkel kleiner wird, je stärker der Stoss ausgeführt wird.
+Dieser Effekt tritt vor allem bei Einfallswinkeln zwischen $20\circ$ und $50\circ$ auf und ist auf
+die seitliche Kompression der Bande zurückzuführen. Diese wird unterschiedlich stark eingedrückt und gibt durch die
+darauffolgende Entspannung eine stärkere Kraft in die einfallende Richtung der Kugel zurück\cite{book:the_ilustrated_principles_of_pool_and_billiards}.
+Dieser Umstand wird in der Abbildung \ref{fig:rebound_angle_no_spin_fast_shot} gezeigt.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.3\linewidth]{../common/03_billiard_ai/resources/56_rebound_angle_no_spin_fast_shot.png}
+    \end{center}
+    \caption{Unterschiedliche Belastung der Bande bei starkem Stoss einer Kugel.
+    Entnommen aus dem Buch \cite{book:the_ilustrated_principles_of_pool_and_billiards} des Kapitels \glqq 6 Bank and kick shots\grqq.}
+    \label{fig:rebound_angle_no_spin_fast_shot}
+\end{figure}
+
+Trifft die Kugel langsam auf die Bande auf, so gilt Prinzip 6.7 \glqq Curved rebound path due to slow-speed roll\grqq.
+Dieses verweist auf den Umstand, dass eine Kugel, die langsam auf die Bande trifft, aufgrund des resultierenden
+Topspins kurvenförmig wegrollt. Der Effekt ist bei einem Einfallswinkel von $45\circ$ am stärksten\cite{book:the_ilustrated_principles_of_pool_and_billiards}.
+Die Abbildung \ref{fig:rebound_angle_no_spin_slow_shot} verdeutlicht das Prinzip.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/57_rebound_angle_no_spin_slow_shot.png}
+    \end{center}
+    \caption{Einfluss des Topspins auf den Ausfallswinkel bei schwachem Stoss einer Kugel an eine Bande.
+    Entnommen aus dem Buch \cite{book:the_ilustrated_principles_of_pool_and_billiards} des Kapitels \glqq 6 Bank and kick shots\grqq.}
+    \label{fig:rebound_angle_no_spin_slow_shot}
+\end{figure}
+
+Trifft eine Kugel langsam auf die Bande auf und ist sehr nahe, so dass sie zum Zeitpunkt der Kollision noch nicht zu rollen begonnen hat,
+gilt Prinzip 6.8 \glqq Smaller rebound angle when close to the rail\grqq.
+Dieses besagt, dass der Ausfallswinkel demnach kleiner wird\cite{book:the_ilustrated_principles_of_pool_and_billiards}.
+Der resultierende Unterschied aufgrund der Distanzen wird in Abbildung \ref{fig:rebound_angle_no_spin_slow_shot_distance} veranschaulicht.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/58_rebound_angle_no_spin_slow_shot_distance.png}
+    \end{center}
+    \caption{Einfluss der Distanz auf den Ausfallswinkel bei schwachem Stoss einer Kugel an eine Bande.
+    Entnommen aus dem Buch \cite{book:the_ilustrated_principles_of_pool_and_billiards} des Kapitels \glqq 6 Bank and kick shots\grqq.}
+    \label{fig:rebound_angle_no_spin_slow_shot_distance}
+\end{figure}
+
+Aufgrund dieser Erkenntnisse und der gegebenen Abhängigkeit wird der Ausfallswinkel dem Einfallswinkel gleichgesetzt.
+Technisch geschieht dies über einen geometrischen Ansatz durch eine Spiegelung\cite{math.stackexchange:1}
 des Zielpunkts an der entsprechenden Bande, über welche gespielt werden soll. In Abbildung \ref{fig:Tiefe über Bande erreichen mittels Reflektion}
 wird ein Suchschritt über eine Bande visualisiert. Es wird ein Punkt $A$ an einer Bande gesucht, zu welchem die Kugel $B$
 gespielt werden muss, um die Kugel $C$ zu treffen. Dieser Bandenkollisionspunkt $A$ wird mithilfe eines Spiegelpunkts $\bar{C}$
