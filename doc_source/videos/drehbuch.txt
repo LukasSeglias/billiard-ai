@@ -40,10 +40,12 @@ Gefunden werden direkte Stösse ...
 
 Die gefundenen Stösse werden nach deren Schwierigkeit bewertet. 
 [Bild eines Stosses]
-In die Bewertung fliessen verschiedene Faktoren ein, wie etwa die Distanz, welche die Kugeln zurücklegen müssen ...
+In die Bewertung fliessen verschiedene Faktoren ein, wie etwa die Distanz, welche die Kugeln zurücklegen ...
 [Bild mit Anzeige der Länge]
-... oder auch der Winkel, in dem die Kugel getroffen werden muss.
+... der Winkel, in dem die Kugel getroffen wird ...
 [Bild mit Anzeige des Winkels]
+und die benötigte Stärke des Stosses.
+[Bild von Anzeige mit Stärke]
 Aus der Vielzahl an berechneten Möglichkeiten wird dem Spieler der beste Stoss vorgeschlagen.
 [Zurück zum Bild des Stosses]
 
@@ -70,6 +72,69 @@ Und der Spieler kann vom System lernen und dieses strategische Denken wie auch d
 Zusätzlich bietet das System die Möglichkeit, automatisch zu erkennen, wann ein Spieler einen neuen Vorschlag benötigt.
 [Video infinity-modus, idealerweise mit erfolgreichen Stössen]
 Der Spieler kann so sorgenlos spielen und üben.
+[Daumen hoch/Smiley]
+[Piano-Musik spielt]
+[Abspann]
+
+
+
+Kurzversion:
+-----------------
+
+[Piano-Musik spielt]
+"Billard ist die hohe Kunst des Vorausdenkens, eine Kunst die den Kopf eines Schachspielers
+ und die ruhige Hand eines Konzertpianisten erfordert"
+    - Albert Einstein
+[Piano-Musik fadeout]
+Das soll Albert Einstein über Billard gesagt haben.
+Für Billardanfänger kann es schwierig sein, einen guten Stoss zu wählen und korrekt auszuführen.
+[Bild von Spielstand ohne Augmentationen]
+Wäre es nicht ideal, wenn der Spieler unterstützt würde? Billiard-AI hat genau das zum Ziel.
+
+Zunächst wurden eine Kamera und ein Projektor über einem Billardtisch montiert.
+[Bild/Illustration des Setups]
+Der Projektor zeigt dem Spieler Informationen direkt auf dem Tisch an.
+[Bild von projizierten Linien?]
+Die Kamera nimmt die aktuelle Spielsituation auf.
+[Bild aus Sicht der Kamera]
+Die Position und Farbe jeder Kugel werden erkannt und angezeigt.
+[Video von live-detektion, evtl. mit Debug-Texten (nur) mit Klasse, bestenfalls mit einer bewegten Kugel, die verfolgt wird]
+
+Gehen wir von dieser Situation aus, welche Stösse wären möglich?
+[Bild von Spielstand ohne Augmentationen]
+Diese Kugel könnte in dieses Loch ...
+[Bild mit eingezeichneten Linien]
+... oder diese Kugel in dieses Loch gespielt werden.
+[Bild mit anderen eingezeichneten Linien]
+Es werden mögliche Stösse für die vorliegende Situation gefunden.
+[Video mit den verschiedenen Suchresultaten nacheinander]
+Direkte ...
+[Bild von direktem Stoss, evtl. sogar Video mit erfolgreichem Einlochen]
+... und über die Banden.
+[Bild von Stoss über eine Bande, evtl. sogar Video mit erfolgreichem Einlochen]
+
+Die Schwierigkeit der Stösse wird bewertet.
+[Bild eines Stosses]
+Wichtig dabei ist die Distanz, welche die Kugeln zurücklegen, ...
+[Bild mit Anzeige der Länge]
+... der Winkel, in dem die Kugel getroffen wird ...
+[Bild mit Anzeige des Winkels]
+... und die benötigte Stärke des Stosses.
+[Bild von Anzeige mit Stärke]
+Dem Spieler wird dann der einfachste Stoss vorgeschlagen.
+[Zurück zum Bild des Stosses]
+
+Soweit so gut, aber wie stark und in welchem Winkel muss die weisse Kugel getroffen werden?
+[Bild des Stosses]
+Die benötigte Geschwindigkeit wird berechnet und anhand einer Animation angezeigt.
+Viele Spieler sind überrascht, wie wenig Kraft notwendig ist.
+[Video einer Stoss-Animation]
+
+Der Stoss wurde mit dieser Geschwindigkeit physikalisch simuliert, wodurch die Positionen aller Kugeln danach bekannt sind.
+Dadurch können mögliche zukünftige Stösse in der Suche berücksichtigt und so strategisch wie im Schachspiel geplant werden.
+[Bild mit möglichem nächsten Stoss eingezeichnet]
+Ändert sich die Situation, wird automatisch ein neuer Vorschlag berechnet.
+So kann der Spieler sein strategisches Denken und die Ausführung verbessern.
 [Daumen hoch/Smiley]
 [Piano-Musik spielt]
 [Abspann]
