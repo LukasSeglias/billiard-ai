@@ -30,7 +30,7 @@ Wird über mehrere Stösse gesucht, sind gewisse Regeln des Spiels einzuhalten. 
 und farbige Kugeln versenkt, solange noch rote Kugeln auf dem Tisch sind. Die farbigen Kugeln haben unterschiedliche
 Werte: Gelb(2), Grün(3), Braun(4), Blau(5), Pink(6), Schwarz(7)\cite{stoppball:spielregel:snooker}.\\
 Gibt es noch eine oder mehrere rote Kugeln zu spielen, wird die versenkte farbige Kugel, ausser Rote, wieder
-auf ihrem Spot (Aufsetzmarke) platziert. Ist der Spot nicht frei, so wird sie auf den nächst höherwertigen Spot gelegt. Die Wertung
+auf ihrem Spot (Aufsetzmarke) platziert. Ist der Spot nicht frei, so wird sie auf den nächsthöherwertigen Spot gelegt. Die Wertung
 der Spots entspricht der Wertung der Kugeln, welche bei der Ausgangsstellung platziert wurden. Die Ausgangsstellung ist in
 Abbildung \ref{fig:snooker_ausgangslage} veranschaulicht. Wenn alle Spots belegt sind, wird die Kugel so nah wie möglich an ihrem ursprünglichen
 Spot in Richtung der Kopfbande\footnote{Die Kopfbande ist diejenige, welcher der schwarzen Kugel bei der Ausgangstellung am
@@ -44,14 +44,14 @@ nächsten ist.} platziert\cite{stoppball:spielregel:snooker}.
     \label{fig:snooker_ausgangslage}
 \end{figure}
 
-Diese möglichst nahe Platzierung wurde über eine Suche nahe des Spots in einem diskretisierten Raum implementiert.
+Diese möglichst nahe Platzierung wurde über eine Suche nahe dem Spot in einem diskretisierten Raum implementiert.
 Abbildung \ref{fig:snooker_spot_replacement} veranschaulicht eine solche Situation, in der die Position $s$ besetzt
 ist und daher eine möglichst nahe Platzierung erforderlich ist.
 Es wird angenommen, dass sich die Kopfbande auf der rechten Seite befindet. Demnach wird zuerst eine Position in dieser
 Richtung geprüft, danach eine Position in senkrechter Richtung zur Kopfbande und anschliessend die Position entgegengesetzt
 zur Kopfbande.
 Dies ist in Abbildung \ref{fig:snooker_spot_replacement} in den Schritten $1a$ bis $1d$ zu sehen.
-Die Fringe $f$ beinhaltet potentielle Positionen für die zu platzierende Kugel, die noch auf Verfügbarkeit geprüft werden müssen.
+Die Fringe $f$ beinhaltet potenzielle Positionen für die zu platzierende Kugel, die noch auf Verfügbarkeit geprüft werden müssen.
 Zu Beginn enthält $f$ nur die belegte Position $s$.
 Ist eine Platzierung nicht möglich, werden die Positionen $a_1$ bis $a_4$ als neue Fringe betrachtet. Danach werden die Positionen
 innerhalb der Fringe wiederum zuerst Richtung Kopfbande, danach in senkrechter Richtung zu dieser und anschliessend noch entgegengesetzt

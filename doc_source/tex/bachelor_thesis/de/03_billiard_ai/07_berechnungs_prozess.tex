@@ -14,7 +14,7 @@ Abbildung \ref{fig:berechnungsprozess} erläutert die Durchführung dieser Expan
 Die Applikation auf der linken Seite liefert die konkreten Aufgaben, welche von einem Pool an Berechnungsprozessen
 bearbeitet werden sollen. Sie beinhaltet die Logik, um eine solche Aufgabe zu lösen, da die Berechnungsprozesse
 selbst nicht über dieses Wissen verfügen.
-Der Pool von Berechnungsprozessen wird vom Prozessmanager verwaltet und dieser ist die zentrale Ansprechsperson der Applikation.
+Der Pool von Berechnungsprozessen wird vom Prozessmanager verwaltet und dieser ist die zentrale Ansprechperson der Applikation.
 
 Datenaustausche sind über gefärbte Kreise repräsentiert. Handelt es sich um einen asynchronen
 Datenaustausch, dann ist der entsprechende Kreis heller eingefärbt und die Verbindungslinie ist durch einen nicht
@@ -52,7 +52,7 @@ $n$-Kandidaten. Dadurch wird sichergestellt, dass immer an den vielversprechends
 
 Der Algorithmus \ref{alg:distribute_manager} zeigt, wie die offenen Arbeitspakete auf die Berechnungsprozesse verteilt
 werden, damit das Ziel in Abbildung \ref{fig:berechnungsprozess_verteilung} erreicht werden kann. So werden
-zuerst alle Antworten auf die offenen Anfragen erstellt. Dies geschieht in einer \glqq While-Loop\grqq, welche solange
+zuerst alle Antworten auf die offenen Anfragen erstellt. Dies geschieht in einer \glqq While-Loop\grqq, welche so lange
 läuft, wie es noch offene Arbeitspakete hat. In jedem Schritt der Schleife wird ein Arbeitspaket einer Antwort für eine
 Anfrage hinzugefügt. Am Ende der Schleife wird eine Index-Variable hochgezählt. Sollte diese die Anzahl der offenen Anfragen
 erreichen, beginnt sie wieder bei 0. Dies ist z.B. in Abbildung \ref{fig:berechnungsprozess_verteilung} beim Wechsel von
@@ -96,10 +96,10 @@ Berechnung gestartet oder wenn eine aktuell Laufende erfolgreich beendet oder ab
 Der Berechnungsprozess stellt in einem nächsten Schritt eine Datenanfragen an den Prozessmanager, sollte keine offene oder
 noch nicht bearbeitete Anfrage existieren. Danach erfolgt die Prüfung, ob die Zeit zwischen einem Synchronisationsschritt
 abgelaufen ist. In dem Fall liefert der Berechnungsprozess seine besten weiterzuführenden Berechnungen wie auch Resultate
-dem Prozessmanager. Er wird demnach für eine Weile an weniger erfolgsversprechenden Resultaten weiterarbeiten. In einem
+dem Prozessmanager. Er wird demnach für eine Weile an weniger erfolgversprechenden Resultaten weiterarbeiten. In einem
 weiteren Schritt wird geprüft, ob eine Datenanfrage bereits beantwortet wurde. Ist dies der Fall, so werden die
 Daten den zu bearbeitenden Daten des Berechnungsprozesses hinzugefügt. Zuletzt erfolgt der Expansionsschritt, wobei der
-erfolgsversprechendste Kandidat expandiert wird.
+erfolgversprechendste Kandidat expandiert wird.
 Der Algorithmus \ref{alg:expand_berechnung} zeigt, wie dies in etwa funktionieren kann.
 Als Eingabe dient eine priorisierte Queue von offenen Arbeitspaketen sowie die Implementation der \glqq Expand-Funktion\grqq.
 Wenn es offene Arbeitspakete gibt, dann wird das Beste genommen und über die Implementation der
@@ -138,7 +138,7 @@ Sie findet nach einer konfigurierten Zeit $k$ statt. Diese wird in Millisekunden
 angegeben. Da die Synchronisation ein exklusives Verwenden einer geteilten Ressource erfordert, um die erledigte Arbeit
 dem Prozessmanager mitzuteilen, erhalten alle laufenden Prozesse (dies umfasst den Hauptprozess des Prozessmanagers wie auch
 alle Berechnungsprozesse) ein Zeitfenster zugeteilt, welches nach $k$ Millisekunden startet. Danach kann jeder Prozess nach
-$k + i \cdot n$, wobei $i$ für die Prozessid beginnend bei $0$ und $n$ für das Zeitfenster einer Synchronisation steht,
+$k + i \cdot n$, wobei $i$ für die Prozess-ID beginnend bei $0$ und $n$ für das Zeitfenster einer Synchronisation steht,
 mit der Synchronisation beginnen. Es wird so verhindert, dass zu viele Prozesse auf die Ressource des Prozessmanagers
 warten müssen und untätig bleiben. Ein weiterer Vorteil dabei ist die Tatsache, dass in der Zeit der Synchronisation
 einige Prozesse Zeit erhalten, um eher schlechter bewertete Kandidaten weiterzuverfolgen. Dadurch ist es möglich,
@@ -153,7 +153,7 @@ dass ein sehr gutes Ergebnis gefunden werden kann, obwohl dessen Kandidat anfän
 \end{figure}
 
 Die Abbildung \ref{fig:berechnungsprozess_synchronisation} zeigt den Hauptprozess wie auch zwei Berechnungsprozesse, welche
-eine Synchronisation in einem Interval von $k$ Millisekunden durchführen. Grüne Spalten stehen hierbei für die Zeit, welche für die Berechnung
+eine Synchronisation in einem Intervall von $k$ Millisekunden durchführen. Grüne Spalten stehen hierbei für die Zeit, welche für die Berechnung
 einer Lösung verwendet wird, also als produktiv bezeichnet werden kann. Rote Spalten hingegen signalisieren den unproduktiven
 Overhead, der bei der Synchronisation entsteht. Der Prozessmanager macht nebst seinem Synchronisationsfenster nichts,
 weswegen seine Spalten grau markiert sind. Eine mögliche Verbesserung wäre die Auslastung des Prozessmanagers mit zusätzlicher

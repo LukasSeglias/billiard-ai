@@ -1,7 +1,7 @@
 \newpage
 \subsection{Modellierung physikalisches System}\label{kap:physikalisches_system}
 Ein Stoss kann für die Simulation mithilfe eines Modells beschrieben werden.
-Dieses Modell beschreibt den Ablauf eines Stosses durch Ereignisse, welche den beteiligten Objekten wiederfahren.
+Dieses Modell beschreibt den Ablauf eines Stosses durch Ereignisse, welche den beteiligten Objekten widerfahren.
 Die Kugeln, Banden und Löcher sind die Objekte dieses Modells.
 Jedes Objekt dieses Modells hat einen veränderlichen Energiewert, bspw. sind Kugeln in Bewegung oder sie sind ruhend.
 Eine Bande oder ein Loch bewegen sich nie, d.h. deren Energiewert ist konstant 0.
@@ -42,7 +42,7 @@ Nachfolgend werden die Knoten definiert.
     \end{center}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.8\textwidth}
-    \textbf{Energy-Input-Node}: Dieser Node beschreibt das Auftreten eines Energie-Inputs von Aussen.
+    \textbf{Energy-Input-Node}: Dieser Node beschreibt das Auftreten eines Energie-Inputs von aussen.
     Beispielsweise wenn die weisse Kugel mit dem Queue gestossen wird.
 \end{minipage}\vskip.2\baselineskip
 \begin{minipage}[t]{0.2\textwidth}
@@ -92,7 +92,7 @@ Objekte nach der Energieübergabe.
     \textbf{Cutting-Node}: Dieser Node ist ein spezieller Energy-Transfer-Node. Er wird bei variablen Objekten
     eingesetzt, die nicht an einem Ereignis beteiligt sind, wenn ein solches auftritt. Zum Ereigniszeitpunkt wird
     ein neuer Layer (siehe S. \pageref{cust:Layer}) geschaffen, welcher die Objekte, die am Ereignis beteiligt sind,
-    in einem Energy-Transfer-Node festhält. Weiterhin wird der Status aller dynamsichen Objekte ebenfalls zu diesem
+    in einem Energy-Transfer-Node festhält. Weiterhin wird der Status aller dynamischen Objekte ebenfalls zu diesem
     Zeitpunkt festgehalten. Der Cutting-Node beschränkt sich auf ein Input- sowie Output-Objekt und beinhaltet als
     Energieübertragungsfunktion die Identitätsfunktion.
 \end{minipage}\vskip.2\baselineskip
@@ -102,7 +102,7 @@ Die Kantenfunktion beschreibt eine Energieabnahme über die Zeit oder den Weg.
 
 \subsubsection{Layer} \label{cust:Layer}
 Ein Layer beinhaltet sämtliche Veränderungen der variablen Objekte und beschreibt den Status aller Objekte zu diesem Zeitpunkt.
-Sobald ein Ereignis auftritt wird ein neuer Layer im Modell eingefügt.
+Sobald ein Ereignis auftritt, wird ein neuer Layer im Modell eingefügt.
 
 \subsubsection{Beispiel eines Graphen}
 Das beschriebene Datenmodell kann als Graph\footnote{Aus effizientsgründen wird auf einen Graphen in der Implementation
@@ -128,7 +128,7 @@ erstellt und das System hat sämtliche Energie verloren. Ein Endzustand wurde er
 
 In Algorithmus \ref{alg:physikalisches_system} wird die Grundidee erläutert. Als Input für die Funktion \glqq simulate\grqq{}
 dient der erste Layer, welcher mehrere variable Objekte beinhalten kann, wobei mindestens ein Objekt dynamisch (energiereich)
-sein sollte. Dieser Layer wird direkt dem erzeugten System hinzugefügt und dieses wird solange bearbeitet, bis alle variablen
+sein sollte. Dieser Layer wird direkt dem erzeugten System hinzugefügt und dieses wird so lange bearbeitet, bis alle variablen
 Objekte statisch sind (das System hat keine Energie mehr). In jedem Schleifendurchlauf wird das nächste Event berechnet.
 Die Events können diverser Natur sein. Es werden Kollisionen mit dynamischen, statischen wie auch konstanten Objekten
 geprüft. Bei der Kollision mit konstanten Objekten können die Ereignisse \glqq Energy transfer\grqq{} oder \glqq Out of

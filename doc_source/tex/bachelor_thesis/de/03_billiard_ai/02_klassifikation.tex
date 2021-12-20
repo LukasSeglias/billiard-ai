@@ -163,7 +163,7 @@ In Abbildung \ref{fig:classification_trainingdata_examples} sind zwei Trainingsb
 
 Eine Klassifikation dieser Kugelfarben findet sinnvollerweise nicht im RGB-Farbraum, sondern im HSV-Farbraum\cite{wiki:hsv_color_space} statt.
 Dadurch gehören beispielsweise die roten, pinken und braunen Kugeln in den roten Bereich des Hue-Kanals.
-Die weisse und schwarze Kugel sind am ehesten im Value-Kanal klassifizierbar.
+Die weisse und die schwarze Kugel sind am ehesten im Value-Kanal klassifizierbar.
 
 Zunächst wird zur Rauschunterdrückung ein Gauss-Filter mit der Kernelgrösse von 5x5 auf den zu klassifizierenden Bildausschnitt angewendet.
 Anschliessend wird das RGB-Bild in den HSV-Farbraum konvertiert, um die Farbanalyse zu vereinfachen.
@@ -185,8 +185,8 @@ Die roten und braunen Kugeln liegen dicht beieinander, wobei die Sättigung (mit
     \caption{
         Paarweise Gegenüberstellung von HSV-Kanälen mit eingezeichneten Datenpunkten der Testbilder.
         Vertikal sind von oben nach unten die Kanäle Hue, Saturation und Value abgebildet.
-        Horizonal sind von links nach rechts die Kanäle Hue, Saturation und Value abgebildet.
-        Die Farbe der Datenpunkte entspricht ihrer Klasse, wobei die Klasse "weiss" mit grauer Farbe gezeichnet wurde.
+        Horizontal sind von links nach rechts die Kanäle Hue, Saturation und Value abgebildet.
+        Die Farbe der Datenpunkte entspricht ihrer Klasse, wobei die Klasse \emph{weiss} mit grauer Farbe gezeichnet wurde.
         Es ist zu beachten, dass der Hue-Kanal hierbei einen Wertebereich von [0, 180] hat, währenddessen
         der Saturation- und Value-Kanal einen Wertebereich von [0, 255] aufweisen.
     }
@@ -195,24 +195,24 @@ Die roten und braunen Kugeln liegen dicht beieinander, wobei die Sättigung (mit
 
 Das Resultat der Analyse dieser Daten sind Wertebereiche für die HSV-Kanäle pro Klasse, wodurch eine grobe Klassifikation,
 ermöglicht wird.
-Diese Wertebereiche bieten keine eindeutige Klassifikation, sondern werden verwendet, um die potentiellen
+Diese Wertebereiche bieten keine eindeutige Klassifikation, sondern werden verwendet, um die potenziellen
 Klassen einer Kugel zu finden.
 So kann es sein, dass eine blaue Kugel aufgrund ihres Hue-Kanals klar als Blau erkannt wird.
-Es kann aber auch sein, dass eine braune Kugel sowohl Rot, Pink und Braun als potentielle Klassen erhält.
+Es kann aber auch sein, dass eine braune Kugel sowohl Rot, Pink und Braun als potenzielle Klassen erhält.
 
-Es muss demnach noch eine genauere Unterscheidung gemacht werden, sobald die potentiellen Klassen bekannt sind.
+Es muss demnach noch eine genauere Unterscheidung gemacht werden, sobald die potenziellen Klassen bekannt sind.
 Anhand der Trainingsbildern wurden die Durchschnittswerte der häufigsten Werte der HSV-Kanäle pro Klasse berechnet.
 Diese Durchschnittswerte bilden die Cluster-Zentren jeder Klasse und können für die Klassifikation verwendet werden.
 Dazu wird die Distanz der HSV-Position des zu klassifizierenden Bildausschnitts zu jedem Cluster-Zentrum bestimmt.
 Der Cluster mit der kleinsten Distanz gibt dem Bildausschnitt seine Klasse.
 
-Sofern ein Bildausschnitt mehrere potentielle Klassen in der Prüfung durch Wertebereiche erhalten hat, wird die Distanz
-zwischen dessen HSV-Position und dem Cluster-Zentrum jeder der potentiellen Klassen verglichen.
+Sofern ein Bildausschnitt mehrere potenzielle Klassen in der Prüfung durch Wertebereiche erhalten hat, wird die Distanz
+zwischen dessen HSV-Position und dem Cluster-Zentrum jeder der potenziellen Klassen verglichen.
 Die Klasse mit der kleinsten Distanz zur HSV-Position des Bildausschnitts wird angenommen.
 Demnach ist diese Klassifikation in der Idee ein \emph{k-nearest neighbors} Algorithmus\cite{wiki:k_nearest_neighbors},
 wobei keine Trainingsdatensätze als Nachbaren verwendet werden, sondern die bereits gefundenen Cluster-Zentren.
 
-Sofern ein Bildauschnitt keine potentiellen Klassen erhalten hat, wird diesem die Klasse \emph{unbekannt} zugewiesen.
+Sofern ein Bildausschnitt keine potenziellen Klassen erhalten hat, wird diesem die Klasse \emph{unbekannt} zugewiesen.
 
 Mit der hier beschriebenen Klassifikation ist die Farbe jeder Kugel nach deren Detektion bekannt und es
 sind alle Informationen für die weitere Verwendung in der Suche und Darstellung vorhanden.

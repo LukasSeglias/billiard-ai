@@ -47,7 +47,7 @@ Die Lösungen lauten demnach:
     l_1 = \frac{-b + \sqrt{b^2 - 4ac}}{2a}\\
     l_2 = \frac{-b - \sqrt{b^2 - 4ac}}{2a}
 \end{align}
-Wobei $b^2 - 4ac$ die Diskrimante ist. Hat diese einen negativen Wert, existiert kein Schnittpunkt,
+Wobei $b^2 - 4ac$ die Diskriminante ist. Hat diese einen negativen Wert, existiert kein Schnittpunkt,
 beim Wert $0$ gibt es einen Schnittpunkt und bei einem Wert grösser als $0$ gibt es zwei Schnittpunkte.
 
 Die Lösung lautet demnach:
@@ -57,8 +57,8 @@ Die Lösung lautet demnach:
     l = \max{(\min{(l_1, l_2)}, 0)}
 \end{align}
 
-Ein $l$ ist valid, wenn es positiv ist und nicht innerhalb des Ziellochs ($-l_1, +l_2$) liegt.Dieser Fall wird nicht vorkommen, da die
-Kugel bei der ersten Kollision aus dem System entfernt wird.
+Ein $l$ ist valid, wenn es positiv ist und nicht innerhalb des Ziellochs ($-l_1, +l_2$) liegt.
+Dieser Fall wird nicht vorkommen, da die Kugel bei der ersten Kollision aus dem System entfernt wird.
 Sollte ein valides $l$ existieren, kann damit die Distanz $d$ zwischen der Kugel und dem Schnittpunkt bestimmt werden.
 \begin{align}
     \vec{d(l)} = l \cdot \hat{v}\label{eq:target_collision_event:04}
@@ -85,7 +85,7 @@ wird. Demnach ergibt sich die Situation in \ref{eq:target_collision_event:07}.
     c = -\norm{\vec{d(l)}}
 \end{align}
 
-Es ergeben sich wiederum zwei Lösungen, wobei nur die der erste Schnittpunkte (die Minimalzeit) relevant ist.
+Es ergeben sich wiederum zwei Lösungen, wobei nur die Zeit des ersten Schnittpunktes (die Minimalzeit) relevant ist.
 \begin{align}
     t_1 = \frac{-b + \sqrt{b^2 - 4ac}}{2a}\\
     t_2 = \frac{-b - \sqrt{b^2 - 4ac}}{2a}\\

@@ -1,7 +1,7 @@
 \subsection{Berechnung der Initialgeschwindigkeit}\label{sec:initialgeschwindigkeit}
-Sofern ein Stosskandidate wie in Abschnitt \ref{sec:kandidatensuche} beschrieben gefunden wurde, muss berechnet werden,
+Sofern ein Stosskandidat wie in Abschnitt \ref{sec:kandidatensuche} beschrieben gefunden wurde, muss berechnet werden,
 welche Geschwindigkeit die weisse Kugel erhalten muss, damit die gewünschte Kugel ins Loch gespielt wird.
-Relevant dafür ist der Reibungsverlust wenn die Kugel rollt und die Kollision mit anderen Kugeln.
+Relevant dafür ist der Reibungsverlust, wenn die Kugel rollt und die Kollision mit anderen Kugeln.
 
 Wenn eine Kugel in ein Loch rollen soll, kann eine minimale Endgeschwindigkeit angenommen werden und aufgrund
 der zurückzulegenden Strecke die Startgeschwindigkeit bestimmt werden, dies wird in Abschnitt \ref{ReibungsverlustUeberBahn} beschrieben.
@@ -9,7 +9,7 @@ Sofern diese Kugel über den Spielball ins Loch gespielt werden soll, dann muss 
 Geschwindigkeit die Kugel treffen, damit diese die gewünschte Startgeschwindigkeit erhält. Dies wird in Abschnitt \ref{EnergieuebergabeBeiKollision} beschrieben.
 
 \subsubsection{Reibungsverlust über Bahn}\label{ReibungsverlustUeberBahn}
-Das Ziel eines Billiardstosses ist es, eine Kugel von einem Punkt A zu einem Punkt B rollen zu lassen.
+Das Ziel eines Billardstosses ist es, eine Kugel von einem Punkt A zu einem Punkt B rollen zu lassen.
 Dabei findet Rollreibung statt, welche das Abbremsen der Kugel verursacht.
 Es ist relevant zu wissen, welche Startgeschwindigkeit $v_1$ eine Kugel am Punkt A haben muss,
 um mit der Endgeschwindigkeit $v_2$ am Punkt B anzukommen.
@@ -64,14 +64,14 @@ Prozent, dann gilt für die Geschwindigkeit $\vec{v_1}$ der Kugel A bei der Koll
 \end{align}
 
 Anschliessend kann die Startgeschwindigkeit der Kugel A an der Position A berechnet werden, weil die gewünschte
-Endgeschwindigkeit und der zurückzulegende Weg bekannt ist\footnote{siehe Kapitel \ref{ReibungsverlustUeberBahn}}.
+Endgeschwindigkeit und der zurückzulegende Weg bekannt sind\footnote{siehe Kapitel \ref{ReibungsverlustUeberBahn}}.
 
 \subsubsection{Bandenkollision}
 
 Hierbei wird der Geschwindigkeitsvektor berechnet, der vor einer Bandenkollision gilt.
 Es wird von einer perfekten Spiegelung ausgegangen. Der an der Bande eingehende
 Geschwindigkeitsvektor $\vec{v_0}$ kann demnach berechnet werden, wenn die Bandennormale $\vec{N}$ sowie die
-gewünschte Engeschwindigkeit $\vec{v}$ bekannt ist.
+gewünschte Endgeschwindigkeit $\vec{v}$ bekannt ist.
 \begin{align}
     \vec{v_0} = \vec{v} - 2 \cdot \vec{N} \cdot (\vec{v} \cdot \vec{N})
 \end{align}

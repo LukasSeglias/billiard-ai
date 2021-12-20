@@ -8,11 +8,11 @@ Kriterien beurteilt. So spielt die Distanz des zurückzulegenden Weges, der Koll
 zum Loch einer einzulochenden Kugel und die benötigte Startgeschwindigkeit eine Rolle.
 
 In einem ersten Teil wird sich nur der Suche über einen Stoss ohne Bandeninteraktion und ohne
-verfielfältigter Startgeschwindigkeit gewidmet. Der zweite Teil beinhaltet zusätzlich verschiedene Startgeschwindigkeiten.
+vervielfältigter Startgeschwindigkeit gewidmet. Der zweite Teil beinhaltet zusätzlich verschiedene Startgeschwindigkeiten.
 Im dritten Teil werden verschiedene Startgeschwindigkeiten wiederum ignoriert, aber dafür Bandeninteraktionen berücksichtigt.
 Der vierte Teil beinhaltet den kompletten Funktionsumfang bis auf die Berücksichtigung verschiedener Startgeschwindigkeiten.
 
-Um die Resultate der Suche zu bewerten werden nachfolgend Situationen aufgestellt und die von der Suche
+Um die Resultate der Suche zu bewerten, werden nachfolgend Situationen aufgestellt und die von der Suche
 vorgeschlagenen Stösse untersucht auf Basis der Kriterien und berücksichtigten Funktionsumfänge untersucht.
 
 \subsection{Die einfache Suche}\label{kap:suche:die_einfache_suche}
@@ -38,7 +38,7 @@ Kugel 4 ist in der Nähe des Spielballs, die Kugel 5 ist nahe dem Tischzenturm a
     \label{fig:search_situation_1}
 \end{figure}
 
-Nach Betrachten dieser Situation sind einige mögilche Stösse denkbar:
+Nach Betrachten dieser Situation sind einige mögliche Stösse denkbar:
 \begin{enumerate}
     \item Kugel 1 ins Loch unten-links.
     \item Kugel 2 ins Loch oben-rechts.
@@ -116,14 +116,14 @@ muss, damit diese den erwünschten Pfad nicht so weit verlässt, dass sie das Zi
 
 Im Stoss 3 ist die Gesamtdistanz klein, allerdings ist die Distanz der Kugel 4 zum Spielball kleiner als die Distanz zum Loch.
 Dadurch führt ein kleiner Fehler beim Treffen der Kugel zu einer grösseren Abweichung des Pfades.
-In diesem Beispiel könnte dieser Fehler allerdings relativ klein sein, da der Pfad geradlinig ist und der Spielball die Kugel
+In diesem Beispiel könnte dieser Fehler allerdings klein sein, da der Pfad geradlinig ist und der Spielball die Kugel
 nicht in einem Winkel treffen muss.
 
 Stoss 2 wurde besser als Stoss 3 bewertet, weil bei Stoss 2 die Kugel näher am Loch liegt als bei Stoss 3. Die anderen
 Bewertungskriterien Distanz und Winkel sind bei Stoss 3 besser als bei Stoss 2.
 Ob diese Rangfolge objektiv korrekt ist, ist schwierig zu beurteilen.
 
-Der Stoss 5 wird als schwieriger bewertet, weil der Winkel, in dem der Spielball die Kugel 3 treffen muss ca 45$^{\circ}$ ist.
+Der Stoss 5 wird als schwieriger bewertet, weil der Winkel, in dem der Spielball die Kugel 3 treffen muss, ca. 45$^{\circ}$ ist.
 Im Gegensatz dazu ist die Distanz der Kugel zum Loch sehr klein und die Gesamtdistanz ist relativ klein, was diesen Stoss
 wiederum einfacher macht. Trotzdem hat in diesem Fall der Winkel die Bewertung so stark reduziert, dass Stoss 4 trotzdem
 als einfacher eingestuft wird.
@@ -141,8 +141,8 @@ möglich erscheinen. Zudem berücksichtigt die Bewertung der Schwierigkeit eines
 der einzulochenden Kugel zum Loch und die erforderliche Startgeschwindigkeit.
 \newpage
 
-\subsection{Die einfache Suche - mit verfielfältigter Startgeschwindigkeit}
-Es wird wiederum die Situation wie in Kapitel \ref{kap:suche:die_einfache_suche} betrachtet. Diesmal wird aber die Verfielfältigung der Startgeschwindigkeiten
+\subsection{Die einfache Suche - mit vervielfältigter Startgeschwindigkeit}
+Es wird wiederum die Situation wie in Kapitel \ref{kap:suche:die_einfache_suche} betrachtet. Diesmal wird aber die Vervielfältigung der Startgeschwindigkeiten
 zugelassen, insgesamt werden jeweils drei verschieden starke Stargeschwindigkeiten berücksichtigt.
 Als Resultat wird in etwa dieselbe Abfolge der Suchresultate wie in Kapitel \ref{kap:suche:die_einfache_suche} erwartet, es kann aber durchaus
 sein, dass gewisse Stösse mit geringer Distanz und kleinem Winkel durch die hohe Startgeschwindigkeit schlechter bewertet werden
@@ -227,7 +227,7 @@ Insgesamt wurden 21 Lösungen gefunden, davon werden nur die zehn besten diskuti
     \label{fig:situation_1_solutions_startgeschwindigkeit}
 \end{figure}
 
-Wie zu erwarten sieht die Abfolge der Suchresultate nicht wesentlich anders aus wie vorhin. Was auffällt ist die Tatsache,
+Wie zu erwarten war, sieht die Abfolge der Suchresultate nicht wesentlich anders aus wie vorhin. Was auffällt ist die Tatsache,
 dass eine erhöhte Geschwindigkeit durchaus dazu führen kann, dass ein Stoss, der einen grösseren Weg und/oder Winkel aufweist,
 besser gewertet werden kann. Dies ist z.B. bei Stoss 3 ersichtlich, der besser gewertet wird als Stoss 4 oder bei
 Stoss 8, der schwieriger als Stoss 6 und 7 ist. Bei Stoss 8 könnte argumentiert werden, dass die Stärke
@@ -240,7 +240,7 @@ sein kann.
 \subsection{Die einfache Suche - mit Bandenkollisionen}
 In diesem Fall werden verschiedene Startgeschwindigkeiten nicht berücksichtigt, jedoch wird das Bandenspiel zugelassen.
 Auch hier sollten sich die Resultate nicht wesentlich zur einfachen Suche in Kapitel \ref{kap:suche:die_einfache_suche} ändern.
-Ein Unterschied ist vor allem gegen Ende bei Stoss 6 und 7 zu erwarten, so wird eventuell eher ein Spiel über eine Bande berücksichtigt,
+Ein Unterschied ist vor allem gegen Ende bei Stoss 6 und 7 zu erwarten, so wird eventuell eher ein Spiel über eine Bande berücksichtigt
 als der starke Stoss 7 oder der indirekte Stoss 6.
 
 In Abbildung \ref{fig:situation_1_solutions_bande} sind die Resultate in aufsteigender Schwierigkeit gegeben.
@@ -321,8 +321,8 @@ In Abbildung \ref{fig:situation_1_solutions_bande} sind die Resultate in aufstei
 \end{figure}
 
 Bis zu Stoss 5 gibt es keine Änderungen der Vorschläge. Bei Stoss 6 wird
-anstelle des indirekten Stoss auf Kugel 2 in Kapitel \ref{kap:suche:die_einfache_suche} jedoch eine Lösung über
-die untere Bande auf Kugel 3 empfohlen. Dies macht durchaus Sinn, da das Spiel über
+anstelle des indirekten Stosses auf Kugel 2 in Kapitel \ref{kap:suche:die_einfache_suche} jedoch eine Lösung über
+die untere Bande auf Kugel 3 empfohlen. Dies macht Sinn, da das Spiel über
 die untere Bande einerseits direkter ist und andererseits eine ähnliche Distanz
 mit kleineren Winkeln vorliegt. Zudem liegt die Kugel 3 näher am Loch als die Kugel 2.
 
@@ -461,7 +461,7 @@ Abschliessend wird das Versenken der Kugel 2 im oberen rechten Loch vorgeschlage
 Der Stoss 5-B wird über die untere Bande anstelle eines Direkttreffers bevorzugt.
 Ein direkter Stoss auf die Kugel 3 würde einen Winkel von praktisch \ang{90} erfordern, was unmöglich wäre.
 
-Mit diesem Kapitel wurde die Vorschläge der Suche von Stösse exemplarisch anhand eines Spielstands erläutert und bewertet.
+Mit diesem Kapitel wurden die Vorschläge der Suche von Stössen exemplarisch anhand eines Spielstands erläutert und bewertet.
 Eine komplette Analyse weiterer Spielstände unter Berücksichtigung aller Funktionalitäten,
 insbesondere der Suche über mehr als zwei Stösse, würde den Rahmen dieses Dokuments sprengen.
 

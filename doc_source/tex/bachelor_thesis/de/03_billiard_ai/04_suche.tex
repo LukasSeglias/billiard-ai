@@ -8,7 +8,7 @@ welcher von der weissen Kugel ausgehend eine andere Kugel ins Loch spielt.
 Nachfolgend wird die Suche beschrieben, welche beim Loch, dem Ziel, startet, eine einzulochende Kugel findet
 und anschliessend den Stoss bis zur weissen Kugel zurück sucht.
 Dementsprechend ist der Root-Knoten des Suchbaumes das zu treffende Ziel (Loch).
-Da ein handelsüblicher Billiardtisch mehrere Löcher hat, muss pro Loch eine separate Suche durchgeführt werden.
+Da ein handelsüblicher Billardtisch mehrere Löcher hat, muss pro Loch eine separate Suche durchgeführt werden.
 
 Bei der Durchführung eines Expansionsschrittes werden ausgehend von einem Knoten im Suchbaum dessen Nachfolger-Knoten ermittelt.
 Diese stellen im Fall vom Root-Knoten Kugeln dar, welche in dieses Loch gespielt werden könnten.
@@ -21,7 +21,7 @@ Diese Kugel-Knoten stellen dann Kugeln dar, welche die Kugel des Vorgänger-Kuge
 Sofern ein Kugel-Knoten die weisse Kugel darstellt, so ist dieser Kugel-Knoten ein Endzustand und damit ist der Stoss
 über die Kette von Nachfolger- zu Vorgänger-Kugel-Knoten definiert.
 
-Zur Veranschaulichung des Prinzips folgt ein Beispiel.Es wird vereinfacht angenommen,
+Zur Veranschaulichung des Prinzips folgt ein Beispiel. Es wird vereinfacht angenommen,
 dass der Tisch nur ein Loch hat. Für mehrere Ziele ergeben sich mehrere Suchbäume, einen pro Loch.
 In Abbildung \ref{fig:backwardsearch_1} erfolgt die Eingabe des Suchalgorithmus in Form des Root-Knotens.
 Es wird nur das zu treffende Ziel definiert. Auf der rechten Seite des Tisches ist der Suchbaum dargestellt.
@@ -77,7 +77,8 @@ leere Liste namens \glqq nodes\grqq{} angelegt. Diese wird danach mit Nodes gef�
 
 \subsubsection{Expansion einer Kugel}
 Bei einer Expansion einer Kugel wird der nächste Zielpunkt berechnet. Das Prinzip wird in Abbildung \ref{fig:kugelexpansion}
-veranschaulicht. Es gibt einen bereits bekannten Zielpunkt $T$, wo die Kugel hingespielt werden muss.
+veranschaulicht.
+Der Zielpunkt $T$, wohin die Kugel gespielt werden soll, ist bekannt.
 Weiterhin ist die aktuelle Position $S$ der Kugel bekannt. Dazwischen kann der Vektor $\vec{d}$ gebildet werden.
 \begin{align}
     \vec{d} = S - T
@@ -102,7 +103,7 @@ Kugel nach einer Bandenkollision aussieht. Um diese Frage beantworten zu können
 Nach diesen Quellen gilt für den Stoss einer Kugel über die Bande, dass im Falle eines nicht vorhandenen Spins
 der Ausfallswinkel dem Einfallswinkel entspricht. Dieses Verhalten wurde von den Autoren des Papers \glqq A theoretical analysis of billiard ball dynamics under cushion impacts\grqq{}
 untersucht\cite{10.1243/09544062JMES1964}. Der Abschnitt \glqq b\grqq{} der Abbildung \ref{fig:rail_rebound_angle_no_spin} veranschaulicht die
-funktionale fast lineare Abhängigkeit des Ausfallswinkel vom Einfallswinkel. Diese Werte wurden anhand verschiedener
+funktionale fast lineare Abhängigkeit des Ausfallswinkels vom Einfallswinkel. Diese Werte wurden anhand verschiedener
 Geschwindigkeiten in praktischen Experimenten ermittelt\cite{10.1243/09544062JMES1964}.
 
 \begin{figure}[h!]
@@ -179,7 +180,7 @@ des Punktes $C$ an der Bande berechnet.
 In der Abbildung \ref{fig:Tiefe über Bande erreichen mittels Reflektion} sind zwei Beispiele ersichtlich.
 Im ersten Fall wird für die weisse Kugel ein Kollisionspunkt an der oberen Bande bestimmt, um die rote Kugel zu treffen.
 Im zweiten Fall wird für die rote Kugel ein Kollisionspunkt an der oberen Bande bestimmt, um ins Ziel zu treffen.\\
-Gegeben sind die folgenden Angaben (Parameter werden gross geschrieben, Variablen dagegen klein):
+Gegeben sind die folgenden Angaben (Parameter werden grossgeschrieben, Variablen dagegen klein):
 \begin{align}
     B = \begin{pmatrix}B_X\\B_Y\end{pmatrix},
     C = \begin{pmatrix}C_X\\C_Y\end{pmatrix},
@@ -277,9 +278,9 @@ mit dem Zielpunkt $C$ verbunden wird.
 
 Dasselbe Prinzip kann auch auf ein Spiel über drei Banden angewendet werden. Die Abbildung \ref{fig:Dreifache Reflektion an Banden} veranschaulicht
 ein Solches. Es wird zuerst an der linken, dann an der oberen und anschliessend an der rechten Bande gespiegelt.
-Es wird in einem Schritt wiederum der letze Spiegelpunkt und dessen Startposition betrachtet, mit welchen der Kollisionspunkt
+Es wird in einem Schritt wiederum der letzte Spiegelpunkt und dessen Startposition betrachtet, mit welchen der Kollisionspunkt
 an einer Bande gefunden werden kann. Danach kann der Spiegelpunkt an dieser Bande gespiegelt werden und der nächste
-Schritt kann starten. Dies wird so oft wiederholt, wie es Banden zum spiegeln hat.
+Schritt kann starten. Dies wird so oft wiederholt, wie es Banden zum Spiegeln hat.
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=1\linewidth]{../common/03_billiard_ai/resources/54_rail_reflection_3.png}
@@ -305,7 +306,7 @@ $C$ herauszufinden, ob dieser spiegelbar ist, muss demnach nur geprüft werden, 
 Dazu wird der Ursprung des Koordinatensystems zum Start der Bande verschoben und es wird die elementweise Multiplikation
 des verschobenen Punktes $C'$ mit der Bandennormale durchgeführt.
 Die Elemente des Vektors werden geprüft, ob sie grösser oder gleich dem Nullvektor sind.
-Dies resultiert in einem Vektor, welcher eine $0$ speichert, wenn das Element kleiner und $1$ wenn es grösser ist.
+Dies resultiert in einem Vektor, welcher eine $0$ speichert, wenn das Element kleiner und $1$, wenn es grösser ist.
 Abschliessend wird die quadrierte Länge des resultierenden Vektors gebildet, diese Länge muss $2$ entsprechen, in dem
 Fall liegt der Punkt im Definitionsbereich.
 \begin{align}
@@ -478,7 +479,7 @@ expandiert worden sein. Daher muss dieser Fall nicht speziell behandelt werden.
 
 \newpage
 \subsubsection{Bewertungsfunktion}
-Um die Suche zu vereinfachen und in eine spezfische Richtung zu lenken, wo die besten Resultate zu erwarten sind, ist
+Um die Suche zu vereinfachen und in eine spezifische Richtung zu lenken, wo die besten Resultate zu erwarten sind, ist
 es unerlässlich eine Bewertung des Stosses durchzuführen. Die Heuristik wurde so definiert, dass sie sich auf den
 aktuell expandierten Knoten beschränkt. Die Kosten für eine Expansion werden über die Pfade aufsummiert. Anhand der
 Summen kann jeweils der kostengünstigste Pfad evaluiert und verfolgt werden.
@@ -494,7 +495,7 @@ zu hoher Kosten. Dieses Vorgehen entspricht demjenigen des Dijkstra-Algorithmus 
     \label{fig:suchbaum_bewertung}
 \end{figure}
 
-Die Kosten werden auf Basis dreier Kriterien\footnote{Die Kriterien betreffend der Distanz wie auch des Winkels werden wie
+Die Kosten werden auf Basis dreier Kriterien\footnote{Die Kriterien Distanz und Winkel werden wie
 in Publikation \cite{inproceedings:billiard_ai:1} verwendet.} gebildet. Das Erste bildet die Berücksichtigung der Distanz, welche eine
 Kugel zurücklegt. Das Zweite behandelt den Winkel, in welcher ein Zielpunkt getroffen werden muss. Das Dritte fügt den
 Kosten einen Wert für jede Indirektion hinzu. Jeder dieser Werte liegt zwischen $0$ und $1$.

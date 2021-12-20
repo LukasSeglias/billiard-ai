@@ -9,7 +9,7 @@ und das Resultat wird dem Spieler auf dem Tisch angezeigt. Währenddessen, dass 
 Suche ausgelöst werden, damit der Spieler die Chance hat, den Vorschlag zu prüfen und gemäss angezeigter Animation auszuführen.
 
 Die Detektion des aktuellen Spielstandes enthält über die Zeit betrachtet ein gewisses zufälliges Rauschen.
-Dadurch verändern sich die Positionen aller Kugeln auch bei kompletem Stillstand leicht.
+Dadurch verändern sich die Positionen aller Kugeln auch bei komplettem Stillstand leicht.
 Ausserdem werden manchmal Kugeln erkannt wo keine Kugeln liegen, oder es werden Kugeln nicht erkannt.
 Dieser Ungewissheit muss Rechnung getragen werden.
 Dieser Modus baut hierzu auf der in Abschnitt \ref{kap:tracking} beschriebenen Tracking und Positionsstabilisierung auf.
@@ -33,8 +33,8 @@ Die in Abschnitt \ref{kap:detektion} beschriebene Detektion führt manchmal zu f
 So kann es passieren, dass mehrere weisse Kugeln auf dem Tisch erkannt werden.
 Daher muss der echte Spielball gefunden werden.
 
-Im Fall dass eine einzige weisse Kugel erkannt wurde, wird diese als Spielball angenommen.
-Sofern es mehrere weisse Kugeln gibt wird diejenige gesucht, welche der zuletzt bekannten Position des Spielballs am nächsten ist.
+Im Fall, dass eine einzige weisse Kugel erkannt wurde, wird diese als Spielball angenommen.
+Sofern es mehrere weisse Kugeln gibt, wird diejenige gesucht, welche der zuletzt bekannten Position des Spielballs am nächsten ist.
 Falls sich diese nicht zu weit entfernt befindet, dann wird diese Kugel als Spielball angenommen und die
 anderen weissen Kugeln werden ignoriert.
 Falls keine naheliegende Kugel gefunden wurde, wird angenommen, dass der Spielball nicht auf dem Tisch liegt.
@@ -49,8 +49,8 @@ So wird für jede getrackte Kugel die Bewegung der detektierten Kugelposition zw
 Mithilfe dieser Bewegungsvektoren wird anschliessend ein Durchschnitt gebildet, um den durchschnittlichen Bewegungsvektor über
 die letzten $M$ Frames zu erhalten.
 Der Betrag dieses Vektors kann anschliessend genutzt werden, um einzuschätzen, ob die Kugel in Bewegung ist oder nicht.
-Wenn eine Kugel in Bewegung versetzt wird, steigt dieser Durchschnitt zunächst und sinkt wieder sobald die Kugel ausrollt.
-Eine Kugel gilt als bewegt, wenn der Betrag des durschnittlichen Bewegungsvektors über dem Grenzwert von $0.5mm$ liegt.
+Wenn eine Kugel in Bewegung versetzt wird, steigt dieser Durchschnitt zunächst und sinkt wieder, sobald die Kugel ausrollt.
+Eine Kugel gilt als bewegt, wenn der Betrag des durchschnittlichen Bewegungsvektors über dem Grenzwert von $0.5mm$ liegt.
 
 \subsection{Verlust von Kugeln}
 Sofern eine Kugel eingelocht wird, verändert sich die Gesamtanzahl der Kugeln und der Spielstand ist für eine kurze Zeit instabil.
@@ -83,7 +83,7 @@ getrackt wurden und keine Fehldetektionen vorhanden sind.
 \subsection{Zeitliche Stabilität}
 Der Wechsel zum Status stabil sollte möglichst nur dann auftreten, wenn der Spielstand vollkommen ruhig ist.
 Ausserdem darf es nicht passieren, dass der Status zu volatil ist.
-Es wäre problematisch wenn der Status innerhalb weniger Frames mehrfach zwischen stabil und instabil wechseln würde,
+Es wäre problematisch, wenn der Status innerhalb weniger Frames mehrfach zwischen stabil und instabil wechseln würde,
 denn bei jedem Wechsel zum Status stabil wird eine Suche ausgelöst und dem Spieler ein Vorschlag angezeigt.
 Würde der Status nach Anzeige des Vorschlags auf instabil und dann auf stabil ändern, würde das eine erneute
 Suche auslösen und der bisherige Vorschlag würde nicht mehr angezeigt, bis der neue Vorschlag erscheint.

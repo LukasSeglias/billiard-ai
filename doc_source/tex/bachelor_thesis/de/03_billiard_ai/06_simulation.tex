@@ -10,7 +10,7 @@ Hierbei gelten die Zuordnungen wie sie nachfolgend beschrieben werden.\\
 \begin{description}
     \item[Energy-Input-Node] Wird modelliert über die Eingabe der Energie der weissen Kugel. Ein spezifischer Node zur
     Modellierung wird nicht implementiert, es wird der Energy-Transfer-Node verwendet, wobei nur der Output-Wert relevant ist.
-    \item[Energy-Transfer-Node] Tritt bei der Kollision zwischen zweier Kugeln oder einer Kugel mit der Bande auf.
+    \item[Energy-Transfer-Node] Tritt bei der Kollision zwischen zwei Kugeln oder einer Kugel mit der Bande auf.
     \item[No-Energy-Node] Tritt auf, wenn eine Kugel vom dynamischen in den statischen Zustand wechselt (ausrollt). In jedem
     Layer, wo eine Kugel statisch ist, wird sie durch diesen Node modelliert.
     \item[Out-of-System-Node] Sobald eine Kugel mit dem Zielkreis kollidiert, tritt dieses Ereignis auf. Dem System wird die
@@ -27,7 +27,7 @@ Im Billiard gibt es nur die Kugeln als statische und/oder dynamische Objekte.
 \textbf{Konstante Objekte}
 Die konstanten Objekte bilden die Banden wie auch die Ziele.
 
-Es wird ungefähr der Pseudoalgorithmus wie in \ref{alg:physikalisches_system} angewendet, optimal auf das Problem \glqq{} Billiard\grqq{}
+Es wird ungefähr der Pseudoalgorithmus wie in \ref{alg:physikalisches_system} angewendet, optimal auf das Problem \glqq{}Billiard\grqq{}
 abgestimmt. Es folgen die physikalischen Berechnungen zur Durchführung der Simulation.
 
 
@@ -39,7 +39,7 @@ beschleunigten Bewegung verwendet, wobei $\vec{v_0}$, $\vec{a}$ sowie $t$ gegebe
 \end{align}
 
 \subsubsection{Elastischer Stoss zweier Kugeln}
-Die Kollision zweier Kugeln wird im folgenden als zweidimensionaler elastischer Stoss angesehen. Dabei ist es wichtig,
+Die Kollision zweier Kugeln wird im Folgenden als zweidimensionaler elastischer Stoss angesehen. Dabei ist es wichtig,
 zwei Komponenten beim Zusammenprall zu betrachten. Dies ist einerseits das Liniensegment $s_z$ zwischen den Mittelpunkten
 der Kugeln sowie die orthogonal dazu stehende Gerade $s_t$. Die Kugel, welche Energie mitbringt, übergibt der anderen
 Kugel Energie in Richtung von $s_z$. Die übrig gebliebene Energie zeigt in Richtung von $s_t$ \cite{wiki.elastischer_stoss_physik:1}.
@@ -69,13 +69,13 @@ $\vec{v_1}$ sowie $\vec{v_2}$ auf die Komponenten in Richtung von $s_z$ und $s_t
     \vec{z} = \vec{Z_2} - \vec{Z_1}\\
     \hat{z} = \frac{\vec{z}}{\norm{\vec{z}}}
 \end{align}
-Von Interesse ist dabei nur $\hat{z}$. Mittels diesem Vektor kann die Komponente in Richtung von $s_z$ beider Geschwindigkeiten
-ausgerechnet werden.
+Von Interesse ist dabei nur $\hat{z}$.
+Mit diesem Vektor kann die Komponente in Richtung $s_z$ beider Geschwindigkeiten ermittelt werden.
 \begin{align}
     \vec{v_{1,z}} = (\vec{v_1} \cdot \hat{z}) \cdot \hat{z}\\
     \vec{v_{2,z}} = (\vec{v_2} \cdot \hat{z}) \cdot \hat{z}
 \end{align}
-Mittels dieses neuen Vektors in $s_z$ Richtung kann der Vektor in $s_t$ Richtung berechnet werden.
+Mittels dieses neuen Vektors in Richtung $s_z$ kann der Vektor in Richtung $s_t$ berechnet werden.
 \begin{align}
     \vec{v} = \vec{v_t} + \vec{v_z}\\
     \vec{v_t} = \vec{v} - \vec{v_z}
@@ -96,7 +96,7 @@ Das Resultat lautet wie folgt:
 Da eine Kugel auch einen Topspin aufweist und kaum Reibung mit der kollidierenden Kugel hat, hat dieser Topspin im
 Falle einer Kugelkollision einen Einfluss auf den weiteren Verlauf der vorher dynamischen Kugeln.
 Dieser Einfluss scheint konstant oder zumindest in kleinem Masse variabel, also praktisch unabhängig von der eingehenden Geschwindigkeit zu sein
-und fällt demnach vorallem bei kleinen Geschwindigkeiten ins Gewicht. Es werden zwei Ansätze erläutert.
+und fällt demnach vor allem bei kleinen Geschwindigkeiten ins Gewicht. Es werden zwei Ansätze erläutert.
 Die erste Variante behandelt den Topspin als ablenkende Kraft in eingehender Richtung mit konstantem Betrag.
 Die zweite Variante berücksichtigt zusätzlich die Variabilität des Topspins. In Abbildung \ref{fig:einfluss_topspin} wird der Einfluss des
 Topspins bei grossen wie auch kleinen Geschwindigkeiten erläutert.
@@ -104,7 +104,7 @@ Topspins bei grossen wie auch kleinen Geschwindigkeiten erläutert.
 Bei Variante eins wird der Einfluss des Topspins berücksichtigt,
 indem bei den vorher dynamischen Kugeln ein Vektor mit konstantem
 Betrag in der einkommenden Geschwindigkeitsrichtung auf den durch die elastische Kollision berechneten Vektor
-$\vec{v_{k,t}}$ aufaddiert wird. Demnach gilt für den neuen Vektor $\vec{v_{k,t,n}}$ der Kugeln, wobei $A$ für die konstante Geschwindigket und
+$\vec{v_{k,t}}$ aufaddiert wird. Demnach gilt für den neuen Vektor $\vec{v_{k,t,n}}$ der Kugeln, wobei $A$ für die konstante Geschwindigkeit und
 $\hat{v_k}$ für den normierten Vektor $\vec{v_k}$ der Kugel $k$ steht.
 \begin{align}
     \vec{v_{1,t,n}} = \vec{v_{1,t}} + A \cdot \hat{v_1}\\
@@ -148,7 +148,7 @@ Die Berechnung von $\vec{u_1}$ sowie $\vec{u_2}$ geschieht auf dieselbe Art und 
 \subsubsection{Bandenreflektion}
 Sofern eine Kugel an eine Bande stösst, so wird diese abgelenkt. In dem hier beschriebenen Modell wird der Drall\cite{wiki.spin:1},
 welcher die Bahn einer Kugel nach Kollision mit der Bande ablenken würde, ignoriert.
-Das bedeutet, es wird davon ausgegangen, dass der Ausfallswinkel nach der Bandenreflektion gleich dem Eifallswinkel sei.
+Das bedeutet, es wird davon ausgegangen, dass der Ausfallswinkel nach der Bandenreflektion gleich dem Einfallswinkel sei.
 Dazu kann die folgende Formel\cite{paulbourke.reflected_ray:1} verwendet werden, wobei $I$ der einfallende
 und $R$ der ausgehende Weg der Kugel und $N$ der Normalenvektor der Bande sind:
 \begin{align}
@@ -183,8 +183,8 @@ Weiterhin sind folgende Abstraktionen bekannt:
     \vec{\Delta s} = \vec{\Delta s}_1 - \vec{\Delta s}_2
 \end{align}
 
-Es entsteht ein Polynom vierten Grades\footnote{Für Herleitung, siehe Anhang \ref{anhang:herleitung:event:dynamicObjectCollision}}.
-Um diese Gleichung zu lösen bedarf es der entsprechenden Lösungsformel \cite{wiki.polynom:1}:
+Es entsteht ein Polynom vierten Grades\footnote{Herleitung siehe Anhang \ref{anhang:herleitung:event:dynamicObjectCollision}}.
+Um diese Gleichung zu lösen, bedarf es der entsprechenden Lösungsformel \cite{wiki.polynom:1}:
 \begin{align}
     ax^4 + bx^3 + cx^2 + dx + e = 0\\
     x_{1,2} = -\frac{b}{4a} - S \pm \frac{1}{2}\sqrt{-4S^2 - 2p + \frac{q}{S}}\\
@@ -229,7 +229,7 @@ Sämtliche Angaben beziehen sich auf die Grafik \ref{fig:kugelkollision_vorbedin
 \end{figure}
 
 Sobald beide Kugeln dynamisch sind reicht eine einfache Prüfung auf die Distanz nicht mehr. Es muss ein Schnittpunkttest der beiden halben Geraden, definiert durch die
-beiden Geschwindigkeitsvektoren, durchgeführt werden. Hierbei ist der Durchmesser der Kugel mitzubeachten, dies
+beiden Geschwindigkeitsvektoren, durchgeführt werden. Hierbei ist der Durchmesser der Kugel zu beachten, dies
 wird in Abbildung \ref{fig:kugelkollision_vorbedingung_dynamisch} dargestellt.
 \begin{figure}[h!]
     \begin{center}
@@ -268,7 +268,7 @@ sind äquivalent zu den vorhergehenden Berechnungen.
     \begin{center}
         \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/26_vorbedingung_kugelkollision_dynamisch_parallel.png}
     \end{center}
-    \caption{Vorbedingung einer Prüfung auf Kollision zwischen dynamischen parallel velaufenden Kugeln}
+    \caption{Vorbedingung einer Prüfung auf Kollision zwischen dynamischen parallellaufenden Kugeln}
     \label{fig:kugelkollision_vorbedingung_dynamisch_parallel}
 \end{figure}
 
@@ -282,7 +282,7 @@ Durchmesser nach hinten verschoben.
     \begin{center}
         \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/27_vorbedingung_kugelkollision_dynamisch_hintereinander.png}
     \end{center}
-    \caption{Vorbedingung einer Prüfung auf Kollision zwischen dynamischen hintereinander velaufenden Kugeln}
+    \caption{Vorbedingung einer Prüfung auf Kollision zwischen dynamischen hintereinander verlaufenden Kugeln}
     \label{fig:kugelkollision_vorbedingung_dynamisch_hintereinander}
 \end{figure}
 
@@ -326,7 +326,7 @@ ihre Gesamtenergie verloren und steht still. Es wird das Minimum der beiden Zeit
 Probleme hat dieser Ansatz ergeben, wenn die Kugel z.B. nahe der Bande rollt oder teilweise auch aufgrund der Ungenauigkeiten
 beim Rechnen mit Fliesskommazahlen. So wurde die Kollision mit derselben Bande mehrfach aufeinanderfolgend detektiert und
 die Kugeln konnte so durch die Bande hindurchrollen. Das Problem wurde behoben, indem
-die letzte Bande, mit welchere die Kugel kollidierte, von der Ereignisberechnung ausgeschlossen wurde. Die Bande wird
+die letzte Bande, mit welcher die Kugel kollidierte, von der Ereignisberechnung ausgeschlossen wurde. Die Bande wird
 erst wieder miteinbezogen, wenn die Kugel eine andere Bande oder eine andere Kugel getroffen hat.
 
 \subsubsection{Ereignis - Totaler Energieverlust}
@@ -369,7 +369,7 @@ der Reibungsverlust ist zu gross, als dass sie den Zielkreis erreichen könnte.
 \end{align}
 
 \subsubsection{Ereignis - Rollen}
-Wenn eine Kugel zentral angestossen wird, dann gleitet sie einen Moment ohne zu rollen. Die Eigenschaft des
+Wenn eine Kugel zentral angestossen wird, dann gleitet sie einen Moment, ohne zu rollen. Die Eigenschaft des
 Rollens wird ebenso als Ereignis geführt. Der Zeitpunkt, wann dieses Ereignis eintritt, kann über die
 Formel\footnote{Die Herleitung erfolgt in Kapitel \ref{anhang:herleitung:event:rollen}} \ref{eq:rollzeitpunkt_2} berechnet
 werden, wobei $\mu$ für den Gleitreibungskoeffizienten steht.
@@ -379,7 +379,7 @@ werden, wobei $\mu$ für den Gleitreibungskoeffizienten steht.
 \end{align}
 
 Dieser Zeitpunkt wird einmal beim Anstossen einer Kugel berechnet und zwischengespeichert. Würde dieses Ereignis nach
-jedem Vorherhigen neu berechnet werden, so würde der Rollzeitpunkt immer weiter in der Zukunft liegen. Dieses Zwischenspeichern
+jedem Vorherigen neu berechnet werden, so würde der Rollzeitpunkt immer weiter in der Zukunft liegen. Dieses Zwischenspeichern
 wäre nicht nötig, würde die Simulation sämtliche Ereignisse vorausberechnen, zwischenspeichern, abarbeiten und bei Bedarf
 invalidieren\footnote{Eine mögliche Verbesserung des Algorithmus wird in Kapitel \ref{anhang:simulation:algorithmus} beschrieben.}.
 
@@ -406,8 +406,8 @@ möglichen erzielt wurden. Dies geschieht, in dem das Minimum von $1$ und dem Sc
     K_{p} = 1 - \min{(S, 1)}
 \end{align}
 
-Des weiteren soll die Stossstärke, gemessen an der Startgeschwindigkeit des Spielballs, in die Bewertung einfliessen.
-Der Grund ist, dass bei stärkeren Stössen ein Präzisionsfehler wahrscheinlicher ist und daher schwachere Stösse zu bevorzugen sind.
+Des Weiteren soll die Stossstärke, gemessen an der Startgeschwindigkeit des Spielballs, in die Bewertung einfliessen.
+Der Grund ist, dass bei stärkeren Stössen ein Präzisionsfehler wahrscheinlicher ist und daher schwächere Stösse zu bevorzugen sind.
 Die Kosten der Stossstärke werden wie folgt mithilfe der Stossgeschwindigkeit $v$ und einer
 Maximalgeschwindigkeit von $V_{max} = 5\frac{m}{s}$ in einem Wert zwischen $0$ und $1$ ausgedrückt.
 \begin{align}
