@@ -227,12 +227,12 @@ namespace process {
             return manager->_workers.size() == manager->_notWorking.size() && manager->_inProgress.empty();
         }
 
-        void pushData(const Process<Data, Parameter, Solution>* const process, const std::vector<Data>& inProgress,
+        void pushData(const Process<Data, Parameter, Solution>* const process, bool noWorkLeftToDo, const std::vector<Data>& inProgress,
                       const std::vector<Data>& solutions) {
             _lock.lock();
 
             if (!process->_clearFlag) {
-                if (inProgress.empty() && !process->dataRequestValid()) {
+                if (noWorkLeftToDo && !process->dataRequestValid()) {
                     _notWorking.insert(process->_id);
                 }
 
@@ -352,7 +352,8 @@ namespace process {
                 auto synchronizeInProgress = getForSynchronization(process->_inProgress, 0.6);
                 auto synchronizeSolutions = getForSynchronization(process->_solutions, 1);
 
-                process->_processManager->pushData(process, synchronizeInProgress, synchronizeSolutions);
+                process->_processManager->pushData(process, process->_inProgress.empty(), synchronizeInProgress,
+                                                   synchronizeSolutions);
             }
         }
 
