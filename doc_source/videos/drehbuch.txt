@@ -124,6 +124,8 @@ Wichtig dabei ist die Distanz, welche die Kugeln zurücklegen, ...
 Dem Spieler wird dann der einfachste Stoss vorgeschlagen.
 [Zurück zum Bild des Stosses]
 
+Wie stark und in welchem Winkel die weisse Kugel getroffen werden muss wird berechnet und animiert.
+
 Soweit so gut, aber wie stark und in welchem Winkel muss die weisse Kugel getroffen werden?
 [Bild des Stosses]
 Die benötigte Geschwindigkeit wird berechnet und anhand einer Animation angezeigt.
