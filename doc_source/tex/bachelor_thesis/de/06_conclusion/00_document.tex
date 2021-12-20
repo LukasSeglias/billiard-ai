@@ -1,2 +1,38 @@
 \chapter{Fazit}\label{kap:fazit}
-TODO: Fazit
+Die Zielstellung dieser Arbeit war die Implementation eines Systems, welches den Billardspieler auf geeignete Weise bei der Auswahl und Ausführung von Stössen unterstützt.
+
+Die Situation auf dem Billardtisch wird in Form der Kugelpositionen und -farben detektiert und passend zurückprojiziert.
+Die Detektion verfügt über eine hohe Genauigkeit und eine gute Performanz, sodass diese in Echtzeit verwendet werden kann.
+Dank der Stabilisierung der detektierten Positionen ist die Anzeige stabil im Ruhezustand und trotzdem reaktionsschnell bei Bewegungen.
+Trotz der Problematik von möglichen Detektionsfehlern durch die projizierten Augmentationen funktionieren die Detektion und Klassifikation robust.
+
+Die Suche nach Stössen wurde gut diskretisiert, indem diese von den Löchern ausgehend Stösse findet.
+Sie ist fähig, direkte Stösse und Stösse über mehrere Banden oder Kugeln zu finden.
+Alle evaluierten Stösse werden nach verschiedenen Kriterien bewertet, welche deren Schwierigkeit ausdrücken.
+Die Startgeschwindigkeit jedes Stosses wird rückwärts vom Zielpunkt zurück bis zur weissen Kugel physikalisch korrekt, unter Berücksichtigung der Reibung, berechnet.
+Dank der implementierten ereignisbasierten analytischen Physiksimulation können gefundene Stösse simuliert und die daraus
+folgende Situation abgeleitet werden, um die Suche über mehrere Stösse zu erlauben und damit die Wahl früherer Stösse zu beeinflussen.
+Dabei wurden u.a. die Reihenfolge der einzulochenden Kugeln und die Platzierung der farbigen Kugeln regelkonform umgesetzt.
+Die Suche wie auch die Simulation berücksichtigen keinen Sidespin, modellieren jedoch den Topspin.
+
+Mithilfe von Animationen werden die Resultate der Suche und Simulation dem Spieler optimal und direkt auf dem Billardtisch angezeigt.
+Dies führt dazu, dass die Richtung des Queues und die Stärke des Schlags an den Animationen abgelesen und daran ausgerichtet werden kann.
+Ausserdem sieht der Spieler den Ablauf des Stosses vom Anfang bis zum Schluss und die resultierende Spielsituation.
+
+Es wurde eine erweiterbare Anwendung mit Unity erstellt, die verschiedenste Optionen und Funktionalitäten
+für die Anzeige und das Debugging des Gesamtsystems anbietet.
+
+Im Infinity-Modus kann der Spieler mit dem Gesamtsystem spielend interagieren, indem das System automatisch erkennt, wann
+neue Vorschläge gemacht werden sollen, ohne den Spielfluss zu unterbrechen.
+Es wird erkannt, wenn Kugeln in Bewegung sind, neue Kugeln auf dem Tisch platziert werden und Kugeln vom Tisch verschwinden.
+Die Interaktion findet ausschliesslich über das Billardspiel statt, wodurch sich der Spieler darauf konzentrieren kann,
+die strategischen Überlegungen des Systems nachzuvollziehen und die Ausführung zu üben.
+
+In dieser Arbeit wurden viele Erkenntnisse und Herleitungen zur Implementation der genannten Komponenten dokumentiert, die für ähnliche Arbeiten nützlich sein können.
+Es wurde der Vergleich zu verwanden Arbeiten, die ebenfalls praktischer Natur waren, gezogen und innovative Alleinstellungsmerkmale dieser Arbeit gefunden.
+
+Die Ergebnisse dieser Arbeit sind nicht nur theoretischer Natur, sondern wurden mit einem Aufbau an einem echten Billardtisch
+erarbeitet und resultieren in einer \emph{Augmented Reality} Anwendung, welche Hardware und Software vereint.
+
+Die ursprünglichen Ziele der Arbeit wurden übertroffen.
+Es wurde ein sehr gut funktionierendes Gesamtsystem entwickelt, welches als sehr solide Grundlage für ein Produkt dienen kann.
