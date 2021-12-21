@@ -8,16 +8,16 @@ gleichmässig beschleunigten Bewegung bestimmt.
 
 Bekannt ist, dass der Betrag des Geschwindigkeitsvektors $0$ sein muss.
 \begin{align}
-    \norm{\vec{v(t)}} = 0\\
-    \vec{0} = \vec{a} \cdot t + \vec{v_0}\label{eq:out_of_energy:00}
+    \norm{\vec{v(t)}} &= 0\\
+    \vec{0} &= \vec{a} \cdot t + \vec{v_0}\label{eq:out_of_energy:00}
 \end{align}
 
 Um $t$ anhand von bekannten Werten $\vec{a}$ und $\vec{v_0}$ zu ermitteln, gibt es zwei Möglichkeiten. Bei der Ersten
 kann die Gleichung \ref{eq:out_of_energy:00} Komponentenweise aufgestellt werden, wobei auch $t$ in zwei verschiedene
 Richtungen betrachtet werden muss.
 \begin{align}
-    0 = a_x \cdot t_x + v_{0,x}\\
-    0 = a_y \cdot t_y + v_{0,y}
+    0 &= a_x \cdot t_x + v_{0,x}\\
+    0 &= a_y \cdot t_y + v_{0,y}
 \end{align}
 
 Damit ergeben sich zwei unabhängige Gleichungen mit zwei unbekannten $t_x$ und $t_y$, die Zeitpunkte, an denen die Kugel in der
@@ -35,14 +35,14 @@ Die beiden Variablen $t_x$ und $t_y$ sind in diesem Fall äquivalent. Eine Unter
 also nur getroffen, da sich das Problem auf nur eine Dimension beschränken kann. Es ergeben sich die beiden nachfolgenden
 Formeln.
 \begin{align}
-    t_x = \frac{-v_{0,x}}{a_x}\\
-    t_y = \frac{-v_{0,y}}{a_y}
+    t_x &= \frac{-v_{0,x}}{a_x}\\
+    t_y &= \frac{-v_{0,y}}{a_y}
 \end{align}
 
 Der Zeitpunkt $t$ zu dem die Kugel vollständig stillsteht, ist so wie folgt gegeben:
 \begin{align}
-    t = \max{(t_x, t_y)}\\
-    t = \max{(\frac{-v_{0,x}}{a_x}, \frac{-v_{0,y}}{a_y})}
+    t &= \max{(t_x, t_y)}\\
+    t &= \max{(\frac{-v_{0,x}}{a_x}, \frac{-v_{0,y}}{a_y})}
 \end{align}
 
 Die andere Möglichkeit ist die Betrachtung der Gleichung \ref{eq:out_of_energy:00} über die Beträge der Vektoren
@@ -57,18 +57,18 @@ konstanten Faktor.
 
 Es folgen einige Umformungen, um die Variable $t$ auf eine Seite der Gleichung zu bringen.
 \begin{align}
-    0 = \norm{\vec{a}} \cdot t + \norm{\vec{v_0}}\\
-    -\norm{\vec{v_0}} = \norm{\vec{a}} \cdot t\\
-    -\sqrt{v_{0,x}^2 + v_{0,y}^2} = \sqrt{a_x^2 + a_y^2} \cdot t\\
-    v_{0,x}^2 + v_{0,y}^2 = a_x^2 + a_y^2 \cdot t^2\\
-    \frac{v_{0,x}^2 + v_{0,y}^2}{a_x^2 + a_y^2} = t^2\\
-    \sqrt{\frac{v_{0,x}^2 + v_{0,y}^2}{a_x^2 + a_y^2}} = t
+    0 &= \norm{\vec{a}} \cdot t + \norm{\vec{v_0}}\\
+    -\norm{\vec{v_0}} &= \norm{\vec{a}} \cdot t\\
+    -\sqrt{v_{0,x}^2 + v_{0,y}^2} &= \sqrt{a_x^2 + a_y^2} \cdot t\\
+    v_{0,x}^2 + v_{0,y}^2 &= a_x^2 + a_y^2 \cdot t^2\\
+    \frac{v_{0,x}^2 + v_{0,y}^2}{a_x^2 + a_y^2} &= t^2\\
+    \sqrt{\frac{v_{0,x}^2 + v_{0,y}^2}{a_x^2 + a_y^2}} &= t
 \end{align}
 
 Damit stehen zwei Möglichkeiten zur Verfügung.
 \begin{align}
-    t = \max{(\frac{-v_{0,x}}{a_x}, \frac{-v_{0,y}}{a_y})}\label{eq:out_of_energy:01}\\
-    t = \sqrt{\frac{v_{0,x}^2 + v_{0,y}^2}{a_x^2 + a_y^2}}
+    t &= \max{(\frac{-v_{0,x}}{a_x}, \frac{-v_{0,y}}{a_y})}\label{eq:out_of_energy:01}\\
+    t &= \sqrt{\frac{v_{0,x}^2 + v_{0,y}^2}{a_x^2 + a_y^2}}
 \end{align}
 Verwendet wird die Gleichung \ref{eq:out_of_energy:01}, da angenommen wird, dass das Nehmen eines Maximalwerts zweier
 Divisionen effizienter ist als die Berechnung einer Wurzel einer Division zweier Additionen.

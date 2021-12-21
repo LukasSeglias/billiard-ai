@@ -1,6 +1,10 @@
-\section{Detektion}
+\section{Detektion von Snooker-Kugeln}
+Im Folgenden wird die Detektion geprüft, indem die Genauigkeit der detektierten Kugelpositionen, die Performanz und die
+Robustheit gegenüber Fremdkörpern, wie Armen und Händen des Spielers, im Bild untersucht wird.
+
+\subsection{Detektionsgenauigkeit}
 Zur Überprüfung der Genauigkeit der Kugeldetektion wurden 50 Testbilder von verschiedenen Spielständen aufgenommen
-und von Hand die Positionen der Kugeln in Pixelkoordinaten angegeben.
+und die Positionen der Kugeln in Pixelkoordinaten manuell angegeben.
 Die Pixelkoordinaten wurden anschliessend in Modellkoordinaten umgewandelt \cite{project2:pixel_to_model_coordinates}.
 Diese Referenzdaten können mit dem Resultat des Detektionsalgorithmus verglichen werden,
 indem dieser die Kugeln auf denselben Bildern detektiert, auf dieselbe Weise in Modellkoordinaten umwandelt und
@@ -10,7 +14,8 @@ anschliessend statistisch ausgewertet werden.
 
 In den 50 Referenzbildern sind insgesamt 835 Kugelpositionen hinterlegt, in Tabelle \ref{tab:detektion_resultate_distanzen_stats}
 sind einige statistische Kennzahlen aus diesem Vergleich aufgeführt. Der Median liegt bei ca. 2.33mm und 50\% der Detektionen
-haben einen Positionsfehler zwischen ca. 0mm - 3.7mm. Die maximale Abweichung zwischen Referenzdaten und Detektion liegt bei 8.35mm.
+haben einen Positionsfehler zwischen ca. 0mm - 3.7mm.
+Die maximale Abweichung zwischen Referenzdaten und Detektion liegt bei 8.35mm.
 
 \begin{table}[ht]
     \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
@@ -110,14 +115,41 @@ In diesem Kapitel wurden nur Bilder für den Vergleich zwischen Detektion und Re
 Es kann sein, dass die Stabilisierung in gewissen Fällen die detektierten Positionen verbessert,
 weil Positionsfehler in einzelnen Bildern geglättet werden.
 
-Die implementierte Live-Detektion gilt es nachfolgend ebenfalls zu überprüfen.
+\subsection{Performanz der Live-Detektion}
+Die Performanz der Detektion ist für das Tracking und die Anzeige der Kugelpositionen in Echtzeit relevant.
+Zur Messung wurde die Detektion 50-mal abwechselnd auf 24 Testbildern ausgeführt und die benötigte Zeit gemessen.
+Dadurch wurden $50 \cdot 24 = 1200$ Detektionen ausgeführt.
+Ausgeführt wurde dieser Test auf einem vierjährigen Laptop vom Modell Acer Aspire V 15 Nitro mit
+einem Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz und 16GB RAM.
 
+Aufgrund dieses Tests konnte die durchschnittliche Dauer eines Detektionsdurchlaufs berechnet werden.
+Diese beträgt 43.8ms und entspricht damit einer Framerate von 22.8 fps (frames per second).
+Mit der aktuell eingesetzten Kamera, einer Intel RealSense D435\cite{project2:aufbau}, kann mit der verwendeten Auflösung eine Framerate von
+30 fps erreicht werden.
+Mit dieser Performanz werden dementsprechend einzelne Frames übersprungen.
+Die erreichte Performanz reicht allerdings aus, um Kugeln bei mittleren Geschwindigkeiten mit einer kleinen Verzögerung
+zu verfolgen, siehe Abbildung \ref{fig:detection_delay}.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.4\linewidth]{../common/04_results/resources/detection_delay.jpg}
+    \end{center}
+    \caption{
+        Sichtbare Verzögerung in der Detektion (vergrösserter Bildausschnitt).
+        Die Vergangene Zeit zwischen Bildaufnahme und Anzeige des Kreises um die detektierte Kugelposition herum ist zu gross,
+        um die rollende Kugel perfekt zu verfolgen.
+    }
+    \label{fig:detection_delay}
+\end{figure}
+
+\subsection{Fehldetektionen an Armen und Händen}
 Ein Problem der Live-Detektion ist, dass wenn ein Spieler mit der Hand in das Bild greift, um u.a. einen Stoss
 durchzuführen, dann werden bei der Hand ebenfalls Kugeln detektiert, siehe Abbildung \ref{fig:detection_hand_problem}.
 Dies ist darauf zurückzuführen, dass die Detektion eine Segmentierung des HSV-Farbraumes durchführt\cite{project2:snooker_detection}
 und anschliessend darauf den Circle Hough transform\cite{wiki:circle_hough} ausführt.
-Dadurch werden Kleider oder Haut ebenfalls als Bereiche erkannt, wo eine Kugel sein könnte. Der Circle Hough transform
-findet anschliessend aufgrund von Kanten in diesen Bereichen Kreise, welche dann als detektierte Kugeln übernommen werden.
+Dadurch werden Kleider oder Haut ebenfalls als Bereiche erkannt, wo eine Kugel sein könnte.
+Der Circle Hough transform findet anschliessend aufgrund von Kanten in diesen Bereichen Kreise,
+welche dann als detektierte Kugeln übernommen werden.
 
 \begin{figure}[h!]
     \begin{center}
@@ -132,69 +164,6 @@ Dazu würden die segmentierten Regionen, wo eine Hand oder ein Arm abgebildet is
 Diese Segmentation ist allerdings schwierig durchzuführen, da diese stark von Hautfarbe und Bekleidung abhängt.
 Es wäre hier denkbar, ein vortrainiertes neuronales Netzwerk zu verwenden, welches eine Handsegmentation oder -detektion machen kann.
 
-Das in Abschnitt \ref{kap:tracking} beschriebene Tracking zur Stabilisierung der Kugelpositionen hat zu einer deutlichen
-visuellen Verbesserung geführt.
-Sofern der Spielstand ruhig ist, also keine Kugeln in Bewegung sind, bewegen sich die
-projizierten Kreise rund um die detektierte Position kaum noch.
-Ohne Tracking ist das Rauschen in der detektierten Position anhand der bewegenden Kreise sichtbar.
-
-Diese visuelle Verbesserung kann auch statistisch quantifiziert werden, indem die Detektion auf einem Video eines
-ruhigen Spielstandes durchgeführt wird. Die Detektion kann auf jedem einzelnen Frame des Videos durchgeführt werden, und
-die detektierte Position mit derjenigen im vorherigen Frame verglichen werden.
-Die Distanz zwischen der detektierten Position in Frame $F_{t-1}$ und derjenigen in Frame $F_{t}$ bildet anschliessend
-eine Messung, die gesammelt wird.
-
-Auf den gesammelten Distanzen können anschliessend statistische Kennzahlen berechnet werden.
-Diese Messungen wurden mit und ohne Stabilisierung der Kugelpositionen durchgeführt, die Resultate sind in Tabelle \ref{tab:detektion_resultate_tracking_stats} aufgeführt.
-Die Messungen basieren auf einem Videoausschnitt von 178 Frames eines Videos mit einem Spielstand wo 21 Kugeln stillstehen.
-Die Messung wurde erst nach 30 Frames gestartet, damit die Messung mit eingeschalteter Stabilisierung bereits einige
-Daten sammeln konnte.
-Während dieser Aufwärmphase wäre die Detektion mit eingeschalteter Stabilisierung anfällig auf Rauschen in der Detektion,
-wie es die Detektion ohne Stabilisierung ist.
-Durch diesen Vorlauf von 30 Frames beträgt der gemessene Videoausschnitt 148 Frames.
-Dies resultiert in $148 \cdot 21 = 3108$ Messwerten.
-Aus Tabelle \ref{tab:detektion_resultate_tracking_stats} wird klar, dass die Stabilisierung die Bewegung der
-detektierten Kugelpositionen deutlich verringern konnte.
-
-\begin{table}[ht]
-    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
-    \begin{tabular}{ lrr }
-        \rowcolor{\seccolor!50}
-        Bezeichnung & Stabilisierung ausgeschaltet & Stabilisierung eingeschaltet\\
-        Anzahl Messwerte & 3108 & 3108\\
-        Minimum & 0mm & 0mm\\
-        Unteres Quartil $Q_{0.25}$ & 1.638916mm & 0.081972mm\\
-        Median $Q_{0.5}$ & 2.359856mm & 0.129632mm\\
-        Oberes Quartil $Q_{0.75}$ & 3.714067mm & 0.222898mm\\
-        Quartilabstand $Q_{0.75} - Q_{0.25}$ & 2.075151mm & 0.140926mm\\
-        Maximum & 13.590104mm & 4.043161mm\\
-        Summe aller Messungen & 7654.91mm & 588.849mm
-    \end{tabular}
-    \caption{
-        Statistische Zahlen zu der Verteilung der Veränderung der detektierten Kugelpositionen über eine Dauer von
-        148 Video-Frames mit und ohne Stabilisierung.
-        Bei einem Messwert handelt es sich um die Distanz zwischen der detektierten Kugelposition in Frame $F_{t-1}$
-        und Frame $F_{t}$ für eine Kugel.
-    }
-    \label{tab:detektion_resultate_tracking_stats}
-\end{table}
-% ohne stabilisierung: Total delta movement summary: count=3108 min=0.000000, lower quartile=1.638916, median=2.359856, upper quartile=3.714067, max=13.590104
-% mit  stabilisierung: Total delta movement summary: count=3108 min=0.000000, lower quartile=0.081972, median=0.129632, upper quartile=0.222898, max=4.043161
-% ohne stabilisierung: Total delta movement: 7654.91mm, 148 frames, lost: 0
-% mit  stabilisierung: Total delta movement: 588.849mm, 148 frames, lost: 0
-
-In Abbildung \ref{fig:detektion_resultate_tracking_boxplot} sind die Daten aus Tabelle \ref{tab:detektion_resultate_tracking_stats}
-in zwei Box-Plot-Diagrammen visualisiert.
-
-\begin{figure}[h!]
-    \begin{center}
-        \includegraphics[width=0.5\linewidth]{../common/04_results/resources/stabilisierung_boxplot.png}
-    \end{center}
-    \caption{
-        Box-Plot-Diagramme zu der Bewegung der Kugelpositionen mit und ohne Stabilisierung
-        gemäss Tabelle \ref{tab:detektion_resultate_tracking_stats}.
-        Der Wertebereich der Y-Achse wurde auf 5 beschränkt, damit das rechte Diagramm ersichtlich ist.
-        Die Antenne des linken Diagrammes geht bis zum Maximum von 13.59mm.
-    }
-    \label{fig:detektion_resultate_tracking_boxplot}
-\end{figure}
+Die detektierten Kreise bei Armen und Händen sind mehrheitlich aus kosmetischen Gründen störend und könnten den Spieler ablenken.
+Eine Suche sollte zum Zeitpunkt, da der Spieler gerade dabei ist, einen Stoss auszuführen, nicht durchgeführt werden.
+Daher sind diese Fehldetektionen für die Suche irrelevant.

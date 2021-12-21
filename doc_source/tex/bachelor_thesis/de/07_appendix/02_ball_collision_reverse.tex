@@ -20,9 +20,9 @@ die Kugel A am Punkt $B$ haben muss.
 
 Sei die gewünschte Richtung, in die Kugel T nach der Kollision rollen soll, $\hat{u}$ und der Kugelradius $r$, dann kann die Position $B$ bestimmt werden:
 \begin{align}
-    s_z = 2 \cdot r\\
-    B = C - s_z \cdot \hat{u}\\
-    B = C - 2 \cdot r \cdot \hat{u}
+    s_z &= 2 \cdot r\\
+    B &= C - s_z \cdot \hat{u}\\
+    B &= C - 2 \cdot r \cdot \hat{u}
 \end{align}
 
 Nun gilt es die Geschwindigkeit $\vec{v_{1,z}}$ der Kugel A zum Zeitpunkt der Kollision zu bestimmen.
@@ -30,9 +30,9 @@ Nachfolgend wird angenommen, dass die zu treffende Kugel T stillsteht und somit 
 Der Geschwindkeitsvektor $\vec{u}$ ist durch die gewünschte Richtung und Geschwindigkeit,
 welche die Kugel T nach dem Zusammenstoss haben soll, gegeben.
 \begin{align}
-    \vec{u} = \vec{v_{1,z}} + \vec{v_{2,t}}\\
-    \vec{u} = \vec{v_{1,z}} + \vec{0}\\
-    \vec{u} = \vec{v_{1,z}}
+    \vec{u} &= \vec{v_{1,z}} + \vec{v_{2,t}}\\
+    \vec{u} &= \vec{v_{1,z}} + \vec{0}\\
+    \vec{u} &= \vec{v_{1,z}}
 \end{align}
 Die Situation ist in Abbildung \ref{fig:elasticCollisionOfTwoBalls} dargestellt.
 
@@ -54,25 +54,25 @@ Gegeben sind die nachfolgenden Informationen:
 Weiterhin ist die Richtung von $\vec{v_1}$ gegeben, da dieser parallel zum Vektor $\vec{d}$ ist.
 Allerdings muss die Länge des Vektors noch bestimmt werden:
 \begin{align}
-    \vec{d} = B - A\\
-    \hat{d} = \frac{\vec{d}}{\norm{\vec{d}}}\\
-    \vec{v_1} = \alpha \cdot \hat{d}
+    \vec{d} &= B - A\\
+    \hat{d} &= \frac{\vec{d}}{\norm{\vec{d}}}\\
+    \vec{v_1} &= \alpha \cdot \hat{d}
 \end{align}
 
 Die Länge des Vektors $\vec{v_1}$ muss nach Projektion auf den Einheitsvektor $\hat{u}$ in Richtung
 von $\vec{u}$ der Länge des Vektors $\vec{u}$ entsprechen. Dazu muss ein Skalierungsfaktor $\alpha$ bestimmt werden,
 mit dem der Einheitsvektor $\hat{d}$ skaliert werden kann:
 \begin{align}
-    \hat{u} = \frac{\vec{u}}{\norm{\vec{u}}}\\
-    \vec{v_1} \cdot \hat{u} = \norm{\vec{u}}\\
-    (\alpha \cdot \hat{d}) \cdot \hat{u} = \norm{\vec{u}}\\
-    \alpha \cdot (\hat{d} \cdot \hat{u}) = \norm{\vec{u}}\\
-    \alpha = \frac{\norm{\vec{u}}}{\hat{d} \cdot \hat{u}}\\
-    \alpha = \frac{\norm{\vec{u}}}{\hat{d} \cdot \frac{\vec{u}}{\norm{\vec{u}}}}\\
-    \alpha = \frac{\norm{\vec{u}}^2}{\hat{d} \cdot \vec{u}}\\
-    \alpha = \frac{\vec{u} \cdot \vec{u}}{\hat{d} \cdot \vec{u}}\\
-    \vec{v_1} = \alpha \cdot \hat{d}\\
-    \vec{v_1} = \frac{\vec{u} \cdot \vec{u}}{\hat{d} \cdot \vec{u}} \cdot \hat{d}
+    \hat{u} &= \frac{\vec{u}}{\norm{\vec{u}}}\\
+    \vec{v_1} \cdot \hat{u} &= \norm{\vec{u}}\\
+    (\alpha \cdot \hat{d}) \cdot \hat{u} &= \norm{\vec{u}}\\
+    \alpha \cdot (\hat{d} \cdot \hat{u}) &= \norm{\vec{u}}\\
+    \alpha &= \frac{\norm{\vec{u}}}{\hat{d} \cdot \hat{u}}\\
+    \alpha &= \frac{\norm{\vec{u}}}{\hat{d} \cdot \frac{\vec{u}}{\norm{\vec{u}}}}\\
+    \alpha &= \frac{\norm{\vec{u}}^2}{\hat{d} \cdot \vec{u}}\\
+    \alpha &= \frac{\vec{u} \cdot \vec{u}}{\hat{d} \cdot \vec{u}}\\
+    \vec{v_1} &= \alpha \cdot \hat{d}\\
+    \vec{v_1} &= \frac{\vec{u} \cdot \vec{u}}{\hat{d} \cdot \vec{u}} \cdot \hat{d}
 \end{align}
 
 Somit ist die Geschwindigkeit, welche die Kugel A an Position B haben muss, bestimmt.

@@ -1,2 +1,43 @@
 \chapter{Zusammenfassung}
-TODO: Zusammenfassung
+Billard ist eine Sportart, die ein gewisses Verständnis von Physik, strategisches Denken und eine ruhige Hand erfordert.
+Für Anfänger kann es schwierig sein, eine Spielsituation zu analysieren, geeignete Stösse zu finden, und den passenden auszuwählen.
+Zudem muss die Stärke, mit der die weisse Kugel angestossen werden soll, abgeschätzt werden.
+Was nach dem Stoss passiert, muss sich der Spieler aufgrund seiner Erfahrung im Spiel vorstellen.
+
+Mit Billiard-AI wurde ein System entwickelt, das zum Ziel hat, den Spieler zu unterstützen und ihm wichtige Erkenntnisse
+zu verschaffen.
+Die in dieser Arbeit betrachtete Spielart ist Snooker, da diese die Weitsicht des Spielers erfordert, über mehrere Stösse zu planen.
+
+Es wurde ein physischer Aufbau mit einem Billardtisch, einer Kamera und einem Projektor verwendet.
+Über die Bilder der Kamera werden die Positionen und Farben aller Kugeln kontinuierlich und in Echtzeit erkannt.
+Mithilfe des Projektors werden dem Spieler Hilfestellungen und Informationen direkt auf dem Tisch eingeblendet.
+
+Um dem Spieler bei der Wahl des Stosses zu helfen, wird die erkannte Spielsituation analysiert und mögliche Stösse gefunden.
+Diese werden nach verschiedenen, geeigneten Kriterien bewertet, um deren Schwierigkeit einzuschätzen und dem Spieler
+einfache Stösse vorzuschlagen.
+Es werden sowohl direkte wie auch Stösse über die Banden gefunden und berücksichtigt.
+
+Zudem ist das System fähig, die benötigte Geschwindigkeit eines Stosses zu bestimmen, damit die gewünschte Kugel eingelocht wird.
+Gefundene Stösse werden mit unterschiedlichen Startgeschwindigkeiten physikalisch simuliert, um die Auswirkungen
+des Stosses auf die Spielsituation zu untersuchen und dem Spieler diese animiert darzustellen.
+Der Weg jeder beteiligten Kugel wird anhand von Linien auf dem Tisch angezeigt und durch die Animation projizierter Kugeln
+ist der Ablauf des Stosses vom Anfang bis zum Schluss nachvollziehbar.
+So sieht der Spieler die Konsequenzen des Stosses und kann zudem den Billardqueue an den angezeigten Linien ausrichten
+und versuchen, die animierte Geschwindigkeit in den Stoss einfliessen zu lassen, damit der Stoss gelingt.
+
+Das System kann das Wissen über die Spielsituation nach einem Stoss nutzen, um über mehrere Stösse zu planen.
+Die Konsequenz ist, dass eine Abfolge von Stössen geplant und dem Spieler präsentiert werden, welche dieser anschliessend
+ausführen kann.
+Damit kann der Spieler sein strategisches Denken und die korrekte Ausführung von Stössen mit Unterstützung üben.
+
+Es wurde ein Spielmodus implementiert, in dem der Spieler nur durch das Billardspiel mit dem System interagiert.
+Dazu wird dem Spieler ein Stoss vorgeschlagen und angezeigt.
+Der Spieler kann diesen anschliessend mehr oder weniger erfolgreich ausführen.
+Nachdem alle Kugeln wieder zum Stillstand gekommen sind, wird aufgrund dieser neuen Ausgangslage ein neuer Vorschlag gemacht.
+Durch diese Interaktion kann der Spieler unterbrechungsfrei Billard spielen und trotzdem vom System profitieren.
+
+Im Vergleich zu verwandten Arbeiten besitzt diese Arbeit einige Alleinstellungsmerkmale.
+Dank dem physischen Aufbau ist die Arbeit nicht nur theoretischer, sondern auch praktischer Natur.
+
+Die gesetzten Ziele wurden übertroffen und das Resultat ist eine \emph{Augmented Reality} Anwendung,
+welche mithilfe von künstlicher Intelligenz Billardanfänger optimal unterstützt.

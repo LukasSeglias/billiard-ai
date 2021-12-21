@@ -7,10 +7,10 @@ Zentrum verschoben werden muss, um den korrekten Anspielpunkt $A$ zu finden.
 
 Es ergeben sich dadurch die beiden Linien:
 \begin{align}
-    \vec{l} = \vec{\bar{C}} - \vec{B}\\
-    L_1 = \vec{B} + \lambda_1 \cdot \vec{l}\\
-    \vec{r} = \vec{R_2} - \vec{R_1}\\
-    L_2 = \vec{R_1} + \lambda_2 \cdot \vec{r}
+    \vec{l} &= \vec{\bar{C}} - \vec{B}\\
+    L_1 &= \vec{B} + \lambda_1 \cdot \vec{l}\\
+    \vec{r} &= \vec{R_2} - \vec{R_1}\\
+    L_2 &= \vec{R_1} + \lambda_2 \cdot \vec{r}
 \end{align}
 Der Schnittpunkt kann über die in Kapitel \ref{anhang:herleitung:linie-linie-schnittpunkt} vorgestellte Formel
 berechnet werden.
@@ -44,10 +44,10 @@ Multiplikation mit einem Vektor $\vec{s}$. Für die Herleitung kann Abbildung \r
 
 Aus dieser Abbildung ergeben sich die nachfolgenden Beziehungen:
 \begin{align}
-    \begin{pmatrix}a \\ -b\end{pmatrix} \rightarrow \begin{pmatrix}a \\ b\end{pmatrix}\\
-    \begin{pmatrix}a \\ b\end{pmatrix} \rightarrow \begin{pmatrix}a \\ -b\end{pmatrix}\\
-    \begin{pmatrix}a \\ -b\end{pmatrix} \rightarrow \begin{pmatrix}-a \\ -b\end{pmatrix}\\
-    \begin{pmatrix}-a \\ -b\end{pmatrix} \rightarrow \begin{pmatrix}a \\ -b\end{pmatrix}\\
+    \begin{pmatrix}a \\ -b\end{pmatrix} &\rightarrow \begin{pmatrix}a \\ b\end{pmatrix}\\
+    \begin{pmatrix}a \\ b\end{pmatrix} &\rightarrow \begin{pmatrix}a \\ -b\end{pmatrix}\\
+    \begin{pmatrix}a \\ -b\end{pmatrix} &\rightarrow \begin{pmatrix}-a \\ -b\end{pmatrix}\\
+    \begin{pmatrix}-a \\ -b\end{pmatrix} &\rightarrow \begin{pmatrix}a \\ -b\end{pmatrix}\\
 \end{align}
 
 Anhand der Beziehungen kann für die obere sowie untere Bande folgende Eigenschaft gefunden werden:
@@ -83,23 +83,23 @@ werden. Die Beziehungen reduzieren sich auf zwei:
 \end{align}
 Es wird eine lineare Funktion gesucht, welche die Abbildung darstellt:
 \begin{align}
-    f(\vec{x}) = a \cdot \vec{x} + \vec{b}\\
-    \begin{pmatrix}1 \\ -1\end{pmatrix} = a \cdot \begin{pmatrix}0 \\ 1\end{pmatrix} + \begin{pmatrix}b_x \\ b_y\end{pmatrix}\\
-    \begin{pmatrix}-1 \\ 1\end{pmatrix} = a \cdot \begin{pmatrix}1 \\ 0\end{pmatrix} + \begin{pmatrix}b_x \\ b_y\end{pmatrix}
+    f(\vec{x}) &= a \cdot \vec{x} + \vec{b}\\
+    \begin{pmatrix}1 \\ -1\end{pmatrix} &= a \cdot \begin{pmatrix}0 \\ 1\end{pmatrix} + \begin{pmatrix}b_x \\ b_y\end{pmatrix}\\
+    \begin{pmatrix}-1 \\ 1\end{pmatrix} &= a \cdot \begin{pmatrix}1 \\ 0\end{pmatrix} + \begin{pmatrix}b_x \\ b_y\end{pmatrix}
 \end{align}
 
 Daraus ergeben sich vier Gleichungen:
 \begin{align}
-    1 = b_x\\
-    -1 = a + b_y\\
-    -1 = a + b_x\\
-    1 = b_y
+    1 &= b_x\\
+    -1 &= a + b_y\\
+    -1 &= a + b_x\\
+    1 &= b_y
 \end{align}
 Demnach lauten die Parameter:
 \begin{align}
-    b_x = 1\\
-    b_y = 1\\
-    a = -2
+    b_x &= 1\\
+    b_y &= 1\\
+    a &= -2
 \end{align}
 Anhand der nachfolgenden Funktion kann der Spiegelvektor $\vec{s}$ bestimmt werden:
 \begin{align}

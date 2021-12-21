@@ -2,8 +2,8 @@
 Um den Kollisionszeitpunkt zu bestimmen, wird in einem ersten Schritt der Schnittpunkt des Weges der Kugel mit
 dem Zielkreis berechnet. Dazu wird die Kreisgleichung wie in \ref{eq:target_collision_event:00} verwendet.
 \begin{align}
-    \norm{X - C}^2 = r^2\\
-    (x - C_x)^2 + (y - C_y)^2 = r^2\label{eq:target_collision_event:00}
+    \norm{X - C}^2 &= r^2\\
+    (x - C_x)^2 + (y - C_y)^2 &= r^2\label{eq:target_collision_event:00}
 \end{align}
 
 Hierbei gelten die Definitionen aus \ref{eq:target_collision_event:99}.
@@ -13,8 +13,8 @@ Hierbei gelten die Definitionen aus \ref{eq:target_collision_event:99}.
 
 Die Parameterform der Geradengleichung ist gegeben in \ref{eq:target_collision_event:01}.
 \begin{align}
-    \vec{d} = \vec{p} + l \cdot \hat{v}\\
-    \begin{pmatrix}d_{x}\\d_{y}\end{pmatrix} = \begin{pmatrix}p_{x}\\p_{y}\end{pmatrix} + l \cdot \begin{pmatrix}v_{x}\\v_{y}\end{pmatrix}\label{eq:target_collision_event:01}
+    \vec{d} &= \vec{p} + l \cdot \hat{v}\\
+    \begin{pmatrix}d_{x}\\d_{y}\end{pmatrix} &= \begin{pmatrix}p_{x}\\p_{y}\end{pmatrix} + l \cdot \begin{pmatrix}v_{x}\\v_{y}\end{pmatrix}\label{eq:target_collision_event:01}
 \end{align}
 
 Durch Einsetzen der Gleichung \ref{eq:target_collision_event:01} in \ref{eq:target_collision_event:00} folgt \ref{eq:target_collision_event:02}.
@@ -24,37 +24,37 @@ Durch Einsetzen der Gleichung \ref{eq:target_collision_event:01} in \ref{eq:targ
 
 Im nächsten Schritt wird die Gleichung \ref{eq:target_collision_event:02} nach t umgeformt.
 \begin{align}
-    (p_x + l \cdot v_x - C_x)^2 + (p_y + l \cdot v_y - C_y)^2 = r^2\\
-    \norm{\vec{p} + l \cdot \hat{v} - \vec{C}}^2 = r^2\\
-    \norm{l \cdot \hat{v} + \vec{p} - \vec{C}}^2 = r^2\\
-    \norm{l \cdot \hat{v} + (\vec{p} - \vec{c})}^2 = r^2\\
-    (l \cdot \hat{v} + (\vec{p} - \vec{C})) \cdot (l \cdot \hat{v} + (\vec{p} - \vec{C})) = r^2\\
-    l^2 \cdot (\hat{v} \cdot \hat{v}) + 2l \cdot (\hat{v}(\vec{p} - \vec{C})) + (\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) = r^2\\
-    l^2 \cdot (\hat{v} \cdot \hat{v}) + 2l \cdot (\hat{v}(\vec{p} - \vec{C})) + (\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) - r^2 = 0\label{eq:target_collision_event:03}
+    (p_x + l \cdot v_x - C_x)^2 + (p_y + l \cdot v_y - C_y)^2 &= r^2\\
+    \norm{\vec{p} + l \cdot \hat{v} - \vec{C}}^2 &= r^2\\
+    \norm{l \cdot \hat{v} + \vec{p} - \vec{C}}^2 &= r^2\\
+    \norm{l \cdot \hat{v} + (\vec{p} - \vec{c})}^2 &= r^2\\
+    (l \cdot \hat{v} + (\vec{p} - \vec{C})) \cdot (l \cdot \hat{v} + (\vec{p} - \vec{C})) &= r^2\\
+    l^2 \cdot (\hat{v} \cdot \hat{v}) + 2l \cdot (\hat{v}(\vec{p} - \vec{C})) + (\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) &= r^2\\
+    l^2 \cdot (\hat{v} \cdot \hat{v}) + 2l \cdot (\hat{v}(\vec{p} - \vec{C})) + (\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) - r^2 &= 0\label{eq:target_collision_event:03}
 \end{align}
 
 Die Gleichung \ref{eq:target_collision_event:02} ist von einer quadratischen Form und kann mithilfe der Mitternachtsformel
 gelöst werden.
 \begin{align}
-    a \cdot l^2 + b \cdot l + c = 0\\
-    a = \hat{v} \cdot \hat{v} = \norm{\hat{v}}^2 = 1\\
-    b = 2 \cdot \hat{v} \cdot (\vec{p} - \vec{C})\\
-    c = (\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) - r^2
+    a \cdot l^2 + b \cdot l + c &= 0\\
+    a &= \hat{v} \cdot \hat{v} = \norm{\hat{v}}^2 = 1\\
+    b &= 2 \cdot \hat{v} \cdot (\vec{p} - \vec{C})\\
+    c &= (\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) - r^2
 \end{align}
 
 Die Lösungen lauten demnach:
 \begin{align}
-    l_1 = \frac{-b + \sqrt{b^2 - 4ac}}{2a}\\
-    l_2 = \frac{-b - \sqrt{b^2 - 4ac}}{2a}
+    l_1 &= \frac{-b + \sqrt{b^2 - 4ac}}{2a}\\
+    l_2 &= \frac{-b - \sqrt{b^2 - 4ac}}{2a}
 \end{align}
 Wobei $b^2 - 4ac$ die Diskriminante ist. Hat diese einen negativen Wert, existiert kein Schnittpunkt,
 beim Wert $0$ gibt es einen Schnittpunkt und bei einem Wert grösser als $0$ gibt es zwei Schnittpunkte.
 
 Die Lösung lautet demnach:
 \begin{align}
-    l_1 = \frac{-(2 \cdot \hat{v} \cdot (\vec{p} - \vec{C})) + \sqrt{4 \cdot ((\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) - r^2)}}{2}\\
-    l_2 = \frac{-(2 \cdot \hat{v} \cdot (\vec{p} - \vec{C})) - \sqrt{4 \cdot ((\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) - r^2)}}{2}\\
-    l = \max{(\min{(l_1, l_2)}, 0)}
+    l_1 &= \frac{-(2 \cdot \hat{v} \cdot (\vec{p} - \vec{C})) + \sqrt{4 \cdot ((\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) - r^2)}}{2}\\
+    l_2 &= \frac{-(2 \cdot \hat{v} \cdot (\vec{p} - \vec{C})) - \sqrt{4 \cdot ((\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) - r^2)}}{2}\\
+    l &= \max{(\min{(l_1, l_2)}, 0)}
 \end{align}
 
 Ein $l$ ist valid, wenn es positiv ist und nicht innerhalb des Ziellochs ($-l_1, +l_2$) liegt.
@@ -67,8 +67,8 @@ Sollte ein valides $l$ existieren, kann damit die Distanz $d$ zwischen der Kugel
 Anhand der Distanz aus \ref{eq:target_collision_event:04} kann der Zeitpunkt durch die Gleichung \ref{eq:target_collision_event:05}
 bestimmt werden, wobei gilt $\vec{s(t)} = \vec{d(l)}$
 \begin{align}
-    \vec{s(t)} = \frac{1}{2} \cdot \vec{a} \cdot t^2 + \vec{v} \cdot t\\\label{eq:target_collision_event:05}
-    \frac{1}{2} \cdot \vec{a} \cdot t^2 + \vec{v} \cdot t - \vec{d(l)} = 0
+    \vec{s(t)} &= \frac{1}{2} \cdot \vec{a} \cdot t^2 + \vec{v} \cdot t\\\label{eq:target_collision_event:05}
+    \frac{1}{2} \cdot \vec{a} \cdot t^2 + \vec{v} \cdot t - \vec{d(l)} &= 0
 \end{align}
 
 Da es sich um die Berechnung der benötigten Zeit von der Kugel zum Ziel handelt und keine weiteren Faktoren relevant sind,
@@ -79,23 +79,23 @@ höher als die Reduktion auf eine Dimension durch die Betragsnahme der Vektoren,
 wird. Demnach ergibt sich die Situation in \ref{eq:target_collision_event:07}.
 
 \begin{align}
-    a \cdot t^2 + b \cdot t + c = 0\\\label{eq:target_collision_event:07}
-    a = \frac{1}{2} \cdot -\norm{\vec{a}}\\
-    b = \norm{\vec{v}}\\
-    c = -\norm{\vec{d(l)}}
+    a \cdot t^2 + b \cdot t + c &= 0\\\label{eq:target_collision_event:07}
+    a &= \frac{1}{2} \cdot -\norm{\vec{a}}\\
+    b &= \norm{\vec{v}}\\
+    c &= -\norm{\vec{d(l)}}
 \end{align}
 
 Es ergeben sich wiederum zwei Lösungen, wobei nur die Zeit des ersten Schnittpunktes (die Minimalzeit) relevant ist.
 \begin{align}
-    t_1 = \frac{-b + \sqrt{b^2 - 4ac}}{2a}\\
-    t_2 = \frac{-b - \sqrt{b^2 - 4ac}}{2a}\\
-    t = \min{(t_1, t_2)}
+    t_1 &= \frac{-b + \sqrt{b^2 - 4ac}}{2a}\\
+    t_2 &= \frac{-b - \sqrt{b^2 - 4ac}}{2a}\\
+    t &= \min{(t_1, t_2)}
 \end{align}
 
 Sollte die Diskriminante kleiner denn $0$ sein, bedeutet dies, dass die Geschwindigkeit der Kugel nicht ausreichend
 ist, um den Zielkreis zu erreichen. Es existiert demnach keine Lösung. Die Lösung lautet demnach:
 \begin{align}
-    t_1 = \frac{-\norm{\vec{v}} + \sqrt{\norm{\vec{v}}^2 + 2 \cdot -\norm{\vec{a}} \norm{\vec{d(l)}}}}{-\norm{\vec{a}}}\\
-    t_2 = \frac{-\norm{\vec{v}} - \sqrt{\norm{\vec{v}}^2 + 2 \cdot -\norm{\vec{a}} \norm{\vec{d(l)}}}}{-\norm{\vec{a}}}\\
-    t = \min{(t_1, t_2)}
+    t_1 &= \frac{-\norm{\vec{v}} + \sqrt{\norm{\vec{v}}^2 + 2 \cdot -\norm{\vec{a}} \norm{\vec{d(l)}}}}{-\norm{\vec{a}}}\\
+    t_2 &= \frac{-\norm{\vec{v}} - \sqrt{\norm{\vec{v}}^2 + 2 \cdot -\norm{\vec{a}} \norm{\vec{d(l)}}}}{-\norm{\vec{a}}}\\
+    t &= \min{(t_1, t_2)}
 \end{align}
