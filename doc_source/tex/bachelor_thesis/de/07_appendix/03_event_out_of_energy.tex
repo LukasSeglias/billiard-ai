@@ -65,10 +65,60 @@ Es folgen einige Umformungen, um die Variable $t$ auf eine Seite der Gleichung z
     \sqrt{\frac{v_{0,x}^2 + v_{0,y}^2}{a_x^2 + a_y^2}} &= t
 \end{align}
 
-Damit stehen zwei Möglichkeiten zur Verfügung.
+Damit stehen zwei Möglichkeiten zur Verfügung, wobei Formel \ref{eq:out_of_energy:01} verwendet wird, damit
+keine Wurzelberechnung durchgeführt werden muss.
 \begin{align}
     t &= \max{(\frac{-v_{0,x}}{a_x}, \frac{-v_{0,y}}{a_y})}\label{eq:out_of_energy:01}\\
     t &= \sqrt{\frac{v_{0,x}^2 + v_{0,y}^2}{a_x^2 + a_y^2}}
 \end{align}
-Verwendet wird die Gleichung \ref{eq:out_of_energy:01}, da angenommen wird, dass das Nehmen eines Maximalwerts zweier
-Divisionen effizienter ist als die Berechnung einer Wurzel einer Division zweier Additionen.
+
+Es steht der formelle Beweis auf Gleichheit der beiden genannten Varianten aus.
+Es sind die Vektoren $\vec{v_0}$ und $\vec{a}$ bekannt. Weiterhin kann $\vec{a}$ abhängig von $\vec{v}$
+über eine Konstante $K$ ausgedrückt werden.
+\begin{align}
+    \vec{a} &= -K \cdot \hat{v_0}
+\end{align}
+Hierbei steht $\hat{v_0}$ für den normierten Vektor $\vec{v_0}$.
+\begin{align}
+    \hat{v_0} &= \frac{\vec{v_0}}{\norm{\vec{v}}}
+\end{align}
+Die Länge des Vektors $\vec{v_0}$ wird als $l$ ausgedrückt.
+\begin{align}
+    \hat{v_0} &= \frac{\vec{v_0}}{l}
+\end{align}
+
+In einem ersten Schritt wird die Berechung über separate Komponenten und das Ziehen des Maximalwerts davon
+betrachtet. Es muss zuerst die Gleichheit der Berechnung über diese einzelnen Komponenten belegt werden, vorausgesetzt
+die Komponenten $v_{0,x}$ sowie $v_{0,y}$ sind ungleich $0$.
+\begin{align}
+    \frac{-v_{0,x}}{a_x} &\stackrel{?}{=} \frac{-v_{0,y}}{a_y}\\
+    \frac{-v_{0,x}}{-K \cdot \hat{v_{0,x}}} &\stackrel{?}{=} \frac{-v_{0,y}}{-K \cdot \hat{v_{0,y}}}\\
+    \frac{v_{0,x}}{K \cdot \hat{v_{0,x}}} &\stackrel{?}{=} \frac{v_{0,y}}{K \cdot \hat{v_{0,y}}}\\
+    \frac{v_{0,x}}{K \cdot \frac{v_{0,x}}{l}} &\stackrel{?}{=} \frac{v_{0,y}}{K \cdot \frac{v_{0,y}}{l}}\\
+    \frac{v_{0,x}}{\frac{K \cdot v_{0,x}}{l}} &\stackrel{?}{=} \frac{v_{0,y}}{\frac{K \cdot v_{0,y}}{l}}\\
+    v_{0,x} \cdot \frac{l}{K \cdot v_{0,x}} &\stackrel{?}{=} v_{0,y} \cdot \frac{l}{K \cdot v_{0,y}}\\
+    \frac{l}{K} &= \frac{l}{K}\\
+\end{align}
+
+Somit reicht eine Berechnung einer Komponente aus, sollte diese jedoch $0$ sein, kann die Zeit über die andere
+Komponente berechnet werden.
+
+Demnach muss nun die Berechnung über die Variante des Betrags ebenfalls auf $\frac{l}{K}$ umformbar sein, damit
+die äquivalenz bewiesen ist.
+\begin{align}
+    t &= \sqrt{\frac{v_{0,x}^2 + v_{0,y}^2}{a_x^2 + a_y^2}}\\
+    t &= \sqrt{\frac{v_{0,x}^2 + v_{0,y}^2}{(-K \cdot \hat{v_{0,x}})^2 + (-K \cdot \hat{v_{0,y}})^2}}\\
+    t &= \sqrt{\frac{v_{0,x}^2 + v_{0,y}^2}{-K^2 \cdot \hat{v_{0,x}}^2 -K^2 \cdot \hat{v_{0,y}}^2}}\\
+    t &= \sqrt{\frac{v_{0,x}^2 + v_{0,y}^2}{-K^2 \cdot (\hat{v_{0,x}}^2 + \hat{v_{0,y}}^2)}}\\
+    t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{\sqrt{-K^2 \cdot (\hat{v_{0,x}}^2 + \hat{v_{0,y}}^2)}}\\
+    t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{\sqrt{-K^2} \cdot \sqrt{\hat{v_{0,x}}^2 + \hat{v_{0,y}}^2}}\\
+    t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{K \cdot \sqrt{\hat{v_{0,x}}^2 + \hat{v_{0,y}}^2}}\\
+    t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{K \cdot \sqrt{\frac{v_{0,x}}{l}^2 + \frac{v_{0,y}}{l}^2}}\\
+    t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{K \cdot \sqrt{\frac{v_{0,x}^2}{l^2} + \frac{v_{0,y}^2}{l^2}}}\\
+    t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{K \cdot \sqrt{\frac{1}{l^2} \cdot (v_{0,x}^2 + v_{0,y}^2)}}\\
+    t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{K \cdot \sqrt{\frac{1}{l^2}} \cdot \sqrt{v_{0,x}^2 + v_{0,y}^2}}\\
+    t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{K \cdot \frac{1}{l} \cdot \sqrt{v_{0,x}^2 + v_{0,y}^2}}\\
+    t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{\frac{K}{l} \cdot \sqrt{v_{0,x}^2 + v_{0,y}^2}}\\
+    t &= \frac{1}{\frac{K}{l}}\\
+    t &= \frac{l}{K}
+\end{align}
