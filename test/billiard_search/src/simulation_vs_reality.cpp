@@ -580,19 +580,35 @@ TEST(SimulationVsReality, video_12_0205_0208) {
               << simulationInput.str()
               << std::endl
               << "collision pos ["
+              << "expected white=" << whiteCollision << " "
+              << "actual white=" << whiteCollisionNode->_after._position << " "
+              << "expected red=" << redCollision << " "
+              << "actual red=" << redCollisionNode->_after._position << " "
               << "white=" << std::to_string(whiteCollisionPositionError) << " "
               << "red=" << std::to_string(redCollisionPositionError)
               << "]" << " "
               << std::endl
               << "red in rest ["
+              << "expected pos=" << redInRest << " "
+              << "actual pos=" << redInRestNode->_ball._position << " "
               << "pos=" << std::to_string(redInRestPositionError) << " "
+              << "expected time=" << std::to_string(redInRestTime) << " "
+              << "actual time=" << std::to_string(redInRestLayer._time) << " "
               << "time=" << std::to_string(redInRestTimeError) << " "
+              << "expected dir=" << glm::normalize(redDirectionAfterCollision) << " "
+              << "actual dir=" << glm::normalize(redInRestNode->_ball._position - redCollisionNode->_after._position) << " "
               << "dir=" << std::to_string(redInRestDirectionError) << " "
               << "]" << " "
               << std::endl
               << "white in rest ["
+              << "expected pos=" << whiteInRest << " "
+              << "actual pos=" << whiteInRestNode->_ball._position << " "
               << "pos=" << std::to_string(whiteInRestPositionError) << " "
+              << "expected time=" << std::to_string(whiteInRestTime) << " "
+              << "actual time=" << std::to_string(whiteInRestLayer._time) << " "
               << "time=" << std::to_string(whiteInRestTimeError) << " "
+              << "expected dir=" << glm::normalize(whiteDirectionAfterCollision) << " "
+              << "actual dir=" << glm::normalize(whiteInRestNode->_ball._position - whiteCollisionNode->_after._position) << " "
               << "dir=" << std::to_string(whiteInRestDirectionError) << " "
               << "]" << " "
               << std::endl;
@@ -711,16 +727,26 @@ TEST(SimulationVsReality, video_13_0030_0034) {
               << simulationInput.str()
               << std::endl
               << "collision pos ["
+              << "expected white=" << whiteCollision << " "
+              << "actual white=" << whiteCollisionNode->_after._position << " "
+              << "expected red=" << redCollision << " "
+              << "actual red=" << redCollisionNode->_after._position << " "
               << "white=" << std::to_string(whiteCollisionPositionError) << " "
               << "red=" << std::to_string(redCollisionPositionError)
               << "]" << " "
               << std::endl
               << "red potted ["
+              << "expected time=" << std::to_string(redPottedTime) << " "
+              << "actual time=" << std::to_string(redPottedLayer._time) << " "
               << "time=" << std::to_string(redPottedTimeError) << " "
               << "]" << " "
               << std::endl
               << "white in rest ["
+              << "expected pos=" << whiteInRest << " "
+              << "actual pos=" << whiteInRestNode->_ball._position << " "
               << "pos=" << std::to_string(whiteInRestPositionError) << " "
+              << "expected time=" << std::to_string(whiteInRestTime) << " "
+              << "actual time=" << std::to_string(whiteInRestLayer._time) << " "
               << "time=" << std::to_string(whiteInRestTimeError) << " "
               << "dir=" << std::to_string(whiteInRestDirectionError) << " "
               << "]" << " "
@@ -835,16 +861,26 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0008_0011) {
               << simulationInput.str()
               << std::endl
               << "collision pos ["
+              << "expected white=" << whiteCollision << " "
+              << "actual white=" << whiteCollisionNode->_after._position << " "
+              << "expected red=" << redCollision << " "
+              << "actual red=" << redCollisionNode->_after._position << " "
               << "white=" << std::to_string(whiteCollisionPositionError) << " "
               << "red=" << std::to_string(redCollisionPositionError)
               << "]" << " "
               << std::endl
               << "red potted ["
+              << "expected time=" << std::to_string(redPottedTime) << " "
+              << "actual time=" << std::to_string(redPottedLayer._time) << " "
               << "time=" << std::to_string(redPottedTimeError) << " "
               << "]" << " "
               << std::endl
               << "white in rest ["
+              << "expected pos=" << whiteInRest << " "
+              << "actual pos=" << whiteInRestNode->_ball._position << " "
               << "pos=" << std::to_string(whiteInRestPositionError) << " "
+              << "expected time=" << std::to_string(whiteInRestTime) << " "
+              << "actual time=" << std::to_string(whiteInRestLayer._time) << " "
               << "time=" << std::to_string(whiteInRestTimeError) << " "
               << "dir=" << std::to_string(whiteInRestDirectionError) << " "
               << "]" << " "
@@ -964,16 +1000,26 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0028_0032) {
               << simulationInput.str()
               << std::endl
               << "collision pos ["
+              << "expected white=" << whiteCollision << " "
+              << "actual white=" << whiteCollisionNode->_after._position << " "
+              << "expected red=" << redCollision << " "
+              << "actual red=" << redCollisionNode->_after._position << " "
               << "white=" << std::to_string(whiteCollisionPositionError) << " "
               << "red=" << std::to_string(redCollisionPositionError)
               << "]" << " "
               << std::endl
               << "red potted ["
+              << "expected time=" << std::to_string(redPottedTime) << " "
+              << "actual time=" << std::to_string(redPottedLayer._time) << " "
               << "time=" << std::to_string(redPottedTimeError) << " "
               << "]" << " "
               << std::endl
               << "white in rest ["
+              << "expected pos=" << whiteInRest << " "
+              << "actual pos=" << whiteInRestNode->_ball._position << " "
               << "pos=" << std::to_string(whiteInRestPositionError) << " "
+              << "expected time=" << std::to_string(whiteInRestTime) << " "
+              << "actual time=" << std::to_string(whiteInRestLayer._time) << " "
               << "time=" << std::to_string(whiteInRestTimeError) << " "
               << "dir=" << std::to_string(whiteInRestDirectionError) << " "
               << "]" << " "
@@ -1322,7 +1368,7 @@ TEST(SimulationVsReality, simulation_vs_reality_1_0104_0108) {
               << std::endl;
 }
 
-// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+// Wegen dem Bandenverhalten des verwendeten Billardtisch nicht verlässlich.
 TEST(DISABLED_SimulationVsReality, simulation_vs_reality_2_0119_0124) {
 
     std::string name = "simulation_vs_reality_2_0119_0124";
@@ -1629,7 +1675,7 @@ TEST(SimulationVsReality, simulation_vs_reality_2_0153_0200) {
               << std::endl;
 }
 
-// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+// Wegen dem Bandenverhalten des verwendeten Billardtisch nicht verlässlich.
 TEST(DISABLED_SimulationVsReality, simulation_vs_reality_2_0244_0251) {
 
     std::string name = "simulation_vs_reality_2_0244_0251";
@@ -1799,7 +1845,7 @@ TEST(DISABLED_SimulationVsReality, simulation_vs_reality_2_0244_0251) {
               << std::endl;
 }
 
-// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+// Wegen dem Bandenverhalten des verwendeten Billardtisch nicht verlässlich.
 TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0101_0104) {
 
     std::string name = "simulation_vs_reality_3_0101_0104";
@@ -1953,7 +1999,7 @@ TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0101_0104) {
               << std::endl;
 }
 
-// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+// Wegen dem Bandenverhalten des verwendeten Billardtisch nicht verlässlich.
 TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0138_0143) {
 
     std::string name = "simulation_vs_reality_3_0138_0143";
@@ -2102,7 +2148,7 @@ TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0138_0143) {
               << std::endl;
 }
 
-// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+// Wegen dem Bandenverhalten des verwendeten Billardtisch nicht verlässlich.
 TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0244_0248) {
 
     std::string name = "simulation_vs_reality_3_0244_0248";
@@ -2252,7 +2298,7 @@ TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0244_0248) {
               << std::endl;
 }
 
-// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+// Wegen dem Bandenverhalten des verwendeten Billardtisch nicht verlässlich.
 TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0356_0400) {
 
     // TODO: Die Startgeschwindigkeit der Simulation wirkt zu langsam im Vergleich zum Video
@@ -2403,7 +2449,7 @@ TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0356_0400) {
               << std::endl;
 }
 
-// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+// Wegen dem Bandenverhalten des verwendeten Billardtisch nicht verlässlich.
 TEST(DISABLED_SimulationVsReality, simulation_vs_reality_3_0424_0430) {
 
     std::string name = "simulation_vs_reality_3_0424_0430";
@@ -3016,7 +3062,7 @@ TEST(SimulationVsReality, null_grad_stoss_1_0130_0135) {
               << std::endl;
 }
 
-// TODO: Evtl. nicht verlässlich, weil die Bandenhöhe des Pooltisches nicht auf die Snooker-Kugeln ausgelegt ist.
+// Wegen dem Bandenverhalten des verwendeten Billardtisch nicht verlässlich.
 TEST(DISABLED_SimulationVsReality, banden_1_0408_0416) {
 
     std::string name = "banden_1_0408_0416";
@@ -3144,7 +3190,7 @@ float radiansToDegrees(float angleRadians) {
 }
 
 float checkDirection(const glm::vec2& actual, const glm::vec2& expected) {
-    float angleRadians = 1.0f - glm::dot(glm::normalize(actual), glm::normalize(expected));
+    float angleRadians = std::acos(glm::dot(glm::normalize(actual), glm::normalize(expected)));
     return radiansToDegrees(angleRadians);
 }
 
