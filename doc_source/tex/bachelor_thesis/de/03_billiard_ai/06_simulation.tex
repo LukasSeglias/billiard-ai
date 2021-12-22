@@ -92,16 +92,16 @@ Das Resultat lautet wie folgt:
     \vec{u_2} = \vec{v_{1,z}} + \vec{v_{2,t}}
 \end{align}
 
-\paragraph{Behandlung Topspin} \hfill \\
-Da eine Kugel auch einen Topspin aufweist und kaum Reibung mit der kollidierenden Kugel hat, hat dieser Topspin im
+\paragraph{Behandlung Rollverhalten} \hfill \\
+Da eine Kugel nicht nur gleitet sondern auch rollt und kaum Reibung mit der kollidierenden Kugel hat, hat dieses Rollen im
 Falle einer Kugelkollision einen Einfluss auf den weiteren Verlauf der vorher dynamischen Kugeln.
 Dieser Einfluss scheint konstant oder zumindest in kleinem Masse variabel, also praktisch unabhängig von der eingehenden Geschwindigkeit zu sein
 und fällt demnach vor allem bei kleinen Geschwindigkeiten ins Gewicht. Es werden zwei Ansätze erläutert.
-Die erste Variante behandelt den Topspin als ablenkende Kraft in eingehender Richtung mit konstantem Betrag.
-Die zweite Variante berücksichtigt zusätzlich die Variabilität des Topspins. In Abbildung \ref{fig:einfluss_topspin} wird der Einfluss des
-Topspins bei grossen wie auch kleinen Geschwindigkeiten erläutert.
+Die erste Variante behandelt das Rollen als ablenkende Kraft in eingehender Richtung mit konstantem Betrag.
+Die zweite Variante berücksichtigt zusätzlich die Variabilität des Rollens. In Abbildung \ref{fig:einfluss_rollen} wird der Einfluss des
+Rollens bei grossen wie auch kleinen Geschwindigkeiten erläutert.
 
-Bei Variante eins wird der Einfluss des Topspins berücksichtigt,
+Bei Variante eins wird der Einfluss des Rollens berücksichtigt,
 indem bei den vorher dynamischen Kugeln ein Vektor mit konstantem
 Betrag in der einkommenden Geschwindigkeitsrichtung auf den durch die elastische Kollision berechneten Vektor
 $\vec{v_{k,t}}$ aufaddiert wird. Demnach gilt für den neuen Vektor $\vec{v_{k,t,n}}$ der Kugeln, wobei $A$ für die konstante Geschwindigkeit und
@@ -121,17 +121,20 @@ auf die Eingangsenergie beschränkt wird.
 \begin{figure}[h!]
     \centering
     \begin{subfigure}[b]{0.8\textwidth}
-        \includegraphics[width=1\textwidth]{../common/03_billiard_ai/resources/33_topspin_kleine_geschwindigkeit.png}
-        \caption{Topspin-Einfluss bei kleiner Geschwindigkeit}
-        \label{fig:topspin_kleine_geschwindigkeit}
+        \includegraphics[width=1\textwidth]{../common/03_billiard_ai/resources/33_rollen_kleine_geschwindigkeit.png}
+        \caption{Rolleinfluss bei kleiner Geschwindigkeit}
+        \label{fig:rollen_kleine_geschwindigkeit}
     \end{subfigure}\\
     \begin{subfigure}[b]{0.8\textwidth}
-        \includegraphics[width=1\textwidth]{../common/03_billiard_ai/resources/34_topspin_grosse_geschwindigkeit.png}
-        \caption{Topspin-Einfluss bei grosser Geschwindigkeit}
-        \label{fig:topspin_grosse_geschwindigkeit}
+        \includegraphics[width=1\textwidth]{../common/03_billiard_ai/resources/34_gleiten_grosse_geschwindigkeit.png}
+        \caption{Kein Rollen bei grosser Geschwindigkeit}
+        \label{fig:gleiten_grosse_geschwindigkeit}
     \end{subfigure}
-    \caption{(a) Eine einkommende Geschwindigkeit $\vec{v}$ wird auf die Komponenten $\vec{z}$ und $\vec{t}$ aufgeteilt. Ohne Berücksichtigung des Topspins wird die Position der weissen Kugel bei $P$ berechnet, die effektive Position ist bei $E$. (b) Bei grösserer Geschwindigkeit ist die Abweichung zwischen $P$ und $E$ kleiner.}
-    \label{fig:einfluss_topspin}
+    \caption{(a) Eine einkommende Geschwindigkeit $\vec{v}$ wird auf die Komponenten $\vec{z}$ und $\vec{t}$ aufgeteilt.
+    Ohne Berücksichtigung des Rollens wird die Position der weissen Kugel bei $P$ berechnet, die effektive Position ist bei $E$.
+        (b) Bei grösserer Geschwindigkeit rollt die Kugel noch nicht und es gilt der zweidimensionale elasitsche Stoss.
+        $P$ und $E$ stimmen in diesem Fall überein.}
+    \label{fig:einfluss_rollen}
 \end{figure}
 
 Variante zwei verfolgt einen ähnlichen Ansatz, jedoch wird bei der Berechnung von $\vec{v_{k,t,n}}$ anstelle des normierten
@@ -143,10 +146,11 @@ berücksichtigt. Es gilt, dass $A$ zwischen $0$ und $1$ liegt.
 \end{align}
 
 Die Berechnung von $\vec{u_1}$ sowie $\vec{u_2}$ geschieht auf dieselbe Art und Weise wie bei Variante eins.
+Implementiert wurde die zweite Variante, da die variable Rollenergie dadurch mitberücksichtigt wird.
 
 \newpage
 \subsubsection{Bandenreflektion}
-Sofern eine Kugel an eine Bande stösst, so wird diese abgelenkt. In dem hier beschriebenen Modell wird der Drall\cite{wiki.spin:1},
+Sofern eine Kugel an eine Bande stösst, wird diese abgelenkt. In dem hier beschriebenen Modell wird der Drall\cite{wiki.spin:1},
 welcher die Bahn einer Kugel nach Kollision mit der Bande ablenken würde, ignoriert.
 Das bedeutet, es wird davon ausgegangen, dass der Ausfallswinkel nach der Bandenreflektion gleich dem Einfallswinkel sei.
 Dazu kann die folgende Formel\cite{paulbourke.reflected_ray:1} verwendet werden, wobei $I$ der einfallende

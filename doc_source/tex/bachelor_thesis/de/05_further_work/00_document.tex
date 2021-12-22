@@ -3,7 +3,7 @@ Auf den in dieser Arbeit erzielten Resultaten sind potenzielle weitere Arbeiten 
 möglich.
 Nachfolgend werden einige Ideen beschrieben.
 
-Die Suche nach Stössen wird, wie in Kapitel \ref{sec:kandidatensuche} beschrieben ausgehend von den Löchern gestartet,
+Die Suche nach Stössen wird, wie in Kapitel \ref{sec:kandidatensuche} beschrieben, ausgehend von den Löchern gestartet,
 wodurch diese als Rückwärtssuche bezeichnet werden kann.
 Der Raum der möglichen Stösse wird diskretisiert, weil nicht allen Möglichkeiten untersucht werden.
 Eine Vorwärtssuche würde viele Simulationen mit unterschiedlichen Anfangsbedingungen (Stossrichtung \& -stärke)
@@ -13,10 +13,18 @@ Wegen der Diskretisierung der Rückwärtssuche kann es in gewissen Situationen S
 Durch eine Kombination von Rückwärts- und Vorwärtssuche könnten mehr potenzielle Stösse untersucht werden.
 
 Die in Kapitel \ref{kap:simulation} beschriebene Simulation ist zweidimensional.
-Zur korrekten Behandlung von aller Arten von Spin, beispielsweise Sidespin, müsste diese auf eine 3D-Simulation erweitert werden.
+Zur korrekten Behandlung aller Arten von Spin, beispielsweise Sidespin, müsste diese auf eine 3D-Simulation erweitert werden.
 Die Suche könnte weiterhin zweidimensional bleiben, würde dadurch aber auch keine Stösse mit Spin vorschlagen.
 Dabei könnte evtl. die bereits erwähnte Vereinigung mit einer Vorwärtssuche helfen, welche dem Stoss als
 Anfangsbedingung zusätzlich auch Spin geben könnte.
+
+Die Berechnung des Ausfallswinkels nach einer Bandenkollision bei starken Stössen wie in
+Kapitel \ref{kandidatensuche:bandenkollisionstheorie} beschrieben, könnte verbessert werden, indem der Winkel entsprechend
+der Geschwindigkeit angepasst würde. Dazu müsste experimentell ein Wertebereich eruiert werden, für den der Ausfalls- dem
+Einfallswinkel entspricht. Die Simulation kann dann relativ einfach den Ausfallswinkel aufgrund der Geschwindigkeit
+berechnen. Die Suche liesse ein mögliches Resultat nur zu, wenn die Eintrittsgeschwindigkeit der Kugel an die Bande
+in diesem Wertebereich liegt, ansonsten gälte es als erfolgslos, was wiederum dazu führen würde,
+dass weniger Suchresultate, dafür aber qualitativ hochwertigere gefunden würden.
 
 Die Genauigkeit der Klassifikation der Kugelfarben könnte weiter optimiert werden, um bessere Resultate zu erzielen.
 Dies ist bei den über den gesamten Tisch unterschiedlichen Lichtverhältnissen und projizierten Augmentationen herausfordernd.
