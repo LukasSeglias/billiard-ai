@@ -38,7 +38,7 @@ beschleunigten Bewegung verwendet, wobei $\vec{v_0}$, $\vec{a}$ sowie $t$ gegebe
     \vec{v} = \vec{a} \cdot t + \vec{v_0}
 \end{align}
 
-\subsubsection{Elastischer Stoss zweier Kugeln}
+\subsubsection{Elastischer Stoss zweier Kugeln}\label{kap:simulation:elastischer_stoss_zweier_kugeln}
 Die Kollision zweier Kugeln wird im Folgenden als zweidimensionaler elastischer Stoss angesehen. Dabei ist es wichtig,
 zwei Komponenten beim Zusammenprall zu betrachten. Dies ist einerseits das Liniensegment $s_z$ zwischen den Mittelpunkten
 der Kugeln sowie die orthogonal dazu stehende Gerade $s_t$. Die Kugel, welche Energie mitbringt, übergibt der anderen
@@ -95,9 +95,7 @@ Das Resultat lautet wie folgt:
 \paragraph{Behandlung Rollverhalten} \hfill \\
 Da eine Kugel nicht nur gleitet sondern auch rollt und kaum Reibung mit der kollidierenden Kugel hat, hat dieses Rollen im
 Falle einer Kugelkollision einen Einfluss auf den weiteren Verlauf der vorher dynamischen Kugeln.
-Dieser Einfluss scheint konstant oder zumindest in kleinem Masse variabel, also praktisch unabhängig von der eingehenden Geschwindigkeit zu sein
-und fällt demnach vor allem bei kleinen Geschwindigkeiten ins Gewicht. Es werden zwei Ansätze erläutert.
-Die erste Variante behandelt das Rollen als ablenkende Kraft in eingehender Richtung mit konstantem Betrag.
+Es werden zwei Ansätze erläutert. Die erste Variante behandelt das Rollen als ablenkende Kraft in eingehender Richtung mit konstantem Betrag.
 Die zweite Variante berücksichtigt zusätzlich die Variabilität des Rollens. In Abbildung \ref{fig:einfluss_rollen} wird der Einfluss des
 Rollens bei grossen wie auch kleinen Geschwindigkeiten erläutert.
 
@@ -130,9 +128,12 @@ auf die Eingangsenergie beschränkt wird.
         \caption{Kein Rollen bei grosser Geschwindigkeit}
         \label{fig:gleiten_grosse_geschwindigkeit}
     \end{subfigure}
-    \caption{(a) Eine einkommende Geschwindigkeit $\vec{v}$ wird auf die Komponenten $\vec{z}$ und $\vec{t}$ aufgeteilt.
+    \caption{(a) Eine einkommende Geschwindigkeit $\vec{v}$ wird auf die Komponenten $\vec{z}$ und $\vec{t}$ nach dem
+    elastischen Stoss aus Kapitel \ref{kap:simulation:elastischer_stoss_zweier_kugeln} aufgeteilt.
     Ohne Berücksichtigung des Rollens wird die Position der weissen Kugel bei $P$ berechnet, die effektive Position ist bei $E$.
-        (b) Bei grösserer Geschwindigkeit rollt die Kugel noch nicht und es gilt der zweidimensionale elasitsche Stoss.
+        (b) Bei grösserer Geschwindigkeit fängt die Kugel erst später an zu rollen. Zum Kollisionszeitpunkt gleitet sie
+        in diesem Fall nur und es gilt der zweidimensionale elasitsche Stoss wie in
+        Kapitel \ref{kap:simulation:elastischer_stoss_zweier_kugeln} beschrieben.
         $P$ und $E$ stimmen in diesem Fall überein.}
     \label{fig:einfluss_rollen}
 \end{figure}
@@ -146,6 +147,7 @@ berücksichtigt. Es gilt, dass $A$ zwischen $0$ und $1$ liegt.
 \end{align}
 
 Die Berechnung von $\vec{u_1}$ sowie $\vec{u_2}$ geschieht auf dieselbe Art und Weise wie bei Variante eins.
+% TODO: Wieso zweite Variante?
 Implementiert wurde die zweite Variante, da die variable Rollenergie dadurch mitberücksichtigt wird.
 
 \newpage
