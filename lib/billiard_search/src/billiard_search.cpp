@@ -12,7 +12,7 @@ namespace billiard::search {
 
     #define PROCESSES 1
     #define SYNC_PERIOD_MS 100
-    #define BREAKS 3
+    #define BREAKS 2
     #define BANK_INDIRECTION 3
     // TODO: find a good number
     #define FORWARD_SEARCHES 2
