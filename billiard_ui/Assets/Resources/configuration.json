@@ -3,7 +3,7 @@
 	"radius": 26.15,
 	"width": 1881,
 	"height": 943,
-	"scale": 3.550,
+	"scale": 3.49,
 	"headRail": "Right",
 	"segments": [
 		{
@@ -196,12 +196,12 @@
 		"sy": 0.0014
 	},
 	"correctionWidth": {
-		"factor": 3.550,
-		"translation": -0.085
+		"factor": 3.488,
+		"translation": -0.113
 	},
 	"correctionHeight": {
-		"factor": 3.550,
-		"translation": -0.035
+		"factor": 3.488,
+		"translation": -0.085
 	},
 	"infinityModeSearchTypes": [ "RED", "YELLOW", "GREEN", "BROWN", "BLUE", "PINK", "BLACK" ],
 	"coloredSearchTypes": [ "YELLOW", "GREEN", "BROWN", "BLUE", "PINK", "BLACK" ]
