@@ -116,9 +116,7 @@ public class TableBehaviour : MonoBehaviour
 		} else if (Input.GetKeyDown(KeyCode.H)) {
 			showBallHalos = !showBallHalos;
 		} else if (Input.GetKeyDown(KeyCode.M)) {
-		    // TODO: Remove once StabilizationController is obsolete
-//             stabilizationController.track = !stabilizationController.track;
-//             stabilizationStatusInfoText.SetText("");
+            stabilizationStatusInfoText.SetText("");
             infinityModeActive = !infinityModeActive;
         } else if (Input.GetKeyDown(KeyCode.Return)) {
 			AnimationService.captureState();
@@ -224,6 +222,7 @@ public class TableBehaviour : MonoBehaviour
             }
 
             stabilizationStatusInfoText.SetText("" + currentState);
+            stabilizationStatusInfoText.GetComponent<MeshRenderer >().enabled = false; // TODO: remove?
         }
 	}
 
