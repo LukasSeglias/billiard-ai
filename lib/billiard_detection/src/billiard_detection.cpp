@@ -433,10 +433,6 @@ billiard::detection::State track(billiard::detection::Tracking& tracking,
         }
     }
 
-    // Patch cueBallIndex since the order of the balls in the result changed
-    // in order to have the correct index for the next frame, see previousCueBallIndex.
-    tracking.cueBallIndex = newCurrentCueBallIndex;
-
     tracking.lostCount = countLostBalls(previousState, tracked, minTrackedDurationBeforeLost);
 
     int stableTrackingsChange = tracking.stableTrackings - previousStableTrackings;
@@ -469,11 +465,21 @@ billiard::detection::State track(billiard::detection::Tracking& tracking,
         ball._trackingCount = 0;
         result._balls.push_back(ball);
 
+        if (ballIndex == tracking.cueBallIndex) {
+            // Patch cueBallIndex since the order of the balls in the result changed
+            // in order to have the correct index for the next frame, see previousCueBallIndex.
+            newCurrentCueBallIndex = result._balls.size() - 1;
+        }
+
         TRACKING_DEBUG(agent
               << "Failed " << id << " "
               << "new: (" << currentBall._position.x << ", " << currentBall._position.y << ") "
               << std::endl);
     }
+
+    // Patch cueBallIndex since the order of the balls in the result changed
+    // in order to have the correct index for the next frame, see previousCueBallIndex.
+    tracking.cueBallIndex = newCurrentCueBallIndex;
 
     TRACKING_DEBUG(agent
           << "Tracked: " << tracking.tracked.size() << " "
@@ -571,7 +577,7 @@ billiard::detection::TableStatus trackTableState(billiard::detection::Tracking& 
     }
 }
 
-const float MAX_TRACKING_DISTANCE_SQUARED = 20.f * 20.0f;
+const float MAX_TRACKING_DISTANCE_SQUARED = 20.0f * 20.0f;
 const float MAX_BALL_STABLE_AVERAGE_MOVEMENT_SQUARED = 0.5f * 0.5f;
 
 // Minimal duration that a ball has to be tracked successfully before
