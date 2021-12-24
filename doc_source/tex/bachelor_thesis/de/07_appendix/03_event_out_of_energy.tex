@@ -80,14 +80,14 @@ Es sind die Vektoren $\vec{v_0}$ und $\vec{a}$ bekannt. Weiterhin kann $\vec{a}$
 \end{align}
 Hierbei steht $\hat{v_0}$ für den normierten Vektor $\vec{v_0}$.
 \begin{align}
-    \hat{v_0} &= \frac{\vec{v_0}}{\norm{\vec{v}}}
+    \hat{v_0} &= \frac{\vec{v_0}}{\norm{\vec{v_0}}}
 \end{align}
 Die Länge des Vektors $\vec{v_0}$ wird als $l$ ausgedrückt.
 \begin{align}
     \hat{v_0} &= \frac{\vec{v_0}}{l}
 \end{align}
 
-In einem ersten Schritt wird die Berechung über separate Komponenten und das Ziehen des Maximalwerts davon
+In einem ersten Schritt wird die Berechung über separate Komponenten und die Bestimmung des Maximalwerts davon
 betrachtet. Es muss zuerst die Gleichheit der Berechnung über diese einzelnen Komponenten belegt werden, vorausgesetzt
 die Komponenten $v_{0,x}$ sowie $v_{0,y}$ sind ungleich $0$.
 \begin{align}
@@ -104,7 +104,7 @@ Somit reicht eine Berechnung einer Komponente aus, sollte diese jedoch $0$ sein,
 Komponente berechnet werden.
 
 Demnach muss nun die Berechnung über die Variante des Betrags ebenfalls auf $\frac{l}{K}$ umformbar sein, damit
-die äquivalenz bewiesen ist.
+die Äquivalenz bewiesen ist.
 \begin{align}
     t &= \sqrt{\frac{v_{0,x}^2 + v_{0,y}^2}{a_x^2 + a_y^2}}\\
     t &= \sqrt{\frac{v_{0,x}^2 + v_{0,y}^2}{(-K \cdot \hat{v_{0,x}})^2 + (-K \cdot \hat{v_{0,y}})^2}}\\
@@ -113,7 +113,7 @@ die äquivalenz bewiesen ist.
     t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{\sqrt{-K^2 \cdot (\hat{v_{0,x}}^2 + \hat{v_{0,y}}^2)}}\\
     t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{\sqrt{-K^2} \cdot \sqrt{\hat{v_{0,x}}^2 + \hat{v_{0,y}}^2}}\\
     t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{K \cdot \sqrt{\hat{v_{0,x}}^2 + \hat{v_{0,y}}^2}}\\
-    t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{K \cdot \sqrt{\frac{v_{0,x}}{l}^2 + \frac{v_{0,y}}{l}^2}}\\
+    t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{K \cdot \sqrt{(\frac{v_{0,x}}{l})^2 + (\frac{v_{0,y}}{l})^2}}\\
     t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{K \cdot \sqrt{\frac{v_{0,x}^2}{l^2} + \frac{v_{0,y}^2}{l^2}}}\\
     t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{K \cdot \sqrt{\frac{1}{l^2} \cdot (v_{0,x}^2 + v_{0,y}^2)}}\\
     t &= \frac{\sqrt{v_{0,x}^2 + v_{0,y}^2}}{K \cdot \sqrt{\frac{1}{l^2}} \cdot \sqrt{v_{0,x}^2 + v_{0,y}^2}}\\
@@ -122,3 +122,5 @@ die äquivalenz bewiesen ist.
     t &= \frac{1}{\frac{K}{l}}\\
     t &= \frac{l}{K}
 \end{align}
+
+Gewählt wurde die Variante mit der Bestimmung des Maximums beider Komponeten, weil diese keine Wurzelberechnung enthält.
