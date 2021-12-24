@@ -75,19 +75,19 @@ Zudem wird das Ereignis ebenfalls für das Partnerobjekt erfasst, dies ist insbe
 
 \newpage
 Der Algorithmus \ref{alg:physikalisches_system_verbesserung_algorithmus_2} beinhaltet die Funktionen zum Löschen von
-Ereignissen, zur Bestimmung der nächst eintretenden Ereignisse und zur Korrektur der Zeit bei den bekannten Ereignissen.
+Ereignissen, zur Bestimmung der nächsten Ereignisse und zur Korrektur der Zeit bei den bekannten Ereignissen.
 Die Löschfunktion nimmt einerseits die aktuellen Ereignisse pro Kugel und die als nächstes eintretenden Ereignisse
 entgegen. Als Rückgabe erfolgen wiederum die Ereignisse pro Kugel. Es werden nacheinander pro eintretendes Ereignis
 alle Verbliebenen aus der Datenstruktur gelöscht, somit haben die entsprechenden Kugeln keine Ereignisse mehr, was
 zur Folge hat, dass sie im nächsten Durchgang neu berechnet werden. Anschliessend werden alle Ereignisse bei anderen
-Kugeln entfernt, an denen die bereits genannten beteiligt sind. Bei der Berechnung der nächsten Ereignissen werden
-die Ereignisse pro Kugel benötigt. Als Resultat erfolgt der Zeitpunkt ausgedrückt als Delta (von vorher eingetretem
-Ereignis zu als nächst einzutretenden Ereignis) und eine Liste von Ereignissen, da mehrere zum selben Zeitpunkt
+Kugeln entfernt, an denen die bereits genannten beteiligt sind. Bei der Berechnung der nächsten Ereignisse werden
+die Ereignisse pro Kugel benötigt. Als Resultat erfolgt der Zeitpunkt ausgedrückt als Delta (von vorherigem
+Ereignis zum nächsten Ereignis) und eine Liste von Ereignissen, da mehrere zum selben Zeitpunkt
 auftreten können. Es werden alle Ereignisse geprüft und entweder übernommen, wenn der Eintrittszeitpunkt vor dem
 aktuell gespeicherten liegt oder der Liste hinzugefügt, wenn dieser dem aktuell gespeicherten entspricht.
 Eventuell könnte beim Einfügen der Ereignisse bereits eine Sortierung nach Zeitpunkt stattfinden, somit müssten nur
-alle ersten Ereignisse pro Kugel geprüft werden anstelle aller. Bei der Korrektur der Zeit erfolgt die Eingabe
-aller Ereignisse und der Deltazeit zum nächst einzutreffenden Ereignis. Die Funktion zieht diese Deltazeit von den
+alle ersten Ereignisse pro Kugel geprüft werden. Bei der Korrektur der Zeit erfolgt die Eingabe
+aller Ereignisse und der Deltazeit zum nächsten Ereignis. Die Funktion zieht diese Deltazeit von den
 Zeitpunkten ab und gibt als Resultat die korrigierte Struktur zurück.
 \begin{algorithm}[H]
     \DontPrintSemicolon
