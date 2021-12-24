@@ -52,3 +52,13 @@ Rückmeldung gegeben werden.
 Über die Darstellung würde es sich anbieten, verschiedene Ereignisse mit speziellen Animationen oder über Ton hervorzuheben,
 beispielsweise wenn ein Spieler eine Kugel erfolgreich einlocht, oder wenn der Spielball ebenfalls versenkt wird.
 
+% TODO: Lukas bitte lesen
+Die Simulation und die Berechnung eines Lösungskandidaten erfordern einige bekannte Eigenschaften des Billardtisches und
+der Kugeln wie z.B. den Gleit- oder Rollreibungskoeffizienten, verschiedene Energieverlustfaktoren oder ein variables
+Bandenverhalten. Diese Parameter zu finden ist äusserst schwierig und aufwendig. Es wäre denkbar, dass einige repräsentative
+Stösse aufgezeichnet und wichtige Schlüsseleigenschaften wie Ereigniszeitpunkt, Position und Richtung annotiert werden,
+wie es in dieser Arbeit für den Simulations- Realitätsabgleich bereits vorgenommen
+wurde\footnote{Siehe Kapitel \ref{kap:vergleich_simulation_und_realitaet}.}. Anhand dieser könnte über ein Optimierungsverfahren
+die Differenz zwischen der Simulation und Realität minimiert werden, indem die genannten Eigenschaften des Tisches und
+der Kugeln als Variablen behandelt und im Zuge der Optimierung angepasst werden. Dies ergäbe eine genauere Eichung auf
+die zugrundeliegenden Stösse.
