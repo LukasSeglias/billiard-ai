@@ -3,10 +3,10 @@
 Aufgrund eines Bildes des Billardtisches soll der Spielstand mit der Position aller Kugeln bestimmt werden.
 Der in dieser Arbeit verwendete Detektionsalgorithmus stammte von der vorherigen Projektarbeit\cite{project2:snooker_detection}
 und funktioniert für Snooker-Kugeln.
-In der Vorarbeit wurde die Detektion dafür vorgesehen, per Knopfdruck durchgeführt werden konnte.
+In der Vorarbeit wurde die Detektion nur per Knopfdruck durchgeführt.
 Mit dieser Arbeit wurde darauf aufbauend eine Live-Detektion implementiert, welche kontinuierlich Bilder vom Tisch macht,
-den Spielstand detektiert und dem Benutzer über den Projektor anzeigt.
-Dadurch entsteht ein Feedback-Loop, weil die dargestellten Augmentationen im Bild, das verarbeitet wird, ersichtlich sind.
+den Spielstand detektiert und diesen dem Benutzer über den Projektor anzeigt.
+Dadurch entsteht ein Feedback-Loop aufgrund der dargestellten Augmentationen im zu verarbeitenden Bild.
 Ein Eingabebild für die Detektion ist in Abbildung \ref{fig:detection_feedback_loop} dargestellt und zeigt diesen Feedback-Loop.
 
 \begin{figure}[h!]
@@ -17,10 +17,10 @@ Ein Eingabebild für die Detektion ist in Abbildung \ref{fig:detection_feedback_
     \label{fig:detection_feedback_loop}
 \end{figure}
 
-Die dargestellten Augmentationen können zu fälschlicherweise detektierten Kugeln führen.
-Um diesem Problem entgegenzuwirken, wurden die Parameter der Detektion angepasst, damit die Augmentationen grösstenteils
-entfernt werden können. Da allerdings nicht alle restlos entfernt werden können, besteht ein Restrisiko für
-fälschlicherweise detektierte Kugeln.
+Die dargestellten Augmentationen können zu fälschlich detektierten Kugeln führen.
+Um diesem Problem entgegenzuwirken, wurden die Parameter der Detektion höchstmöglich angepasst, um die Augmentationen
+der fälschlich detektierten Kugeln so gering wie möglich zu halten.
+Eine vollständige Eliminierung fälschlich detektierter Kugeln ist nicht möglich.
 
 Des Weiteren wurde die Performance der Detektion erhöht, um die Live-Detektion aufzuwerten.
 In der bisherigen Detektion wurden drei separate Circle Hough transform\cite{wiki:circle_hough} angewendet, eine für

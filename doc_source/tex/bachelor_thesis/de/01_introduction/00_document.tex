@@ -1,6 +1,6 @@
 \chapter{Einführung}
 Wie viele andere Sportarten ist auch das Erlernen des Billardspiels eine schwierige Sache.
-Als Spieler muss eine gegebene Spielsituation untersucht, ein möglicher und den eigenen Fähigkeiten entsprechender Stoss
+Als Spieler muss eine gegebene Spielsituation untersucht, ein möglicher und den eigenen Fähigkeiten angepasster Stoss
 gefunden und korrekt ausgeführt werden.
 Es stellen sich Fragen wie \glqq Welche Kugel soll man anspielen?\grqq{},
 \glqq Wie soll man die Kugel anspielen?\grqq{} oder \glqq Wie hält man den Queue richtig?\grqq{}.
@@ -18,17 +18,17 @@ Dazu wurde ein Tisch mit einer Kamera und einem Projektor ausgestattet, um den a
 zu erkennen und dem Spieler Hilfestellungen über den Projektor direkt auf den Tisch zu projizieren.
 Der Spieler soll mit dem System interagieren können und direkte Reaktionen erhalten.
 
-Das Gesamtsystem hat verschiedene Komponenten, zuerst müssen die Billardkugeln auf dem Tisch mittels der Kamera
+Das Gesamtsystem hat verschiedene Komponenten: In einem ersten Schritt müssen die Billardkugeln auf dem Tisch mittels der Kamera
 aufgenommen und deren Position durch Bildverarbeitung und -analyse erkannt werden.
-Des Weiteren muss die Farbe jeder Kugel erkannt werden, da dies für Snooker aufgrund der Spielregeln besonders relevant ist.
+Es muss die Farbe jeder Kugel erkannt werden, da diese aufgrund der Spielregeln besonders relevant ist.
 Diese Detektion muss eine hohe Genauigkeit und Robustheit aufweisen, um ein erhöhtes Vertrauen in das System zu erreichen.
 
-Darauf aufbauend geht es um die Fragestellung, welchen Stoss der Spieler ausführen soll.
+Im zweiten Schritt geht es um die Fragestellung, welchen Stoss der Spieler ausführen soll.
 Dazu muss die Vielzahl an Möglichkeiten, die eine Spielsituation bietet, auf geeignete Weise durchsucht und die gefundenen
 Stösse nach Schwierigkeit bewertet werden, um dem Spieler einen idealen Vorschlag zu machen.
 Es sollen sowohl Stösse, welche eine Kugel direkt einlochen, als auch Stösse über die Banden berücksichtigt werden.
 
-Ausserdem ist für die genannte Platzierung, die im Billard wichtig ist, eine Simulation von Billardstössen notwendig,
+Ausserdem ist für die Platzierung, die im Billard wichtig ist, eine Simulation von Billardstössen notwendig,
 um die Situation zu berechnen, welche nach einem Stoss entsteht.
 Aus dieser neuen Ausgangssituation können geeignete nächste Stösse gesucht und bewertet werden, um in der Wahl des
 ersten Stosses mögliche zukünftige Stösse zu berücksichtigen.
@@ -46,4 +46,4 @@ In Kapitel \ref{kap:ziele} werden die Ziele dieser Arbeit näher beschrieben.
 Kapitel \ref{billardAi} beschreibt die Implementation des Systems, deren Resultate in Kapitel \ref{kap:resultate}
 diskutiert werden.
 Es wird ein Ausblick in mögliche weitere Arbeiten am System in Kapitel \ref{kap:weitere_arbeiten} formuliert und
-in Kapitel \ref{kap:fazit} enthält das Fazit dieser Arbeit.
+Kapitel \ref{kap:fazit} enthält das Fazit dieser Arbeit.

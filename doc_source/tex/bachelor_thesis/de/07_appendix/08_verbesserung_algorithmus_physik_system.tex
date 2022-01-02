@@ -65,7 +65,7 @@ mit am vorherigen Ereignis unbeteiligten Kugeln ergänzt, sollte es solche geben
 Algorithmus \ref{alg:physikalisches_system_verbesserung_algorithmus_1} beinhaltet die Funktionen für den Simulationsvorgang
 an sich, die Berechnung der nächsten Ereignisse und das Hinzufügen neuer Ereignisse. Der Simulationsvorgang sieht im
 Wesentlichen so aus, dass solange simuliert wird, wie das System Energie führt. Es werden nacheinander die Ereignisse berechnet,
-die als nächstes eintretenden Ereignisse bestimmt, die gespeicherten Ereignisse darauf basierend bereinigt und bei den übrig
+die nächst eintretenden Ereignisse bestimmt, die gespeicherten Ereignisse darauf basierend bereinigt und bei den übrig
 gebliebenen Ereignissen die Zeit korrigiert. Abschliessend kann der Zustand zu diesem Zeitpunkt bestimmt und
 dem System hinzugefügt werden. Die Berechnung der Ereignisse wird nur auf dynamische Kugeln angewendet, die keine Ereignisse haben.
 Dies ist bei der ersten Ausführung der Fall oder wenn eine Kugel vorgängig an einem Ereignis beteiligt gewesen ist.
@@ -75,14 +75,15 @@ Zudem wird das Ereignis ebenfalls für das Partnerobjekt erfasst, dies ist insbe
 \newpage
 Der Algorithmus \ref{alg:physikalisches_system_verbesserung_algorithmus_2} beinhaltet die Funktionen zum Löschen von
 Ereignissen, zur Bestimmung der nächsten Ereignisse und zur Korrektur der Zeit bei den bekannten Ereignissen.
-Die Löschfunktion nimmt einerseits die aktuellen Ereignisse pro Kugel und die als nächstes eintretenden Ereignisse
-entgegen. Als Rückgabe erfolgen wiederum die Ereignisse pro Kugel. Es werden nacheinander pro eintretendes Ereignis
-alle Verbliebenen aus der Datenstruktur gelöscht, somit haben die entsprechenden Kugeln keine Ereignisse mehr, was
-zur Folge hat, dass sie im nächsten Durchgang neu berechnet werden. Anschliessend werden alle Ereignisse bei anderen
-Kugeln entfernt, an denen die bereits genannten beteiligt sind. Bei der Berechnung der nächsten Ereignisse werden
-die Ereignisse pro Kugel benötigt. Als Resultat erfolgt der Zeitpunkt ausgedrückt als Delta (von vorherigem
-Ereignis zum nächsten Ereignis) und eine Liste von Ereignissen, da mehrere zum selben Zeitpunkt
-auftreten können. Es werden alle Ereignisse geprüft und entweder übernommen, wenn der Eintrittszeitpunkt vor dem
+Die Löschfunktion nimmt einerseits die aktuellen Ereignisse pro Kugel und die nachfolgend eintretenden Ereignisse
+entgegen. Als Rückgabe erfolgen wiederum die Ereignisse pro Kugel.
+Es werden nacheinander pro eintretendes Ereignis je Kugel alle weiteren vorgesehenen Ereignisse aus der Datenstruktur gelöscht,
+was zur Folge hat, dass sie im nächsten Durchgang neu berechnet werden.
+Anschliessend werden alle Ereignisse bei anderen Kugeln entfernt, an denen die bereits genannten beteiligt sind.
+Bei der Berechnung der nächsten Ereignisse werden die Ereignisse pro Kugel benötigt.
+Als Resultat erfolgt der Zeitpunkt ausgedrückt als Delta (von vorherigem Ereignis zum nächsten Ereignis)
+und eine Liste von Ereignissen, da mehrere zum selben Zeitpunkt auftreten können.
+Es werden alle Ereignisse geprüft und entweder übernommen, wenn der Eintrittszeitpunkt vor dem
 aktuell gespeicherten liegt oder der Liste hinzugefügt, wenn dieser dem aktuell gespeicherten entspricht.
 Eventuell könnte beim Einfügen der Ereignisse bereits eine Sortierung nach Zeitpunkt stattfinden, somit müssten nur
 alle ersten Ereignisse pro Kugel geprüft werden. Bei der Korrektur der Zeit erfolgt die Eingabe

@@ -5,7 +5,7 @@ Für die Suche gibt es zwei Möglichkeiten, entweder wird bei der weissen Kugel 
 welcher eine andere Kugel ins Loch spielt, oder es wird bei einem oder mehreren Löchern gestartet und von dort ein Stoss gesucht,
 welcher von der weissen Kugel ausgehend eine andere Kugel ins Loch spielt.
 
-Nachfolgend wird die Suche beschrieben, welche beim Loch, dem Ziel, startet, eine einzulochende Kugel findet
+Nachfolgend wird die Rückwärtssuche beschrieben, welche ausgehend vom Zielloch startet, eine einzulochende Kugel findet
 und anschliessend den Stoss bis zur weissen Kugel zurück sucht.
 Dementsprechend ist der Root-Knoten des Suchbaumes das zu treffende Ziel (Loch).
 Da ein handelsüblicher Billardtisch mehrere Löcher hat, muss pro Loch eine separate Suche durchgeführt werden.
@@ -14,7 +14,7 @@ Bei der Durchführung eines Expansionsschrittes werden ausgehend von einem Knote
 Diese stellen im Fall vom Root-Knoten Kugeln dar, welche in dieses Loch gespielt werden könnten.
 Aus diesen Kugeln werden Kugel-Knoten gebildet, welche diese Kugeln entweder auf direktem Wege oder indirekt über die Bande
 in das Loch spielen lassen sollen.
-Ausgehend von diesen Kugel-Knoten, werden deren Nachfolger-Knoten in weiteren Expansionsschritten ermittelt, welche
+Von diesen Kugel-Knoten startend, werden deren Nachfolger-Knoten in weiteren Expansionsschritten ermittelt, welche
 wiederum Kugel-Knoten darstellen.
 Diese Kugel-Knoten stellen dann Kugeln dar, welche die Kugel des Vorgänger-Kugel-Knotens entweder auf direktem Wege oder indirekt
 über die Bande treffen sollen.
@@ -35,7 +35,7 @@ Es wird nur das zu treffende Ziel definiert. Auf der rechten Seite des Tisches i
 \end{figure}
 
 In einem zweiten Schritt wird die einzulochende Kugel definiert. Es kommen lediglich die beiden roten Kugeln in Frage.
-Nachfolgend wird der Pfad weiter betrachtet, bei dem die rote Kugel, welche näher beim Loch ist, gewählt wurde.
+Nachfolgend wird der Pfad weiter betrachtet, bei dem die beim Loch näherstehende rote Kugel, gewählt wurde.
 Abbildung \ref{fig:backwardsearch_2} zeigt, dass der Suchbaum um einen Knoten erweitert wurde.
 \begin{figure}[h!]
     \begin{center}
@@ -219,7 +219,7 @@ Einerseits wird als Zielposition $C$ nicht die Kugelposition selbst, sondern ein
 Gegenrichtung zur gewünschten Laufrichtung $\vec{r}$ der Kugel $C$ definiert. Andererseits wird die Bande, an welcher
 gespiegelt wird, um den Radius der Kugel in Richtung des Zentrums verschoben. Die verschobene virtuelle Bande ist grün eingezeichnet.
 
-Durch Studium mehrerer Beispiele wird ein allgemeiner Algorithmus hergeleitet. Hierbei wird zuvor genanntes Problem
+Durch Studium mehrerer Beispiele wird ein allgemeiner Algorithmus hergeleitet. Hierbei wird das zuvor genannte Problem
 mit dem Kugelradius vernachlässigt, da dieses durch die beschriebenen Positionskorrekturen behandelt werden kann.
 Der Algorithmus kann unabhängig von dieser Korrektur beschrieben werden.
 
@@ -496,9 +496,9 @@ zu hoher Kosten. Dieses Vorgehen entspricht demjenigen des Dijkstra-Algorithmus 
 \end{figure}
 
 Die Kosten werden auf Basis dreier Kriterien\footnote{Die Kriterien Distanz und Winkel werden wie
-in Publikation \cite{inproceedings:billiard_ai:1} verwendet.} gebildet. Das Erste bildet die Berücksichtigung der Distanz, welche eine
-Kugel zurücklegt. Das Zweite behandelt den Winkel, in welcher ein Zielpunkt getroffen werden muss. Das Dritte fügt den
-Kosten einen Wert für jede Indirektion hinzu. Jeder dieser Werte liegt zwischen $0$ und $1$.
+in Publikation \cite{inproceedings:billiard_ai:1} verwendet.} gebildet. Das Erste bildet die Berücksichtigung der \emph{Distanz}, welche eine
+Kugel zurücklegt. Das Zweite behandelt den \emph{Winkel}, in welcher ein Zielpunkt getroffen werden muss. Das Dritte fügt den
+Kosten einen Wert für jede \emph{Indirektion} hinzu. Jeder dieser Werte liegt zwischen $0$ und $1$.
 Die ersten beiden Kriterien sind in Abbildung \ref{fig:suche_knoten_expansionskosten} veranschaulicht.
 Es werden zwei Expansionen gezeigt. Die relevanten Informationen $d$ für die Distanz sowie $\alpha$ für den Winkel weisen
 einen entsprechenden Index auf, welcher den Expansionsschritt markiert. Beim ersten Expansionsschritt bildet der Zielpunkt

@@ -1,12 +1,12 @@
 \newpage
 \section{Klassifikation}\label{kap:klassifikation}
-In Kapitel \ref{kap:detektion} wurde beschrieben, wie die Positionen aller Kugeln mithilfe eines Bilds des Spielstands detektiert werden.
+In Kapitel \ref{kap:detektion} wurde beschrieben, wie die Positionen aller Kugeln mithilfe eines Bildes des Spielstands detektiert werden.
 Um den Spielstand zu verstehen ist es relevant zu wissen, welche Kugel welche Farbe hat.
 Im Snooker gibt es die Farben Weiss, Rot, Gelb, Pink, Grün, Blau, Braun und Schwarz.
 Deshalb muss jede detektierte Kugel anhand eines Bildausschnitts in eine dieser Klassen eingeteilt werden.
 Der Ablauf der Klassifikation der Snooker-Kugeln wird nachfolgend beschrieben.
 
-Zunächst liegt zu jeder Kugel deren Position in Pixel- sowie Modell-Koordinaten vor und der Radius der Kugeln ist in Pixel bekannt\cite{project2:pixel_to_model_coordinates}.
+Zunächst liegt für jede Kugel deren Position in Pixel- sowie Modell-Koordinaten vor und der Radius der Kugeln ist in Pixel bekannt\cite{project2:pixel_to_model_coordinates}.
 Aufgrund dieser Informationen wird von jeder detektierten Kugel ein Bildausschnitt des RGB-Bildes rund um die Kugelposition definiert,
 der für die Klassifikation verwendet werden kann.
 Der Bildausschnitt ist quadratisch, wodurch in den Ecken des Bildes noch das Grün des Billardtisches ersichtlich ist.
@@ -34,7 +34,7 @@ und den grünen Tisch so zu entfernen, siehe Abbildung \ref{fig:klassifikation_r
         }
         \label{fig:klassifikation_radius_reduced}
     \end{subfigure}
-    \caption{Auswahl aus den Trainingsbilder}
+    \caption{Auswahl aus den Trainingsbildern}
     \label{fig:klassifikation_radius}
 \end{figure}
 
@@ -157,7 +157,7 @@ In Abbildung \ref{fig:classification_trainingdata_examples} sind zwei Trainingsb
         \caption{Pink 2}
         \label{fig:classification_pink_ball_2}
     \end{subfigure}
-    \caption{Auswahl aus den Trainingsbilder}
+    \caption{Auswahl aus den Trainingsbildern}
     \label{fig:classification_trainingdata_examples}
 \end{figure}
 
@@ -174,7 +174,7 @@ Diese drei Werte können als Position des Bildausschnitts im HSV-Raum interpreti
 In Abbildung \ref{fig:klassifikation_cluster} ist der HSV-Farbraum der Trainingsbilder abgebildet.
 Für jedes Trainingsbild wurde die zuvor erklärte Position im HSV-Raum eingezeichnet.
 Aus diesem Clusterdiagramm können einige Schlüsse gezogen werden.
-Die Klassifikation der blauen und grünen Kugeln erdordert lediglich den Hue-Kanal (oben-links).
+Die Klassifikation der blauen und grünen Kugeln erfordert lediglich den Hue-Kanal (oben-links).
 Die schwarze Kugel kann über den Value-Kanal (unten-rechts) klassifiziert werden.
 Die roten und braunen Kugeln liegen dicht beieinander, wobei die Sättigung (mitte-rechts oder unten-mitte) ein gewisses Unterscheidungskriterium bildet.
 

@@ -118,12 +118,12 @@ auf die Eingangsenergie beschränkt wird.
 
 \begin{figure}[h!]
     \centering
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{0.6\textwidth}
         \includegraphics[width=1\textwidth]{../common/03_billiard_ai/resources/33_rollen_kleine_geschwindigkeit.png}
         \caption{Rolleinfluss bei kleiner Geschwindigkeit}
         \label{fig:rollen_kleine_geschwindigkeit}
     \end{subfigure}\\
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{0.6\textwidth}
         \includegraphics[width=1\textwidth]{../common/03_billiard_ai/resources/34_gleiten_grosse_geschwindigkeit.png}
         \caption{Kein Rollen bei grosser Geschwindigkeit}
         \label{fig:gleiten_grosse_geschwindigkeit}
@@ -132,7 +132,7 @@ auf die Eingangsenergie beschränkt wird.
     elastischen Stoss aus Kapitel \ref{kap:simulation:elastischer_stoss_zweier_kugeln} aufgeteilt.
     Ohne Berücksichtigung des Rollens wird die Position der weissen Kugel bei $P$ berechnet, die effektive Position ist bei $E$.
         (b) Bei grösserer Geschwindigkeit fängt die Kugel erst später an zu rollen. Zum Kollisionszeitpunkt gleitet sie
-        in diesem Fall nur und es gilt der zweidimensionale elasitsche Stoss wie in
+        in diesem Fall nur und es gilt der zweidimensionale elastische Stoss wie in
         Kapitel \ref{kap:simulation:elastischer_stoss_zweier_kugeln} beschrieben.
         $P$ und $E$ stimmen in diesem Fall überein.}
     \label{fig:einfluss_rollen}
@@ -330,7 +330,7 @@ ihre Gesamtenergie verloren und steht still. Es wird das Minimum der beiden Zeit
 
 Probleme hat dieser Ansatz ergeben, wenn die Kugel z.B. nahe der Bande rollt oder teilweise auch aufgrund der Ungenauigkeiten
 beim Rechnen mit Fliesskommazahlen. So wurde die Kollision mit derselben Bande mehrfach aufeinanderfolgend detektiert und
-die Kugeln konnte so durch die Bande hindurchrollen. Das Problem wurde behoben, indem
+die Kugel konnte so durch die Bande hindurchrollen. Das Problem wurde behoben, indem
 die letzte Bande, mit welcher die Kugel kollidierte, von der Ereignisberechnung ausgeschlossen wurde. Die Bande wird
 erst wieder miteinbezogen, wenn die Kugel eine andere Bande oder eine andere Kugel getroffen hat.
 

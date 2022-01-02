@@ -43,14 +43,13 @@ der Position zu berechnen.
 Der gleitende Durchschnitt führt bei stillstehenden Kugeln zu einer deutlichen Reduktion des Rauschens.
 Bei bewegten Kugeln ist zu beachten, dass diese nicht zwingend über alle Frames getrackt werden können,
 weil sie zwischen den Frames zu weit gerollt sein könnten.
-Die History wird für Kugeln, die nicht mehr getrackt werden konnten, gelöscht.
-Dadurch ist die History leer, wenn eine Kugel wieder getrackt werden konnte und wird wieder gefüllt, solange das Tracking
-erfolgreich ist.
+Die History wird für Kugeln, die nicht mehr getrackt werden konnten, geleert.
+Sobald eine Kugel wieder erfolgreich getrackt werden konnte wird die History erneut befüllt.
 Die Berechnung des gleitenden Durchschnitts auf einigen wenigen Positionen aus der History ist suboptimal, weil
 zu wenige Datensätze vorhanden sind, um eine effektive Rauschunterdrückung zu erreichen.
 Um dieses Problem zu lösen, wird die Durchschnittsposition einer getrackten Kugel erst verwendet,
-wenn diese mindestens $L < N$ Frames getrackt wurde. Sofern eine Kugel beispielsweise erst 3 Frames lang getrackt wurde,
-wird noch kein gleitender Durchschnitt berechnet.
+wenn diese mindestens $L$ Frames getrackt wurde, wobei $L < N$.
+Sofern eine Kugel beispielsweise erst 3 Frames lang getrackt wurde, wird noch kein gleitender Durchschnitt berechnet.
 Bei stillstehenden Kugeln ist diese Bedingung unproblematisch, weil diese bei kleinem $L$ schnell erfüllt ist.
 
 Bei bewegten Kugeln ist die Durschschnittsposition weiterhin problematisch, weil diese zwischen den detektierten Positionen liegt und

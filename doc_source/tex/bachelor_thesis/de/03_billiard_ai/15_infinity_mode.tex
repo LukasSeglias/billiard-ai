@@ -4,15 +4,15 @@ einen Stoss auszuführen und anschliessend auf Basis des dadurch entstandenen Sp
 
 Dies bedingt die Klassifikation des Spielstandes in stabil und instabil. Ein Spielstand ist instabil, sofern sich noch Kugeln
 bewegen oder der Spieler gerade dabei ist, einen Stoss durchzuführen. Der Spielstand gilt als stabil, wenn die Kugeln
-stehen bleiben. Sofern sich der Spielstand zu stabil ändern, wird eine Suche nach dem optimalen Stoss ausgeführt,
+stehen bleiben. Sofern sich der Spielstand zu stabil ändert, wird eine Suche nach dem optimalen Stoss ausgeführt,
 und das Resultat wird dem Spieler auf dem Tisch angezeigt. Währenddessen, dass der Spielstand instabil ist, soll keine erneute
 Suche ausgelöst werden, damit der Spieler die Chance hat, den Vorschlag zu prüfen und gemäss angezeigter Animation auszuführen.
 
 Die Detektion des aktuellen Spielstandes enthält über die Zeit betrachtet ein gewisses zufälliges Rauschen.
 Dadurch verändern sich die Positionen aller Kugeln auch bei komplettem Stillstand leicht.
 Ausserdem werden manchmal Kugeln erkannt wo keine Kugeln liegen, oder es werden Kugeln nicht erkannt.
-Dieser Ungewissheit muss Rechnung getragen werden.
-Dieser Modus baut hierzu auf der in Abschnitt \ref{kap:tracking} beschriebenen Tracking und Positionsstabilisierung auf.
+Dieser Ungewissheit muss Rechnung getragen werden, wobei der Modus hierzu auf dem in Abschnitt \ref{kap:tracking}
+beschriebenen Tracking und der Positionsstabilisierung aufbaut.
 
 Die Bedingungen, dass der Spielstand als stabil gilt, sind nachfolgend aufgeführt und werden in den nächsten Abschnitten erläutert.
 \begin{enumerate}
@@ -26,16 +26,16 @@ Die Bedingungen, dass der Spielstand als stabil gilt, sind nachfolgend aufgefüh
 
 \subsection{Tracking des Spielballs}
 Der Spielball ist von allen Kugeln einzigartig, weil in einem regelkonformen Spiel höchstens ein Spielball auf dem Tisch liegt.
-Dieses Wissen kann daher ausgenutzt werden, um diesen wiederzufinden.
-Wenn der Spielball nicht auf dem Tisch liegt, weil er beispielsweise eingelocht wurde, dann soll der Spielstand instabil sein.
+Diese Erkenntnis kann daher ausgenutzt werden, um diesen wiederzufinden.
+Sollte der Spielball nicht auf dem Tisch liegen, weil er beispielsweise eingelocht wurde, verändert sich der Spielstand auf den Status instabil.
 
-Die in Abschnitt \ref{kap:detektion} beschriebene Detektion führt manchmal zu fälschlicherweise erkannten Kugeln.
+Die in Abschnitt \ref{kap:detektion} beschriebene Detektion führt manchmal zu fälschlich erkannten Kugeln.
 So kann es passieren, dass mehrere weisse Kugeln auf dem Tisch erkannt werden.
 Daher muss der echte Spielball gefunden werden.
 
 Im Fall, dass eine einzige weisse Kugel erkannt wurde, wird diese als Spielball angenommen.
 Sofern es mehrere weisse Kugeln gibt, wird diejenige gesucht, welche der zuletzt bekannten Position des Spielballs am nächsten ist.
-Falls sich diese nicht zu weit entfernt befindet, dann wird diese Kugel als Spielball angenommen und die
+Falls sich diese Kugel nicht zu weit entfernt befindet, dann wird sie als Spielball angenommen und die
 anderen weissen Kugeln werden ignoriert.
 Falls keine naheliegende Kugel gefunden wurde, wird angenommen, dass der Spielball nicht auf dem Tisch liegt.
 Das Gleiche passiert, sofern keine weisse Kugel erkannt wurde.
@@ -46,7 +46,7 @@ Da alle Kugeln bereits getrackt werden, kann für jede erfolgreich getrackte Kug
 Kugelpositionen aus Abschnitt \ref{kap:tracking} geführt werden.
 So wird für jede getrackte Kugel die Bewegung der detektierten Kugelposition zwischen zwei aufeinanderfolgenden Frames
 über $M$ Frames gespeichert.
-Mithilfe dieser Bewegungsvektoren wird anschliessend ein Durchschnitt gebildet, um den durchschnittlichen Bewegungsvektor über
+Mithilfe dieser Bewegungsvektoren wird anschliessend ein Mittelwert gebildet, um den durchschnittlichen Bewegungsvektor über
 die letzten $M$ Frames zu erhalten.
 Der Betrag dieses Vektors kann anschliessend genutzt werden, um einzuschätzen, ob die Kugel in Bewegung ist oder nicht.
 Wenn eine Kugel in Bewegung versetzt wird, steigt dieser Durchschnitt zunächst und sinkt wieder, sobald die Kugel ausrollt.
@@ -62,22 +62,21 @@ Da diese Detektionsfehler oft nur auf einzelnen Frames auftauchen, gilt eine Kug
 $O$ Frames erfolgreich getrackt werden konnte.
 
 \subsection{Neue Kugeln}
-Sofern eine Kugel auf dem Tisch platziert wird, weil beispielsweise eine der farbigen Kugeln neu platziert wird,
-dann muss diese Änderung den Spielstand zu instabil ändern.
-Sobald die neue Kugel anschliessend eine gewisse Zeit lang auf dem Tisch liegt und nicht mehr als \emph{neu} gilt,
-kann der Spielstand wieder zu stabil wechseln.
-Damit auch hier fälschlicherweise detektierte Kugeln nicht zu Fehlentscheidungen führen, werden hierzu nur Kugeln
+Sofern eine Kugel auf dem Tisch platziert wird, verändert diese Anpassung den Spielstand zu instabil.
+Sobald die neue Kugel folgedessen eine bestimmte Zeit lang auf dem Tisch liegt und nicht mehr als \emph{neu} gilt,
+wechselt der Spielstand wieder zu stabil.
+Damit auch hier fälschlich detektierte Kugeln nicht zu Fehlentscheidungen führen, werden hierzu nur Kugeln
 betrachtet, welche $N$ Frames lang erfolgreich getrackt wurden.
 Anschliessend kann die Anzahl der in Frame $F_{t}$ erfolgreich getrackten Kugeln mit derjenigen aus Frame $F_{t-1}$
 verglichen werden.
-Sofern diese Differenz positiv ist, wurden Kugeln dem Spielstand hinzugefügt und der Spielstand muss als instabil markiert werden.
+Sofern diese Differenz positiv ist, wurden Kugeln dem Spielstand hinzugefügt und der Spielstand folglich als instabil markiert.
 
 \subsection{Robustheit}
 Damit Detektionsfehler nicht in der Suche nach Stössen berücksichtigt werden, muss der Spielstand als instabil gelten,
-solange sich fälschlicherweise detektierte Kugeln auf dem Tisch befinden.
+solange sich fälschlich detektierte Kugeln auf dem Tisch befinden.
 Daher muss die Anzahl aktuell detektierter Kugeln mit der Anzahl Kugeln übereinstimmen, welche über $N$ Frames erfolgreich
 getrackt wurden.
-Dadurch ist sichergestellt, dass der Spielstand erst stabil wird, wenn alle tatsächlich vorhandenen Kugeln lange genug
+So ist sichergestellt, dass der Spielstand erst stabil wird, wenn alle tatsächlich vorhandenen Kugeln lange genug
 getrackt wurden und keine Fehldetektionen vorhanden sind.
 
 \subsection{Zeitliche Stabilität}
@@ -85,10 +84,10 @@ Der Wechsel zum Status stabil sollte möglichst nur dann auftreten, wenn der Spi
 Ausserdem darf es nicht passieren, dass der Status zu volatil ist.
 Es wäre problematisch, wenn der Status innerhalb weniger Frames mehrfach zwischen stabil und instabil wechseln würde,
 denn bei jedem Wechsel zum Status stabil wird eine Suche ausgelöst und dem Spieler ein Vorschlag angezeigt.
-Würde der Status nach Anzeige des Vorschlags auf instabil und dann auf stabil ändern, würde das eine erneute
-Suche auslösen und der bisherige Vorschlag würde nicht mehr angezeigt, bis der neue Vorschlag erscheint.
+Würde der Status während der Ausführung des Stosses von instabil zu stabil ändern, hätte das eine erneute Suche zur Folge
+und der bisherige Vorschlag würde nicht mehr angezeigt, bis der Neue erscheint.
 Daher wird der Status erst tatsächlich als stabil ausgewiesen, wenn er über mindestens $P$ Frames als stabil erkannt wurde.
 
 Die oben beschriebenen Bedingungen dienen dem Ziel des Infinity-Modus, dem Spieler zu geeigneter Zeit
-einen Vorschlag für einen Stoss zu machen und anzuzeigen, bis der Spieler einen Stoss ausgeführt hat
-und ein neuer Vorschlag erwartet wird.
+einen Vorschlag für einen Stoss zu berechnen und anzuzeigen, bis der Spieler diesen ausgeführt hat
+und folglich ein neuer Vorschlag erwartet wird.

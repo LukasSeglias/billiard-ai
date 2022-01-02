@@ -1,13 +1,13 @@
 \chapter{Weitere Arbeiten}\label{kap:weitere_arbeiten}
-Auf den in dieser Arbeit erzielten Resultaten sind potenzielle weitere Arbeiten für Erweiterungen und Verbesserungen
+Aufbauend auf den in dieser Arbeit erzielten Resultaten sind potenzielle weitere Arbeiten für Erweiterungen und Verbesserungen
 möglich.
 Nachfolgend werden einige Ideen beschrieben.
 
 Die Suche nach Stössen wird, wie in Kapitel \ref{sec:kandidatensuche} beschrieben, ausgehend von den Löchern gestartet,
 wodurch diese als Rückwärtssuche bezeichnet werden kann.
-Der Raum der möglichen Stösse wird diskretisiert, weil nicht allen Möglichkeiten untersucht werden.
+Der Raum der möglichen Stösse wird diskretisiert, weil nicht alle Möglichkeiten untersucht werden.
 Eine Vorwärtssuche würde viele Simulationen mit unterschiedlichen Anfangsbedingungen (Stossrichtung \& -stärke)
-durchführen und so mögliche Stösse finden.
+erfordern und so eine hohe Anzahl möglicher Stösse erzielen.
 Dabei müsste der unendliche Raum der Anfangsbedingungen sinnvoll diskretisiert werden, um eine solche Suche zu ermöglichen.
 Wegen der Diskretisierung der Rückwärtssuche kann es in gewissen Situationen Stösse geben, welche nicht gefunden werden.
 Durch eine Kombination von Rückwärts- und Vorwärtssuche könnten mehr potenzielle Stösse untersucht werden.
@@ -33,13 +33,13 @@ Der Einsatz einer Hochgeschwindigkeitskamera könnte nachgelagerte Analysen eine
 dessen Aufzeichnung und spätere Wiedergabe erlauben.
 Dies würde vermutlich weitere Optimierungen in der Detektion erfordern.
 
-Eine Ausweitung auf andere Arten des Billards, wie etwa Poolbillard, sind durch den Aufbau des Systems möglich, da
+Eine Ausweitung auf andere Arten des Billards, wie etwa Poolbillard, ist durch den Aufbau des Systems möglich, da
 Snooker-spezifische Komponenten von Allgemeingültigen getrennt wurden.
-Es müsste eine Detektion und Klassifikation für Poolbillard-Kugeln und einige Spielregeln implementiert werden.
+Es müssten eine Detektion und Klassifikation für Poolbillard-Kugeln und einige Spielregeln implementiert werden.
 
 Des Weiteren könnte es für den Spieler von Nutzen sein, wenn das System die Position und Orientierung des Billardqueues
 erkennen könnte.
-Dank dieser Informationen könnte dem Spieler angezeigt werden, wie der Spielball bei einem Stoss in diese Richtung
+Dank dieser Informationen könnte dem Spieler angezeigt werden, wie der Spielball bei einem Stoss in angezeigter Richtung des Queues
 an den Banden reflektieren würde, um so Erfahrungen mit Stössen über die Banden zu sammeln.
 Es gibt bereits verwandte Arbeiten, wo dies umgesetzt ist, siehe Kapitel \ref{kap:verwandte_arbeiten}.
 Ausserdem wäre es möglich, verschieden starke Stösse aufgrund der aktuellen Position und Orientierung des Queues zu simulieren
