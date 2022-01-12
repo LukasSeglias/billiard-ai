@@ -176,7 +176,7 @@ den entsprechenden Node und zuletzt für die anderen variablen Objekte entweder 
     }
     \;
     \Fn{\atMoment{layer: Layer, event: Event} $\longrightarrow$ Event}{
-        nextLayer $\longleftarrow$ layer()
+        nextLayer $\longleftarrow$ layer()\\
         \For{node in layer.objects()}{
             \If{node.first == event.me or node.first == event.partner}{
                 nextLayer $\longleftarrow$ append(nodeForEvent(node, event), nextLayer)
