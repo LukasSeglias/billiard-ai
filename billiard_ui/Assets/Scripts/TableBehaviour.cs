@@ -134,6 +134,8 @@ public class TableBehaviour : MonoBehaviour
             searchSolution(search);
 		} else if (Input.GetKeyDown(KeyCode.Y)) {
 			AnimationService.toggleSearch();
+		} else if (Input.GetKeyDown(KeyCode.V)) {
+			AnimationService.toggleVelocity();
 		} else if (Input.GetKeyDown(KeyCode.X)) {
 			showBallHalos = false;
 			isPlaying = false;

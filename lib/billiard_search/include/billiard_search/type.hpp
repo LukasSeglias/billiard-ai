@@ -332,6 +332,7 @@ namespace billiard::search {
         } _rules;
 
         bool _depthSearchEnabled = true;
+        bool _velocityMultiplyEnabled = true;
     };
 
     struct EXPORT_BILLIARD_SEARCH_LIB SearchState {

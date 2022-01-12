@@ -477,6 +477,15 @@ void toggleDepthSearch() {
     }
 }
 
+void toggleVelocityMultiply() {
+    if (searchConfig) {
+        searchConfig->_velocityMultiplyEnabled = !searchConfig->_velocityMultiplyEnabled;
+        DEBUG("[toggleVelocityMultiply] velocity multiply enabled: " << (searchConfig->_velocityMultiplyEnabled ? "true" : "false") << std::endl);
+    } else {
+        DEBUG("[toggleVelocityMultiply] no configuration available!" << std::endl);
+    }
+}
+
 void image() {
     static int imageNumber = 1;
     if (cameraCapture) {

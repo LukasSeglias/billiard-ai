@@ -777,7 +777,8 @@ namespace billiard::snooker {
                                                                 {"BROWN", "BLUE"},
                                                                 {"BLUE", "PINK"},
                                                                 {"PINK", "BLACK"},
-                                                                {"BLACK", ""}
+                                                                {"BLACK", ""},
+                                                                {"UNKNOWN", ""}
                                                         });
     std::vector<std::string> typesToReplace({
         "YELLOW",
@@ -1159,15 +1160,7 @@ namespace billiard::snooker {
             DEBUG("[validEndState] Invalid end state: no balls potted." << std::endl);
             return false;
         }
-
-        // TODO: Failing to hit any other ball with the cue ball? No such solution should be found.
-        // TODO: First hitting a ball "not-on" with the cue ball?
-        // TODO: It is sometimes erroneously believed that potting two or more balls in one shot is an automatic foul.
-        //  This is only true if one of the potted balls is not "on" (e.g. a red and a colour, or two different colours).
-        //  When the reds are "on", two or more of them may be legally potted in the same shot and are worth one point each;
-        //  however, the player may only nominate and attempt to pot one colour on the next shot.
-        // TODO: Source: https://en.wikipedia.org/wiki/Rules_of_snooker
-        // TODO: nominating colors: https://indoorgamebunker.com/why-do-snooker-players-nominate-a-colour/
+        
         return true;
     }
 }

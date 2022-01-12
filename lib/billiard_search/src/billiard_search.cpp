@@ -771,7 +771,7 @@ namespace billiard::search {
 
         DEBUG("[prepareForSimulation] Found path: " << logPath(path) << std::endl);
 
-        for (int i = 0; i <= (state->_config._depthSearchEnabled ? FORWARD_SEARCHES : 0); ++i) {
+        for (int i = 0; i <= (state->_config._velocityMultiplyEnabled ? FORWARD_SEARCHES : 0); ++i) {
             glm::vec2 increasedVelocity = minimalVelocity + (i * VELOCITY_STEP * minimalVelocityNormalized);
             if (glm::dot(increasedVelocity, increasedVelocity) > MAX_VELOCITY_SQUARED) {
                 DEBUG("[prepareForSimulation] Start velocity " << increasedVelocity << " is too high" << std::endl);

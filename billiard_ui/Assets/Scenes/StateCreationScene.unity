@@ -267,6 +267,8 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: bdc29fb2509a6b04882a95c7681c217b, type: 2}
   - key: BLACK
     material: {fileID: 2100000, guid: 9296eb178bcf71844a6da438e7a9516a, type: 2}
+  - key: UNKNOWN
+    material: {fileID: 2100000, guid: d7818f7eb54398a4d8c1d5de20429cbf, type: 2}
   typeText: {fileID: 779886145}
   TextVisibilityTime: 3
   stateInputField: {fileID: 415844911}
