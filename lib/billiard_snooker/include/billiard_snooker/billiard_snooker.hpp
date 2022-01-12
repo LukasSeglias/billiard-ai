@@ -24,7 +24,7 @@ namespace billiard::snooker {
         double radiusErrorLow = 20 /* % (percent) */;
         double radiusErrorHigh = 10 /* % (percent) */;
 
-        cv::HoughModes houghMethod = cv::HOUGH_GRADIENT; // TODO: try HOUGH_GRADIENT_ALT for better accuracy?
+        cv::HoughModes houghMethod = cv::HOUGH_GRADIENT;
         // Hough: minimal distance between centers
         double houghMinDistance;
         // Hough: higher threshold of the two passed to the Canny edge detector (lower threshold is twice smaller)

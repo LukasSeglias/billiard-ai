@@ -14,9 +14,7 @@ namespace billiard::search {
     #define SYNC_PERIOD_MS 100
     #define BREAKS 2
     #define BANK_INDIRECTION 3
-    // TODO: find a good number
     #define FORWARD_SEARCHES 2
-    // TODO: find a good number
     #define MAX_VELOCITY_TO_ADD 2000.0f
     #define MAX_VELOCITY_SQUARED (5000.0f * 5000.0f)
     #define MAX_EVENTS 30
@@ -602,10 +600,8 @@ namespace billiard::search {
                                               << std::endl);
 
             if (ball.second._type == "WHITE") {
-                auto prepared = prepareForSimulation(result, ball.first, state); // TODO: Comment if search test
+                auto prepared = prepareForSimulation(result, ball.first, state);
                 expanded.insert(expanded.end(), prepared.begin(), prepared.end());
-                /*result->_isSolution = true;
-                expanded.push_back(result);*/
             } else {
                 expanded.push_back(result);
             }
@@ -1015,7 +1011,7 @@ namespace billiard::search {
 
         glm::vec2 target;
         if (searchInput->_action == SearchActionType::NONE) {
-            auto pocket = getSearchPocketById(state, searchInput->_ballId); // TODO: Pockets über unorderd_map speichern?
+            auto pocket = getSearchPocketById(state, searchInput->_ballId);
             assert(pocket);
             target = pocket->_pottingPoint;
         } else {

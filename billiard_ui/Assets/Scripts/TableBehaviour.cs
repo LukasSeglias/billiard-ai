@@ -26,7 +26,6 @@ public class TableBehaviour : MonoBehaviour
 	public TableVisuals visuals;
 	public GameObject Queue;
 	public GameObject dotsParentGameObject;
-	public StabilizationController stabilizationController;
 
 	private static int screenshotIndex = 0;
 	private const float FAST_RESULT_DISPLAY_TIME = 2.0f;
@@ -64,8 +63,6 @@ public class TableBehaviour : MonoBehaviour
 		AnimationService.OnAnimationReceived += animationChanged;
 		AnimationService.OnStateReceived += stateChanged;
 		AnimationService.captureState(isLive);
-
-		stabilizationController.OnStateStabilizationChange += stabilizationChanged;
 
 		config = ConfigurationLoader.load();
 
@@ -224,30 +221,9 @@ public class TableBehaviour : MonoBehaviour
             }
 
             stabilizationStatusInfoText.SetText("" + currentState);
-            stabilizationStatusInfoText.GetComponent<MeshRenderer >().enabled = false; // TODO: remove?
+            stabilizationStatusInfoText.GetComponent<MeshRenderer >().enabled = false;
         }
 	}
-
-	private void stabilizationChanged(StabilizationChange change) {
-        // TODO: Remove once StabilizationController is obsolete
-        if (change.current == StabilizationStatus.STABLE) {
-            // -> STABLE
-
-             this.animationPlayer.setAnimation(new RootObject());
-
-             Search search = new Search();
-             search.types = config.infinityModeSearchTypes;
-
-             Debug.Log("[Infinity-mode] STABLE: Search for solution: " + string.Join(", ", search.types));
-             searchSolution(search);
-
-        } else {
-
-            Debug.Log("[Infinity-mode] " + change.previous + " -> " + change.current + ": Do nothing");
-        }
-
-        stabilizationStatusInfoText.SetText("" + change.current);
-    }
 
 	private static Vector3 convert(Vec2 vector, float z) {
 		return new Vector3((float)vector.x, (float)vector.y, z);

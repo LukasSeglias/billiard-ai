@@ -13,14 +13,14 @@ namespace billiard::physics {
 
     const float gravitationalAcceleration = 9.8 * 1000; // mm/s^2
     const float frictionCoefficient = 0.0142435;
-    const float slideFrictionCoefficient = 12.0f * frictionCoefficient; // TODO: find a good number!
-    const float energyLossByBall = 0.05; // TODO: find a good number!
+    const float slideFrictionCoefficient = 12.0f * frictionCoefficient;
+    const float energyLossByBall = 0.05;
     const float energyLossFactorBall = 1 - energyLossByBall;
     const float energyAdditionFactorBall = 1 / energyLossFactorBall;
-    const float topspinConstant = 100.0f; // TODO: find a good number!
-    const float topspinRest = 0.25f; // TODO: find a good number!
+    const float topspinConstant = 100.0f;
+    const float topspinRest = 0.25f;
     const bool isTopspinConstant = false;
-    const float energyLossByRail = 0.38f; // https://www.researchgate.net/publication/245388279_A_theoretical_analysis_of_billiard_ball_dynamics_under_cushion_impacts // TODO: Source immernoch aktuell?
+    const float energyLossByRail = 0.38f;
     const float energyLossFactorRail = 1 - energyLossByRail;
     const float energyAdditionFactorRail = 1 / energyLossFactorRail;
 

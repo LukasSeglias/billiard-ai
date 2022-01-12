@@ -4,8 +4,6 @@
 #include <mutex>
 #include <sstream>
 
-#define BILLIARD_DEBUG 1 // TODO: Remove
-
 #ifndef BILLIARD_DEBUG
     #ifdef NDEBUG
         #undef BILLIARD_DEBUG

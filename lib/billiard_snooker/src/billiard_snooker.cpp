@@ -33,15 +33,6 @@
     #endif
 #endif
 
-// TODO: remove this
-#undef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
-//#define BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL 1
-#undef BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT
-//#define BILLIARD_SNOOKER_CLASSIFICATION_DEBUG_OUTPUT 1
-
-// TODO: remove this
-//#define BILLIARD_SNOOKER_TIMING 1
-
 #ifndef BILLIARD_SNOOKER_TIMING
     #ifdef NDEBUG
         #undef BILLIARD_SNOOKER_TIMING
@@ -328,10 +319,6 @@ namespace billiard::snooker {
             cv::Mat valueMask;
             cv::inRange(value, config.blackValueFilter.x, config.blackValueFilter.y, valueMask);
 
-            // TODO: remove?
-            cv::Mat valueMaskAndedWithTableMask;
-            cv::bitwise_and(valueMask, config.innerTableMask, valueMaskAndedWithTableMask);
-
             cv::Mat valueMaskAndedWithRailMask;
             cv::bitwise_and(valueMask, config.railMask, valueMaskAndedWithRailMask);
 
@@ -345,6 +332,8 @@ namespace billiard::snooker {
 
 #ifdef BILLIARD_SNOOKER_DETECTION_DEBUG_VISUAL
             cv::imshow("black - valueMask", valueMask);
+            cv::Mat valueMaskAndedWithTableMask;
+            cv::bitwise_and(valueMask, config.innerTableMask, valueMaskAndedWithTableMask);
             cv::imshow("black - valueMask anded with innerTableMask", valueMaskAndedWithTableMask);
             cv::imshow("black - valueMask anded with railMask", valueMaskAndedWithRailMask);
             cv::imshow("black - closedValueMask", closedValueMask);
@@ -699,7 +688,6 @@ namespace billiard::snooker {
             label = potentialLabels[0];
         } else {
 
-            // TODO: max distance to a cluster, as to classify as UNKNOWN if too far away
             float minDistanceSquared = 100000.0f;
             for (auto& cluster : classificationConfig.clusters) {
 

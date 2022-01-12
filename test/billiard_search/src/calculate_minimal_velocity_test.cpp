@@ -11,7 +11,7 @@ using billiard::search::PhysicalEventType;
 std::shared_ptr<billiard::search::SearchState> getState() {
 
     billiard::search::Configuration config;
-    config._table.minimalPocketVelocity = 10; // TODO: find a better number
+    config._table.minimalPocketVelocity = 10;
     config._ball._radius = 26.15;
     config._ball._diameter = 52.3;
 

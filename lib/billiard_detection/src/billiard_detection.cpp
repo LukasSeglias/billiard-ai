@@ -18,14 +18,6 @@
     #endif
 #endif
 
-// TODO: remove this
-//#define BILLIARD_DETECTION_DEBUG_VISUAL 1
-#undef BILLIARD_DETECTION_DEBUG_VISUAL
-//#define BILLIARD_DETECTION_DEBUG_PRINT 1
-#undef BILLIARD_DETECTION_DEBUG_PRINT
-//#define BILLIARD_TRACKING_DEBUG_PRINT 1
-#undef BILLIARD_TRACKING_DEBUG_PRINT
-
 #ifdef BILLIARD_DETECTION_DEBUG_PRINT
 #define DETECTION_DEBUG(x) DEBUG(x)
 #else
@@ -1087,7 +1079,6 @@ namespace billiard::detection {
 
         std::vector<cv::Point2d> railRect = getRailRect(table.innerTableLength, table.innerTableWidth);
         std::vector<Pocket> pockets = getPockets(table.innerTableLength, table.innerTableWidth);
-//        std::vector<Pocket> pockets = table.pockets; // TODO: remove this or line above
 
         // Build inner table mask
         cv::Mat railMask(cv::Size(original.cols, original.rows), CV_8UC1, cv::Scalar(0));
@@ -1167,7 +1158,7 @@ namespace billiard::detection {
 
             for (int i = 0; i < pockets.size(); i++) {
                 auto& pocket = pockets[i];
-                int pocketPixelRadius = pocket.radius * (pixelsPerMillimeter + 0.1); // TODO: 0.1 because detection
+                int pocketPixelRadius = pocket.radius * (pixelsPerMillimeter + 0.1);
                 cv::circle(pocketMask, imagePoints[i], pocketPixelRadius, cv::Scalar{255},
                            cv::LineTypes::FILLED);
                 cv::circle(innerTableMask, imagePoints[i], pocketPixelRadius, cv::Scalar{0},

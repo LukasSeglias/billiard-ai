@@ -4,11 +4,9 @@
 
 #ifdef BILLIARD_CAPTURE_WITH_EBUS_SDK
 void configureStream(PvGenParameterArray* deviceParams) {
-    // TODO: ist das notwendig?
     PvGenBoolean* doubleRateEnable = dynamic_cast<PvGenBoolean*>(deviceParams->Get("DoubleRate_Enable"));
     doubleRateEnable->SetValue(false);
 
-    // TODO: hier setzen oder config auf Gerät ändern?
     PvGenInteger* width = dynamic_cast<PvGenInteger*>(deviceParams->Get("Width"));
     width->SetValue(2048);
 
@@ -39,7 +37,6 @@ bool billiard::capture::ImageStream::start() {
         startCommand->Execute();
 
         opened = true;
-        // TODO: should we handle errors in the calls above?
         return true;
     }
     return true;
@@ -58,7 +55,6 @@ void pvImageToMat(PvImage* pvImage, cv::Mat& image) {
 bool billiard::capture::ImageStream::read(cv::Mat& image) {
 
     if (!opened) {
-        // TODO: should we implicitly start instead?
         return false;
     }
 
