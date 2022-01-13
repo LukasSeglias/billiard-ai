@@ -7,7 +7,7 @@ Bekannt dabei ist die Zeit sowie die Distanz, welche über die Auswahl einzelner
 Die Zeit ergibt sich durch den Abstand zweier Frames.
 Bei einem Video mit 30 FPS liegt der Fehler bei $\frac{1}{30} t [s] = 0.03 [s]$.
 Die Distanz wird über zwei selektierte Pixelpositionen auf denselben Frames zur Berechnung der Zeit bestimmt.
-Diese Positionen werden zu Modellkoordinaten $P_0, P_1$ übersetzt\cite{project2:pixel_to_model_coordinates},
+Diese Positionen werden zu Modellkoordinaten $P_0, P_1$ übersetzt \cite{project2:pixel_to_model_coordinates},
 um die Distanz in der Einheit $[mm]$ anzugeben.
 Anschliessend kann über die Formel \ref{eq:simvsReal:initialVelocity} die Anfangsgeschwindigkeit berechnet
 werden, wobei auch die Gleitreibung $\mu_g$ sowie die Rollreibung $\mu_r$ bekannt sein müssen\footnote{Die Herleitung
@@ -29,7 +29,7 @@ welcher über die beiden Punkte zur Bestimmung der Distanz gegeben ist:
 
 Im nächsten Schritt kann die Simulation mit der errechneten Startgeschwindigkeit des Spielballs ausgeführt werden.
 Daraus resultiert eine Abfolge von Ereignissen, die in der Simulation gefunden wurden.
-Diese werden mit manuell erstellten Ereignissabfolgen abgeglichen, bei welchem alle Positionen der Kugeln und Ereigniszeitpunkte
+Diese werden mit manuell erstellten Ereignisabfolgen abgeglichen, bei welchem alle Positionen der Kugeln und Ereigniszeitpunkte
 anhand der Videoaufnahmen bestimmt wurden.
 Die Summe der Differenzen zwischen den erwarteten Zeiten und Positionen bilden den Gesamtfehler.
 
@@ -44,7 +44,7 @@ dem Resultat der Simulation verglichen.
 Diese Stösse beinhalten keine Bandeninteraktionen, sondern lediglich die Interaktionen zwischen Kugeln.
 
 \subsubsection{Stoss 1}
-Im Ersten Stoss wird eine rote Kugel auf direktem Wege mit hoher Geschwindigkeit in das zentrale untere Loch gespielt.
+Im ersten Stoss wird eine rote Kugel auf direktem Wege mit hoher Geschwindigkeit in das zentrale untere Loch gespielt.
 Wegen der hohen Geschwindigkeit gleitet die weisse Kugel höchstwahrscheinlich noch bei der Kollision mit der roten Kugel.
 In Abbildung \ref{fig:simulation_vs_reality_1_0008_0011} sind einige Bilder aus dem aufgezeichneten Video und ein Bild
 der Simulation aufgeführt.
@@ -99,12 +99,12 @@ gewisser Fehler enthalten ist, der den Vergleich schwierig macht.
     \begin{tabular}{ lrrr }
         \rowcolor{\seccolor!50}
         Kennzahl & Wert gemäss Video & Wert gemäss Simulation & Differenz \\
-        Start: Position weisse Kugel & (8.38658, -159.215) & - & -\\
-        Start: Position rote Kugel & (4.24078, -336.939) & - & -\\
-        Kollision: Position weisse Kugel & (7.84763, -284.44) & (7.84627, -284.756) & 0.315677mm\\
-        Einlochen: Zeitpunkt rote Kugel wird eingelocht & 0.133333s & 0.172932s & +0.039598s\\
-        Stillstand: Position weisse Kugel & (9.53746, -284.455) & (21.7098, -285.714) & 12.237230mm\\
-        Stillstand: Zeitpunkt & 0.2s & 0.530894s & +0.330895\\
+        Start: Position weisse Kugel & (8.387, -159.215) & - & -\\
+        Start: Position rote Kugel & (4.241, -336.939) & - & -\\
+        Kollision: Position weisse Kugel & (7.848, -284.44) & (7.846, -284.756) & 0.316mm\\
+        Einlochen: Zeitpunkt rote Kugel wird eingelocht & 0.134s & 0.173s & +0.04s\\
+        Stillstand: Position weisse Kugel & (9.537, -284.455) & (21.71, -285.714) & 12.237mm\\
+        Stillstand: Zeitpunkt & 0.2s & 0.531s & +0.331\\
     \end{tabular}
     \caption{Vergleich Video und Simulation für Stoss 1}
     \label{tab:simulation_vs_reality_1_0008_0011}
@@ -158,12 +158,12 @@ Das kann auf die Reibungskoeffizienten, den Energieverlust bei Kugelkollision od
     \begin{tabular}{ lrrr }
         \rowcolor{\seccolor!50}
         Kennzahl & Wert gemäss Video & Wert gemäss Simulation & Differenz \\
-        Start: Position weisse Kugel & (9.99188, -157.766) & - & -\\
-        Start: Position rote Kugel & (5.8054, -342.29) & - & -\\
-        Kollision: Position weisse Kugel & (7.72594, -289.771) & (7.72172, -290.017) & 0.245703mm\\
-        Einlochen: Zeitpunkt rote Kugel wird eingelocht & 0.7s & 0.687573s & -0.012427s\\
-        Stillstand: Position weisse Kugel & (-2.68527, -350.685) & (9.62618, -321.478) & 31.695890mm\\
-        Stillstand: Zeitpunkt & 1.3s & 0.972639s & -0.327361s\\
+        Start: Position weisse Kugel & (9.992, -157.766) & - & -\\
+        Start: Position rote Kugel & (5.805, -342.29) & - & -\\
+        Kollision: Position weisse Kugel & (7.726, -289.771) & (7.722, -290.017) & 0.246mm\\
+        Einlochen: Zeitpunkt rote Kugel wird eingelocht & 0.7s & 0.688s & -0.012s\\
+        Stillstand: Position weisse Kugel & (-2.685, -350.685) & (9.626, -321.478) & 31.696mm\\
+        Stillstand: Zeitpunkt & 1.3s & 0.973s & -0.327s\\
     \end{tabular}
     \caption{Vergleich Video und Simulation für Stoss 2}
     \label{tab:simulation_vs_reality_1_0028_0032}
@@ -220,13 +220,13 @@ Der Positionsfehler beträgt beim Stillstand ca. 2cm und die Richtung unterschei
         Kennzahl & Wert gemäss Video & Wert gemäss Simulation & Differenz \\
         Start: Position weisse Kugel & (504.88, 77.68) & - & -\\
         Start: Position rote Kugel & (630.137, -152.789) & - & -\\
-        Kollision: Position weisse Kugel & (585.423, -114.962) & (588.18, -121.556) & 7.146715mm\\
-        Rollen nach Kollision: Richtung weisse Kugel & (-0.288612, -0.957446) & (-0.309209, -0.950994) & 1.236697$^{\circ}$ \\
-        Rollen nach Kollision: Richtung rote Kugel & (0.715309, -0.698809) & (0.802148, -0.597126) & 7.667131$^{\circ}$ \\
-        Stillstand: Position weisse Kugel & (545.906, -246.056) & (554.434, -225.344) & 22.398825mm\\
-        Stillstand: Zeitpunkt weisse Kugel & 2.233333s & 1.909805s & -0.323528s\\
-        Stillstand: Position rote Kugel & (709.469, -230.291) & (709.088, -211.561) & 18.734226mm\\
-        Stillstand: Zeitpunkt rote Kugel & 1.933333s & 1.840109s & -0.093224s\\
+        Kollision: Position weisse Kugel & (585.423, -114.962) & (588.18, -121.556) & 7.147mm\\
+        Rollen nach Kollision: Richtung weisse Kugel & (-0.289, -0.957) & (-0.309, -0.951) & 1.237$^{\circ}$ \\
+        Rollen nach Kollision: Richtung rote Kugel & (0.715, -0.699) & (0.802, -0.597) & 7.667$^{\circ}$ \\
+        Stillstand: Position weisse Kugel & (545.906, -246.056) & (554.434, -225.344) & 22.399mm\\
+        Stillstand: Zeitpunkt weisse Kugel & 2.233s & 1.91s & -0.324s\\
+        Stillstand: Position rote Kugel & (709.469, -230.291) & (709.088, -211.561) & 18.734mm\\
+        Stillstand: Zeitpunkt rote Kugel & 1.933s & 1.840s & -0.093s\\
     \end{tabular}
     \caption{Vergleich Video und Simulation für Stoss 3}
     \label{tab:video_12_0205_0208}
@@ -282,10 +282,10 @@ ein Positionsfehler beim Stillstand der weissen Kugel von 2,6cm.
         Kennzahl & Wert gemäss Video & Wert gemäss Simulation & Differenz \\
         Start: Position weisse Kugel & (631.828, -149.426) & - & -\\
         Start: Position rote Kugel & (771.566, -295.777) & - & -\\
-        Kollision: Position weisse Kugel & (735.251, -256.098) & (736.286, -257.165) & 1.486228mm\\
-        Einlochen: Zeitpunkt rote Kugel wird eingelocht & 0.8s & 0.765598s & -0.034402s\\
-        Stillstand: Position weisse Kugel & (792.353, -323.378) & (786.198, -297.818) & 26.290272mm\\
-        Stillstand: Zeitpunkt & 1.2s & 1.196382s & -0.003618s\\
+        Kollision: Position weisse Kugel & (735.251, -256.098) & (736.286, -257.165) & 1.486mm\\
+        Einlochen: Zeitpunkt rote Kugel wird eingelocht & 0.8s & 0.766s & -0.034s\\
+        Stillstand: Position weisse Kugel & (792.353, -323.378) & (786.198, -297.818) & 26.290mm\\
+        Stillstand: Zeitpunkt & 1.2s & 1.196s & -0.004s\\
     \end{tabular}
     \caption{Vergleich Video und Simulation für Stoss 4}
     \label{tab:video_13_0030_0034}
@@ -699,17 +699,17 @@ Einfluss haben kann, dieser aber nicht so stark ins Gewicht fällt wie das grund
 der Bande.
 
 Dass die Banden nicht in Ordnung sind, zeigt ein weiterer durchgeführter Test. Demnach muss eine Kugel insgesamt vier Mal über
-die Tischlänge oder fünf Mal über die Tischbreite laufen, wenn sie stark angespielt wird\cite{sport64:bandengummi}.
+die Tischlänge oder fünf Mal über die Tischbreite laufen, wenn sie stark angespielt wird \cite{sport64:bandengummi}.
 Auf dem verwendeten Tisch schafft die Kugel nur deren 2.5, respektive 3 Läufe.
 
 \newpage
 \subsubsection{Diskussion}
 Nach dem Autor des Buches \glqq The illustrated principles of pool and billiards\grqq{} gibt es diverse Einflüsse,
 die den Ausfallswinkel der Kugel nach einer Bandenkollision beeinträchtigen. Laut ihm ist daher eine mittlere
-Geschwindigkeit zu bevorzugen, welche diese unerwünschten Effekte minimal hält\cite{book:the_ilustrated_principles_of_pool_and_billiards}.
+Geschwindigkeit zu bevorzugen, welche diese unerwünschten Effekte minimal hält \cite{book:the_ilustrated_principles_of_pool_and_billiards}.
 Leider findet sich keine Aussage, wie stark ein schwacher, mittlerer oder starker Stoss bemessen ist.
 
-Demgegenüber steht die Aussage der Autoren des Papers \glqq A theoretical analysis of billiard ball dynamics under cushion impacts\grqq\cite{10.1243/09544062JMES1964}, welche ebenfalls
+Demgegenüber steht die Aussage der Autoren des Papers \glqq A theoretical analysis of billiard ball dynamics under cushion impacts\grqq \cite{10.1243/09544062JMES1964}, welche ebenfalls
 gewisse Abweichungen festgestellt haben, jedoch im Schnitt durchaus einen linearen Zusammenhang feststellen konnten.
 
 Einen Einfluss auf diese Untersuchungen hat der verwendete Billardtisch und die Kugeln.
@@ -727,7 +727,7 @@ Ein entsprechendes Statement ist auch aus einer Bewertung aus dem Onlineshop zu 
     \begin{center}
         \includegraphics[width=0.3\linewidth]{../common/04_results/resources/simulation/00_bewertung_billardtisch.png}
     \end{center}
-    \caption{Bewertung zu Billardtisch\cite{gonser:billardtisch}}
+    \caption{Bewertung zu Billardtisch \cite{gonser:billardtisch}}
     \label{fig:bewertung_billardtisch}
 \end{figure}
 

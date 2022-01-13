@@ -1,12 +1,14 @@
+\clearpage
 \section{Berechnungsprozess}
 Die Berechnung eines optimalen Stosses wird aufgrund der vielen Möglichkeiten sehr zeitintensiv, weswegen
 die expandierten Teilschritte parallel gerechnet werden.
+Diese Parallelisierung wird mithilfe von Threads bewerkstelligt, um Berechnungsprozesse effizienter auszuführen.
 
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=0.8\linewidth]{../common/03_billiard_ai/resources/14_berechnungsprozess.png}
     \end{center}
-    \caption{Berechnungsprozess}
+    \caption{Berechnungsprozess: Die Suche und Simulation verschiedener Stosskandidaten wird parallelisiert ausgeführt.}
     \label{fig:berechnungsprozess}
 \end{figure}
 
@@ -17,11 +19,12 @@ selbst nicht über dieses Wissen verfügen.
 Der Pool von Berechnungsprozessen wird vom Prozessmanager verwaltet und dieser ist die zentrale Ansprechperson der Applikation.
 
 Datenaustausche sind über gefärbte Kreise repräsentiert. Handelt es sich um einen asynchronen
-Datenaustausch, dann ist der entsprechende Kreis heller eingefärbt und die Verbindungslinie ist durch einen nicht
-ausgefüllten Punkt gekennzeichnet. Es werden die Farben Rot den zu bearbeitenden Daten,
-Gelb den Konfigurationsdaten und Grün den Resultaten zugeordnet. Signale sind durch ein ausgefülltes Quadrat an der
-Verbindungslinie gekennzeichnet. Das Signal oder die Daten sind jeweils beim Empfänger angegeben. Repetitive Aufgaben
-sind durch ein hinterlegtes oranges Rechteck markiert.
+Datenaustausch, dann ist die Verbindungslinie durch einen nicht ausgefüllten Punkt gekennzeichnet.
+Es werden die Farben Rot den zu bearbeitenden Daten,
+Gelb den Konfigurationsdaten und Grün den Resultaten zugeordnet.
+Signale für die Koordination der Threads sind durch ein ausgefülltes Quadrat an der Verbindungslinie gekennzeichnet.
+Das Signal oder die Daten sind jeweils beim Empfänger angegeben.
+Repetitive Aufgaben sind durch ein hinterlegtes oranges Rechteck markiert.
 
 Bei der Erstellung des Prozessmanagers werden alle Konfigurationen mitgeliefert. Der Prozessmanager erzeugt während seiner
 Instanziierung die Prozesse, welche ebenfalls direkt konfiguriert werden. Die Prozesse laufen nun im Hintergrund und
@@ -46,7 +49,13 @@ $n$-Kandidaten. Dadurch wird sichergestellt, dass immer an den vielversprechends
     \begin{center}
         \includegraphics[width=0.8\linewidth]{../common/03_billiard_ai/resources/20_berechnungsprozess_verteilung.png}
     \end{center}
-    \caption{Berechnungsprozessverteilung}
+    \caption{Berechnungsprozessverteilung. Die Blöcke 1 bis 7 stellen Arbeitspakete dar, wobei die Zahl deren Kosten oder Priorität darstellen.
+    Abgebildet ist die optimale Verteilung der Arbeitspakete auf die Berechnungsprozesse, bei der die prioritärsten Arbeitspakete zuoberst stehen.
+    Falls mehr Anfragen als Arbeitspakete existieren, bleiben diese Anfragen erhalten und werden im nächsten Synchronisationszyklus beantwortet.
+    Wenn beispielsweise nur zwei offene Arbeitspakete existieren, würde Paket $1$ auf den Berechnungsprozess $1$
+    und Paket $2$ auf den Berechnungsprozess $2$ verteilt werden.
+    Die Anfrage des Berechnungsprozesses $3$ bliebe unbeantwortet.
+    }
     \label{fig:berechnungsprozess_verteilung}
 \end{figure}
 
@@ -57,10 +66,8 @@ läuft, wie es noch offene Arbeitspakete hat. In jedem Schritt der Schleife wird
 Anfrage hinzugefügt. Am Ende der Schleife wird eine Index-Variable hochgezählt. Sollte diese die Anzahl der offenen Anfragen
 erreichen, beginnt sie wieder bei 0. Dies ist z.B. in Abbildung \ref{fig:berechnungsprozess_verteilung} beim Wechsel von
 Arbeitspakte $3$ zu $4$ ersichtlich. Sobald keine offenen Arbeitspakete mehr existieren, werden sämtliche Anfragen
-beantwortet, zu welchen Antworten erstellt werden konnten. Wenn z.B. mehr Anfragen als Arbeitspakete existieren, bleiben
-diese erhalten und werden im nächsten Synchronisationszyklus beantwortet\footnote{Man stelle sich bei der Abbildung
-\ref{fig:berechnungsprozess_verteilung} nur zwei offene Arbeitspakete vor. Demnach würde Paket $1$ auf den Berechnungsprozess
-    $1$ und Paket $2$ auf den Berechnungsprozess $2$ verteilt werden. Die Anfrage des Berechnungsprozesses $3$ bliebe offen.}.
+beantwortet, zu welchen Antworten erstellt werden konnten.
+
 \begin{algorithm}[H]
     \DontPrintSemicolon
     \SetKwFunction{distribute}{distribute}
@@ -99,7 +106,7 @@ abgelaufen ist. In dem Fall liefert der Berechnungsprozess seine besten weiterzu
 dem Prozessmanager. Er wird demnach für eine Weile an weniger erfolgversprechenden Resultaten weiterarbeiten. In einem
 weiteren Schritt wird geprüft, ob eine Datenanfrage bereits beantwortet wurde. Ist dies der Fall, so werden die
 Daten den zu bearbeitenden Daten des Berechnungsprozesses hinzugefügt. Zuletzt erfolgt der Expansionsschritt, wobei der
-erfolgversprechendste Kandidat expandiert wird.
+erfolgversprechendste Kandidat expandiert wird. \\
 Der Algorithmus \ref{alg:expand_berechnung} zeigt, wie dies in etwa funktionieren kann.
 Als Eingabe dient eine priorisierte Queue von offenen Arbeitspaketen sowie die Implementation der \glqq Expand-Funktion\grqq.
 Wenn es offene Arbeitspakete gibt, dann wird das Beste genommen und über die Implementation der

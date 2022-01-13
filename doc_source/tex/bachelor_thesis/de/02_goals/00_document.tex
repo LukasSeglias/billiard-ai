@@ -1,31 +1,35 @@
 \chapter{Ziele}\label{kap:ziele}
 Es wird ein Billardassistent entwickelt, welcher aufgrund des aktuellen Spielstands einen Stoss berechnet, der einerseits
 einfach durchzuführen ist und andererseits eine optimale Ausgangslage für den nächsten Stoss bieten soll. Es gab bereits
-einige Vorarbeiten\cite{project2:ziele}, wie aus dem Kapitel \ref{kap:vorarbeiten} zu entnehmen ist.
+einige Vorarbeiten \cite{project2:ziele}, wie aus dem Kapitel \ref{kap:vorarbeiten} zu entnehmen ist.
 
-Die Ziele für diese Arbeit sind nun die Klassifikation der Kugeln,
-die Entwicklung einer effizienten gerichteten Suche nach einem Stoss, die darauffolgende,
-möglichst realitätsnahe Simulation sowie einige Verbesserungen bei der Darstellung.
-
-Es werden zwei verschiedene Spielmodi angestrebt.
-Beim ersten Modus kann der Spieler eine Kugel oder einen Kugeltypen (Farbe) wählen, nach dem gesucht wird.
-Daraufhin werden ihm alle gefundenen Resultate in geordneter Reihenfolge nach Schwierigkeit dargestellt.
-Die Suche kann über mehrere Stösse gehen und dabei werden auch die Regeln des Spiels beachtet.
-Dies ist wichtig, um die optimale Platzierung der weissen Kugel zu eruieren.
-Nach einem Stoss kann der Spieler wiederum eine Wahl treffen.
-Der zweite Modus ist der sogenannte \glqq Infinity-Mode\grqq.
-Die Idee dahinter ist die vereinfachte Einführung des Spielers.
-So soll das System bei stabilem Zustand automatisch eine Suche nach allen Kugeln starten und das beste Ergebnis anzeigen.
-Sobald der Spieler den Stoss durchgeführt hat, wird das System wiederum automatisch eine Suche starten.
-Dadurch kann ein Spieler optimal lernen, welche Stösse einfach sind und wo eine Kugel mit welcher Geschwindigkeit
-getroffen werden muss, um das gewünschte Ergebnis zu erzielen.
+Die Ziele für diese Arbeit sind:
+\begin{itemize}
+    \item \textbf{Klassifikation} der Kugeln
+    \item Eine effiziente gerichtete \textbf{Suche nach Stössen}
+    \item Eine möglichst \textbf{realitätsnahe Simulation}
+    \item Einige \textbf{Verbesserungen in der Darstellung}
+    \item \textbf{Zwei Spielmodi}: \leavevmode
+    \begin{itemize}
+        \item \textbf{On-Demand-Modus}:
+        Der Spieler kann eine Kugel oder einen Kugeltypen (Farbe) wählen, nach dem gesucht wird.
+        Daraufhin werden ihm alle gefundenen Resultate in geordneter Reihenfolge nach Schwierigkeit dargestellt.
+        Die Suche kann über mehrere Stösse gehen und dabei werden auch die Regeln des Spiels beachtet.
+        Dies ist wichtig, um die optimale Platzierung der weissen Kugel zu eruieren.
+        Nach einem Stoss kann der Spieler wiederum eine Wahl treffen.
+        \item \textbf{Infinity-Modus}:
+        Die Idee dahinter ist die vereinfachte Einführung des Spielers.
+        So soll das System bei stabilem Zustand automatisch eine Suche nach allen Kugeln starten und das beste Ergebnis anzeigen.
+        Sobald der Spieler den Stoss durchgeführt hat, wird das System wiederum automatisch eine Suche starten.
+        Dadurch kann ein Spieler optimal lernen, welche Stösse einfach sind und wo eine Kugel mit welcher Geschwindigkeit
+        getroffen werden muss, um das gewünschte Ergebnis zu erzielen.
+    \end{itemize}
+\end{itemize}
 
 Es ist weiterhin anzumerken, dass es in erster Linie um Snooker-Billard geht. Dies hat mehrere Gründe. Einerseits soll
 in dieser Arbeit nicht die Klassifikation der Kugeln im Zentrum stehen, sondern die Suche nach einem optimalen Stoss.
-Es wird angenommen, dass dies mit Snooker-Kugeln einfacher ist als mit Pool-Billard-Kugeln. Andererseits wird das
-Projekt zusammen mit einem Unternehmen durchgeführt, welches eventuell auch einen kommerziellen Ansatz verfolgen
-will. Da grössere Turniere wie Weltmeisterschaften in Snooker ausgetragen werden, kam schnell der Wunsch auf, das
-Hauptaugenmerk darauf zu legen. Nichtsdestotrotz wird die Anwendung so abstrakt gehalten, dass sie mit wenig Aufwand
+Es wird angenommen, dass dies mit Snooker-Kugeln einfacher ist als mit Pool-Billard-Kugeln.
+Nichtsdestotrotz wird die Anwendung so abstrakt gehalten, dass sie mit wenig Aufwand
 auf Pool-Billard portiert werden könnte. Dies bildet jedoch kein Ziel der Bachelor-Thesis.
 
 \newpage
@@ -177,3 +181,5 @@ Das Ziel ist der Abschluss aller Arbeiten zu denen auch Plakat, Book-Eintrag ode
     \item[Finalisieren der Arbeiten - T-15]\hfill \\
     Die Dokumentation wie auch der Code sind abgeschlossen.
 \end{description}
+
+\input{02_goals/08_risiko_analyse}

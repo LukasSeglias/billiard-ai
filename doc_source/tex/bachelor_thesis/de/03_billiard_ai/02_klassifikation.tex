@@ -6,7 +6,7 @@ Im Snooker gibt es die Farben Weiss, Rot, Gelb, Pink, Grün, Blau, Braun und Sch
 Deshalb muss jede detektierte Kugel anhand eines Bildausschnitts in eine dieser Klassen eingeteilt werden.
 Der Ablauf der Klassifikation der Snooker-Kugeln wird nachfolgend beschrieben.
 
-Zunächst liegt für jede Kugel deren Position in Pixel- sowie Modell-Koordinaten vor und der Radius der Kugeln ist in Pixel bekannt\cite{project2:pixel_to_model_coordinates}.
+Zunächst liegt für jede Kugel deren Position in Pixel- sowie Modell-Koordinaten vor und der Radius der Kugeln ist in Pixel bekannt \cite{project2:pixel_to_model_coordinates}.
 Aufgrund dieser Informationen wird von jeder detektierten Kugel ein Bildausschnitt des RGB-Bildes rund um die Kugelposition definiert,
 der für die Klassifikation verwendet werden kann.
 Der Bildausschnitt ist quadratisch, wodurch in den Ecken des Bildes noch das Grün des Billardtisches ersichtlich ist.
@@ -34,7 +34,7 @@ und den grünen Tisch so zu entfernen, siehe Abbildung \ref{fig:klassifikation_r
         }
         \label{fig:klassifikation_radius_reduced}
     \end{subfigure}
-    \caption{Auswahl aus den Trainingsbildern}
+    \caption{Auswahl aus den Trainingsbildern: Pro Klasse/Farbe sind zwei Bilder aufgeführt.}
     \label{fig:klassifikation_radius}
 \end{figure}
 
@@ -46,112 +46,112 @@ In Abbildung \ref{fig:classification_trainingdata_examples} sind zwei Trainingsb
 
 \begin{figure}[h!]
     \centering
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/BLACK_1.png}
         \caption{Schwarz 1}
         \label{fig:classification_black_ball_1}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/BLACK_2.png}
         \caption{Schwarz 2}
         \label{fig:classification_black_ball_2}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/WHITE_1.png}
         \caption{Weiss 1}
         \label{fig:classification_white_ball_1}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/WHITE_2.png}
         \caption{Weiss 2}
         \label{fig:classification_white_ball_2}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/BLUE_1.png}
         \caption{Blau 1}
         \label{fig:classification_blue_ball_1}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/BLUE_2.png}
         \caption{Blau 2}
         \label{fig:classification_blue_ball_2}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/GREEN_1.png}
         \caption{Grün 1}
         \label{fig:classification_green_ball_1}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/GREEN_2.png}
         \caption{Grün 2}
         \label{fig:classification_green_ball_2}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/YELLOW_1.png}
         \caption{Gelb 1}
         \label{fig:classification_yellow_ball_1}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/YELLOW_2.png}
         \caption{Gelb 2}
         \label{fig:classification_yellow_ball_2}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/RED_1.png}
         \caption{Rot 1}
         \label{fig:classification_red_ball_1}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/RED_2.png}
         \caption{Rot 2}
         \label{fig:classification_red_ball_2}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/BROWN_1.png}
         \caption{Braun 1}
         \label{fig:classification_brown_ball_1}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/BROWN_2.png}
         \caption{Braun 2}
         \label{fig:classification_brown_ball_2}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \centering
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/PINK_1.png}
         \caption{Pink 1}
         \label{fig:classification_pink_ball_1}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.15\textwidth}
+    \begin{subfigure}[t]{0.12\textwidth}
         \raggedright
         \includegraphics[width=1.0\linewidth]{../common/03_billiard_ai/resources/classification/PINK_2.png}
         \caption{Pink 2}
@@ -161,7 +161,7 @@ In Abbildung \ref{fig:classification_trainingdata_examples} sind zwei Trainingsb
     \label{fig:classification_trainingdata_examples}
 \end{figure}
 
-Eine Klassifikation dieser Kugelfarben findet sinnvollerweise nicht im RGB-Farbraum, sondern im HSV-Farbraum\cite{wiki:hsv_color_space} statt.
+Eine Klassifikation dieser Kugelfarben findet sinnvollerweise nicht im RGB-Farbraum, sondern im HSV-Farbraum \cite{wiki:hsv_color_space} statt.
 Dadurch gehören beispielsweise die roten, pinken und braunen Kugeln in den roten Bereich des Hue-Kanals.
 Die weisse und die schwarze Kugel sind am ehesten im Value-Kanal klassifizierbar.
 
@@ -209,8 +209,7 @@ Der Cluster mit der kleinsten Distanz gibt dem Bildausschnitt seine Klasse.
 Sofern ein Bildausschnitt mehrere potenzielle Klassen in der Prüfung durch Wertebereiche erhalten hat, wird die Distanz
 zwischen dessen HSV-Position und dem Cluster-Zentrum jeder der potenziellen Klassen verglichen.
 Die Klasse mit der kleinsten Distanz zur HSV-Position des Bildausschnitts wird angenommen.
-Demnach ist diese Klassifikation in der Idee ein \emph{k-nearest neighbors} Algorithmus\cite{wiki:k_nearest_neighbors},
-wobei keine Trainingsdatensätze als Nachbaren verwendet werden, sondern die bereits gefundenen Cluster-Zentren.
+Demnach ist diese Klassifikation in der Idee ein \emph{Minimal Distance Classifier} \cite{seos:minimum_distance_classifier}.
 
 Sofern ein Bildausschnitt keine potenziellen Klassen erhalten hat, wird diesem die Klasse \emph{unbekannt} zugewiesen.
 

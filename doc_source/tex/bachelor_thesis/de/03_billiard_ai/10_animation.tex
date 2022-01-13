@@ -33,17 +33,20 @@ Jede Eingabe- wie auch Ausgabeschicht bildet so im Animationsmodell ein Keyframe
 nicht wie bei einer nach Lehrbuch aufgebauten Keyframe-Animation mit Fortlaufen der Zeit die Keyframes durchiteriert
 \footnote{Durchiterieren bedeutet, dass wenn ein Keyframe vorher das Ende markierte, wie es das Keyframe 2 in Abbildung \ref{fig:keyframe_animation} tut, dann wird
 das Keyframe 2 mit Fortlaufen der Zeit zum Startkeyframe und das nächstfolgende zum neuen Ende.} werden. Die Keyframes, welche aufgrund
-des Simulationsmodells generiert werden, werden paarweise als Fenster betrachtet. Dieses Paarfenster wird bei Erreichen
-des Endkeyframes auf das nächste Paar verschoben. Die Funktionsweise ist in Abbildung \ref{fig:simulationsmodell_keyframe_paare}
-beschrieben. Dort werden die verschiedenen Keyframefensterpaare unterschiedlich rot markiert. Die Zeit schreitet wiederum in
-vertikaler Richtung nach unten voran, der rote Pfeil auf der linken Seite zeigt eine mögliche aktuelle Position innerhalb
-einer Animation. Demnach wäre das zweite Keyframefenster mit den Keyframes 2 und 3 aktiv.
+des Simulationsmodells generiert werden, werden paarweise als Fenster betrachtet.
+Dieses Paarfenster wird bei Erreichen des End-Keyframes auf das nächste Paar verschoben.
+Die Funktionsweise ist in Abbildung \ref{fig:simulationsmodell_keyframe_paare} beschrieben.
+Dort werden die verschiedenen Keyframe-Fensterpaare unterschiedlich rot markiert.
+Die Zeit schreitet wiederum in vertikaler Richtung nach unten voran,
+der rote Pfeil auf der linken Seite zeigt eine mögliche aktuelle Position innerhalb einer Animation.
+Demnach wäre das zweite Keyframe-Fenster mit den Keyframes 2 und 3 aktiv.
 
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=0.6\linewidth]{../common/03_billiard_ai/resources/32_simulation_animationfenster.png}
     \end{center}
-    \caption{Simulationsmodell mit paarweisen Keyframefenstern}
+    \caption{Simulationsmodell mit paarweisen Keyframe-Fenstern.
+    Das Keyframe des Endzustands eines vorherigen Knotens bildet mit dem Keyframe des Startzustands des nächsten Knotens ein Keyframe-Fensterpaar.}
     \label{fig:simulationsmodell_keyframe_paare}
 \end{figure}
 

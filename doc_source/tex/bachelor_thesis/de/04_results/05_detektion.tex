@@ -3,8 +3,9 @@ Im Folgenden wird die Detektion geprüft, indem die Genauigkeit der detektierten
 Robustheit gegenüber Fremdkörpern, wie Armen und Händen des Spielers, im Bild untersucht wird.
 
 \subsection{Detektionsgenauigkeit}
-Zur Überprüfung der Genauigkeit der Kugeldetektion wurden 50 Testbilder von verschiedenen Spielständen aufgenommen
-und die Positionen der Kugeln in Pixelkoordinaten manuell angegeben.
+Zur Überprüfung der Genauigkeit der Kugeldetektion wurden 50 Testbilder von verschiedenen Spielständen
+mit einer kalibrierten Kamera aufgenommen.
+Die Positionen der Kugeln wurden auf den Bildern manuell bestimmt und in Pixelkoordinaten angegeben.
 Die Pixelkoordinaten wurden anschliessend in Modellkoordinaten umgewandelt \cite{project2:pixel_to_model_coordinates}.
 Diese Referenzdaten können mit dem Resultat des Detektionsalgorithmus verglichen werden,
 indem dieser die Kugeln auf denselben Bildern detektiert, auf dieselbe Weise in Modellkoordinaten umwandelt und
@@ -124,7 +125,7 @@ einem Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz und 16GB RAM.
 
 Aufgrund dieses Tests konnte die durchschnittliche Dauer eines Detektionsdurchlaufs berechnet werden.
 Diese beträgt 43.8ms und entspricht damit einer Framerate von 22.8 fps (frames per second).
-Mit der aktuell eingesetzten Kamera, einer Intel RealSense D435\cite{project2:aufbau}, kann mit der verwendeten Auflösung eine Framerate von
+Mit der aktuell eingesetzten Kamera, einer Intel RealSense D435 \cite{project2:aufbau}, kann mit der verwendeten Auflösung eine Framerate von
 30 fps erreicht werden.
 Mit dieser Performanz werden dementsprechend einzelne Frames übersprungen.
 Die erreichte Performanz reicht allerdings aus, um Kugeln bei mittleren Geschwindigkeiten mit einer kleinen Verzögerung
@@ -142,11 +143,11 @@ zu verfolgen, siehe Abbildung \ref{fig:detection_delay}.
     \label{fig:detection_delay}
 \end{figure}
 
-\subsection{Fehldetektionen an Armen und Händen}
+\subsection{Fehldetektionen an Armen und Händen}\label{kap:detektion_arme_haende}
 Ein Problem der Live-Detektion ist, dass wenn ein Spieler mit der Hand in das Bild greift, um u.a. einen Stoss
 durchzuführen, dann werden bei der Hand ebenfalls Kugeln detektiert, siehe Abbildung \ref{fig:detection_hand_problem}.
-Dies ist darauf zurückzuführen, dass die Detektion eine Segmentierung des HSV-Farbraumes durchführt\cite{project2:snooker_detection}
-und anschliessend darauf den Circle Hough transform\cite{wiki:circle_hough} ausführt.
+Dies ist darauf zurückzuführen, dass die Detektion eine Segmentierung des HSV-Farbraumes durchführt \cite{project2:snooker_detection}
+und anschliessend darauf den Circle Hough transform \cite{wiki:circle_hough} ausführt.
 Dadurch werden Kleider oder Haut ebenfalls als Bereiche erkannt, wo eine Kugel sein könnte.
 Der Circle Hough transform findet anschliessend aufgrund von Kanten in diesen Bereichen Kreise,
 welche dann als detektierte Kugeln übernommen werden.

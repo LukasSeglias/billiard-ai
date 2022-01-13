@@ -3,61 +3,71 @@ Aufbauend auf den in dieser Arbeit erzielten Resultaten sind potenzielle weitere
 möglich.
 Nachfolgend werden einige Ideen beschrieben.
 
-Die Suche nach Stössen wird, wie in Kapitel \ref{sec:kandidatensuche} beschrieben, ausgehend von den Löchern gestartet,
-wodurch diese als Rückwärtssuche bezeichnet werden kann.
-Der Raum der möglichen Stösse wird diskretisiert, weil nicht alle Möglichkeiten untersucht werden.
-Eine Vorwärtssuche würde viele Simulationen mit unterschiedlichen Anfangsbedingungen (Stossrichtung \& -stärke)
-erfordern und so eine hohe Anzahl möglicher Stösse erzielen.
-Dabei müsste der unendliche Raum der Anfangsbedingungen sinnvoll diskretisiert werden, um eine solche Suche zu ermöglichen.
-Wegen der Diskretisierung der Rückwärtssuche kann es in gewissen Situationen Stösse geben, welche nicht gefunden werden.
-Durch eine Kombination von Rückwärts- und Vorwärtssuche könnten mehr potenzielle Stösse untersucht werden.
-
-Die in Kapitel \ref{kap:simulation} beschriebene Simulation ist zweidimensional.
-Zur korrekten Behandlung aller Arten von Spin, beispielsweise Sidespin, müsste diese auf eine 3D-Simulation erweitert werden.
-Die Suche könnte weiterhin zweidimensional bleiben, würde dadurch aber auch keine Stösse mit Spin vorschlagen.
-Dabei könnte evtl. die bereits erwähnte Vereinigung mit einer Vorwärtssuche helfen, welche dem Stoss als
-Anfangsbedingung zusätzlich auch Spin geben könnte.
-
-Die Berechnung des Ausfallswinkels nach einer Bandenkollision bei starken Stössen wie in
-Kapitel \ref{kandidatensuche:bandenkollisionstheorie} beschrieben, könnte verbessert werden, indem der Winkel entsprechend
-der Geschwindigkeit angepasst würde. Dazu müsste experimentell ein Wertebereich eruiert werden, für den der Ausfalls- dem
-Einfallswinkel entspricht. Die Simulation kann dann relativ einfach den Ausfallswinkel aufgrund der Geschwindigkeit
-berechnen. Die Suche liesse ein mögliches Resultat nur zu, wenn die Eintrittsgeschwindigkeit der Kugel an die Bande
-in diesem Wertebereich liegt, ansonsten gälte es als erfolgslos, was wiederum dazu führen würde,
-dass weniger Suchresultate, dafür aber qualitativ hochwertigere gefunden würden.
-
-Die Genauigkeit der Klassifikation der Kugelfarben könnte weiter optimiert werden, um bessere Resultate zu erzielen.
-Dies ist bei den über den gesamten Tisch unterschiedlichen Lichtverhältnissen und projizierten Augmentationen herausfordernd.
-
-Der Einsatz einer Hochgeschwindigkeitskamera könnte nachgelagerte Analysen eines Spiels,
-dessen Aufzeichnung und spätere Wiedergabe erlauben.
-Dies würde vermutlich weitere Optimierungen in der Detektion erfordern.
-
-Eine Ausweitung auf andere Arten des Billards, wie etwa Poolbillard, ist durch den Aufbau des Systems möglich, da
-Snooker-spezifische Komponenten von Allgemeingültigen getrennt wurden.
-Es müssten eine Detektion und Klassifikation für Poolbillard-Kugeln und einige Spielregeln implementiert werden.
-
-Des Weiteren könnte es für den Spieler von Nutzen sein, wenn das System die Position und Orientierung des Billardqueues
-erkennen könnte.
-Dank dieser Informationen könnte dem Spieler angezeigt werden, wie der Spielball bei einem Stoss in angezeigter Richtung des Queues
-an den Banden reflektieren würde, um so Erfahrungen mit Stössen über die Banden zu sammeln.
-Es gibt bereits verwandte Arbeiten, wo dies umgesetzt ist, siehe Kapitel \ref{kap:verwandte_arbeiten}.
-Ausserdem wäre es möglich, verschieden starke Stösse aufgrund der aktuellen Position und Orientierung des Queues zu simulieren
-und dem Spieler den besten Stoss animiert anzuzeigen.
-
-Für ein erweitertes Spielerlebnis sind weitere Spielmodi denkbar, beispielsweise die Erkennung und Behandlung von
-Regelverstössen, dem Wechsel zwischen zwei Spielern und dem Zählen der Punktzahl jedes Spielers.
-In einem Trainingsmodus könnte dem Spieler ein Stoss angezeigt, dessen Ausführung beobachtet und dem Spieler
-Rückmeldung gegeben werden.
-Über die Darstellung würde es sich anbieten, verschiedene Ereignisse mit speziellen Animationen oder über Ton hervorzuheben,
-beispielsweise wenn ein Spieler eine Kugel erfolgreich einlocht, oder wenn der Spielball ebenfalls versenkt wird.
-
-Die Simulation und die Berechnung eines Lösungskandidaten erfordern einige bekannte Eigenschaften des Billardtisches und
-der Kugeln wie z.B. den Gleit- oder Rollreibungskoeffizienten, verschiedene Energieverlustfaktoren oder ein variables
-Bandenverhalten. Diese Parameter zu finden ist äusserst schwierig und aufwendig. Es wäre denkbar, dass einige repräsentative
-Stösse aufgezeichnet und wichtige Schlüsseleigenschaften wie Ereigniszeitpunkt, Position und Richtung annotiert werden,
-wie es in dieser Arbeit für den Simulations- Realitätsabgleich bereits vorgenommen
-wurde\footnote{Siehe Kapitel \ref{kap:vergleich_simulation_und_realitaet}.}. Anhand dieser könnte über ein Optimierungsverfahren
-die Differenz zwischen der Simulation und Realität minimiert werden, indem die genannten Eigenschaften des Tisches und
-der Kugeln als Variablen behandelt und im Zuge der Optimierung angepasst werden. Dies ergäbe eine genauere Eichung auf
-die zugrundeliegenden Stösse.
+\begin{description}
+    \item[Vorwärtssuche]\mbox{} \\
+    Die Suche nach Stössen wird, wie in Kapitel \ref{sec:kandidatensuche} beschrieben, ausgehend von den Löchern gestartet,
+    wodurch diese als Rückwärtssuche bezeichnet werden kann.
+    Der Raum der möglichen Stösse wird diskretisiert, weil nicht alle Möglichkeiten untersucht werden.
+    Eine Vorwärtssuche würde viele Simulationen mit unterschiedlichen Anfangsbedingungen (Stossrichtung \& -stärke)
+    erfordern und so eine hohe Anzahl möglicher Stösse erzielen.
+    Dabei müsste der unendliche Raum der Anfangsbedingungen sinnvoll diskretisiert werden, um eine solche Suche zu ermöglichen.
+    Wegen der Diskretisierung der Rückwärtssuche kann es in gewissen Situationen Stösse geben, welche nicht gefunden werden.
+    Durch eine Kombination von Rückwärts- und Vorwärtssuche könnten mehr potenzielle Stösse untersucht werden.
+    \item[3D-Simulation mit Spin]\mbox{} \\
+    Die in Kapitel \ref{kap:simulation} beschriebene Simulation ist zweidimensional.
+    Zur korrekten Behandlung aller Arten von Spin, beispielsweise Sidespin, müsste diese auf eine 3D-Simulation erweitert werden.
+    Die Suche könnte weiterhin zweidimensional bleiben, würde dadurch aber auch keine Stösse mit Spin vorschlagen.
+    Dabei könnte evtl. die bereits erwähnte Vereinigung mit einer Vorwärtssuche helfen, welche dem Stoss als
+    Anfangsbedingung zusätzlich auch Spin geben könnte.
+    \item[Verbesserter Ausfallswinkel]\mbox{} \\
+    Die Berechnung des Ausfallswinkels nach einer Bandenkollision bei starken Stössen wie in
+    Kapitel \ref{kandidatensuche:bandenkollisionstheorie} beschrieben, könnte verbessert werden, indem der Winkel entsprechend
+    der Geschwindigkeit angepasst würde. Dazu müsste experimentell ein Wertebereich eruiert werden, für den der Ausfalls- dem
+    Einfallswinkel entspricht. Die Simulation kann dann relativ einfach den Ausfallswinkel aufgrund der Geschwindigkeit
+    berechnen. Die Suche liesse ein mögliches Resultat nur zu, wenn die Eintrittsgeschwindigkeit der Kugel an die Bande
+    in diesem Wertebereich liegt, ansonsten gälte es als erfolgslos, was wiederum dazu führen würde,
+    dass weniger Suchresultate, dafür aber qualitativ hochwertigere gefunden würden.
+    \item[Kugelklassifikation]\mbox{} \\
+    Die Genauigkeit der Klassifikation der Kugelfarben könnte weiter optimiert werden, um bessere Resultate zu erzielen.
+    Dies ist bei den über den gesamten Tisch unterschiedlichen Lichtverhältnissen und projizierten Augmentationen herausfordernd.
+    \item[Verbesserte Analyse]\mbox{} \\
+    Der Einsatz einer Hochgeschwindigkeitskamera könnte nachgelagerte Analysen eines Spiels,
+    dessen Aufzeichnung und spätere Wiedergabe erlauben.
+    Dies würde vermutlich weitere Optimierungen in der Detektion erfordern.
+    \item[Erweiterung auf Pool-Billard]\mbox{} \\
+    Eine Ausweitung auf andere Arten des Billards, wie etwa Poolbillard, ist durch den Aufbau des Systems möglich, da
+    Snooker-spezifische Komponenten von Allgemeingültigen getrennt wurden.
+    Es müssten eine Detektion und Klassifikation für Poolbillard-Kugeln und einige Spielregeln implementiert werden.
+    \item[Hand und Arm detektieren]\mbox{} \\
+    Die Detektion von Händen und Armen des Spielers im Bild, würde es erlauben,
+    die Detektionsfehler aus Abschnitt \ref{kap:detektion_arme_haende} zu vermeiden, wodurch das Spielerlebnis störungsfreier würde.
+    \item[Queuerichtung detektieren]\mbox{} \\
+    Des Weiteren könnte es für den Spieler von Nutzen sein, wenn das System die Position und Orientierung des Billardqueues
+    erkennen könnte.
+    Dank dieser Informationen könnte dem Spieler angezeigt werden, wie der Spielball bei einem Stoss in angezeigter Richtung des Queues
+    an den Banden reflektieren würde, um so Erfahrungen mit Stössen über die Banden zu sammeln.
+    Es gibt bereits verwandte Arbeiten, wo dies umgesetzt ist, siehe Kapitel \ref{kap:verwandte_arbeiten}.
+    Ausserdem wäre es möglich, verschieden starke Stösse aufgrund der aktuellen Position und Orientierung des Queues zu simulieren
+    und dem Spieler den besten Stoss animiert anzuzeigen.
+    \item[Regelverstösse detektieren]\mbox{} \\
+    Für ein erweitertes Spielerlebnis sind weitere Spielmodi denkbar, beispielsweise die Erkennung und Behandlung von
+    Regelverstössen, dem Wechsel zwischen zwei Spielern und dem Zählen der Punktzahl jedes Spielers.
+    In einem Trainingsmodus könnte dem Spieler ein Stoss angezeigt, dessen Ausführung beobachtet und dem Spieler
+    Rückmeldung gegeben werden.
+    Über die Darstellung würde es sich anbieten, verschiedene Ereignisse mit speziellen Animationen oder über Ton hervorzuheben,
+    beispielsweise wenn ein Spieler eine Kugel erfolgreich einlocht, oder wenn der Spielball ebenfalls versenkt wird.
+    \item[Physikalische Parameter optimieren]\mbox{} \\
+    Die Simulation und die Berechnung eines Lösungskandidaten erfordern einige bekannte Eigenschaften des Billardtisches und
+    der Kugeln wie z.B. den Gleit- oder Rollreibungskoeffizienten, verschiedene Energieverlustfaktoren oder ein variables
+    Bandenverhalten. Diese Parameter zu finden ist äusserst schwierig und aufwendig. Es wäre denkbar, dass einige repräsentative
+    Stösse aufgezeichnet und wichtige Schlüsseleigenschaften wie Ereigniszeitpunkt, Position und Richtung annotiert werden,
+    wie es in dieser Arbeit für den Simulations- Realitätsabgleich bereits vorgenommen
+    wurde\footnote{Siehe Kapitel \ref{kap:vergleich_simulation_und_realitaet}.}. Anhand dieser könnte über ein Optimierungsverfahren
+    die Differenz zwischen der Simulation und Realität minimiert werden, indem die genannten Eigenschaften des Tisches und
+    der Kugeln als Variablen behandelt und im Zuge der Optimierung angepasst werden. Dies ergäbe eine genauere Eichung auf
+    die zugrundeliegenden Stösse.
+    \item[Detektion, Simulation und Suche über Machine Learning lernen]\mbox{} \\
+    Es wäre denkbar, mithilfe von Machine Learning die Detektion, Simulation und Stosssuche zu implementieren.
+    Dazu müsste eine grosse Datensammlung angelegt und annotiert werden.
+    Dies hat das Potential die Genauigkeit dieser Komponenten zu verbessern, würde allerdings einen sehr grossen Aufwand bedeuten.
+\end{description}

@@ -38,13 +38,13 @@ Kugeln des vorherigen Frames, welche einer aktuellen Kugel zugewiesen wurden, we
 Kugeln, für die keine Vorgängerkugel gefunden werden konnte, werden als \emph{nicht getrackt} markiert.
 
 Für jede getrackte Kugel können die detektierten Positionen über ein Zeitfenster von $N$ Frames aufgezeichnet werden.
-Diese History der Positionen kann anschliessend genutzt werden, um einen \emph{gleitenden Durchschnitt}\cite{wiki:moving_average}
+Diese History der Positionen kann anschliessend genutzt werden, um einen \emph{gleitenden Durchschnitt} \cite{wiki:moving_average}
 der Position zu berechnen.
 Der gleitende Durchschnitt führt bei stillstehenden Kugeln zu einer deutlichen Reduktion des Rauschens.
 Bei bewegten Kugeln ist zu beachten, dass diese nicht zwingend über alle Frames getrackt werden können,
 weil sie zwischen den Frames zu weit gerollt sein könnten.
 Die History wird für Kugeln, die nicht mehr getrackt werden konnten, geleert.
-Sobald eine Kugel wieder erfolgreich getrackt werden konnte wird die History erneut befüllt.
+Sobald eine Kugel wieder erfolgreich getrackt werden konnte, wird die History erneut befüllt.
 Die Berechnung des gleitenden Durchschnitts auf einigen wenigen Positionen aus der History ist suboptimal, weil
 zu wenige Datensätze vorhanden sind, um eine effektive Rauschunterdrückung zu erreichen.
 Um dieses Problem zu lösen, wird die Durchschnittsposition einer getrackten Kugel erst verwendet,
@@ -52,7 +52,7 @@ wenn diese mindestens $L$ Frames getrackt wurde, wobei $L < N$.
 Sofern eine Kugel beispielsweise erst 3 Frames lang getrackt wurde, wird noch kein gleitender Durchschnitt berechnet.
 Bei stillstehenden Kugeln ist diese Bedingung unproblematisch, weil diese bei kleinem $L$ schnell erfüllt ist.
 
-Bei bewegten Kugeln ist die Durschschnittsposition weiterhin problematisch, weil diese zwischen den detektierten Positionen liegt und
+Bei bewegten Kugeln ist die Durchschnittsposition weiterhin problematisch, weil diese zwischen den detektierten Positionen liegt und
 dadurch hinter der tatsächlichen Position zurückliegt, siehe Abbildung \ref{fig:tracking_moving_average_for_moving_balls}.
 
 \begin{figure}[h!]

@@ -1,11 +1,11 @@
 \section{Herleitung Initialgeschwindigkeit bei Kugel-Kollision}\label{anhang:herleitung:ballCollisionReverse}
-Eine Kugel T soll in eine gewünschte Richtung rollen. Dazu soll sie von einer anderen Kugel A angestossen werden.
-Gesucht ist der Punkt, wohin Kugel A rollen muss, um mit Kugel T zusammenzustossen.
-Die Kugel T soll mit einer bestimmten Geschwindigkeit von der Kollision ausgehen.
+Eine Kugel C soll in eine gewünschte Richtung rollen. Dazu soll sie von einer anderen Kugel A angestossen werden.
+Gesucht ist der Punkt, wohin Kugel A rollen muss, um mit Kugel C zusammenzustossen.
+Die Kugel C soll mit einer bestimmten Geschwindigkeit von der Kollision ausgehen.
 Dazu ist die Geschwindigkeit zu bestimmen, die Kugel A  zum Zeitpunkt der Kollision haben muss.
 
-Die Situation mit der Kugel T, an der Position $C$ und der Kugel A, an der Position $A$ ist in Abbildung \ref{fig:ballCollisionPointReverse_anhang}
-dargestellt. Die Kugel A muss zum Punkt $B$ rollen, wo sie auf Kugel T prallt und ein elastischer Stoss\cite{wiki.elastischer_stoss_physik:1} stattfindet.
+Die Situation mit der Kugel C, an der Position $C$ und der Kugel A, an der Position $A$ ist in Abbildung \ref{fig:ballCollisionPointReverse_anhang}
+dargestellt. Die Kugel A muss zum Punkt $B$ rollen, wo sie auf Kugel C prallt und ein elastischer Stoss \cite{wiki.elastischer_stoss_physik:1} stattfindet.
 Während die Kugel die Distanz $\norm{\vec{d}}$ zurücklegt, verliert sie an Geschwindigkeit aufgrund von Reibung,
 diese wird in Abschnitt \ref{ReibungsverlustUeberBahn} behandelt. Hier ist lediglich relevant, welche Geschwindigkeit
 die Kugel A am Punkt $B$ haben muss.
@@ -18,7 +18,7 @@ die Kugel A am Punkt $B$ haben muss.
     \label{fig:ballCollisionPointReverse_anhang}
 \end{figure}
 
-Sei die gewünschte Richtung, in die Kugel T nach der Kollision rollen soll, $\hat{u}$ und der Kugelradius $r$, dann kann die Position $B$ bestimmt werden:
+Sei die gewünschte Richtung, in die Kugel C nach der Kollision rollen soll, $\hat{u}$ und der Kugelradius $r$, dann kann die Position $B$ bestimmt werden:
 \begin{align}
     s_z &= 2 \cdot r\\
     B &= C - s_z \cdot \hat{u}\\
@@ -26,9 +26,9 @@ Sei die gewünschte Richtung, in die Kugel T nach der Kollision rollen soll, $\h
 \end{align}
 
 Nun gilt es die Geschwindigkeit $\vec{v_{1,z}}$ der Kugel A zum Zeitpunkt der Kollision zu bestimmen.
-Nachfolgend wird angenommen, dass die zu treffende Kugel T stillsteht und somit die Geschwindigkeit $\vec{v_2} = \vec{0}$ hat.
+Nachfolgend wird angenommen, dass die zu treffende Kugel C stillsteht und somit die Geschwindigkeit $\vec{v_2} = \vec{0}$ hat.
 Der Geschwindkeitsvektor $\vec{u}$ ist durch die gewünschte Richtung und Geschwindigkeit,
-welche die Kugel T nach dem Zusammenstoss haben soll, gegeben.
+welche die Kugel C nach dem Zusammenstoss haben soll, gegeben.
 \begin{align}
     \vec{u} &= \vec{v_{1,z}} + \vec{v_{2,t}}\\
     \vec{u} &= \vec{v_{1,z}} + \vec{0}\\
@@ -47,8 +47,8 @@ Die Situation ist in Abbildung \ref{fig:elasticCollisionOfTwoBalls} dargestellt.
 Gegeben sind die nachfolgenden Informationen:
 \begin{itemize}
     \item $A$: Startposition der Kugel A.
-    \item $C$: Position der Kugel T.
-    \item $\vec{u}$: Gewünschte Geschwindigkeit und Richtung der Kugel T nach dem Zusammenstoss.
+    \item $C$: Position der Kugel C.
+    \item $\vec{u}$: Gewünschte Geschwindigkeit und Richtung der Kugel C nach dem Zusammenstoss.
 \end{itemize}
 
 Weiterhin ist die Richtung von $\vec{v_1}$ gegeben, da dieser parallel zum Vektor $\vec{d}$ ist.

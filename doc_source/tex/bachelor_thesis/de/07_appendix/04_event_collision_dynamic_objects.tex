@@ -58,26 +58,30 @@ Aus Gleichung \ref{eq:dynamic_object_collision_event:01} folgt für $d_y^2$:
     d_y^2 = (\frac{1}{2})^2 \cdot \Delta a_y^2 \cdot t^4 + \Delta a_y \cdot \Delta v_y t^3 + (\Delta a_y \cdot \Delta s_y + \Delta v_y^2) t^2 + 2 \cdot \Delta v_y \cdot \Delta s_y \cdot t + \Delta s_y^2\label{eq:dynamic_object_collision_event:02}
 \end{align}
 Aus Gleichung \ref{eq:dynamic_object_collision_event:00}, \ref{eq:dynamic_object_collision_event:01} und \ref{eq:dynamic_object_collision_event:02} folgt:
-\begin{multline}
-    D^2 = (\frac{1}{2})^2 \cdot \Delta a_x^2 \cdot t^4 +\\\
-    \Delta a_x \cdot \Delta v_x t^3 +\\\
-    (\Delta a_x \cdot \Delta s_x + \Delta v_x^2) t^2 +\\\
-    2 \cdot \Delta v_x \cdot \Delta s_x \cdot t +\\\
-    \Delta s_x^2 +\\
-    (\frac{1}{2})^2 \cdot \Delta a_y^2 \cdot t^4 +\\\
-    \Delta a_y \cdot \Delta v_y t^3 +\\\
-    (\Delta a_y \cdot \Delta s_y + \Delta v_y^2) t^2 +\\\
-    2 \cdot \Delta v_y \cdot \Delta s_y \cdot t +\\\
-    \Delta s_y^2\\
-\end{multline}
+\begin{equation}
+    \begin{split}
+    D^2 = & (\frac{1}{2})^2 \cdot \Delta a_x^2 \cdot t^4 +\\\
+    & \Delta a_x \cdot \Delta v_x t^3 +\\\
+    & (\Delta a_x \cdot \Delta s_x + \Delta v_x^2) t^2 +\\\
+    & 2 \cdot \Delta v_x \cdot \Delta s_x \cdot t +\\\
+    & \Delta s_x^2 +\\
+    & (\frac{1}{2})^2 \cdot \Delta a_y^2 \cdot t^4 +\\\
+    & \Delta a_y \cdot \Delta v_y t^3 +\\\
+    & (\Delta a_y \cdot \Delta s_y + \Delta v_y^2) t^2 +\\\
+    & 2 \cdot \Delta v_y \cdot \Delta s_y \cdot t +\\\
+    & \Delta s_y^2\\
+    \end{split}
+\end{equation}
 Daraus ergibt sich das folgende Polynom vierten Grades:
-\begin{multline}
-    D^2 = (\frac{1}{2})^2 \cdot (\Delta a_x^2 + \Delta a_y^2) \cdot t^4 +\\\
-    (\Delta a_x \cdot \Delta v_x + \Delta a_y \cdot \Delta v_y) \cdot t^3 +\\\
-    (\Delta a_x \cdot \Delta s_x + \Delta v_x^2 + \Delta a_y \cdot \Delta s_y + \Delta v_y^2) t^2 +\\\
-    2 \cdot (\Delta v_x \cdot \Delta s_x + \Delta v_y \cdot \Delta s_y) \cdot t +\\\
-    \Delta s_x^2 + \Delta s_y^2\label{eq:dynamic_object_collision_event:03}\\\
-\end{multline}
+\begin{equation}
+    \begin{split}
+    D^2 = & (\frac{1}{2})^2 \cdot (\Delta a_x^2 + \Delta a_y^2) \cdot t^4 +\\\
+    & (\Delta a_x \cdot \Delta v_x + \Delta a_y \cdot \Delta v_y) \cdot t^3 +\\\
+    & (\Delta a_x \cdot \Delta s_x + \Delta v_x^2 + \Delta a_y \cdot \Delta s_y + \Delta v_y^2) t^2 +\\\
+    & 2 \cdot (\Delta v_x \cdot \Delta s_x + \Delta v_y \cdot \Delta s_y) \cdot t +\\\
+    & \Delta s_x^2 + \Delta s_y^2\label{eq:dynamic_object_collision_event:03}\\\
+    \end{split}
+\end{equation}
 
 Die Koeffizienten können als Skalarprodukte von Vektoren repräsentiert werden. Dies geschieht durch Ausnutzung der
 Eigenschaft, dass die quadrierte Norm dem Skalarprodukt des Vektors mit sich selbst entspricht.

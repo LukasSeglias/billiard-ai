@@ -24,7 +24,7 @@ Diese Nomenklatur ist in Abbildung \ref{fig:physical_model_object_categories} er
     \begin{center}
         \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/17_physical_model_categories.png}
     \end{center}
-    \caption{Typen von Objekten}
+    \caption{Typen von Objekten für die Modellierung des physikalischen Systems.}
     \label{fig:physical_model_object_categories}
 \end{figure}
 
@@ -126,18 +126,24 @@ erstellt und das System hat sämtliche Energie verloren. Ein Endzustand wurde er
     \label{fig:Beispiel für ein Resultat des Algorithmus phys_sys}
 \end{figure}
 
-In Algorithmus \ref{alg:physikalisches_system} wird die Grundidee erläutert. Als Input für die Funktion \glqq simulate\grqq{}
-dient der erste Layer, welcher mehrere variable Objekte beinhalten kann, wobei mindestens ein Objekt dynamisch (energiereich)
-sein sollte. Dieser Layer wird direkt dem erzeugten System hinzugefügt und dieses wird so lange bearbeitet, bis alle variablen
-Objekte statisch sind (das System hat keine Energie mehr). In jedem Schleifendurchlauf wird das nächste Event berechnet.
-Die Events können diverser Natur sein. Es werden Kollisionen mit dynamischen, statischen wie auch konstanten Objekten
-geprüft. Bei der Kollision mit konstanten Objekten können die Ereignisse \glqq Energy transfer\grqq{} oder \glqq Out of
-System\grqq{} auftreten. Weiterhin wird geprüft, ob ein dynamisches Objekt seine Energie durch die Kantenfunktion
-verliert.
-Aufgrund eines Ereignisses wird zunächst ein neuer Layer generiert, dann für die am Ereignis beteiligten Objekte
-den entsprechenden Node und zuletzt für die anderen variablen Objekte entweder ein \glqq Cutting-Node\grqq{} oder ein
-\glqq Out-of-energy-Node\grqq{} eingefügt.
+In Algorithmus \ref{alg:physikalisches_system} wird die Grundidee erläutert.
+Als Input für die Funktion \glqq simulate\grqq{} dient der erste Layer,
+welcher mehrere variable Objekte beinhalten kann, wobei mindestens ein Objekt dynamisch (energiereich) sein sollte.
+Dieser Layer wird direkt dem erzeugten System hinzugefügt und dieses wird so lange bearbeitet,
+bis alle variablen Objekte statisch sind (das System hat keine Energie mehr).
 
+In jedem Schleifendurchlauf wird das nächste Event berechnet.
+Die Events können diverser Natur sein.
+Es werden Kollisionen mit dynamischen, statischen wie auch konstanten Objekten geprüft.
+Bei der Kollision mit konstanten Objekten können die Ereignisse \glqq Energy transfer\grqq{} oder \glqq Out of
+System\grqq{} auftreten.
+
+Weiterhin wird geprüft, ob ein dynamisches Objekt seine Energie durch die Kantenfunktion verliert.
+Aufgrund eines Ereignisses wird zunächst ein neuer Layer generiert, dann für die am Ereignis beteiligten Objekte
+den entsprechenden Node und zuletzt für die anderen
+variablen Objekte entweder ein \glqq Cutting-Node\grqq{} oder ein \glqq Out-of-energy-Node\grqq{} eingefügt.
+
+\newpage
 \begin{algorithm}[H]
     \DontPrintSemicolon
     \SetKwFunction{simulate}{simulate}
@@ -194,4 +200,3 @@ den entsprechenden Node und zuletzt für die anderen variablen Objekte entweder 
     \caption{Algorithmus zum Aufbau eines physikalischen Systems}
     \label{alg:physikalisches_system}
 \end{algorithm}
-

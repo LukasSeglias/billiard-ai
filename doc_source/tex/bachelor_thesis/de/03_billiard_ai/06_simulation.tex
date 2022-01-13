@@ -1,8 +1,12 @@
+\newpage
 \subsection{Simulation}\label{kap:simulation}
 Sobald ein möglicher Lösungskandidat anhand der in Abschnitt \ref{sec:kandidatensuche} beschriebenen Suche gefunden
 und dessen Initialgeschwindigkeit nach Abschnitt \ref{sec:initialgeschwindigkeit} berechnet wurde,
 wird eine Simulation durchgeführt, um die Lösung definitiv zu bestätigen.
 Durch das Anwenden verschiedener Anfangsgeschwindigkeiten der weissen Kugel können in diesem Schritt mehrere Situationen evaluiert werden.
+
+Es wurde keine bestehende Physik-Engine für die Entwicklung der Simulation verwendet,
+um maximale Flexibilität und Kontrolle über das Verhalten der Simulation zu haben.
 
 Die Simulation wird durch die Definition eines physikalischen Systems wie in Kapitel \ref{kap:physikalisches_system} durchgeführt.
 Hierbei gelten die Zuordnungen wie sie nachfolgend beschrieben werden.\\
@@ -39,20 +43,28 @@ beschleunigten Bewegung verwendet, wobei $\vec{v_0}$, $\vec{a}$ sowie $t$ gegebe
 \end{align}
 
 \subsubsection{Elastischer Stoss zweier Kugeln}\label{kap:simulation:elastischer_stoss_zweier_kugeln}
-Die Kollision zweier Kugeln wird im Folgenden als zweidimensionaler elastischer Stoss angesehen. Dabei ist es wichtig,
-zwei Komponenten beim Zusammenprall zu betrachten. Dies ist einerseits das Liniensegment $s_z$ zwischen den Mittelpunkten
-der Kugeln sowie die orthogonal dazu stehende Gerade $s_t$. Die Kugel, welche Energie mitbringt, übergibt der anderen
-Kugel Energie in Richtung von $s_z$. Die übrig gebliebene Energie zeigt in Richtung von $s_t$ \cite{wiki.elastischer_stoss_physik:1}.
-In Abbildung \ref{fig:Elastischer Stoss zweier Kugeln} ist ein solcher Stoss dargestellt.
-Kugel eins bringt dabei die Geschwindigkeit $\vec{v_1}$ und Kugel zwei die Geschwindigkeit $\vec{v_2}$ mit. Ein Anteil
-der Geschwindigkeit von Kugel eins wird der Kugel zwei in Richtung von $s_z$ übergeben. Dasselbe gilt für die
-Kugel zwei. Sie übergibt einen Teil ihrer Geschwindigkeit an Kugel eins ebenfalls in Richtung von $s_z$. Die verbleibende
-Energie der Kugeln zeigt jeweils in Richtung von $s_t$.
+Die Kollision zweier Kugeln wird im Folgenden als zweidimensionaler elastischer Stoss \cite{wiki.elastischer_stoss_physik:1} angesehen.
+Dabei ist es wichtig, zwei Komponenten beim Zusammenprall zu betrachten.
+Dies ist einerseits das Liniensegment $\vec{s_z}$ zwischen den Mittelpunkten
+der Kugeln sowie die orthogonal dazu stehende Gerade $\vec{s_t}$.
+In Abbildung \ref{fig:Elastischer Stoss zweier Kugeln} ist ein elastischer Stoss dargestellt.
+
+Die erste Kugel liegt zum Zeitpunkt der Kollision an der Position $Z_1$ und hat die Geschwindigkeit $\vec{v_1}$.
+Die zweite Kugel liegt zum Kollisionszeitpunkt an der Position $Z_2$ und hat die Geschwindigkeit $\vec{v_2}$.
+Ein Anteil der Geschwindigkeit von Kugel eins wird der Kugel zwei in Richtung von $\vec{s_z}$ übergeben.
+Die übrig gebliebene Energie zeigt in Richtung von $\vec{s_t}$.
+Dasselbe gilt für die Kugel zwei.
+Sie übergibt einen Teil ihrer Geschwindigkeit an Kugel eins ebenfalls in Richtung von $\vec{s_z}$.
+Die verbleibende Energie der Kugeln zeigt jeweils in Richtung von $\vec{s_t}$.
+
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/23_elastischer_stoss.png}
     \end{center}
-    \caption{Elastischer Stoss zweier Kugeln}
+    \caption{Elastischer Stoss zweier Kugeln:
+    Die Geschwindigkeiten $\vec{v_1}$ und $\vec{v_2}$ der Kugeln werden auf die Richtungen $\vec{s_t}$ und $\vec{s_z}$ aufgeteilt und ausgetauscht.
+    Resultierend rollen die Kugeln nach der Kollision mit den Geschwindigkeiten $\vec{u_1}$ und $\vec{u_2}$ weiter.
+    }
     \label{fig:Elastischer Stoss zweier Kugeln}
 \end{figure}
 
@@ -64,18 +76,19 @@ die Energie nicht vollständig weitergegeben wird.
     \vec{v_2} = \vec{v^i_2} \cdot (1 - E_v)\\
 \end{align}
 Um nun die neuen Geschwindigkeiten $\vec{u_1}$ und $\vec{u_2}$ zu berechnen, müssen die initialen Geschwindigkeiten
-$\vec{v_1}$ sowie $\vec{v_2}$ auf die Komponenten in Richtung von $s_z$ und $s_t$ aufgeteilt werden.
+$\vec{v_1}$ sowie $\vec{v_2}$ auf die Komponenten in Richtung von $\vec{s_z}$ und $\vec{s_t}$ aufgeteilt werden.
 \begin{align}
     \vec{z} = \vec{Z_2} - \vec{Z_1}\\
+    \vec{z} = \vec{s_z}\\
     \hat{z} = \frac{\vec{z}}{\norm{\vec{z}}}
 \end{align}
 Von Interesse ist dabei nur $\hat{z}$.
-Mit diesem Vektor kann die Komponente in Richtung $s_z$ beider Geschwindigkeiten ermittelt werden.
+Mit diesem Vektor kann die Komponente in Richtung $\vec{s_z}$ beider Geschwindigkeiten ermittelt werden.
 \begin{align}
     \vec{v_{1,z}} = (\vec{v_1} \cdot \hat{z}) \cdot \hat{z}\\
     \vec{v_{2,z}} = (\vec{v_2} \cdot \hat{z}) \cdot \hat{z}
 \end{align}
-Mittels dieses neuen Vektors in Richtung $s_z$ kann der Vektor in Richtung $s_t$ berechnet werden.
+Mittels dieses neuen Vektors in Richtung $\vec{s_z}$ kann der Vektor in Richtung $\vec{s_t}$ berechnet werden.
 \begin{align}
     \vec{v} = \vec{v_t} + \vec{v_z}\\
     \vec{v_t} = \vec{v} - \vec{v_z}
@@ -93,10 +106,10 @@ Das Resultat lautet wie folgt:
 \end{align}
 
 \paragraph{Behandlung Rollverhalten} \hfill \\
-Da eine Kugel nicht nur gleitet sondern auch rollt und kaum Reibung mit der kollidierenden Kugel hat, hat dieses Rollen im
+Da eine Kugel nicht nur gleitet, sondern auch rollt und kaum Reibung mit der kollidierenden Kugel hat, hat dieses Rollen im
 Falle einer Kugelkollision einen Einfluss auf den weiteren Verlauf der vorher dynamischen Kugeln.
 Es werden zwei Ansätze erläutert. Die erste Variante behandelt das Rollen als ablenkende Kraft in eingehender Richtung mit konstantem Betrag.
-Die zweite Variante berücksichtigt zusätzlich die Variabilität des Rollens. In Abbildung \ref{fig:einfluss_rollen} wird der Einfluss des
+Die zweite Variante berücksichtigt zusätzlich die Variabilität der Rollgeschwindigkeit. In Abbildung \ref{fig:einfluss_rollen} wird der Einfluss des
 Rollens bei grossen wie auch kleinen Geschwindigkeiten erläutert.
 
 Bei Variante eins wird der Einfluss des Rollens berücksichtigt,
@@ -151,10 +164,10 @@ Implementiert wurde die zweite Variante, da die variable Rollenergie dadurch mit
 
 \newpage
 \subsubsection{Bandenreflektion}
-Sofern eine Kugel an eine Bande stösst, wird diese abgelenkt. In dem hier beschriebenen Modell wird der Drall\cite{wiki.spin:1},
+Sofern eine Kugel an eine Bande stösst, wird diese abgelenkt. In dem hier beschriebenen Modell wird der Drall \cite{wiki.spin:1},
 welcher die Bahn einer Kugel nach Kollision mit der Bande ablenken würde, ignoriert.
 Das bedeutet, es wird davon ausgegangen, dass der Ausfallswinkel nach der Bandenreflektion gleich dem Einfallswinkel sei.
-Dazu kann die folgende Formel\cite{paulbourke.reflected_ray:1} verwendet werden, wobei $I$ der einfallende
+Dazu kann die folgende Formel \cite{paulbourke.reflected_ray:1} verwendet werden, wobei $I$ der einfallende
 und $R$ der ausgehende Weg der Kugel und $N$ der Normalenvektor der Bande sind:
 \begin{align}
     R = I - 2 \cdot N \cdot (I \cdot N)
@@ -219,17 +232,21 @@ Erste ist.
 
 \paragraph{Performanceverbesserungen}\label{kap:kugelkollision:performanceverbesserung} \hfill \\
 Das Lösen dieses Gleichungssystems erfordert viel Rechenzeit, was die Frage nach Performanceverbesserungen aufwirft.
-Diese werden durch Vorbedingungen erzielt, welche geprüft werden. Es findet zu Beginn eine Fallunterscheidung
-statt. Wenn die zweite Kugel statisch ist, so wird geprüft, ob die Distanz $d$ zwischen der Position $P_2$ der zweiten Kugel
-$K_2$ und der halben Geraden $g$ definiert durch die Position $P_1$ der ersten Kugel $K_1$ wie auch deren Geschwindigkeitsvektor
-$\vec{v}$ kleiner oder gleich dem Kugeldurchmesser ist. Nur in diesem Fall kann es eine Kollision geben.
+Diese werden durch Vorbedingungen erzielt, welche geprüft werden. Es findet zu Beginn eine Fallunterscheidung statt.
+
+Wenn die zweite Kugel statisch ist, so kann die Distanz dieser Kugel zur halben Geraden der Laufrichtung der ersten Kugel geprüft werden.
+Die Laufrichtung der ersten Kugel kann mit deren Position $P_1$ und des Geschwindigkeitsvektors $\vec{v}$ als halbe Gerade $g$ definiert werden.
+Sofern die Distanz $d$ zwischen der zweiten Kugel und dieser Geraden kleiner oder gleich dem Kugeldurchmesser ist,
+dann liegt die zweite Kugel der ersten Kugel im Weg.
+Nur dann könnte es zur Kollision kommen.
 Sämtliche Angaben beziehen sich auf die Grafik \ref{fig:kugelkollision_vorbedingung_statisch}.
 
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/24_vorbedingung_kugelkollision_statisch.png}
     \end{center}
-    \caption{Vorbedingung einer Prüfung auf Kollision zwischen Kugeln bei statischer Beteiligung}
+    \caption{Vorbedingung einer Prüfung auf Kollision zwischen Kugeln bei statischer Beteiligung.
+    Die Kugel an Position $P_1$ ist dynamisch, die Kugel an Position $P_2$ ist statisch.}
     \label{fig:kugelkollision_vorbedingung_statisch}
 \end{figure}
 
@@ -240,7 +257,7 @@ wird in Abbildung \ref{fig:kugelkollision_vorbedingung_dynamisch} dargestellt.
     \begin{center}
         \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/25_vorbedingung_kugelkollision_dynamisch.png}
     \end{center}
-    \caption{Vorbedingung einer Prüfung auf Kollision zwischen dynamischen Kugeln}
+    \caption{Vorbedingung einer Prüfung auf Kollision zwischen dynamischen Kugeln.}
     \label{fig:kugelkollision_vorbedingung_dynamisch}
 \end{figure}
 
@@ -389,7 +406,7 @@ wäre nicht nötig, würde die Simulation sämtliche Ereignisse vorausberechnen,
 invalidieren\footnote{Eine mögliche Verbesserung des Algorithmus wird in Kapitel \ref{anhang:simulation:algorithmus} beschrieben.}.
 
 Weiterhin wird angenommen, dass gleitende Kugeln nach einer Kollision mit einer anderen Kugel weitergleiten. Es ist
-auch bekannt, dass die Kugel nach der Kollision mit der Bande sofort zu rollen beginnt\cite{sciphysik:kugelohneschlupf}.
+auch bekannt, dass die Kugel nach der Kollision mit der Bande sofort zu rollen beginnt \cite{sciphysik:kugelohneschlupf}.
 
 \subsubsection{Bewertungsfunktion}
 Wie auch die Suche nach einem guten Lösungskandidaten muss das Endresultat der Simulation bewertet werden.

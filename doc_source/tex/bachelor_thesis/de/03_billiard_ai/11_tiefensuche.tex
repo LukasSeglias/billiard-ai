@@ -26,21 +26,28 @@ ausgeführt werden könnten.
 \end{figure}
 
 \subsubsection{Regeln für Snooker}\label{kap:tiefensuche:regeln_fuer_snooker}
-Wird über mehrere Stösse gesucht, sind gewisse Regeln des Spiels einzuhalten. Bei Snooker werden abwechslungsweise rote
-und farbige Kugeln versenkt, solange noch rote Kugeln auf dem Tisch sind. Die farbigen Kugeln haben unterschiedliche
-Werte: Gelb(2), Grün(3), Braun(4), Blau(5), Pink(6), Schwarz(7)\cite{stoppball:spielregel:snooker}.\\
+Wird über mehrere Stösse gesucht, sind gewisse Regeln des Spiels einzuhalten.
+Nachfolgend werden diejenigen aufgeführt, welche für diese Arbeit relevant sind.
+Bei Snooker werden abwechslungsweise rote und farbige Kugeln versenkt, solange noch rote Kugeln auf dem Tisch sind.
+Die farbigen Kugeln ergeben unterschiedliche Punkte: Gelb(2), Grün(3), Braun(4), Blau(5), Pink(6), Schwarz(7) \cite{stoppball:spielregel:snooker}.\\
 Gibt es noch eine oder mehrere rote Kugeln zu spielen, wird die versenkte farbige Kugel, ausser die Rote, wieder
-auf ihrem Spot (Aufsetzmarke) platziert. Ist der Spot nicht frei, so wird sie auf den nächsthöherwertigen Spot gelegt. Die Wertung
-der Spots entspricht der Wertung der Kugeln, welche bei der Ausgangsstellung platziert wurden. Die Ausgangsstellung ist in
-Abbildung \ref{fig:snooker_ausgangslage} veranschaulicht. Wenn alle Spots belegt sind, wird die Kugel so nah wie möglich an ihrem ursprünglichen
+auf ihrem Spot (Aufsetzmarke) platziert.
+Ein Spot entspricht der Position einer Kugel in der Ausgangsstellung wie in Abbildung \ref{fig:snooker_ausgangslage} dargestellt.
+Die Wertung der Spots entspricht der Wertung der Kugeln, welche bei der Ausgangsstellung platziert wurden.
+
+Ist der Spot nicht frei, so wird sie auf den nächsthöherwertigen Spot gelegt.
+Wenn alle Spots belegt sind, wird die Kugel so nah wie möglich an ihrem ursprünglichen
 Spot in Richtung der Kopfbande\footnote{Die Kopfbande ist diejenige, welcher der schwarzen Kugel bei der Ausgangsstellung am
-nächsten ist.} platziert\cite{stoppball:spielregel:snooker}.
+nächsten ist.} platziert \cite{stoppball:spielregel:snooker}.
 
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/39_snooker_ausgangslage.png}
     \end{center}
-    \caption{Ausgangslage bei Snooker\cite{stoppball:spielregel:snooker}}
+    \caption{Ausgangslage bei Snooker \cite{stoppball:spielregel:snooker}:
+    Die Punktzahlen stehen neben den Kugeln.
+    Alle nicht roten Kugeln wurden auf ihrem Spot platziert.)
+    }
     \label{fig:snooker_ausgangslage}
 \end{figure}
 
@@ -68,4 +75,4 @@ Wenn die Kugel nicht platziert werden konnte, wird dies als Fehler betrachtet un
 \end{figure}
 
 Gibt es keine roten Kugeln mehr, werden die farbigen Kugeln in der Reihenfolge ihrer Punkte aufsteigend,
-also Gelb, Grün, Braun, Blau, Pink, Schwarz versenkt und das Spiel ist beendet\cite{stoppball:spielregel:snooker}.
+also Gelb, Grün, Braun, Blau, Pink, Schwarz versenkt und das Spiel ist beendet \cite{stoppball:spielregel:snooker}.

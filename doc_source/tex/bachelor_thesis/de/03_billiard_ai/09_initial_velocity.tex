@@ -11,7 +11,8 @@ Dies wird in Abschnitt \ref{EnergieuebergabeBeiKollision} beschrieben.
 
 \subsubsection{Reibungsverlust über Bahn}\label{ReibungsverlustUeberBahn}
 Das Ziel eines Billardstosses ist es, eine Kugel von einem Punkt A zu einem Punkt B rollen zu lassen.
-Dabei findet Rollreibung statt, welche das Abbremsen der Kugel verursacht.
+Dabei findet Rollreibung $\mu_r$ sowie Gleitreibung $\mu_g$ statt, welche das Abbremsen der Kugel verursachen.
+Die zurückzulegende Strecke sei $\Delta s$ und die Schwerebeschleunigung $g$.
 Es ist relevant zu wissen, welche Startgeschwindigkeit $v_1$ eine Kugel am Punkt A haben muss,
 um mit der Endgeschwindigkeit $v_2$ am Punkt B anzukommen.
 Beispielsweise wenn eine Kugel X in eines der Löcher gespielt werden soll,
@@ -32,26 +33,28 @@ dann lässt sich die Endgeschwindigkeit $\vec{v_2}$ wie folgt berechnen:
 
 \subsubsection{Elastischer Stoss bei Kugelkollision}\label{EnergieuebergabeBeiKollision}
 
-Um eine Kugel T in eine gewünschte Richtung, wie etwa zum Loch, zu rollen, muss sie von einer anderen Kugel A,
+Um eine Kugel C in eine gewünschte Richtung, wie etwa zum Loch, rollen zu lassen, muss sie von einer anderen Kugel A,
 evtl. vom Spielball, angestossen werden.
-Es gilt herauszufinden, wo die Kugel T getroffen werden muss und welche Geschwindigkeit die Kugel A zum Kollisionszeitpunkt
-haben muss, um die Kugel T in die gewünschte Richtung mit der geforderten Geschwindigkeit rollen zu lassen.
+Es gilt herauszufinden, wo die Kugel C getroffen werden muss und welche Geschwindigkeit die Kugel A zum Kollisionszeitpunkt
+haben muss, um die Kugel C in die gewünschte Richtung mit der geforderten Geschwindigkeit rollen zu lassen.
 
-Die Situation mit der Kugel T, an der Position $C$ und der Kugel A, an der Position $A$ ist in Abbildung \ref{fig:ballCollisionPointReverse}
-dargestellt. Die Kugel A muss zum Punkt $B$ rollen, wo sie auf Kugel T prallt und ein elastischer Stoss\cite{wiki.elastischer_stoss_physik:1} stattfindet.
-Während die Kugel die Distanz $\norm{\vec{d}}$ zurücklegt, verliert sie an Geschwindigkeit aufgrund von Reibung,
-diese wird in Abschnitt \ref{ReibungsverlustUeberBahn} behandelt. Hier ist lediglich relevant, welche Geschwindigkeit
-die Kugel A am Punkt $B$ haben muss.
+Die Situation mit der Kugel C an der Position $C$ und der Kugel A, an der Position $A$ ist in Abbildung \ref{fig:ballCollisionPointReverse}
+dargestellt.
 
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=0.6\linewidth]{../common/03_billiard_ai/resources/21_kollisionspunkt_rueckwaerts.png}
     \end{center}
-    \caption{Kollisionspunkt zweier Kugeln}
+    \caption{Kollisionspunkt zweier Kugeln.
+    Die Kugel A muss zum Punkt B rollen, wo sie auf Kugel C prallt und ein elastischer Stoss \cite{wiki.elastischer_stoss_physik:1} stattfindet.
+    Während die Kugel die Distanz $\norm{\vec{d}}$ zurücklegt, verliert sie an Geschwindigkeit aufgrund von Reibung,
+    diese wird in Abschnitt \ref{ReibungsverlustUeberBahn} behandelt. Hier ist lediglich relevant, welche Geschwindigkeit
+    die Kugel A am Punkt $B$ haben muss.
+    }
     \label{fig:ballCollisionPointReverse}
 \end{figure}
 
-Sei $\vec{u}$, die gewünschte Richtung und Geschwindigkeit der Kugel T nach der Kollision,
+Sei $\vec{u}$, die gewünschte Richtung und Geschwindigkeit der Kugel C nach der Kollision,
 dann ist der Zielpunkt $B$ der Kugel A wie folgt definiert\footnote{Die Herleitung findet sich im Anhang \ref{anhang:herleitung:ballCollisionReverse}}:
 \begin{align}
     B = C - 2 \cdot r \cdot \hat{u}
@@ -77,7 +80,8 @@ gewünschte Endgeschwindigkeit $\vec{v}$ bekannt ist.
     \vec{v_0} = \vec{v} - 2 \cdot \vec{N} \cdot (\vec{v} \cdot \vec{N})
 \end{align}
 
-Der einkommende Geschwindigkeitsvektor $\vec{v_0}$ muss noch um den Energieverlust an der Bande vergrössert werden:
+Da die Kugel an der Bande Energie verlieren wird,
+muss die einkommende Geschwindigkeit $\vec{v_0}$ vor der Bandenkollision um diesen Energieverlust erhöht werden.
 \begin{align}
     \vec{v_0} = \norm{\vec{v_0} \cdot \frac{1}{1 - E_v}} \cdot \hat{v_0}
 \end{align}
