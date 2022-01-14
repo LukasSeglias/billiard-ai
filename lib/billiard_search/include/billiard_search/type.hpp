@@ -435,10 +435,14 @@ namespace billiard::search {
         std::unordered_map<std::string, Ball> _unusedBalls;
         billiard::search::Search _search;
         std::unordered_map<std::string, Ball> _state;
+        double _indirectionCost;
+        double _angleCost;
+        double _distanceCost;
     };
 
     struct SearchNodeSimulation {
         node::System _simulation;
+        double _cost;
     };
 
     struct SearchNode {

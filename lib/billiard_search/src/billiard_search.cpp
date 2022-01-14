@@ -182,6 +182,42 @@ namespace billiard::search {
 namespace billiard::search {
 
     std::vector<node::System> mapToSolution(const std::shared_ptr<SearchNode>& solution) {
+#ifdef BILLIARD_DEBUG
+        auto path = solution->path();
+        std::reverse(path.begin(), path.end());
+        static std::string agent = "[mapToSolution] ";
+        DEBUG(agent << "COST START" << std::endl);
+        uint64_t previousTotalCost = 0;
+        for (uint64_t i = 0; i < path.size(); i++) {
+            auto& node = path.at(i);
+            if (node->asSearch()) {
+                auto asSearch = node->asSearch();
+                auto deltaCost = node->_cost - previousTotalCost;
+                DEBUG(agent << "cost-search -" << " "
+                            << "distance: " << asSearch->_distanceCost << " "
+                            << "angle: " << asSearch->_angleCost << " "
+                            << "indirection: " << asSearch->_indirectionCost <<  " "
+                            << "sum: " << (asSearch->_distanceCost + asSearch->_angleCost + asSearch->_indirectionCost) << " "
+                            << "cost: " << (deltaCost) << " "
+                            << "previous cost: " << previousTotalCost << " "
+                            << "total cost: " << node->_cost << std::endl);
+                previousTotalCost = node->_cost;
+            } else {
+                auto asSimulation = node->asSimulation();
+                DEBUG(agent << "cost-simulation -" << " "
+                            << "cost: " << asSimulation->_cost << " "
+                            << "previous cost: " << previousTotalCost << " ");
+
+                previousTotalCost = node->_cost;
+                if (i < path.size() - 1) {
+                    previousTotalCost += asSimulation->_cost;
+                }
+                DEBUG("total cost: " << previousTotalCost << std::endl);
+            }
+        }
+        DEBUG(agent << "end cost: " << previousTotalCost << std::endl);
+        DEBUG(agent << "COST END" << std::endl);
+#endif
         return solution->allSimulations();
     }
 
@@ -250,7 +286,7 @@ namespace billiard::search {
     std::vector<std::shared_ptr<SearchNode>>
     expandSearchNodeByBank(const std::shared_ptr<SearchNode>& input, const std::shared_ptr<SearchState>& state,
                          const std::shared_ptr<SearchNodeSearch>& searchInput, uint8_t depth);
-    uint64_t searchCost(const std::vector<PhysicalEvent>& events,
+    std::tuple<uint64_t, double, double, double> searchCost(const std::vector<PhysicalEvent>& events,
                         const Ball& ball,
                         const std::shared_ptr<SearchNodeSearch>& parentSearchNode,
                         const std::shared_ptr<SearchState>& state);
@@ -586,9 +622,12 @@ namespace billiard::search {
             resultSearchNode->_ballId = ball.first;
             resultSearchNode->_unusedBalls.erase(resultSearchNode->_unusedBalls.find(ball.first));
             auto parentSearchNode = result->_parent? result->_parent->asSearch() : nullptr;
-            uint64_t searchStepCost = searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
-            result->_cost = input->_cost + searchStepCost;
-            result->_searchCost = input->_searchCost + searchStepCost;
+            auto searchStepCost = searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
+            result->_cost = input->_cost + std::get<0>(searchStepCost);
+            result->_searchCost = input->_searchCost + std::get<0>(searchStepCost);
+            resultSearchNode->_distanceCost = std::get<1>(searchStepCost);
+            resultSearchNode->_angleCost = std::get<2>(searchStepCost);
+            resultSearchNode->_indirectionCost = std::get<3>(searchStepCost);
 
             DEBUG("[expandSearchNodeByBall] " << "expanded" << " "
                                               << "ball=" << resultSearchNode->_ballId << " "
@@ -1097,9 +1136,12 @@ namespace billiard::search {
             resultSearchNode->_ballId = ball.first;
             resultSearchNode->_unusedBalls.erase(resultSearchNode->_unusedBalls.find(ball.first));
             auto parentSearchNode = result->_parent ? result->_parent->asSearch() : nullptr;
-            uint64_t searchStepCost = searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
-            result->_cost = input->_cost + searchStepCost;
-            result->_searchCost = input->_searchCost + searchStepCost;
+            auto searchStepCost = searchCost(resultSearchNode->_events, ball.second, parentSearchNode, state);
+            result->_cost = input->_cost + std::get<0>(searchStepCost);
+            result->_searchCost = input->_searchCost + std::get<0>(searchStepCost);
+            resultSearchNode->_distanceCost = std::get<1>(searchStepCost);
+            resultSearchNode->_angleCost = std::get<2>(searchStepCost);
+            resultSearchNode->_indirectionCost = std::get<3>(searchStepCost);
 
             if (ball.second._type == "WHITE") {
                 auto prepared = prepareForSimulation(result, ball.first, state);
@@ -1113,7 +1155,7 @@ namespace billiard::search {
         return expanded;
     }
 
-    uint64_t searchCost(const std::vector<PhysicalEvent>& events,
+    std::tuple<uint64_t, double, double, double> searchCost(const std::vector<PhysicalEvent>& events,
                         const Ball& ball,
                         const std::shared_ptr<SearchNodeSearch>& parentSearchNode,
                         const std::shared_ptr<SearchState>& state) {
@@ -1301,7 +1343,7 @@ namespace billiard::search {
                     << "totalCostInt=" << std::to_string(totalCostInt) << " "
                     << std::endl);
 
-        return totalCostInt;
+        return std::make_tuple(totalCostInt, totalDistanceCost, totalAngleCost, totalIndirectionCost);
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -1358,7 +1400,9 @@ namespace billiard::search {
                         }
                     }
 
-                    auto cost = input->_cost + simulationCost(simulationInput->_simulation, input->_searchCost, state);
+                    auto simCost = simulationCost(simulationInput->_simulation, input->_searchCost, state);
+                    auto cost = input->_cost + simCost;
+                    simulationInput->_cost = simCost;
 
                     if (state->_config._depthSearchEnabled && simCount < BREAKS) {
                         DEBUG(agent << "Prepare simulated output for next break" << std::endl);
