@@ -201,8 +201,8 @@ So kann es sein, dass eine blaue Kugel aufgrund ihres Hue-Kanals klar als Blau e
 Es kann aber auch sein, dass eine braune Kugel sowohl Rot, Pink und Braun als potenzielle Klassen erhält.
 
 Es muss demnach noch eine genauere Unterscheidung gemacht werden, sobald die potenziellen Klassen bekannt sind.
-Anhand der Trainingsbildern wurden die Durchschnittswerte der häufigsten Werte der HSV-Kanäle pro Klasse berechnet.
-Diese Durchschnittswerte bilden die Cluster-Zentren jeder Klasse und können für die Klassifikation verwendet werden.
+Anhand der Trainingsbilder wurde der Median der häufigsten Werte der HSV-Kanäle pro Klasse berechnet.
+Diese Mediane bilden die Cluster-Zentren jeder Klasse und können für die Klassifikation verwendet werden.
 Dazu wird die Distanz der HSV-Position des zu klassifizierenden Bildausschnitts zu jedem Cluster-Zentrum bestimmt.
 Der Cluster mit der kleinsten Distanz gibt dem Bildausschnitt seine Klasse.
 

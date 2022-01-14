@@ -51,7 +51,7 @@ In Abbildung \ref{fig:Elastischer Stoss zweier Kugeln} ist ein elastischer Stoss
 
 Die erste Kugel liegt zum Zeitpunkt der Kollision an der Position $Z_1$ und hat die Geschwindigkeit $\vec{v_1}$.
 Die zweite Kugel liegt zum Kollisionszeitpunkt an der Position $Z_2$ und hat die Geschwindigkeit $\vec{v_2}$.
-Ein Anteil der Geschwindigkeit von Kugel eins wird der Kugel zwei in Richtung von $\vec{s_z}$ übergeben.
+Ein Anteil der Geschwindigkeit von Kugel eins bei $Z_1$ wird der Kugel zwei in Richtung von $\vec{s_z}$ übergeben.
 Die übrig gebliebene Energie zeigt in Richtung von $\vec{s_t}$.
 Dasselbe gilt für die Kugel zwei.
 Sie übergibt einen Teil ihrer Geschwindigkeit an Kugel eins ebenfalls in Richtung von $\vec{s_z}$.
@@ -178,15 +178,30 @@ Diese gibt den Verlust in Prozent an.
 \begin{align}
     R = (I - 2 \cdot N \cdot (I \cdot N)) \cdot \frac{1}{1 + E_v}
 \end{align}
+
 \subsubsection{Kollisionsprüfung}
 Während der Simulation ist es notwendig zu prüfen, welche Kugeln mit welchen kollidieren könnten.
 Um zu wissen, ob eine Kugel eine Strecke zurücklegen kann, ohne mit einer anderen Kugel zu kollidieren,
-muss für jede andere Kugel geprüft werden, ob diese im Weg liegt. Daher sollte dieser Test effizient sein.
+muss für jede andere Kugel geprüft werden, ob diese im Weg liegt.
+Daher sollte dieser Test effizient sein.
 Für den Test wird die zurückzulegende Strecke als Liniensegment zwischen Punkt $A$ und Punkt $B$ und die Position
 einer zu testenden Kugel $C$ als Punkt verstanden. Anschliessend wird der Abstand zwischen dem Punkt $C$ und dem
-Liniensegment $AB$ geprüft, ob dieser kleiner als der Kugeldurchmesser ist. Sofern dies der Fall ist, liegt die Kugel an
-der Position $C$ im Weg und es würde eine Kollision stattfinden, sofern die Ausgangskugel die Strecke $AB$ rollt.
+Liniensegment $AB$ geprüft, ob dieser kleiner als der Kugeldurchmesser ist.
+Sofern dies der Fall ist, liegt die Kugel an der Position $C$ im Weg und es würde eine Kollision stattfinden,
+sofern die Ausgangskugel die Strecke $AB$ rollt.
 Dies wird für jede Kugel geprüft.
+In Abbildung \ref{fig:kollisionsprüfung} ist eine Situation dargestellt.
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.4\linewidth]{../common/03_billiard_ai/resources/kollisionsprüfung.png}
+    \end{center}
+    \caption{Damit eine Kugel von A nach B rollen kann, darf keine Kugel C auf dem Weg liegen,
+        deren Abstand zum Liniensegment AB kleiner als der Kugeldurchmesser ist.
+        In der abgebildeten Situation ist die Kugel C zu nahe und es würde eine Kollision stattfinden.
+    }
+    \label{fig:kollisionsprüfung}
+\end{figure}
 
 \subsubsection{Ereignis - Energie-Transfer über Kugelkollision}
 Dieses Ereignis beschreibt die Kollision mit einer anderen Kugel zum Zeitpunkt $t$.
