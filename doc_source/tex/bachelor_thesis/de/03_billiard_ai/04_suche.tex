@@ -21,6 +21,7 @@ Diese Kugel-Knoten stellen dann Kugeln dar, welche die Kugel des Vorgänger-Kuge
 Sofern ein Kugel-Knoten die weisse Kugel darstellt, so ist dieser Kugel-Knoten ein Endzustand und damit ist der Stoss
 über die Kette von Nachfolger- zu Vorgänger-Kugel-Knoten definiert.
 
+\newpage
 Zur Veranschaulichung des Prinzips folgt ein Beispiel. Es wird vereinfacht angenommen,
 dass der Tisch nur ein Loch hat. Für mehrere Ziele ergeben sich mehrere Suchbäume, einen pro Loch.
 In Abbildung \ref{fig:backwardsearch_1} erfolgt die Eingabe des Suchalgorithmus in Form des Root-Knotens.
@@ -61,6 +62,7 @@ indirekt über eine Bande an die zuvor gewählte rote Kugel gespielt wird.
     \label{fig:backwardsearch_3}
 \end{figure}
 
+\newpage
 Algorithmus \ref{alg:backward_search} verdeutlicht den Ablauf der \glqq Expand-Funktion\grqq. Zuerst wird eine
 leere Liste namens \glqq nodes\grqq{} angelegt. Diese wird danach mit Nodes gefüllt, welche entweder durch einen Stoss
 über eine weitere Kugel oder indirekt über die Bande zustande kommen. Die Nodes bilden das Ergebnis der Funktion.
@@ -127,6 +129,7 @@ Diese Werte wurden anhand verschiedener Geschwindigkeiten in praktischen Experim
     \label{fig:rail_rebound_angle_no_spin}
 \end{figure}
 
+\newpage
 Eine weitere Bestätigung und eine ebenso ausführliche Behandlung des Themas findet sich im Buch \glqq The illustrated principles
 of pool and billiards\grqq. Auch dieser Arbeit liegen praktische
 \href{https://billiards.colostate.edu/high-speed-video/}{Experimente} zugrunde, die die Theorie bestätigen.
@@ -239,6 +242,7 @@ Durch Studium mehrerer Beispiele wird ein allgemeiner Algorithmus hergeleitet. H
 mit dem Kugelradius vernachlässigt, da dieses durch die beschriebenen Positionskorrekturen behandelt werden kann.
 Der Algorithmus kann unabhängig von dieser Korrektur beschrieben werden.
 
+\newpage
 In einem ersten Schritt werden die Banden definiert, über welche der Zielpunkt gespiegelt werden soll. Dies sind in
 diesem Beispiel die linke und die obere Bande, dementsprechend werden die grün markierten Spiegel zuerst links und
 dann oben angewendet. Es resultieren die Punkte $\bar{C_0}$ und $\bar{C_1}$. Die Abbildung \ref{fig:zweifaches_bandenspiel_a} zeigt die
@@ -267,6 +271,7 @@ resultiert im Spiegelpunkt $\bar{C_0}$.
     \label{fig:zweifaches_bandenspiel_b}
 \end{figure}
 
+\newpage
 In der Abbildung \ref{fig:zweifaches_bandenspiel_c} ist der darauffolgende Schritt ersichtlich.
 Es gibt zum Vorhergehenden keine wesentlichen Unterschiede.
 Es wird wiederum nur der letzte Spiegelpunkt $\bar{C_0}$ beibehalten, zu welchem vom

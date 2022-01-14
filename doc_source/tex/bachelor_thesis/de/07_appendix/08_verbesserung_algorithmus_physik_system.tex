@@ -8,6 +8,17 @@ zusammenhängen. Danach wird ein neuer Layer zu diesem Zeitpunkt berechnet. Wenn
 für sämtliche Kugeln die Ereignisse neu berechnet, die keine mehr haben. Dabei werden auch die gelöschten Ereignisse
 mit am vorherigen Ereignis unbeteiligten Kugeln ergänzt, sollte es solche geben.
 
+Algorithmus \ref{alg:physikalisches_system_verbesserung_algorithmus_1} beinhaltet die Funktionen für den Simulationsvorgang
+an sich, die Berechnung der nächsten Ereignisse und das Hinzufügen neuer Ereignisse. Der Simulationsvorgang sieht im
+Wesentlichen so aus, dass solange simuliert wird, wie das System Energie führt. Es werden nacheinander die Ereignisse berechnet,
+die nächst eintretenden Ereignisse bestimmt, die gespeicherten Ereignisse darauf basierend bereinigt und bei den übrig
+gebliebenen Ereignissen die Zeit korrigiert. Abschliessend kann der Zustand zu diesem Zeitpunkt bestimmt und
+dem System hinzugefügt werden. Die Berechnung der Ereignisse wird nur auf dynamische Kugeln angewendet, die keine Ereignisse haben.
+Dies ist bei der ersten Ausführung der Fall oder wenn eine Kugel vorgängig an einem Ereignis beteiligt gewesen ist.
+Die Funktion zum Hinzufügen des Ereignisses ruft eine Subfunktion auf, die das Ereignis nur hinzufügt, wenn es nicht bereits vorhanden ist.
+Zudem wird das Ereignis ebenfalls für das Partnerobjekt erfasst, dies ist insbesondere bei statischen Kugeln notwendig.
+
+\newpage
 \begin{algorithm}[H]
     \DontPrintSemicolon
     \SetKwFunction{simulate}{simulate}
@@ -61,16 +72,6 @@ mit am vorherigen Ereignis unbeteiligten Kugeln ergänzt, sollte es solche geben
     \caption{Algorithmus zum Aufbau eines physikalischen Systems - Part 1}
     \label{alg:physikalisches_system_verbesserung_algorithmus_1}
 \end{algorithm}
-
-Algorithmus \ref{alg:physikalisches_system_verbesserung_algorithmus_1} beinhaltet die Funktionen für den Simulationsvorgang
-an sich, die Berechnung der nächsten Ereignisse und das Hinzufügen neuer Ereignisse. Der Simulationsvorgang sieht im
-Wesentlichen so aus, dass solange simuliert wird, wie das System Energie führt. Es werden nacheinander die Ereignisse berechnet,
-die nächst eintretenden Ereignisse bestimmt, die gespeicherten Ereignisse darauf basierend bereinigt und bei den übrig
-gebliebenen Ereignissen die Zeit korrigiert. Abschliessend kann der Zustand zu diesem Zeitpunkt bestimmt und
-dem System hinzugefügt werden. Die Berechnung der Ereignisse wird nur auf dynamische Kugeln angewendet, die keine Ereignisse haben.
-Dies ist bei der ersten Ausführung der Fall oder wenn eine Kugel vorgängig an einem Ereignis beteiligt gewesen ist.
-Die Funktion zum Hinzufügen des Ereignisses ruft eine Subfunktion auf, die das Ereignis nur hinzufügt, wenn es nicht bereits vorhanden ist.
-Zudem wird das Ereignis ebenfalls für das Partnerobjekt erfasst, dies ist insbesondere bei statischen Kugeln notwendig.
 
 \newpage
 Der Algorithmus \ref{alg:physikalisches_system_verbesserung_algorithmus_2} beinhaltet die Funktionen zum Löschen von
