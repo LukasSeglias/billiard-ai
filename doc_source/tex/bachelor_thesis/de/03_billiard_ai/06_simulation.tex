@@ -205,9 +205,9 @@ In Abbildung \ref{fig:kollisionsprüfung} ist eine Situation dargestellt.
 
 \subsubsection{Ereignis - Energie-Transfer über Kugelkollision}
 Dieses Ereignis beschreibt die Kollision mit einer anderen Kugel zum Zeitpunkt $t$.
-Bekannt sind dabei die Beschleunigung $\vec{a}$\footnote{Die Beschleunigung $\vec{a}$ ist durch die Herleitung in Kapitel \ref{anhang:herleitung:beschleunigung}
-gegeben.}, die Geschwindigkeit $\vec{v}$ und der Ort $\vec{s}$ beider Kugeln.
+Bekannt sind dabei die Beschleunigung $\vec{a}$, die Geschwindigkeit $\vec{v}$ und der Ort $\vec{s}$ beider Kugeln.
 Diese werden entsprechend indexiert.
+Die Beschleunigung $\vec{a}$ ist durch die Herleitung in Kapitel \ref{anhang:herleitung:beschleunigung} gegeben.
 
 Weiterhin sind folgende Abstraktionen bekannt:
 \begin{align}
@@ -216,7 +216,7 @@ Weiterhin sind folgende Abstraktionen bekannt:
     \vec{\Delta s} = \vec{\Delta s}_1 - \vec{\Delta s}_2
 \end{align}
 
-Es entsteht ein Polynom vierten Grades\footnote{Herleitung siehe Anhang \ref{anhang:herleitung:event:dynamicObjectCollision}}.
+Es entsteht ein Polynom vierten Grades (Herleitung in Anhang \ref{anhang:herleitung:event:dynamicObjectCollision}).
 Um diese Gleichung zu lösen, bedarf es der entsprechenden Lösungsformel \cite{wiki.polynom:1}:
 \begin{align}
     ax^4 + bx^3 + cx^2 + dx + e = 0\\
@@ -333,11 +333,11 @@ Aufgrund dieser Informationen kann eine Linie definiert werden.
 
 Die Punkte $R_1$ und $R_2$ werden um den Kugelradius zur Tischmitte verschoben,
 damit dem Kugelradius Rechnung getragen wird und dieser nicht weiter betrachtet werden muss.
-Daraus ergeben sich $R_1'$ und $R_{2'}$\footnote{Für Herleitung, siehe Anhang \ref{anhang:herleitung:event:collisionWithRail}}.
+Daraus ergeben sich $R_1'$ und $R_{2'}$ (Herleitung in Anhang \ref{anhang:herleitung:event:collisionWithRail}).
 
 Erster Schritt - Prüfe, ob Kollision möglich:\\
 Dazu wird festgestellt, ob ein Schnittpunkt zwischen der Lauflinie der Kugel und dem Liniensegment der
-Bande existiert \footnote{Siehe Anhang \ref{anhang:herleitung:event:collisionWithRail}}.
+Bande existiert, siehe Anhang \ref{anhang:herleitung:event:collisionWithRail}.
 Sofern kein Schnittpunkt vorliegt, können weitere Tests abgebrochen werden, da keine Kollision mit der Bande stattfinden wird.
 
 Zweiter Schritt - Ort der Kollision bestimmen:\\
@@ -367,10 +367,9 @@ die letzte Bande, mit welcher die Kugel kollidierte, von der Ereignisberechnung 
 erst wieder miteinbezogen, wenn die Kugel eine andere Bande oder eine andere Kugel getroffen hat.
 
 \subsubsection{Ereignis - Totaler Energieverlust}
-Dieses Ereignis trifft ein, sobald eine Kugel stillsteht. Der Zeitpunkt wird über die Formel \ref{eq:ereignis:out_of_energy:00}
-beschrieben\footnote{Die Herleitung erfolgt in Kapitel \ref{anhang:herleitung:event:outOfEnergy}.
-Die Beschleunigung $\vec{a}$ ist durch die Herleitung in Kapitel \ref{anhang:herleitung:beschleunigung}
-gegeben.}.
+Dieses Ereignis trifft ein, sobald eine Kugel stillsteht.
+Der Zeitpunkt wird über die Formel \ref{eq:ereignis:out_of_energy:00} beschrieben (Herleitung in Anhang \ref{anhang:herleitung:event:outOfEnergy}).
+Die Beschleunigung $\vec{a}$ ist durch die Herleitung in Kapitel \ref{anhang:herleitung:beschleunigung} gegeben.
 
 \begin{align}
     t = \max{(\frac{-v_{0,x}}{a_x}, \frac{-v_{0,y}}{a_y})}\label{eq:ereignis:out_of_energy:00}
@@ -385,9 +384,8 @@ $\vec{p} = $ Position der Kugel\\
 $\hat{v} = $ Normierte Geschwindigkeit der Kugel\\
 
 Die nachfolgende Formel definiert, mit welchem Faktor der Geschwindigkeitsvektor multipliziert werden muss, damit
-er die Länge der zurückzulegenden Distanz zum Kollisionsort mit dem Ziel erreicht\footnote{
-Für Herleitung, siehe Anhang \ref{anhang:herleitung:event:targetCollision}.}. Zu beachten ist, dass $l$ nur gültig ist,
-wenn es grösser als $0$ ist.
+er die Länge der zurückzulegenden Distanz zum Kollisionsort mit dem Ziel erreicht (Herleitung in Anhang \ref{anhang:herleitung:event:targetCollision}).
+Zu beachten ist, dass $l$ nur gültig ist, wenn es grösser als $0$ ist.
 \begin{align}
     l_1 = \frac{-(2 \cdot \hat{v} \cdot (\vec{p} - \vec{C})) + \sqrt{4 \cdot (\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) \cdot r^2}}{2}\\
     l_2 = \frac{-(2 \cdot \hat{v} \cdot (\vec{p} - \vec{C})) - \sqrt{4 \cdot (\vec{p} - \vec{C}) \cdot (\vec{p} - \vec{C}) \cdot r^2}}{2}\\
@@ -395,8 +393,8 @@ wenn es grösser als $0$ ist.
     \vec{d(l)} = l \cdot \hat{v}
 \end{align}
 
-Nachdem die Distanz bestimmt wurde, kann der Kollisionszeitpunkt berechnet werden\footnote{Für Herleitung, siehe Anhang \ref{anhang:herleitung:event:targetCollision}.
-Die Beschleunigung $\vec{a}$ ist durch die Herleitung in Kapitel \ref{anhang:herleitung:beschleunigung} gegeben.}.
+Nachdem die Distanz bestimmt wurde, kann der Kollisionszeitpunkt berechnet werden (Herleitung in Anhang \ref{anhang:herleitung:event:targetCollision}).
+Die Beschleunigung $\vec{a}$ ist durch die Herleitung in Kapitel \ref{anhang:herleitung:beschleunigung} gegeben.
 Zu beachten ist, dass keine Lösung existiert, wenn die Diskriminante kleiner denn $0$ ist. Die Kugel rollt zu langsam und
 der Reibungsverlust ist zu gross, als dass sie den Zielkreis erreichen könnte.
 \begin{align}
@@ -407,18 +405,19 @@ der Reibungsverlust ist zu gross, als dass sie den Zielkreis erreichen könnte.
 
 \subsubsection{Ereignis - Rollen}
 Wenn eine Kugel zentral angestossen wird, dann gleitet sie einen Moment, ohne zu rollen. Die Eigenschaft des
-Rollens wird ebenso als Ereignis geführt. Der Zeitpunkt, wann dieses Ereignis eintritt, kann über die
-Formel\footnote{Die Herleitung erfolgt in Kapitel \ref{anhang:herleitung:event:rollen}} \ref{eq:rollzeitpunkt_2} berechnet
-werden, wobei $\mu$ für den Gleitreibungskoeffizienten steht.
+Rollens wird ebenso als Ereignis geführt.
+Der Zeitpunkt, wann dieses Ereignis eintritt, kann über die Formel \ref{eq:rollzeitpunkt_2} berechnet werden,
+wobei $\mu$ für den Gleitreibungskoeffizienten steht.
+Die Herleitung erfolgt in Kapitel \ref{anhang:herleitung:event:rollen}.
 
 \begin{align}
     t = \frac{v_0}{\frac{7}{2} \cdot g \cdot \mu}\label{eq:rollzeitpunkt_2}
 \end{align}
 
-Dieser Zeitpunkt wird einmal beim Anstossen einer Kugel berechnet und zwischengespeichert. Würde dieses Ereignis nach
-jedem Vorherigen neu berechnet werden, so würde der Rollzeitpunkt immer weiter in der Zukunft liegen. Dieses Zwischenspeichern
-wäre nicht nötig, würde die Simulation sämtliche Ereignisse vorausberechnen, zwischenspeichern, abarbeiten und bei Bedarf
-invalidieren\footnote{Eine mögliche Verbesserung des Algorithmus wird in Kapitel \ref{anhang:simulation:algorithmus} beschrieben.}.
+Dieser Zeitpunkt wird einmal beim Anstossen einer Kugel berechnet und zwischengespeichert.
+Würde dieses Ereignis nach jedem Vorherigen neu berechnet werden, so würde der Rollzeitpunkt immer weiter in der Zukunft liegen.
+Dieses Zwischenspeichern wäre nicht nötig, würde die Simulation sämtliche Ereignisse vorausberechnen, zwischenspeichern,
+abarbeiten und bei Bedarf invalidieren. Eine mögliche Verbesserung des Algorithmus wird in Kapitel \ref{anhang:simulation:algorithmus} beschrieben.
 
 Weiterhin wird angenommen, dass gleitende Kugeln nach einer Kollision mit einer anderen Kugel weitergleiten. Es ist
 auch bekannt, dass die Kugel nach der Kollision mit der Bande sofort zu rollen beginnt \cite{sciphysik:kugelohneschlupf}.

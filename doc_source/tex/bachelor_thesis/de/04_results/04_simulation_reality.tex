@@ -10,8 +10,7 @@ Die Distanz wird über zwei selektierte Pixelpositionen auf denselben Frames zur
 Diese Positionen werden zu Modellkoordinaten $P_0, P_1$ übersetzt \cite{project2:pixel_to_model_coordinates},
 um die Distanz in der Einheit $[mm]$ anzugeben.
 Anschliessend kann über die Formel \ref{eq:simvsReal:initialVelocity} die Anfangsgeschwindigkeit berechnet
-werden, wobei auch die Gleitreibung $\mu_g$ sowie die Rollreibung $\mu_r$ bekannt sein müssen\footnote{Die Herleitung
-erfolgt in Kapitel \ref{anhang:herleitung:initialVelocityWithTime}.}.
+werden, wobei auch die Gleitreibung $\mu_g$ sowie die Rollreibung $\mu_r$ bekannt sein müssen (Herleitung in Anhang \ref{anhang:herleitung:initialVelocityWithTime}).
 \begin{align}
     v_0^2 \cdot \frac{2 \cdot (\mu_g - \mu_r)}{49 \cdot g \cdot \mu_g^2} + v_0 \cdot \frac{t \cdot (2 \cdot \mu_r + 5 \cdot \mu_g)}{7 \cdot \mu_g} - \frac{1}{2} \cdot g \cdot \mu_r \cdot t^2 - s = 0\label{eq:simvsReal:initialVelocity}
 \end{align}

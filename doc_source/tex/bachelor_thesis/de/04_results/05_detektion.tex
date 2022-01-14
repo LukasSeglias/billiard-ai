@@ -13,6 +13,13 @@ die Positionen mit den Referenzdaten verglichen werden.
 Die Distanzen zwischen den Kugelpositionen in den Referenzdaten und in der Detektion können
 anschliessend statistisch ausgewertet werden.
 
+Im Vergleich zur Vorarbeit \cite{project2:resultate} wurden annotierte Referenzdaten für die Auswertung verwendet, da
+in dieser Arbeit nur der Detektionsalgorithmus für die Bestimmung der Pixelkoordinaten der Kugeln überarbeitet wurde, um
+die Live-Detektion zu erlauben, siehe Kapitel \ref{kap:detektion}.
+Der Algorithmus zur Umwandlung von Pixelkoordinaten zu Modellkoordinaten \cite{project2:pixel_to_model_coordinates} wurde nicht verändert.
+Deshalb wurde hier auf eine Messung der physischen Position der Kugeln verzichtet und stattdessen mit annotierten Bildern gearbeitet.
+Dafür konnten mehr Positionsdaten für die Auswertung gesammelt werden, als dies mit einer Messung zeitlich möglich gewesen wäre.
+
 In den 50 Referenzbildern sind insgesamt 835 Kugelpositionen hinterlegt, in Tabelle \ref{tab:detektion_resultate_distanzen_stats}
 sind einige statistische Kennzahlen aus diesem Vergleich aufgeführt. Der Median liegt bei ca. 2.33mm und 50\% der Detektionen
 haben einen Positionsfehler zwischen ca. 0mm - 3.7mm.
