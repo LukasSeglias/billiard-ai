@@ -5,7 +5,9 @@ in einzelne Funktionsumfänge, da die Interpretation ansonsten zu komplex wird. 
 Startgeschwindigkeiten und der vorausschauende Blick über mehrere Stösse.
 Ein Suchresultat wird wiederum aufgrund vier verschiedener
 Kriterien beurteilt. So spielt die Distanz des zurückzulegenden Weges, der Kollisionswinkel einzelner Kugeln, die Nähe
-zum Loch einer einzulochenden Kugel und die benötigte Startgeschwindigkeit eine Rolle.
+zum Loch einer einzulochenden Kugel und die benötigte Startgeschwindigkeit eine Rolle. Alle diese Kriterien werden für
+jeden Vorschlag eines Stosses nach Segment aufgeschlüsselt. Ein Segment beschreibt den Weg von einer Kugel zur anderen
+oder von einer Kugel zum Zielloch. Darin enthalten können mehrere Bandenkollisionen sein.
 
 In einem ersten Teil wird sich nur der Suche über einen Stoss ohne Bandeninteraktion und ohne
 vervielfältigter Startgeschwindigkeit gewidmet. Der zweite Teil beinhaltet zusätzlich verschiedene Startgeschwindigkeiten.
@@ -51,57 +53,6 @@ Nach Betrachten dieser Situation sind einige mögliche Stösse denkbar:
 In Abbildung \ref{fig:situation_1_solutions} sind die von der Suche gefundenen Stösse in aufsteigender Schwierigkeit abgebildet.
 Mit den ersichtlichen weissen Linien auf jeder Abbildung ist der Pfad jeder Kugel, nicht nur des Spielballs, aufgezeichnet.
 Diese voraussichtlichen Pfade werden nach der Suche mithilfe der Simulation des gefundenen Stosses eingezeichnet.
-
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.00284364 angle: 3.93338e-06 indirection: 0 sum: 0.00284757 cost: 284 previous cost: 0 total cost: 284
-%[mapToSolution] cost-search - distance: 0.000128041 angle: 7.48246e-05 indirection: 0.5 sum: 0.500203 cost: 50020 previous cost: 284 total cost: 50304
-%[mapToSolution] cost-simulation - cost: 21902 previous cost: 50304 total cost: 72206
-%[mapToSolution] end cost: 72206
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.0029786 angle: 7.36014e-05 indirection: 0 sum: 0.0030522 cost: 305 previous cost: 0 total cost: 305
-%[mapToSolution] cost-search - distance: 0.00135804 angle: 0.0237772 indirection: 0.5 sum: 0.525135 cost: 52513 previous cost: 305 total cost: 52818
-%[mapToSolution] cost-simulation - cost: 23547 previous cost: 52818 total cost: 76365
-%[mapToSolution] end cost: 76365
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.0552051 angle: 9.28795e-05 indirection: 0 sum: 0.055298 cost: 5529 previous cost: 0 total cost: 5529
-%[mapToSolution] cost-search - distance: 3.0656e-05 angle: 2.01923e-06 indirection: 0.5 sum: 0.500033 cost: 50003 previous cost: 5529 total cost: 55532
-%[mapToSolution] cost-simulation - cost: 24388 previous cost: 55532 total cost: 79920
-%[mapToSolution] end cost: 79920
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.251514 angle: 0.0224747 indirection: 0 sum: 0.273988 cost: 27398 previous cost: 0 total cost: 27398
-%[mapToSolution] cost-search - distance: 0.0129086 angle: 0.000592332 indirection: 0.5 sum: 0.513501 cost: 51350 previous cost: 27398 total cost: 78748
-%[mapToSolution] cost-simulation - cost: 35872 previous cost: 78748 total cost: 114620
-%[mapToSolution] end cost: 114620
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.00194371 angle: 7.48391e-07 indirection: 0 sum: 0.00194446 cost: 194 previous cost: 0 total cost: 194
-%[mapToSolution] cost-search - distance: 0.000191993 angle: 0.525736 indirection: 0.5 sum: 1.02593 cost: 102592 previous cost: 194 total cost: 102786
-%[mapToSolution] cost-simulation - cost: 45576 previous cost: 102786 total cost: 148362
-%[mapToSolution] end cost: 148362
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.0029786 angle: 7.36014e-05 indirection: 0 sum: 0.0030522 cost: 305 previous cost: 0 total cost: 305
-%[mapToSolution] cost-search - distance: 0.215404 angle: 0.000932547 indirection: 0.5 sum: 0.716337 cost: 71633 previous cost: 305 total cost: 71938
-%[mapToSolution] cost-search - distance: 0.0116657 angle: 0.197609 indirection: 0.5 sum: 0.709275 cost: 70927 previous cost: 71938 total cost: 142865
-%[mapToSolution] cost-simulation - cost: 68868 previous cost: 142865 total cost: 211733
-%[mapToSolution] end cost: 211733
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.0351119 angle: 0.000154641 indirection: 0 sum: 0.0352666 cost: 3526 previous cost: 0 total cost: 3526
-%[mapToSolution] cost-search - distance: 0.00209408 angle: 0.866141 indirection: 0.5 sum: 1.36824 cost: 136823 previous cost: 3526 total cost: 140349
-%[mapToSolution] cost-simulation - cost: 82303 previous cost: 140349 total cost: 222652
-%[mapToSolution] end cost: 222652
-%[mapToSolution] COST END
 
 \begin{figure}[h!]
     \centering
@@ -157,39 +108,202 @@ Diese voraussichtlichen Pfade werden nach der Suche mithilfe der Simulation des 
 \end{figure}
 
 Die zuvor beschriebenen denkbaren Stösse wurden tatsächlich gefunden.
-Der Stoss 1 wurde als der einfachste Stoss bewertet, weil die gesamte zurückzulegende Distanz klein ist,
+Nach Tabelle \ref{tab:kosten_erster_vorschlag_ohne_bande_ohne_geschwindigkeit} wurde der Stoss 1 als der einfachste Stoss
+bewertet, weil die gesamte zurückzulegende Distanz klein ist,
 der Pfad der beteiligten Kugeln insgesamt sehr geradlinig ist und weil die Kugel 1 sehr nahe am Loch unten-links liegt.
-Der zweiteinfachste Stoss 2 zeigt eine grössere Distanz, welche der Spielball zurücklegen muss und daher erfordert
+Allgemein kann festgehalten werden, dass die Stösse in der Reihenfolge vorgeschlagen werden, wie es ihren totalen Suchkosten
+entspricht.
+Der zweiteinfachste Stoss 2 zeigt nach Tabelle \ref{tab:kosten_zweiter_vorschlag_ohne_bande_ohne_geschwindigkeit}
+eine grössere Distanz, welche der Spielball zurücklegen muss und daher erfordert
 der Stoss auch eine höhere Startgeschwindigkeit des Spielballs wodurch dieser als schwieriger eingestuft wird als Stoss 1.
 Dafür ist die Kugel 2 sehr nahe am Loch oben-rechts, wodurch die Kugel nicht mit absoluter Genauigkeit getroffen werden
 muss, damit diese den erwünschten Pfad nicht so weit verlässt, dass sie das Ziel verfehlt.
 
-Im Stoss 3 ist die Gesamtdistanz klein, allerdings ist die Distanz der Kugel 4 zum Spielball kleiner als die Distanz zum Loch.
+Im Stoss 3 ist die Gesamtdistanz nach Tabelle \ref{tab:kosten_dritter_vorschlag_ohne_bande_ohne_geschwindigkeit} klein,
+allerdings ist die Distanz der Kugel 4 zum Spielball kleiner als die Distanz zum Loch.
 Dadurch führt ein kleiner Fehler beim Treffen der Kugel zu einer grösseren Abweichung des Pfades.
 In diesem Beispiel könnte dieser Fehler allerdings klein sein, da der Pfad geradlinig ist und der Spielball die Kugel
 nicht in einem Winkel treffen muss.
 
 Stoss 2 wurde besser als Stoss 3 bewertet, weil bei Stoss 2 die Kugel näher am Loch liegt als bei Stoss 3. Die anderen
-Bewertungskriterien Distanz und Winkel sind bei Stoss 3 besser als bei Stoss 2.
+Bewertungskriterien Distanz und Winkel des Segments \glqq Weiss - Rot\grqq{} sind bei Stoss 3 besser als bei Stoss 2.
 Ob diese Rangfolge objektiv korrekt ist, ist schwierig zu beurteilen.
 
-Der Stoss 5 wird als schwieriger bewertet, weil der Winkel, in dem der Spielball die Kugel 3 treffen muss, ca. 45$^{\circ}$ ist.
+Der Stoss 5 wird nach Tabelle \ref{tab:kosten_fuenfter_vorschlag_ohne_bande_ohne_geschwindigkeit} als schwieriger bewertet, weil der Winkel, in dem der Spielball die Kugel 3 treffen muss, ca. 45$^{\circ}$ ist.
 Im Gegensatz dazu ist die Distanz der Kugel zum Loch sehr klein und die Gesamtdistanz ist relativ klein, was diesen Stoss
-wiederum einfacher macht. Trotzdem hat in diesem Fall der Winkel die Bewertung so stark reduziert, dass Stoss 4 trotz allem
-als einfacher eingestuft wird.
+wiederum einfacher macht. Trotzdem hat in diesem Fall der Winkel die Bewertung so stark reduziert, dass Stoss 4 nach
+Tabelle \ref{tab:kosten_vierter_vorschlag_ohne_bande_ohne_geschwindigkeit} trotz allem als einfacher eingestuft wird.
 
-Der Stoss 6 versenkt die Kugel 2 indirekt über die Kugel 5. Dieser Stoss wird dennoch einfacher bewertet als der
+Der Stoss 6 versenkt die Kugel 2 indirekt über die Kugel 5. Dieser Stoss wird nach
+Tabelle \ref{tab:kosten_sechster_vorschlag_ohne_bande_ohne_geschwindigkeit} dennoch einfacher bewertet als der
 nachfolgende Stoss 7, der keine Indirektion beinhaltet, da der Auftrittswinkel nicht so gross ist und die weisse Kugel
 nicht so stark angespielt werden muss.
 
 Stoss 7 zeigt die Idee, Kugel 5 ins Loch unten-zentral zu spielen.
-Dazu muss diese in einem sehr grossen Winkel angespielt werden, was die Treffgenauigkeit reduziert und eine
-erhöhte Startgeschwindigkeit des Spielballs erfordert.
+Dazu muss diese nach Tabelle \ref{tab:kosten_siebter_vorschlag_ohne_bande_ohne_geschwindigkeit} in einem sehr grossen
+Winkel angespielt werden, was die Treffgenauigkeit reduziert und eine erhöhte Startgeschwindigkeit des Spielballs erfordert.
 
 Aus den obigen Resultaten ist ersichtlich, dass die Suche diejenigen Stösse vorschlägt, welche nach Studium des Spielstandes
 möglich erscheinen. Zudem berücksichtigt die Bewertung der Schwierigkeit eines Stosses die gesamte Distanz, die Winkel, die Nähe
 der einzulochenden Kugel zum Loch und die erforderliche Startgeschwindigkeit.
 
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.00284364 angle: 3.93338e-06 indirection: 0 sum: 0.00284757 cost: 284 previous cost: 0 total cost: 284
+%[mapToSolution] cost-search - distance: 0.000128041 angle: 7.48246e-05 indirection: 0.5 sum: 0.500203 cost: 50020 previous cost: 284 total cost: 50304
+%[mapToSolution] cost-simulation - cost: 21902 previous cost: 50304 total cost: 72206
+%[mapToSolution] end cost: 72206
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.00012804  & 0.0000748246  & 0.5 & 50020 \\
+        1          & Rot - Loch  & 0.00284364  & 0.0000039334  & 0   & 284 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}    & \textbf{50304}\\
+        1          & Simulation & \multicolumn{4}{r}{21902}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                     & \textbf{72206}\\
+    \end{tabular}
+    \caption{Kosten des ersten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion und vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_erster_vorschlag_ohne_bande_ohne_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.0029786 angle: 7.36014e-05 indirection: 0 sum: 0.0030522 cost: 305 previous cost: 0 total cost: 305
+%[mapToSolution] cost-search - distance: 0.00135804 angle: 0.0237772 indirection: 0.5 sum: 0.525135 cost: 52513 previous cost: 305 total cost: 52818
+%[mapToSolution] cost-simulation - cost: 23547 previous cost: 52818 total cost: 76365
+%[mapToSolution] end cost: 76365
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.001358    & 0.0237772     & 0.5 & 52513 \\
+        1          & Rot - Loch  & 0.0029786   & 0.0000736     & 0   & 305 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}    & \textbf{52818}\\
+        1          & Simulation & \multicolumn{4}{r}{23547}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                     & \textbf{76365}\\
+    \end{tabular}
+    \caption{Kosten des zweiten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion und vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_zweiter_vorschlag_ohne_bande_ohne_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.0552051 angle: 9.28795e-05 indirection: 0 sum: 0.055298 cost: 5529 previous cost: 0 total cost: 5529
+%[mapToSolution] cost-search - distance: 3.0656e-05 angle: 2.01923e-06 indirection: 0.5 sum: 0.500033 cost: 50003 previous cost: 5529 total cost: 55532
+%[mapToSolution] cost-simulation - cost: 24388 previous cost: 55532 total cost: 79920
+%[mapToSolution] end cost: 79920
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.0000307    & 0.0000020193  & 0.5 & 50003 \\
+        1          & Rot - Loch  & 0.0552051    & 0.0000928795  & 0   & 5529 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}     & \textbf{55532}\\
+        1          & Simulation & \multicolumn{4}{r}{24388}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                      & \textbf{79920}\\
+    \end{tabular}
+    \caption{Kosten des dritten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion und vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_dritter_vorschlag_ohne_bande_ohne_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.251514 angle: 0.0224747 indirection: 0 sum: 0.273988 cost: 27398 previous cost: 0 total cost: 27398
+%[mapToSolution] cost-search - distance: 0.0129086 angle: 0.000592332 indirection: 0.5 sum: 0.513501 cost: 51350 previous cost: 27398 total cost: 78748
+%[mapToSolution] cost-simulation - cost: 35872 previous cost: 78748 total cost: 114620
+%[mapToSolution] end cost: 114620
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.012909     & 0.0005923     & 0.5 & 51350 \\
+        1          & Rot - Loch  & 0.251514     & 0.0224747     & 0   & 27398 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}     & \textbf{78748}\\
+        1          & Simulation & \multicolumn{4}{r}{35872}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                      & \textbf{114620}\\
+    \end{tabular}
+    \caption{Kosten des vierten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion und vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_vierter_vorschlag_ohne_bande_ohne_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.00194371 angle: 7.48391e-07 indirection: 0 sum: 0.00194446 cost: 194 previous cost: 0 total cost: 194
+%[mapToSolution] cost-search - distance: 0.000191993 angle: 0.525736 indirection: 0.5 sum: 1.02593 cost: 102592 previous cost: 194 total cost: 102786
+%[mapToSolution] cost-simulation - cost: 45576 previous cost: 102786 total cost: 148362
+%[mapToSolution] end cost: 148362
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.000192      & 0.525736      & 0.5 & 102592 \\
+        1          & Rot - Loch  & 0.001944      & 0.0000007484  & 0   & 194 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}      & \textbf{102786}\\
+        1          & Simulation & \multicolumn{4}{r}{45576}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                       & \textbf{148362}\\
+    \end{tabular}
+    \caption{Kosten des fünften Vorschlags über einen einfachen Stoss ohne Bandeninteraktion und vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_fuenfter_vorschlag_ohne_bande_ohne_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.0029786 angle: 7.36014e-05 indirection: 0 sum: 0.0030522 cost: 305 previous cost: 0 total cost: 305
+%[mapToSolution] cost-search - distance: 0.215404 angle: 0.000932547 indirection: 0.5 sum: 0.716337 cost: 71633 previous cost: 305 total cost: 71938
+%[mapToSolution] cost-search - distance: 0.0116657 angle: 0.197609 indirection: 0.5 sum: 0.709275 cost: 70927 previous cost: 71938 total cost: 142865
+%[mapToSolution] cost-simulation - cost: 68868 previous cost: 142865 total cost: 211733
+%[mapToSolution] end cost: 211733
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.011666       & 0.197609      & 0.5 & 70927 \\
+        1          & Rot - Rot   & 0.215404       & 0.0009326     & 0.5 & 71633 \\
+        1          & Rot - Loch  & 0.002979       & 0.0000736     & 0   & 305 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}       & \textbf{142865}\\
+        1          & Simulation & \multicolumn{4}{r}{68868}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                        & \textbf{211733}\\
+    \end{tabular}
+    \caption{Kosten des sechsten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion und vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_sechster_vorschlag_ohne_bande_ohne_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.0351119 angle: 0.000154641 indirection: 0 sum: 0.0352666 cost: 3526 previous cost: 0 total cost: 3526
+%[mapToSolution] cost-search - distance: 0.00209408 angle: 0.866141 indirection: 0.5 sum: 1.36824 cost: 136823 previous cost: 3526 total cost: 140349
+%[mapToSolution] cost-simulation - cost: 82303 previous cost: 140349 total cost: 222652
+%[mapToSolution] end cost: 222652
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.00209408     & 0.866141      & 0.5 & 136823 \\
+        1          & Rot - Loch  & 0.0351119      & 0.000155      & 0   & 3526 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}       & \textbf{140349}\\
+        1          & Simulation & \multicolumn{4}{r}{82303}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                        & \textbf{222652}\\
+    \end{tabular}
+    \caption{Kosten des siebten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion und vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_siebter_vorschlag_ohne_bande_ohne_geschwindigkeit}
+\end{table}
+
+\clearpage
 \subsection{Die einfache Suche - mit vervielfältigter Startgeschwindigkeit}
 Es wird wiederum die Situation wie in Kapitel \ref{kap:suche:die_einfache_suche} betrachtet. Diesmal wird aber die Vervielfältigung der Startgeschwindigkeiten
 zugelassen, insgesamt werden jeweils drei verschieden starke Stargeschwindigkeiten berücksichtigt.
@@ -199,71 +313,6 @@ als solche mit grösserer Distanz und grösserem Winkel.
 
 In Abbildung \ref{fig:situation_1_solutions_startgeschwindigkeit} sind die von der Suche gefundenen Stösse in aufsteigender Schwierigkeit abgebildet.
 Insgesamt wurden 21 Lösungen gefunden, davon werden nur die zehn besten diskutiert.
-
-
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.00284364 angle: 3.93338e-06 indirection: 0 sum: 0.00284757 cost: 284 previous cost: 0 total cost: 284
-%[mapToSolution] cost-search - distance: 0.000128041 angle: 7.48246e-05 indirection: 0.5 sum: 0.500203 cost: 50020 previous cost: 284 total cost: 50304
-%[mapToSolution] cost-simulation - cost: 24085 previous cost: 50304 total cost: 74389
-%[mapToSolution] end cost: 74389
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.0029786 angle: 7.36014e-05 indirection: 0 sum: 0.0030522 cost: 305 previous cost: 0 total cost: 305
-%[mapToSolution] cost-search - distance: 0.00135804 angle: 0.0237772 indirection: 0.5 sum: 0.525135 cost: 52513 previous cost: 305 total cost: 52818
-%[mapToSolution] cost-simulation - cost: 23547 previous cost: 52818 total cost: 76365
-%[mapToSolution] end cost: 76365
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.00284364 angle: 3.93338e-06 indirection: 0 sum: 0.00284757 cost: 284 previous cost: 0 total cost: 284
-%[mapToSolution] cost-search - distance: 0.000128041 angle: 7.48246e-05 indirection: 0.5 sum: 0.500203 cost: 50020 previous cost: 284 total cost: 50304
-%[mapToSolution] cost-simulation - cost: 28280 previous cost: 50304 total cost: 78584
-%[mapToSolution] end cost: 78584
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.0029786 angle: 7.36014e-05 indirection: 0 sum: 0.0030522 cost: 305 previous cost: 0 total cost: 305
-%[mapToSolution] cost-search - distance: 0.00135804 angle: 0.0237772 indirection: 0.5 sum: 0.525135 cost: 52513 previous cost: 305 total cost: 52818
-%[mapToSolution] cost-simulation - cost: 26565 previous cost: 52818 total cost: 79383
-%[mapToSolution] end cost: 79383
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.0552051 angle: 9.28795e-05 indirection: 0 sum: 0.055298 cost: 5529 previous cost: 0 total cost: 5529
-%[mapToSolution] cost-search - distance: 3.0656e-05 angle: 2.01923e-06 indirection: 0.5 sum: 0.500033 cost: 50003 previous cost: 5529 total cost: 55532
-%[mapToSolution] cost-simulation - cost: 24388 previous cost: 55532 total cost: 79920
-%[mapToSolution] end cost: 79920
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.0552051 angle: 9.28795e-05 indirection: 0 sum: 0.055298 cost: 5529 previous cost: 0 total cost: 5529
-%[mapToSolution] cost-search - distance: 3.0656e-05 angle: 2.01923e-06 indirection: 0.5 sum: 0.500033 cost: 50003 previous cost: 5529 total cost: 55532
-%[mapToSolution] cost-simulation - cost: 27115 previous cost: 55532 total cost: 82647
-%[mapToSolution] end cost: 82647
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.0029786 angle: 7.36014e-05 indirection: 0 sum: 0.0030522 cost: 305 previous cost: 0 total cost: 305
-%[mapToSolution] cost-search - distance: 0.00135804 angle: 0.0237772 indirection: 0.5 sum: 0.525135 cost: 52513 previous cost: 305 total cost: 52818
-%[mapToSolution] cost-simulation - cost: 31695 previous cost: 52818 total cost: 84513
-%[mapToSolution] end cost: 84513
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.0552051 angle: 9.28795e-05 indirection: 0 sum: 0.055298 cost: 5529 previous cost: 0 total cost: 5529
-%[mapToSolution] cost-search - distance: 3.0656e-05 angle: 2.01923e-06 indirection: 0.5 sum: 0.500033 cost: 50003 previous cost: 5529 total cost: 55532
-%[mapToSolution] cost-simulation - cost: 32064 previous cost: 55532 total cost: 87596
-%[mapToSolution] end cost: 87596
-%[mapToSolution] COST END
-%[mapToSolution] COST START
-%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
-%[mapToSolution] cost-search - distance: 0.251514 angle: 0.0224747 indirection: 0 sum: 0.273988 cost: 27398 previous cost: 0 total cost: 27398
-%[mapToSolution] cost-search - distance: 0.0129086 angle: 0.000592332 indirection: 0.5 sum: 0.513501 cost: 51350 previous cost: 27398 total cost: 78748
-%[mapToSolution] cost-simulation - cost: 35872 previous cost: 78748 total cost: 114620
-%[mapToSolution] end cost: 114620
-%[mapToSolution] COST END
 
 \begin{figure}[h!]
     \centering
@@ -347,7 +396,12 @@ Dies ist z.B. bei Stoss 3 ersichtlich, der besser gewertet wird als Stoss 4 oder
 Stoss 8, der schwieriger als Stoss 6 und 7 ist. Bei Stoss 8 könnte argumentiert werden, dass die Stärke
 in dem Fall keinen grossen Unterschied macht, da die Kugel 2 mit grosser Wahrscheinlichkeit eingelocht werden kann,
 jedoch ist generell ein sanftes Billardspiel zu bevorzugen, weswegen die Bewertung in dem Sinne durchaus gerechtfertigt
-sein kann.
+sein kann. Die einzelnen Details sind den Tabellen \ref{tab:kosten_erster_vorschlag_ohne_bande_mit_geschwindigkeit},
+\ref{tab:kosten_zweiter_vorschlag_ohne_bande_mit_geschwindigkeit}, \ref{tab:kosten_dritter_vorschlag_ohne_bande_mit_geschwindigkeit},
+\ref{tab:kosten_vierter_vorschlag_ohne_bande_mit_geschwindigkeit}, \ref{tab:kosten_fuenfter_vorschlag_ohne_bande_mit_geschwindigkeit},
+\ref{tab:kosten_sechster_vorschlag_ohne_bande_mit_geschwindigkeit}, \ref{tab:kosten_siebter_vorschlag_ohne_bande_mit_geschwindigkeit},
+\ref{tab:kosten_achter_vorschlag_ohne_bande_mit_geschwindigkeit}, \ref{tab:kosten_neunter_vorschlag_ohne_bande_mit_geschwindigkeit},
+\ref{tab:kosten_zehnter_vorschlag_ohne_bande_mit_geschwindigkeit} zu entnehmen.
 
 %[mapToSolution] COST START
 %[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
@@ -356,21 +410,220 @@ sein kann.
 %[mapToSolution] cost-simulation - cost: 21902 previous cost: 50304 total cost: 72206
 %[mapToSolution] end cost: 72206
 %[mapToSolution] COST END
-\begin{table}[ht]
+\begin{table}[h!]
     \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
     \begin{tabular}{llrrrr}
         \rowcolor{\seccolor!50}
         Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
-        1          & Rot - Loch  & 0.00284364  & 0.0000039334  & 0   & 284 \\
         1          & Weiss - Rot & 0.00012804  & 0.0000748246  & 0.5 & 50020 \\
+        1          & Rot - Loch  & 0.00284364  & 0.0000039334  & 0   & 284 \\
         \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}    & \textbf{50304}\\
         1          & Simulation & \multicolumn{4}{r}{21902}\\\bfhmidline
         \multicolumn{5}{l}{\textbf{Gesamttotal}}                     & \textbf{72206}\\
     \end{tabular}
-    \caption{Kosten des ersten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion und vervielfältigter Geschwindigkeit.}
-    \label{tab:kosten_erster_vorschlag_ohne_bande_ohne_geschwindigkeit}
+    \caption{Kosten des ersten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion mit vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_erster_vorschlag_ohne_bande_mit_geschwindigkeit}
 \end{table}
 
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.00284364 angle: 3.93338e-06 indirection: 0 sum: 0.00284757 cost: 284 previous cost: 0 total cost: 284
+%[mapToSolution] cost-search - distance: 0.000128041 angle: 7.48246e-05 indirection: 0.5 sum: 0.500203 cost: 50020 previous cost: 284 total cost: 50304
+%[mapToSolution] cost-simulation - cost: 24085 previous cost: 50304 total cost: 74389
+%[mapToSolution] end cost: 74389
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.00012804  & 0.0000748246  & 0.5 & 50020 \\
+        1          & Rot - Loch  & 0.00284364  & 0.0000039334  & 0   & 284 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}    & \textbf{50304}\\
+        1          & Simulation & \multicolumn{4}{r}{24085}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                     & \textbf{74389}\\
+    \end{tabular}
+    \caption{Kosten des zweiten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion mit vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_zweiter_vorschlag_ohne_bande_mit_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.0029786 angle: 7.36014e-05 indirection: 0 sum: 0.0030522 cost: 305 previous cost: 0 total cost: 305
+%[mapToSolution] cost-search - distance: 0.00135804 angle: 0.0237772 indirection: 0.5 sum: 0.525135 cost: 52513 previous cost: 305 total cost: 52818
+%[mapToSolution] cost-simulation - cost: 23547 previous cost: 52818 total cost: 76365
+%[mapToSolution] end cost: 76365
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.001358   & 0.0237772      & 0.5 & 52513 \\
+        1          & Rot - Loch  & 0.002979   & 0.0000736      & 0   & 305 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}    & \textbf{52818}\\
+        1          & Simulation & \multicolumn{4}{r}{23547}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                     & \textbf{76365}\\
+    \end{tabular}
+    \caption{Kosten des dritten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion mit vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_dritte_vorschlag_ohne_bande_mit_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.00284364 angle: 3.93338e-06 indirection: 0 sum: 0.00284757 cost: 284 previous cost: 0 total cost: 284
+%[mapToSolution] cost-search - distance: 0.000128041 angle: 7.48246e-05 indirection: 0.5 sum: 0.500203 cost: 50020 previous cost: 284 total cost: 50304
+%[mapToSolution] cost-simulation - cost: 28280 previous cost: 50304 total cost: 78584
+%[mapToSolution] end cost: 78584
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.00012804   & 0.0000748246     & 0.5 & 50020 \\
+        1          & Rot - Loch  & 0.00284364   & 0.0000039334     & 0   & 284 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}  & \textbf{50304}\\
+        1          & Simulation & \multicolumn{4}{r}{28280}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                   & \textbf{78584}\\
+    \end{tabular}
+    \caption{Kosten des vierten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion mit vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_vierter_vorschlag_ohne_bande_mit_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.0029786 angle: 7.36014e-05 indirection: 0 sum: 0.0030522 cost: 305 previous cost: 0 total cost: 305
+%[mapToSolution] cost-search - distance: 0.00135804 angle: 0.0237772 indirection: 0.5 sum: 0.525135 cost: 52513 previous cost: 305 total cost: 52818
+%[mapToSolution] cost-simulation - cost: 26565 previous cost: 52818 total cost: 79383
+%[mapToSolution] end cost: 79383
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.001358   & 0.0237772          & 0.5 & 52513 \\
+        1          & Rot - Loch  & 0.002979   & 0.0000736          & 0   & 305 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}  & \textbf{52818}\\
+        1          & Simulation & \multicolumn{4}{r}{26565}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                   & \textbf{79383}\\
+    \end{tabular}
+    \caption{Kosten des fünften Vorschlags über einen einfachen Stoss ohne Bandeninteraktion mit vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_fuenfter_vorschlag_ohne_bande_mit_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.0552051 angle: 9.28795e-05 indirection: 0 sum: 0.055298 cost: 5529 previous cost: 0 total cost: 5529
+%[mapToSolution] cost-search - distance: 3.0656e-05 angle: 2.01923e-06 indirection: 0.5 sum: 0.500033 cost: 50003 previous cost: 5529 total cost: 55532
+%[mapToSolution] cost-simulation - cost: 24388 previous cost: 55532 total cost: 79920
+%[mapToSolution] end cost: 79920
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.0000307  & 0.0000020192       & 0.5 & 50003 \\
+        1          & Rot - Loch  & 0.055205   & 0.0000928795       & 0   & 5529 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}  & \textbf{55532}\\
+        1          & Simulation & \multicolumn{4}{r}{24388}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                   & \textbf{79920}\\
+    \end{tabular}
+    \caption{Kosten des sechsten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion mit vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_sechster_vorschlag_ohne_bande_mit_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.0552051 angle: 9.28795e-05 indirection: 0 sum: 0.055298 cost: 5529 previous cost: 0 total cost: 5529
+%[mapToSolution] cost-search - distance: 3.0656e-05 angle: 2.01923e-06 indirection: 0.5 sum: 0.500033 cost: 50003 previous cost: 5529 total cost: 55532
+%[mapToSolution] cost-simulation - cost: 27115 previous cost: 55532 total cost: 82647
+%[mapToSolution] end cost: 82647
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.0000307   & 0.0000020192       & 0.5 & 50003 \\
+        1          & Rot - Loch  & 0.0552051   & 0.0000928795       & 0   & 5529 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}  & \textbf{55532}\\
+        1          & Simulation & \multicolumn{4}{r}{27115}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                   & \textbf{82647}\\
+    \end{tabular}
+    \caption{Kosten des siebten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion mit vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_siebter_vorschlag_ohne_bande_mit_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.0029786 angle: 7.36014e-05 indirection: 0 sum: 0.0030522 cost: 305 previous cost: 0 total cost: 305
+%[mapToSolution] cost-search - distance: 0.00135804 angle: 0.0237772 indirection: 0.5 sum: 0.525135 cost: 52513 previous cost: 305 total cost: 52818
+%[mapToSolution] cost-simulation - cost: 31695 previous cost: 52818 total cost: 84513
+%[mapToSolution] end cost: 84513
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.001358    & 0.0237772          & 0.5 & 52513 \\
+        1          & Rot - Loch  & 0.0029786   & 0.0000736014       & 0   & 305 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}  & \textbf{52818}\\
+        1          & Simulation & \multicolumn{4}{r}{31695}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                   & \textbf{84513}\\
+    \end{tabular}
+    \caption{Kosten des achten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion mit vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_achter_vorschlag_ohne_bande_mit_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.0552051 angle: 9.28795e-05 indirection: 0 sum: 0.055298 cost: 5529 previous cost: 0 total cost: 5529
+%[mapToSolution] cost-search - distance: 3.0656e-05 angle: 2.01923e-06 indirection: 0.5 sum: 0.500033 cost: 50003 previous cost: 5529 total cost: 55532
+%[mapToSolution] cost-simulation - cost: 32064 previous cost: 55532 total cost: 87596
+%[mapToSolution] end cost: 87596
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.0000307    & 0.00000201923      & 0.5 & 50003 \\
+        1          & Rot - Loch  & 0.0552051    & 0.0000928795       & 0   & 5529 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}  & \textbf{55532}\\
+        1          & Simulation & \multicolumn{4}{r}{32064}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                   & \textbf{87596}\\
+    \end{tabular}
+    \caption{Kosten des neunten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion mit vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_neunter_vorschlag_ohne_bande_mit_geschwindigkeit}
+\end{table}
+
+%[mapToSolution] COST START
+%[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
+%[mapToSolution] cost-search - distance: 0.251514 angle: 0.0224747 indirection: 0 sum: 0.273988 cost: 27398 previous cost: 0 total cost: 27398
+%[mapToSolution] cost-search - distance: 0.0129086 angle: 0.000592332 indirection: 0.5 sum: 0.513501 cost: 51350 previous cost: 27398 total cost: 78748
+%[mapToSolution] cost-simulation - cost: 35872 previous cost: 78748 total cost: 114620
+%[mapToSolution] end cost: 114620
+%[mapToSolution] COST END
+\begin{table}[h!]
+    \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+    \begin{tabular}{llrrrr}
+        \rowcolor{\seccolor!50}
+        Stoss & Segment & Distanzkosten & Winkelkosten & Indirektionskosten & Total (Ganzzahl)\\\bfhmidline
+        1          & Weiss - Rot & 0.012909     & 0.0005923       & 0.5 & 51350 \\
+        1          & Rot - Loch  & 0.251514     & 0.0224747       & 0   & 27398 \\
+        \textbf{1} & \multicolumn{4}{l}{\textbf{Suchkostentotal}}  & \textbf{78748}\\
+        1          & Simulation & \multicolumn{4}{r}{35872}\\\bfhmidline
+        \multicolumn{5}{l}{\textbf{Gesamttotal}}                   & \textbf{114620}\\
+    \end{tabular}
+    \caption{Kosten des zehnten Vorschlags über einen einfachen Stoss ohne Bandeninteraktion mit vervielfältigter Geschwindigkeit.}
+    \label{tab:kosten_zehnter_vorschlag_ohne_bande_mit_geschwindigkeit}
+\end{table}
+
+\clearpage
 \subsection{Die einfache Suche - mit Bandenkollisionen}
 In diesem Fall werden verschiedene Startgeschwindigkeiten nicht berücksichtigt, jedoch wird das Bandenspiel zugelassen.
 Auch hier sollten sich die Resultate nicht wesentlich zur einfachen Suche in Kapitel \ref{kap:suche:die_einfache_suche} ändern.
