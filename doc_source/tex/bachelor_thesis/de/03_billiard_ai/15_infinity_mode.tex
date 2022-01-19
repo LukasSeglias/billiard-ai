@@ -2,11 +2,13 @@
 Der Infinity-Modus soll es dem Spieler ermöglichen, einen Vorschlag für einen Stoss zu erhalten,
 einen Stoss auszuführen und anschliessend auf Basis des dadurch entstandenen Spielstandes einen neuen Vorschlag zu erhalten.
 
-Dies bedingt die Klassifikation des Spielstandes in stabil und instabil. Ein Spielstand ist instabil, sofern sich noch Kugeln
-bewegen oder der Spieler gerade dabei ist, einen Stoss durchzuführen. Der Spielstand gilt als stabil, wenn die Kugeln
-stehen bleiben. Sofern sich der Spielstand zu stabil ändert, wird eine Suche nach dem optimalen Stoss ausgeführt,
-und das Resultat wird dem Spieler auf dem Tisch angezeigt. Währenddessen, dass der Spielstand instabil ist, soll keine erneute
-Suche ausgelöst werden, damit der Spieler die Chance hat, den Vorschlag zu prüfen und gemäss angezeigter Animation auszuführen.
+Dies bedingt die Klassifikation des Spielstandes in stabil und instabil.
+Ein Spielstand ist instabil, sofern sich noch Kugeln bewegen oder der Spieler gerade dabei ist, einen Stoss durchzuführen.
+Der Spielstand gilt als stabil, wenn die Kugeln stehen bleiben.
+Sofern sich der Spielstand zu stabil ändert, wird eine Suche nach dem optimalen Stoss ausgeführt,
+und das Resultat wird dem Spieler auf dem Tisch angezeigt.
+Währenddessen, dass der Spielstand instabil ist, soll keine erneute Suche ausgelöst werden,
+damit der Spieler die Chance hat, den Vorschlag zu prüfen und gemäss angezeigter Animation auszuführen.
 
 Die Detektion des aktuellen Spielstandes enthält über die Zeit betrachtet ein gewisses zufälliges Rauschen.
 Dadurch verändern sich die Positionen aller Kugeln auch bei komplettem Stillstand leicht.
@@ -56,8 +58,8 @@ Eine Kugel gilt als bewegt, wenn der Betrag des durchschnittlichen Bewegungsvekt
 Sofern eine Kugel eingelocht wird, verändert sich die Gesamtanzahl der Kugeln und der Spielstand ist für eine kurze Zeit instabil.
 Es reicht allerdings nicht aus, die Anzahl detektierter Kugeln zweier aufeinanderfolgender Frames zu vergleichen,
 da Detektionsfehler diesen Vergleich verfälschen können.
-Wenn beispielsweise in Frame $T_{t-1}$ eine Kugel zu viel detektiert und diese Kugel in Frame $T_{t}$ nicht mehr
-detektiert wird, dann würde diese Kugel in Frame $T_{t}$ als verloren eingestuft.
+Wenn beispielsweise in Frame $F_{t-1}$ eine Kugel zu viel detektiert und diese Kugel in Frame $F_{t}$ nicht mehr
+detektiert wird, dann würde diese Kugel in Frame $F_{t}$ als verloren eingestuft.
 Da diese Detektionsfehler oft nur auf einzelnen Frames auftauchen, gilt eine Kugel erst als verloren, wenn diese zuvor
 $O$ Frames erfolgreich getrackt werden konnte.
 

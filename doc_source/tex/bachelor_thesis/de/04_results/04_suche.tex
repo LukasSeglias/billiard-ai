@@ -2,7 +2,7 @@
 Dieses Kapitel beinhaltet die Beschreibung und Diskussion der vorgeschlagenen Suchresultate. Diese werden aufgeteilt
 in einzelne Funktionsumfänge, da die Interpretation ansonsten zu komplex wird. Die Funktionsumfänge beschreiben die Suche
 über einen einzelnen Stoss, über die Möglichkeit einer oder mehrerer Bandeninteraktionen, die Berücksichtigung verschiedener
-Startgeschwindigkeiten und der vorausschauende Blick über mehrere Stösse.
+Startgeschwindigkeiten und die Suche über mehrere Stösse.
 Ein Suchresultat wird wiederum aufgrund vier verschiedener
 Kriterien beurteilt. So spielt die Distanz des zurückzulegenden Weges, der Kollisionswinkel einzelner Kugeln, die Nähe
 zum Loch einer einzulochenden Kugel und die benötigte Startgeschwindigkeit eine Rolle. Alle diese Kriterien werden für
@@ -113,39 +113,6 @@ bewertet, weil die gesamte zurückzulegende Distanz klein ist,
 der Pfad der beteiligten Kugeln insgesamt sehr geradlinig ist und weil die Kugel 1 sehr nahe am Loch unten-links liegt.
 Allgemein kann festgehalten werden, dass die Stösse in der Reihenfolge vorgeschlagen werden, wie es ihren totalen Suchkosten
 entspricht.
-Der zweiteinfachste Stoss 2 zeigt nach Tabelle \ref{tab:kosten_zweiter_vorschlag_ohne_bande_ohne_geschwindigkeit}
-eine grössere Distanz, welche der Spielball zurücklegen muss und daher erfordert
-der Stoss auch eine höhere Startgeschwindigkeit des Spielballs wodurch dieser als schwieriger eingestuft wird als Stoss 1.
-Dafür ist die Kugel 2 sehr nahe am Loch oben-rechts, wodurch die Kugel nicht mit absoluter Genauigkeit getroffen werden
-muss, damit diese den erwünschten Pfad nicht so weit verlässt, dass sie das Ziel verfehlt.
-
-Im Stoss 3 ist die Gesamtdistanz nach Tabelle \ref{tab:kosten_dritter_vorschlag_ohne_bande_ohne_geschwindigkeit} klein,
-allerdings ist die Distanz der Kugel 4 zum Spielball kleiner als die Distanz zum Loch.
-Dadurch führt ein kleiner Fehler beim Treffen der Kugel zu einer grösseren Abweichung des Pfades.
-In diesem Beispiel könnte dieser Fehler allerdings klein sein, da der Pfad geradlinig ist und der Spielball die Kugel
-nicht in einem Winkel treffen muss.
-
-Stoss 2 wurde besser als Stoss 3 bewertet, weil bei Stoss 2 die Kugel näher am Loch liegt als bei Stoss 3. Die anderen
-Bewertungskriterien Distanz und Winkel des Segments \glqq Weiss - Rot\grqq{} sind bei Stoss 3 besser als bei Stoss 2.
-Ob diese Rangfolge objektiv korrekt ist, ist schwierig zu beurteilen.
-
-Der Stoss 5 wird nach Tabelle \ref{tab:kosten_fuenfter_vorschlag_ohne_bande_ohne_geschwindigkeit} als schwieriger bewertet, weil der Winkel, in dem der Spielball die Kugel 3 treffen muss, ca. 45$^{\circ}$ ist.
-Im Gegensatz dazu ist die Distanz der Kugel zum Loch sehr klein und die Gesamtdistanz ist relativ klein, was diesen Stoss
-wiederum einfacher macht. Trotzdem hat in diesem Fall der Winkel die Bewertung so stark reduziert, dass Stoss 4 nach
-Tabelle \ref{tab:kosten_vierter_vorschlag_ohne_bande_ohne_geschwindigkeit} trotz allem als einfacher eingestuft wird.
-
-Der Stoss 6 versenkt die Kugel 2 indirekt über die Kugel 5. Dieser Stoss wird nach
-Tabelle \ref{tab:kosten_sechster_vorschlag_ohne_bande_ohne_geschwindigkeit} dennoch einfacher bewertet als der
-nachfolgende Stoss 7, der keine Indirektion beinhaltet, da der Auftrittswinkel nicht so gross ist und die weisse Kugel
-nicht so stark angespielt werden muss.
-
-Stoss 7 zeigt die Idee, Kugel 5 ins Loch unten-zentral zu spielen.
-Dazu muss diese nach Tabelle \ref{tab:kosten_siebter_vorschlag_ohne_bande_ohne_geschwindigkeit} in einem sehr grossen
-Winkel angespielt werden, was die Treffgenauigkeit reduziert und eine erhöhte Startgeschwindigkeit des Spielballs erfordert.
-
-Aus den obigen Resultaten ist ersichtlich, dass die Suche diejenigen Stösse vorschlägt, welche nach Studium des Spielstandes
-möglich erscheinen. Zudem berücksichtigt die Bewertung der Schwierigkeit eines Stosses die gesamte Distanz, die Winkel, die Nähe
-der einzulochenden Kugel zum Loch und die erforderliche Startgeschwindigkeit.
 
 %[mapToSolution] COST START
 %[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
@@ -169,6 +136,12 @@ der einzulochenden Kugel zum Loch und die erforderliche Startgeschwindigkeit.
     \label{tab:kosten_erster_vorschlag_ohne_bande_ohne_geschwindigkeit}
 \end{table}
 
+Der zweiteinfachste Stoss 2 zeigt nach Tabelle \ref{tab:kosten_zweiter_vorschlag_ohne_bande_ohne_geschwindigkeit}
+eine grössere Distanz, welche der Spielball zurücklegen muss und daher erfordert
+der Stoss auch eine höhere Startgeschwindigkeit des Spielballs wodurch dieser als schwieriger eingestuft wird als Stoss 1.
+Dafür ist die Kugel 2 sehr nahe am Loch oben-rechts, wodurch die Kugel nicht mit absoluter Genauigkeit getroffen werden
+muss, damit diese den erwünschten Pfad nicht so weit verlässt, dass sie das Ziel verfehlt.
+
 %[mapToSolution] COST START
 %[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
 %[mapToSolution] cost-search - distance: 0.0029786 angle: 7.36014e-05 indirection: 0 sum: 0.0030522 cost: 305 previous cost: 0 total cost: 305
@@ -191,6 +164,13 @@ der einzulochenden Kugel zum Loch und die erforderliche Startgeschwindigkeit.
     \label{tab:kosten_zweiter_vorschlag_ohne_bande_ohne_geschwindigkeit}
 \end{table}
 
+\newpage
+Im Stoss 3 ist die Gesamtdistanz nach Tabelle \ref{tab:kosten_dritter_vorschlag_ohne_bande_ohne_geschwindigkeit} klein,
+allerdings ist die Distanz der Kugel 4 zum Spielball kleiner als die Distanz zum Loch.
+Dadurch führt ein kleiner Fehler beim Treffen der Kugel zu einer grösseren Abweichung des Pfades.
+In diesem Beispiel könnte dieser Fehler allerdings klein sein, da der Pfad geradlinig ist und der Spielball die Kugel
+nicht in einem Winkel treffen muss.
+
 %[mapToSolution] COST START
 %[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
 %[mapToSolution] cost-search - distance: 0.0552051 angle: 9.28795e-05 indirection: 0 sum: 0.055298 cost: 5529 previous cost: 0 total cost: 5529
@@ -212,6 +192,16 @@ der einzulochenden Kugel zum Loch und die erforderliche Startgeschwindigkeit.
     \caption{Detaillierte Kosten von Stoss 3 aus Abbildung \ref{fig:situation_1_solutions}.}
     \label{tab:kosten_dritter_vorschlag_ohne_bande_ohne_geschwindigkeit}
 \end{table}
+
+Stoss 2 wurde besser als Stoss 3 bewertet, weil bei Stoss 2 die Kugel näher am Loch liegt als bei Stoss 3. Die anderen
+Bewertungskriterien Distanz und Winkel des Segments \glqq Weiss - Rot\grqq{} sind bei Stoss 3 besser als bei Stoss 2.
+Ob diese Rangfolge objektiv korrekt ist, ist schwierig zu beurteilen.
+
+Der Stoss 5 wird nach Tabelle \ref{tab:kosten_fuenfter_vorschlag_ohne_bande_ohne_geschwindigkeit} als schwieriger bewertet,
+weil der Winkel, in dem der Spielball die Kugel 3 treffen muss, ca. 45$^{\circ}$ ist.
+Im Gegensatz dazu ist die Distanz der Kugel zum Loch sehr klein und die Gesamtdistanz ist relativ klein, was diesen Stoss
+wiederum einfacher macht. Trotzdem hat in diesem Fall der Winkel die Bewertung so stark reduziert, dass Stoss 4 nach
+Tabelle \ref{tab:kosten_vierter_vorschlag_ohne_bande_ohne_geschwindigkeit} trotz allem als einfacher eingestuft wird.
 
 %[mapToSolution] COST START
 %[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
@@ -257,6 +247,11 @@ der einzulochenden Kugel zum Loch und die erforderliche Startgeschwindigkeit.
     \label{tab:kosten_fuenfter_vorschlag_ohne_bande_ohne_geschwindigkeit}
 \end{table}
 
+Der Stoss 6 versenkt die Kugel 2 indirekt über die Kugel 5. Dieser Stoss wird nach
+Tabelle \ref{tab:kosten_sechster_vorschlag_ohne_bande_ohne_geschwindigkeit} dennoch einfacher bewertet als der
+nachfolgende Stoss 7, der keine Indirektion beinhaltet, da der Auftrittswinkel nicht so gross ist und die weisse Kugel
+nicht so stark angespielt werden muss.
+
 %[mapToSolution] COST START
 %[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
 %[mapToSolution] cost-search - distance: 0.0029786 angle: 7.36014e-05 indirection: 0 sum: 0.0030522 cost: 305 previous cost: 0 total cost: 305
@@ -281,6 +276,11 @@ der einzulochenden Kugel zum Loch und die erforderliche Startgeschwindigkeit.
     \label{tab:kosten_sechster_vorschlag_ohne_bande_ohne_geschwindigkeit}
 \end{table}
 
+\newpage
+Stoss 7 zeigt die Idee, Kugel 5 ins Loch unten-zentral zu spielen.
+Dazu muss diese nach Tabelle \ref{tab:kosten_siebter_vorschlag_ohne_bande_ohne_geschwindigkeit} in einem sehr grossen
+Winkel angespielt werden, was die Treffgenauigkeit reduziert und eine erhöhte Startgeschwindigkeit des Spielballs erfordert.
+
 %[mapToSolution] COST START
 %[mapToSolution] cost-search - distance: 0 angle: 0 indirection: 0 sum: 0 cost: 0 previous cost: 0 total cost: 0
 %[mapToSolution] cost-search - distance: 0.0351119 angle: 0.000154641 indirection: 0 sum: 0.0352666 cost: 3526 previous cost: 0 total cost: 3526
@@ -302,6 +302,11 @@ der einzulochenden Kugel zum Loch und die erforderliche Startgeschwindigkeit.
     \caption{Detaillierte Kosten von Stoss 7 aus Abbildung \ref{fig:situation_1_solutions}.}
     \label{tab:kosten_siebter_vorschlag_ohne_bande_ohne_geschwindigkeit}
 \end{table}
+
+Aus den obigen Resultaten ist ersichtlich, dass die Suche diejenigen Stösse vorschlägt, welche nach Studium des Spielstandes
+möglich erscheinen.
+Zudem berücksichtigt die Bewertung der Schwierigkeit eines Stosses die gesamte Distanz, die Winkel, die Nähe
+der einzulochenden Kugel zum Loch und die erforderliche Startgeschwindigkeit.
 
 \clearpage
 \subsection{Die einfache Suche - mit vervielfältigter Startgeschwindigkeit}
@@ -990,7 +995,7 @@ Zudem ist die Berücksichtigung mehrerer Anfangsgeschwindigkeiten ausgeschaltet.
     \begin{center}
         \includegraphics[width=0.4\linewidth]{../common/04_results/resources/simple_search/situation_diverse_deep_search.PNG}
     \end{center}
-    \caption{Situation 2: Einige verstreute Kugeln mit einer Gelben}
+    \caption{Situation 2: Einige verstreute Kugeln mit einer Gelben.}
     \label{fig:search_situation_2}
 \end{figure}
 

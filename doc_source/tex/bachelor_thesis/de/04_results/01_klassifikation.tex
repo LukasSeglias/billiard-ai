@@ -9,6 +9,27 @@ für die Klassifikation aufgeführt. Es wurden 32 Testbilder erstellt, wobei jew
 auf jedem Bild abgebildet sind. Dies führt dazu, dass es mehr Testdaten für die roten Kugeln gibt als für die anderen farbigen Kugeln.
 In den Testbildern sind keine Kugeln mit der Klasse \emph{unknown} vorhanden.
 
+% Total accuracy: 0.962054
+\begin{table}[ht]
+        \rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
+        \begin{tabular}{ ccccccccccc }
+                \rowcolor{\seccolor!50}
+                &         & \multicolumn{9}{c}{\textbf{Wahre Farbe}}\\
+                &         &   BROWN &    PINK &     RED &   BLACK &  YELLOW &   WHITE &    BLUE &   GREEN & UNKNOWN \\
+                & BROWN   &      26 &       0 &      11 &       0 &       0 &       0 &       0 &       0 &       0 \\
+                & PINK    &       0 &      32 &       0 &       0 &       0 &       0 &       0 &       0 &       0 \\
+                & RED     &       6 &       0 &     213 &       0 &       0 &       0 &       0 &       0 &       0 \\
+                & BLACK   &       0 &       0 &       0 &      32 &       0 &       0 &       0 &       0 &       0 \\
+                & YELLOW  &       0 &       0 &       0 &       0 &      32 &       0 &       0 &       0 &       0 \\
+                & WHITE   &       0 &       0 &       0 &       0 &       0 &      32 &       0 &       0 &       0 \\
+                & BLUE    &       0 &       0 &       0 &       0 &       0 &       0 &      32 &       0 &       0 \\
+                & GREEN   &       0 &       0 &       0 &       0 &       0 &       0 &       0 &      32 &       0 \\
+                \multirow{-10}{*}{\rotatebox{90}{\textbf{Klassifizierte Farbe}}} & UNKNOWN &       0 &       0 &       0 &       0 &       0 &       0 &       0 &       0 &       0
+        \end{tabular}
+        \caption{Ergebnisse Klassifikation der Kugelfarben}
+        \label{tab:klassifikation_resultate_confusion_matrix}
+\end{table}
+
 Aus der Wahrheitsmatrix ist ersichtlich, dass braune und rote Kugeln teilweise verwechselt werden.
 Dies ist auf die ungleichmässige Ausleichtung des Billardtisches zurückzuführen, wodurch eine genaue Unterscheidung
 der roten und braunen Kugeln schwierig ist.
@@ -80,23 +101,3 @@ Die Vertrauenswahrscheinlichkeit \cite{wiki:beurteilung_binärer_klassifikator} 
         \label{fig:classification_results_failed_examples}
 \end{figure}
 
-% Total accuracy: 0.962054
-\begin{table}[ht]
-\rowcolors{1}{\seccolor!10}{\seccolor!10} % Rows with 10% of secondary color
-\begin{tabular}{ ccccccccccc }
-        \rowcolor{\seccolor!50}
-        &         & \multicolumn{9}{c}{\textbf{Wahre Farbe}}\\
-        &         &   BROWN &    PINK &     RED &   BLACK &  YELLOW &   WHITE &    BLUE &   GREEN & UNKNOWN \\
-        & BROWN   &      26 &       0 &      11 &       0 &       0 &       0 &       0 &       0 &       0 \\
-        & PINK    &       0 &      32 &       0 &       0 &       0 &       0 &       0 &       0 &       0 \\
-        & RED     &       6 &       0 &     213 &       0 &       0 &       0 &       0 &       0 &       0 \\
-        & BLACK   &       0 &       0 &       0 &      32 &       0 &       0 &       0 &       0 &       0 \\
-        & YELLOW  &       0 &       0 &       0 &       0 &      32 &       0 &       0 &       0 &       0 \\
-        & WHITE   &       0 &       0 &       0 &       0 &       0 &      32 &       0 &       0 &       0 \\
-        & BLUE    &       0 &       0 &       0 &       0 &       0 &       0 &      32 &       0 &       0 \\
-        & GREEN   &       0 &       0 &       0 &       0 &       0 &       0 &       0 &      32 &       0 \\
-        \multirow{-10}{*}{\rotatebox{90}{\textbf{Klassifizierte Farbe}}} & UNKNOWN &       0 &       0 &       0 &       0 &       0 &       0 &       0 &       0 &       0
-\end{tabular}
-\caption{Ergebnisse Klassifikation der Kugelfarben}
-\label{tab:klassifikation_resultate_confusion_matrix}
-\end{table}

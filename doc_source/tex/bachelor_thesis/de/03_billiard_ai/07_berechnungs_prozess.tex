@@ -1,16 +1,8 @@
 \clearpage
 \section{Berechnungsprozess}
-Die Berechnung eines optimalen Stosses wird aufgrund der vielen Möglichkeiten sehr zeitintensiv, weswegen
-die expandierten Teilschritte parallel gerechnet werden.
+Die Berechnung eines optimalen Stosses kann aufgrund der vielen Möglichkeiten zeitintensiv werden, weswegen
+die Expansionsschritte der Suche parallel gerechnet werden.
 Diese Parallelisierung wird mithilfe von Threads bewerkstelligt, um Berechnungsprozesse effizienter auszuführen.
-
-\begin{figure}[h!]
-    \begin{center}
-        \includegraphics[width=0.8\linewidth]{../common/03_billiard_ai/resources/14_berechnungsprozess.png}
-    \end{center}
-    \caption{Berechnungsprozess: Die Suche und Simulation verschiedener Stosskandidaten wird parallelisiert ausgeführt.}
-    \label{fig:berechnungsprozess}
-\end{figure}
 
 Abbildung \ref{fig:berechnungsprozess} erläutert die Durchführung dieser Expansionsschritte.
 Die Applikation auf der linken Seite liefert die konkreten Aufgaben, welche von einem Pool an Berechnungsprozessen
@@ -18,17 +10,26 @@ bearbeitet werden sollen. Sie beinhaltet die Logik, um eine solche Aufgabe zu l�
 selbst nicht über dieses Wissen verfügen.
 Der Pool von Berechnungsprozessen wird vom Prozessmanager verwaltet und dieser ist die zentrale Ansprechperson der Applikation.
 
-Datenaustausche sind über gefärbte Kreise repräsentiert. Handelt es sich um einen asynchronen
-Datenaustausch, dann ist die Verbindungslinie durch einen nicht ausgefüllten Punkt gekennzeichnet.
-Es werden die Farben Rot den zu bearbeitenden Daten,
-Gelb den Konfigurationsdaten und Grün den Resultaten zugeordnet.
-Signale für die Koordination der Threads sind durch ein ausgefülltes Quadrat an der Verbindungslinie gekennzeichnet.
-Das Signal oder die Daten sind jeweils beim Empfänger angegeben.
-Repetitive Aufgaben sind durch ein hinterlegtes oranges Rechteck markiert.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=0.8\linewidth]{../common/03_billiard_ai/resources/14_berechnungsprozess.png}
+    \end{center}
+    \caption{
+        Berechnungsprozess: Die Suche und Simulation verschiedener Stosskandidaten wird parallelisiert ausgeführt.
+        Datenaustausche sind über gefärbte Kreise repräsentiert. Handelt es sich um einen asynchronen
+        Datenaustausch, dann ist die Verbindungslinie durch einen nicht ausgefüllten Punkt gekennzeichnet.
+        Es werden die Farben Rot den zu bearbeitenden Daten,
+        Gelb den Konfigurationsdaten und Grün den Resultaten zugeordnet.
+        Signale für die Koordination der Threads sind durch ein ausgefülltes Quadrat an der Verbindungslinie gekennzeichnet.
+        Das Signal oder die Daten sind jeweils beim Empfänger angegeben.
+        Repetitive Aufgaben sind durch ein hinterlegtes oranges Rechteck markiert.
+    }
+    \label{fig:berechnungsprozess}
+\end{figure}
 
-Bei der Erstellung des Prozessmanagers werden alle Konfigurationen mitgeliefert. Der Prozessmanager erzeugt während seiner
-Instanziierung die Prozesse, welche ebenfalls direkt konfiguriert werden. Die Prozesse laufen nun im Hintergrund und
-warten auf Daten.
+Bei der Erstellung des Prozessmanagers werden alle Konfigurationen mitgeliefert.
+Der Prozessmanager erzeugt während seiner Instanziierung die Prozesse, welche ebenfalls direkt konfiguriert werden.
+Die Prozesse laufen nun im Hintergrund und warten auf Daten.
 
 Erhält die Applikation eine Suchanfrage, ruft sie in einem ersten Schritt den Prozessmanager auf.
 Dieser nimmt noch zu berechnende Daten entgegen. Im Fall von Billard sind dies die Root-Nodes des Suchbaums.
@@ -110,8 +111,9 @@ erfolgversprechendste Kandidat expandiert wird. \\
 Der Algorithmus \ref{alg:expand_berechnung} zeigt, wie dies in etwa funktionieren kann.
 Als Eingabe dient eine priorisierte Queue von offenen Arbeitspaketen sowie die Implementation der \glqq Expand-Funktion\grqq.
 Wenn es offene Arbeitspakete gibt, dann wird das Beste genommen und über die Implementation der
-\glqq Expand-Funktion\grqq{} expandiert. Das Resultat dieses Schrittes wird danach entweder den Lösungen oder den
-offenen Arbeitspaketen hinzugefügt. Am Schluss werden die offenen Arbeitspakete wie auch die Lösungen zurückgegeben.
+\glqq Expand-Funktion\grqq{} expandiert.
+Das Resultat dieses Schrittes wird danach entweder den Lösungen oder den offenen Arbeitspaketen hinzugefügt.
+Am Schluss werden die offenen Arbeitspakete wie auch die Lösungen zurückgegeben.
 
 \begin{algorithm}[H]
     \DontPrintSemicolon
@@ -141,27 +143,31 @@ offenen Arbeitspaketen hinzugefügt. Am Schluss werden die offenen Arbeitspakete
 \end{algorithm}
 
 Die Synchronisation zwischen den Prozessen wird in Abbildung \ref{fig:berechnungsprozess_synchronisation} erläutert.
-Sie findet nach einer konfigurierten Zeit $k$ statt. Diese wird in Millisekunden $[ms]$
-angegeben. Da die Synchronisation ein exklusives Verwenden einer geteilten Ressource erfordert, um die erledigte Arbeit
+Sie findet nach einer konfigurierten Zeit $k$ statt.
+Diese wird in Millisekunden $[ms]$ angegeben.
+Da die Synchronisation ein exklusives Verwenden einer geteilten Ressource erfordert, um die erledigte Arbeit
 dem Prozessmanager mitzuteilen, erhalten alle laufenden Prozesse (dies umfasst den Hauptprozess des Prozessmanagers wie auch
-alle Berechnungsprozesse) ein Zeitfenster zugeteilt, welches nach $k$ Millisekunden startet. Danach kann jeder Prozess nach
-$k + i \cdot n$, wobei $i$ für die Prozess-ID beginnend bei $0$ und $n$ für das Zeitfenster einer Synchronisation steht,
-mit der Synchronisation beginnen. Es wird so verhindert, dass zu viele Prozesse auf die Ressource des Prozessmanagers
-warten müssen und untätig bleiben. Ein weiterer Vorteil dabei ist die Tatsache, dass in der Zeit der Synchronisation
-einige Prozesse Zeit erhalten, um eher schlechter bewertete Kandidaten weiterzuverfolgen. Dadurch ist es möglich,
-dass ein sehr gutes Ergebnis gefunden werden kann, obwohl dessen Kandidat anfänglich als schlecht beurteilt wurde.
+alle Berechnungsprozesse) ein Zeitfenster zugeteilt, welches nach $k$ Millisekunden startet.
+Danach kann jeder Prozess nach $k + i \cdot n$, wobei $i$ für die Prozess-ID beginnend bei $0$ und $n$ für das
+Zeitfenster einer Synchronisation steht, mit der Synchronisation beginnen. Es wird so verhindert,
+dass zu viele Prozesse auf die Ressource des Prozessmanagers warten müssen und untätig bleiben.
+Ein weiterer Vorteil dabei ist die Tatsache, dass in der Zeit der Synchronisation einige Prozesse Zeit erhalten,
+um eher schlechter bewertete Kandidaten weiterzuverfolgen.
+Dadurch ist es möglich, dass ein sehr gutes Ergebnis gefunden werden kann,
+obwohl dessen Kandidat anfänglich als schlecht beurteilt wurde.
 
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=0.8\linewidth]{../common/03_billiard_ai/resources/15_berechnungsprozess_synchronisation.png}
     \end{center}
-    \caption{Berechnungsprozesssynchronisation}
+    \caption{
+        Synchronisation der Berechnungsprozesse: Der Hauptprozess und bsp. zwei Berechnungsprozesse führen eine
+        Synchronisation in einem Intervall von $k$ Millisekunden durch.
+        Grüne Zellen stellen Zeitfenster dar, in denen Lösungen berechnet werden.
+        Rote Zellen stehen für den Overhead, welcher durch die Synchronisation entsteht.
+        Der Prozessmanager macht nebst seinem Synchronisationsfenster nichts, weswegen seine Spalten grau markiert sind.
+        Eine mögliche Verbesserung wäre die Auslastung des Prozessmanagers mit zusätzlicher
+        Berechnungsarbeit, wie sie die Berechnungsprozesse durchführen.
+    }
     \label{fig:berechnungsprozess_synchronisation}
 \end{figure}
-
-Die Abbildung \ref{fig:berechnungsprozess_synchronisation} zeigt den Hauptprozess wie auch zwei Berechnungsprozesse, welche
-eine Synchronisation in einem Intervall von $k$ Millisekunden durchführen. Grüne Spalten stehen hierbei für die Zeit, welche für die Berechnung
-einer Lösung verwendet wird, also als produktiv bezeichnet werden kann. Rote Spalten hingegen signalisieren den unproduktiven
-Overhead, der bei der Synchronisation entsteht. Der Prozessmanager macht nebst seinem Synchronisationsfenster nichts,
-weswegen seine Spalten grau markiert sind. Eine mögliche Verbesserung wäre die Auslastung des Prozessmanagers mit zusätzlicher
-Berechnungsarbeit, wie sie die Berechnungsprozesse durchführen.
