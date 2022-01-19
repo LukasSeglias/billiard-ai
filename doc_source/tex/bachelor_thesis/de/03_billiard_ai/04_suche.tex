@@ -105,7 +105,8 @@ Der neue Zielpunkt $Z$ wird mithilfe des Vektors $d$ und dem bekannten Kugelradi
     \begin{center}
         \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/35_suchkandidat_kugel_expand.png}
     \end{center}
-    \caption{Kugelexpansion}
+    \caption{Kugelexpansion - Berechnung der Position einer anderen Kugel, um die Kugel in die gewünschte Richtung zu
+    stossen.}
     \label{fig:kugelexpansion}
 \end{figure}
 
@@ -266,7 +267,7 @@ resultiert im Spiegelpunkt $\bar{C_0}$.
     \begin{center}
         \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/51_rail_reflection_2_b.png}
     \end{center}
-    \caption{Zweifaches Bandenspiel - B: Der Schnittpunkt $A-0$ an der linken Bande ist der erste Bandenkollisionspunkt.
+    \caption{Zweifaches Bandenspiel - B: Der Schnittpunkt $A_0$ an der linken Bande ist der erste Bandenkollisionspunkt.
     Um den zweiten Bandenkollisionspunkt zu bestimmen, wird die Spiegelung an der linken Bande rückgängig gemacht.}
     \label{fig:zweifaches_bandenspiel_b}
 \end{figure}
@@ -285,7 +286,7 @@ bedeutet.
     \begin{center}
         \includegraphics[width=0.5\linewidth]{../common/03_billiard_ai/resources/52_rail_reflection_2_c.png}
     \end{center}
-    \caption{Zweifaches Bandenspiel - C: Der Schnittpunkt $A-1$ an der oberen Bande ist der zweite Bandenkollisionspunkt.
+    \caption{Zweifaches Bandenspiel - C: Der Schnittpunkt $A_1$ an der oberen Bande ist der zweite Bandenkollisionspunkt.
     Wenn die Spiegelung an der oberen Bande rückgängig gemacht wird, fällt der Zielpunkt wieder auf den ursprünglichen Punkt C zurück.}
     \label{fig:zweifaches_bandenspiel_c}
 \end{figure}
@@ -461,7 +462,7 @@ den Positionen passierbar ist. Sollte dies nicht der Fall sein, wird dieser Lös
 Für die Expansion einer Kugel, sei es über eine weitere Kugel oder über eine Bande,
 muss geprüft werden, dass keine weitere Kugel im Weg ist. Dies wird über die Berechnung
 des Distanzvektors zwischen dem Vektor $\vec{d}$ und der zu prüfenden Kugel erzielt. Dasselbe Prinzip wird
-in Kapitel \ref{kap:kugelkollision:performanceverbesserung} beim Fall einer dynamisch-statischen Kugelkollision erläutert.
+in Kapitel \ref{kap:simulation:kollisionspruefung} erläutert.
 
 %Bei der Prüfung auf eine mögliche Bandenkollision zwischen der aktuellen Position und dem Zielpunkt muss der Durchmesser
 %der Kugel mitberücksichtigt werden. Eine mögliche Situation wird in Abbildung \ref{fig:kugelexpansion_bandenkollision} dargestellt.

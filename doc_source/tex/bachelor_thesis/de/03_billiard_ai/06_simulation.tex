@@ -180,7 +180,7 @@ Diese gibt den Verlust in Prozent an.
     R = (I - 2 \cdot N \cdot (I \cdot N)) \cdot \frac{1}{1 + E_v}
 \end{align}
 
-\subsubsection{Kollisionsprüfung}
+\subsubsection{Kollisionsprüfung}\label{kap:simulation:kollisionspruefung}
 Während der Simulation ist es notwendig zu prüfen, welche Kugeln mit welchen kollidieren könnten.
 Um zu wissen, ob eine Kugel eine Strecke zurücklegen kann, ohne mit einer anderen Kugel zu kollidieren,
 muss für jede andere Kugel geprüft werden, ob diese im Weg liegt.
@@ -246,7 +246,7 @@ Erste ist.
     t = \min{(t_1, t_2, t_3, t_4)}
 \end{align}
 
-\paragraph{Performanceverbesserungen}\label{kap:kugelkollision:performanceverbesserung} \hfill \\
+\paragraph{Performanceverbesserungen} \hfill \\
 Das Lösen dieses Gleichungssystems erfordert viel Rechenzeit, was die Frage nach Performanceverbesserungen aufwirft.
 Diese werden durch Vorbedingungen erzielt, welche geprüft werden. Es findet zu Beginn eine Fallunterscheidung statt.
 

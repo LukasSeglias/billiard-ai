@@ -6,22 +6,21 @@ Ein guter Stoss in der aktuellen Situation kann evtl. zu schwierigeren Stössen 
 Daher wurde beim Lösungsdesign des Suchalgorithmus darauf geachtet, dass eine Suche über mehrere Stösse ermöglicht wird.
 Es handelt sich immer noch um eine Graphensuche, deren Suchraum jedoch erweitert wird.
 Ein korrespondierender Suchbaum wird in Abbildung \ref{fig:suchbaum_tiefensuche} veranschaulicht.
-Die orangenen Knoten bilden die Root-Knoten, die Repräsentation der Ziellöcher. Die grünen Knoten sind
-Expansionsknoten. Diese stehen z.B. für einen Weg über eine Kugel oder eine Bande. Die beiden Knoten sind bereits aus
-Kapitel \ref{sec:kandidatensuche} bekannt. Sobald die weisse Kugel expandiert wird, ist eine Kandidatensuche beendet und
-es startet eine Simulation. Die Simulation wird beim Durchführen des Suchalgorithmus ebenfalls als Knoten in diesem
-Suchbaum angesehen, hier blau eingefärbt. Nach der Berechnung eines Simulationsknotens kann die Suche bei genügender
-Tiefe beendet oder wie in Ebene 3 fortgeführt werden. Das Resultat des Simulationsknotens bildet den neuen Spielstand
-und es werden neue Root-Knoten darauf basierend expandiert. Die Suche kann so zukünftige Stösse in die Bewertung
-des aktuellen Stosses einbeziehen.
-Das Resultat der Tiefensuche sind nicht mehr nur einzelne Stösse, sondern Abfolgen von Stössen, welche nacheinander
-ausgeführt werden könnten.
 
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[width=0.7\linewidth]{../common/03_billiard_ai/resources/38_tiefensuche_suchbaum.png}
     \end{center}
-    \caption{Suchbaum der Tiefensuche}
+    \caption{Suchbaum der Tiefensuche: Die orangenen Knoten bilden die Root-Knoten, die Repräsentation der Ziellöcher. Die grünen Knoten sind
+    Expansionsknoten. Diese stehen für eine Expansion über eine weitere Kugel. Die beiden Knoten sind bereits aus
+    Kapitel \ref{sec:kandidatensuche} bekannt. Sobald die weisse Kugel expandiert wird, ist eine Kandidatensuche beendet und
+    es startet eine Simulation. Die Simulation wird beim Durchführen des Suchalgorithmus ebenfalls als Knoten in diesem
+    Suchbaum angesehen, hier blau eingefärbt. Nach der Berechnung eines Simulationsknotens kann die Suche bei genügender
+    Tiefe beendet oder wie in Ebene 3 fortgeführt werden. Das Resultat des Simulationsknotens bildet den neuen Spielstand
+    und es werden neue Root-Knoten darauf basierend expandiert. Die Suche kann so zukünftige Stösse in die Bewertung
+    des aktuellen Stosses einbeziehen.
+    Das Resultat der Tiefensuche sind nicht mehr nur einzelne Stösse, sondern Abfolgen von Stössen, welche nacheinander
+    ausgeführt werden könnten.}
     \label{fig:suchbaum_tiefensuche}
 \end{figure}
 
@@ -37,7 +36,7 @@ Die Wertung der Spots entspricht der Wertung der Kugeln, welche bei der Ausgangs
 
 Ist der Spot nicht frei, so wird sie auf den nächsthöherwertigen Spot gelegt.
 Wenn alle Spots belegt sind, wird die Kugel so nah wie möglich an ihrem ursprünglichen Spot in Richtung der Kopfbande platziert.
-Die Kopfbande ist diejenige, welcher der schwarzen Kugel bei der Ausgangsstellung am nächsten ist \cite{stoppball:spielregel:snooker}.
+Die Kopfbande ist diejenige, welche der schwarzen Kugel bei der Ausgangsstellung am nächsten ist \cite{stoppball:spielregel:snooker}.
 
 \begin{figure}[h!]
     \begin{center}
