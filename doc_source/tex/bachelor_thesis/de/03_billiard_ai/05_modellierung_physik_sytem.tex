@@ -163,7 +163,7 @@ variablen Objekte entweder ein \glqq Cutting-Node\grqq{} oder ein \glqq Out-of-e
         \While{! system.isStatic()}{
             nextEvent $\longleftarrow$ nextEvent(system.lastLayer(), constantObjects)\\
             layer $\longleftarrow$ atMoment(system.lastLayer(), nextEvent)\\
-            system $\longleftarrow$ appendLayer(system, start)
+            system $\longleftarrow$ appendLayer(system, layer)
         }
         \KwRet system
     }
